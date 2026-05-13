@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Student Academics Council — Official Website of IISER Kolkata"
+    />
+    <meta name="theme-color" content="#1a1410" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F5F0EB" media="(prefers-color-scheme: light)" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SAC — Student Academics Council, IISER Kolkata" />
+    <meta
+      property="og:description"
+      content="Student Academics Council — Official Website of IISER Kolkata"
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content="https://sac-iiserkolkata.github.io/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SAC — Student Academics Council, IISER Kolkata" />
+    <meta
+      name="twitter:description"
+      content="Student Academics Council — Official Website of IISER Kolkata"
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://sac-iiserkolkata.github.io/" />
+
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <title>SAC IISER Kolkata</title>
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <!-- Skip-to-content link (Accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Grain overlay for cinematic feel -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- Main application content — hidden behind loader overlay -->
+    <div id="app"></div>
+
+    <!-- Vite entry point -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,350 @@
+/* ==========================================================================
+   SAC IISER Kolkata — Home Page Styles
+   ========================================================================== */
+
+/* ===== Hero Section ===== */
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-void);
+}
+
+.hero-bg-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.hero-bg-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.orbital-ring-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.15;
+  z-index: 1;
+  transition: opacity var(--duration-slow) var(--ease-gentle);
+}
+
+.orbital-ring-svg {
+  width: 400px;
+  height: 400px;
+  animation: rotateSlow 30s linear infinite;
+}
+
+@keyframes rotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.scroll-indicator__label {
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  max-width: 900px;
+}
+
+.hero-badge {
+  margin-bottom: var(--space-8);
+}
+
+.hero-badge .label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  padding: 0.3em 1em;
+  border: 1px solid rgba(79, 142, 247, 0.3);
+  background: rgba(79, 142, 247, 0.05);
+}
+
+.heading-hero {
+  margin-bottom: var(--space-6);
+  font-size: var(--text-hero);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--color-text-primary);
+}
+
+.hero-subtitle {
+  margin: 0 auto var(--space-10);
+  max-width: 600px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-lg);
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-12);
+}
+
+/* ===== About Section ===== */
+
+.about-section {
+  background: var(--color-deep);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  align-items: center;
+}
+
+.about-text p {
+  margin-bottom: var(--space-4);
+}
+
+.about-visual-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.about-visual-svg {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
+/* ===== Clubs Section ===== */
+
+.clubs-section {
+  background: var(--color-void);
+  position: relative;
+}
+
+.clubs-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='0.8' fill='%23ffffff' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.club-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--duration-normal) var(--ease-gentle);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow-primary);
+    border-color: rgba(79, 142, 247, 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.club-card__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.club-card__icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(79, 142, 247, 0.08);
+  margin-bottom: var(--space-2);
+}
+
+.club-card__icon {
+  width: 28px;
+  height: 28px;
+  opacity: 0.6;
+}
+
+.club-card__category {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-size: 0.6rem;
+  padding: 0.15em 0.4em;
+}
+
+.club-card__name {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.club-card__description {
+  margin: 0;
+  flex-grow: 1;
+  min-height: 2.4em;
+}
+
+.club-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+}
+
+.club-card__link {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  font-weight: 600;
+
+  &:hover {
+    color: #6aa0ff;
+  }
+}
+
+/* ===== Footer ===== */
+
+.footer {
+  background: var(--color-deep);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-12) 0 var(--space-8);
+  position: relative;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-10);
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footer-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+}
+
+.footer-subtitle {
+  font-size: var(--text-sm);
+}
+
+.footer-heading {
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.footer-links,
+.footer-social-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footer-links a,
+.footer-social-links a {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  transition: color var(--duration-fast) var(--ease-gentle);
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+.footer-bottom {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .heading-hero {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .clubs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .orbital-ring-container {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-grid {
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-16);
+  }
+}
+
+@media (min-width: 1280px) {
+  .clubs-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

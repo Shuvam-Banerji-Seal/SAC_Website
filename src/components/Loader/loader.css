@@ -1,0 +1,132 @@
+/* ==========================================================================
+   SAC IISER Kolkata — Loader Styles
+   ========================================================================== */
+
+#loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--color-void);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#loader-overlay canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Grain overlay within loader */
+#loader-overlay .grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+/* Skip hint */
+.loader-skip-hint {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-family: var(--font-body);
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 2s ease 1.5s forwards;
+  cursor: pointer;
+  user-select: none;
+}
+
+.loader-skip-hint:hover {
+  color: var(--color-text-secondary);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Iris transition mask */
+.loader-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--color-void);
+  pointer-events: none;
+  clip-path: circle(0% at 50% 50%);
+}
+
+.loader-mask.reveal {
+  animation: loaderIris 0.8s var(--ease-out-expo) forwards;
+}
+
+@keyframes loaderIris {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+/* Three.js canvas cleanup — ensure no scrollbars */
+body:has(#loader-overlay) {
+  overflow: hidden;
+}
+
+/* ===== Fallback loader (reduced-motion / mobile) ===== */
+
+.fallback-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.fallback-logo {
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+
+.fallback-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+
+.fallback-spinner-ring {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(79, 142, 247, 0.12);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: fallbackSpin 0.8s linear infinite;
+}
+
+@keyframes fallbackSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fallback-text {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+  transition: opacity 0.6s var(--ease-out-expo);
+}

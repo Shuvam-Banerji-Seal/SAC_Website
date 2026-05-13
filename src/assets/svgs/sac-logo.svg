@@ -1,0 +1,9 @@
+<!-- SAC IISER Kolkata — Logo (Warm Brown Theme) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <circle cx="60" cy="60" r="52" fill="none" stroke="#8B7355" stroke-width="1.2" opacity="0.3"/>
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#C4A882" stroke-width="0.8" opacity="0.2"/>
+  <path id="letter-s" d="M24,28 C24,18 32,12 42,12 C52,12 58,18 58,28 L58,38 C58,44 54,48 48,48 C42,48 36,44 34,38 L30,38 C32,44 38,50 48,50 C58,50 64,44 64,36 C64,24 56,16 44,16 C32,16 26,22 26,32 L26,34 C26,42 30,48 38,48 C44,48 50,44 52,38 L56,38 C54,44 50,48 42,48 C34,48 28,44 28,36 Z" fill="#F5F0EB"/>
+  <path id="letter-a" d="M70,16 L76,48 L94,48 L84,72 L76,72 L66,44 L56,44 L46,72 L38,72 L48,48 L66,48 L70,16 Z M66,36 L62,24 C60,20 58,20 56,24 L52,36 C54,38 56,38 58,36 Z" fill="#F5F0EB"/>
+  <path id="letter-c" d="M66,18 C76,18 84,24 84,36 C84,48 76,54 66,54 L62,54 C64,50 66,46 66,42 L66,20 C66,22 65,24 64,26 L60,26 C60,24 62,20 64,18 Z M66,36 L66,30 L72,30 C70,34 68,36 66,36 Z" fill="none" stroke="#F5F0EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24,28 C24,18 32,12 42,12 C52,12 58,18 58,28 L58,38 C58,44 54,48 48,48 C42,48 36,44 34,38 L30,38 C32,44 38,50 48,50 C58,50 64,44 64,36 C64,24 56,16 44,16 C32,16 26,22 26,32 L26,34 C26,42 30,48 38,48 C44,48 50,44 52,38 L56,38 C54,44 50,48 42,48 C34,48 28,44 28,36 Z" fill="none" stroke="#C4A882" stroke-width="1.5" opacity="0.4"/>
+</svg>

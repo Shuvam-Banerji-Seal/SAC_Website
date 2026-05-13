@@ -1,0 +1,133 @@
+/* ==========================================================================
+   SAC IISER Kolkata — Design Tokens & CSS Custom Properties
+   "Warm Hearth" (dark) / "Morning Brew" (light) Theme
+   ========================================================================== */
+
+/* ===== Dark Theme (default) — Warm Brown ===== */
+:root,
+[data-theme='dark'] {
+  --color-void: #1a1410;
+  --color-deep: #2a221d;
+  --color-surface: #362f29;
+  --color-border: #4a423b;
+
+  --color-primary: #8b7355;
+  --color-secondary: #a0896c;
+  --color-accent: #c4a882;
+  --color-glow: #b8945c;
+
+  --color-text-primary: #f5f0eb;
+  --color-text-secondary: #c4bcb0;
+  --color-text-muted: #8a8278;
+
+  --gradient-hero: linear-gradient(135deg, #1a1410 0%, #2a221d 50%, #362f29 100%);
+  --gradient-glow: radial-gradient(
+    ellipse at center,
+    rgba(196, 168, 130, 0.12) 0%,
+    transparent 70%
+  );
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 16px 50px rgba(0, 0, 0, 0.65);
+  --shadow-glow-primary: 0 0 20px rgba(139, 115, 85, 0.25);
+  --shadow-glow-accent: 0 0 20px rgba(196, 168, 130, 0.25);
+  --shadow-glow-glow: 0 0 30px rgba(184, 148, 92, 0.2);
+
+  --color-particle: #c4a882;
+  --color-particle-s: #8b7355;
+  --color-particle-a: #a0896c;
+  --color-particle-c: #b8945c;
+}
+
+/* ===== Light Theme — Coffee Green + Cream ===== */
+[data-theme='light'] {
+  --color-void: #f5f0eb;
+  --color-deep: #ede6dd;
+  --color-surface: #ffffff;
+  --color-border: #d4c9bd;
+
+  --color-primary: #4a6741;
+  --color-secondary: #5d7a53;
+  --color-accent: #8b6914;
+  --color-glow: #3d5a35;
+
+  --color-text-primary: #2a221d;
+  --color-text-secondary: #5c5348;
+  --color-text-muted: #9c948a;
+
+  --gradient-hero: linear-gradient(135deg, #ede6dd 0%, #f5f0eb 50%, #ffffff 100%);
+  --gradient-glow: radial-gradient(ellipse at center, rgba(74, 103, 65, 0.08) 0%, transparent 70%);
+  --gradient-card: linear-gradient(145deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.005));
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 50px rgba(0, 0, 0, 0.15);
+  --shadow-glow-primary: 0 0 20px rgba(74, 103, 65, 0.15);
+  --shadow-glow-accent: 0 0 20px rgba(139, 105, 20, 0.15);
+  --shadow-glow-glow: 0 0 30px rgba(61, 90, 53, 0.12);
+
+  --color-particle: #3d5a35;
+  --color-particle-s: #4a6741;
+  --color-particle-a: #5d7a53;
+  --color-particle-c: #3d5a35;
+}
+
+/* ===== Typography Scale ===== */
+:root {
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --font-heading: var(--font-display);
+
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  --text-3xl: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+  --text-hero: clamp(3rem, 2rem + 5vw, 7rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 800ms;
+  --duration-dramatic: 1600ms;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-expo: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-cinematic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-gentle: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --max-width: 1280px;
+  --nav-height: 72px;
+  --section-gap: var(--space-32);
+
+  --blur-glass: blur(20px);
+  --blur-heavy: blur(40px);
+}

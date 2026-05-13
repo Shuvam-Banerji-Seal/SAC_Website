@@ -1,0 +1,333 @@
+/* ==========================================================================
+   SAC IISER Kolkata — CSS Animation Keyframes
+   ========================================================================== */
+
+/* ===== Fade-In Helpers ===== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== Scale Helpers ===== */
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* ===== Slide-In Helpers ===== */
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Pulse / Glow ===== */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(79, 142, 247, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(79, 142, 247, 0.5),
+      0 0 40px rgba(6, 182, 212, 0.2);
+  }
+}
+
+@keyframes textGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(79, 142, 247, 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 20px rgba(79, 142, 247, 0.6),
+      0 0 40px rgba(6, 182, 212, 0.3);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ===== Rotation ===== */
+
+@keyframes rotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateSlowReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes floatLarge {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* ===== Line Wipe (used by lineWipe text animation) ===== */
+
+@keyframes lineWipeIn {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes lineWipeOut {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+/* ===== Stagger Animation Classes ===== */
+
+.stagger-children > * {
+  opacity: 0;
+}
+
+.stagger-children.animate-in > * {
+  animation: fadeInUp var(--duration-normal) var(--ease-out-expo) both;
+}
+
+.stagger-children.animate-in > *:nth-child(1) {
+  animation-delay: 0s;
+}
+.stagger-children.animate-in > *:nth-child(2) {
+  animation-delay: 0.05s;
+}
+.stagger-children.animate-in > *:nth-child(3) {
+  animation-delay: 0.1s;
+}
+.stagger-children.animate-in > *:nth-child(4) {
+  animation-delay: 0.15s;
+}
+.stagger-children.animate-in > *:nth-child(5) {
+  animation-delay: 0.2s;
+}
+.stagger-children.animate-in > *:nth-child(6) {
+  animation-delay: 0.25s;
+}
+.stagger-children.animate-in > *:nth-child(7) {
+  animation-delay: 0.3s;
+}
+.stagger-children.animate-in > *:nth-child(8) {
+  animation-delay: 0.35s;
+}
+.stagger-children.animate-in > *:nth-child(9) {
+  animation-delay: 0.4s;
+}
+.stagger-children.animate-in > *:nth-child(10) {
+  animation-delay: 0.45s;
+}
+.stagger-children.animate-in > *:nth-child(11) {
+  animation-delay: 0.5s;
+}
+.stagger-children.animate-in > *:nth-child(12) {
+  animation-delay: 0.55s;
+}
+
+/* ===== Reduced Motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ===== Grain / Noise overlay (for cinematic feel) ===== */
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* ===== Clip-path for loader iris transition ===== */
+
+.loader-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  clip-path: circle(0% at 50% 50%);
+  background: var(--color-void);
+  pointer-events: none;
+}
+
+.loader-mask.reveal {
+  animation: loaderIris 0.8s var(--ease-out-expo) forwards;
+}
+
+@keyframes loaderIris {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+  }
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#050810"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0a0f1e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Orbital ring -->
+  <ellipse cx="600" cy="315" rx="200" ry="120" fill="none" stroke="#4f8ef7" stroke-width="1.5" opacity="0.3"/>
+  <ellipse cx="600" cy="315" rx="150" ry="90" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.2"/>
+  <!-- SAC text -->
+  <text x="600" y="310" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="72" font-weight="700" fill="#f1f5f9" letter-spacing="-2">SAC</text>
+  <text x="600" y="370" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="28" fill="#94a3b8">Student Academics Council</text>
+  <text x="600" y="410" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="22" fill="#475569">IISER Kolkata</text>
+  <!-- Decorative dots -->
+  <circle cx="200" cy="200" r="3" fill="#4f8ef7" opacity="0.3"/>
+  <circle cx="1000" cy="430" r="3" fill="#06b6d4" opacity="0.3"/>
+  <circle cx="300" cy="450" r="2" fill="#7c3aed" opacity="0.2"/>
+  <circle cx="900" cy="200" r="2" fill="#7c3aed" opacity="0.2"/>
+</svg>

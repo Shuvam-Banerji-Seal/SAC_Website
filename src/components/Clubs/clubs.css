@@ -1,0 +1,149 @@
+/* ==========================================================================
+   SAC IISER Kolkata — Clubs Section Styles
+   ========================================================================== */
+
+.clubs-section {
+  padding: var(--section-gap) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.clubs-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='0.8' fill='%23ffffff' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.club-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--duration-normal) var(--ease-gentle);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.club-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.club-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow-primary);
+  border-color: rgba(79, 142, 247, 0.3);
+}
+
+.club-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.club-card__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.club-card__icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(79, 142, 247, 0.08);
+  margin-bottom: var(--space-2);
+}
+
+.club-card__icon {
+  width: 28px;
+  height: 28px;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast) var(--ease-gentle);
+}
+
+.club-card:hover .club-card__icon {
+  opacity: 0.9;
+}
+
+.club-card__category {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-size: 0.6rem;
+  padding: 0.15em 0.4em;
+}
+
+.club-card__name {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+}
+
+.club-card__description {
+  margin: 0;
+  flex-grow: 1;
+  min-height: 2.4em;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.club-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.club-card__members {
+  color: var(--color-text-muted);
+}
+
+.club-card__link {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-gentle);
+}
+
+.club-card__link:hover {
+  color: #6aa0ff;
+}
+
+/* Responsive grid */
+@media (max-width: 1024px) {
+  .clubs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .clubs-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .club-card {
+    padding: var(--space-4);
+  }
+}

@@ -1,0 +1,186 @@
+<!-- SAC IISER Kolkata — Particle Map SVG for Loader Animation -->
+<!-- Each <circle> represents a particle target position for the Three.js particle system -->
+<!-- data-letter identifies which letter the particle belongs to: s, a, or c -->
+<!-- data-index provides stagger ordering within each letter -->
+<!-- Coordinates are in a 120x120 viewBox matching sac-logo.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Letter S particles (approx 150 particles forming S shape) -->
+  <!-- Row 1 - top curve -->
+  <circle cx="28" cy="22" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="0"/>
+  <circle cx="32" cy="21" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="1"/>
+  <circle cx="36" cy="20" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="2"/>
+  <circle cx="40" cy="19.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="3"/>
+  <circle cx="44" cy="20" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="4"/>
+  <circle cx="48" cy="21" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="5"/>
+  <circle cx="52" cy="22.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="6"/>
+  <circle cx="54" cy="24" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="7"/>
+  <!-- Row 2 -->
+  <circle cx="26" cy="26" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="8"/>
+  <circle cx="30" cy="25.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="9"/>
+  <circle cx="34" cy="25" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="10"/>
+  <circle cx="38" cy="24.8" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="11"/>
+  <circle cx="42" cy="25" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="12"/>
+  <circle cx="46" cy="25.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="13"/>
+  <circle cx="50" cy="26.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="14"/>
+  <circle cx="53" cy="28" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="15"/>
+  <!-- Row 3 - waist -->
+  <circle cx="24" cy="30" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="16"/>
+  <circle cx="28" cy="29.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="17"/>
+  <circle cx="32" cy="29" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="18"/>
+  <circle cx="36" cy="28.8" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="19"/>
+  <circle cx="40" cy="29" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="20"/>
+  <circle cx="44" cy="29.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="21"/>
+  <circle cx="48" cy="30.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="22"/>
+  <circle cx="51" cy="32" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="23"/>
+  <!-- Row 4 - middle bar -->
+  <circle cx="22" cy="34" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="24"/>
+  <circle cx="26" cy="33.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="25"/>
+  <circle cx="30" cy="33" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="26"/>
+  <circle cx="34" cy="32.8" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="27"/>
+  <circle cx="38" cy="33" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="28"/>
+  <circle cx="42" cy="33.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="29"/>
+  <circle cx="46" cy="34.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="30"/>
+  <circle cx="49" cy="36" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="31"/>
+  <!-- Row 5 - lower curve start -->
+  <circle cx="20" cy="38" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="32"/>
+  <circle cx="24" cy="37.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="33"/>
+  <circle cx="28" cy="37" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="34"/>
+  <circle cx="32" cy="36.8" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="35"/>
+  <circle cx="36" cy="37" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="36"/>
+  <circle cx="40" cy="37.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="37"/>
+  <circle cx="44" cy="38.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="38"/>
+  <circle cx="47" cy="40" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="39"/>
+  <!-- Row 6 - lower vertical -->
+  <circle cx="18" cy="42" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="40"/>
+  <circle cx="20" cy="42" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="41"/>
+  <circle cx="22" cy="43" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="42"/>
+  <circle cx="24" cy="44" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="43"/>
+  <circle cx="26" cy="45" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="44"/>
+  <circle cx="28" cy="46" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="45"/>
+  <circle cx="30" cy="47" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="46"/>
+  <circle cx="32" cy="48" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="47"/>
+  <!-- Row 7 - bottom curve -->
+  <circle cx="34" cy="50" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="48"/>
+  <circle cx="36" cy="52" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="49"/>
+  <circle cx="38" cy="54" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="50"/>
+  <circle cx="42" cy="55" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="51"/>
+  <circle cx="46" cy="55.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="52"/>
+  <circle cx="50" cy="55" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="53"/>
+  <circle cx="54" cy="54" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="54"/>
+  <circle cx="56" cy="52" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="55"/>
+  <circle cx="57" cy="50" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="56"/>
+  <!-- Row 8 - bottom tail -->
+  <circle cx="56" cy="54" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="57"/>
+  <circle cx="54" cy="56" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="58"/>
+  <circle cx="50" cy="57" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="59"/>
+  <circle cx="46" cy="57.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="60"/>
+  <circle cx="42" cy="57" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="61"/>
+  <circle cx="38" cy="56" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="62"/>
+  <circle cx="40" cy="54" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="63"/>
+  <circle cx="44" cy="52.5" r="2.5" fill="#06b6d4" class="particle" data-letter="s" data-index="64"/>
+  <!-- Additional S fill particles -->
+  <circle cx="34" cy="44" r="2" fill="#06b6d4" class="particle" data-letter="s" data-index="65"/>
+  <circle cx="36" cy="46" r="2" fill="#06b6d4" class="particle" data-letter="s" data-index="66"/>
+  <circle cx="38" cy="48" r="2" fill="#06b6d4" class="particle" data-letter="s" data-index="67"/>
+  <circle cx="40" cy="50" r="2" fill="#06b6d4" class="particle" data-letter="s" data-index="68"/>
+  <circle cx="42" cy="52" r="2" fill="#06b6d4" class="particle" data-letter="s" data-index="69"/>
+  <circle cx="32" cy="40" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="70"/>
+  <circle cx="30" cy="44" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="71"/>
+  <circle cx="32" cy="48" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="72"/>
+  <circle cx="34" cy="52" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="73"/>
+  <circle cx="36" cy="56" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="74"/>
+  <circle cx="44" cy="46" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="75"/>
+  <circle cx="46" cy="44" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="76"/>
+  <circle cx="48" cy="46" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="77"/>
+  <circle cx="46" cy="50" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="78"/>
+  <circle cx="44" cy="54" r="1.8" fill="#06b6d4" class="particle" data-letter="s" data-index="79"/>
+  <!-- Letter A particles -->
+  <circle cx="62" cy="18" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="0"/>
+  <circle cx="64" cy="17.5" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="1"/>
+  <circle cx="66" cy="17.5" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="2"/>
+  <circle cx="68" cy="18" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="3"/>
+  <circle cx="70" cy="18.5" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="4"/>
+  <circle cx="72" cy="19.5" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="5"/>
+  <circle cx="74" cy="20.5" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="6"/>
+  <circle cx="75" cy="22" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="7"/>
+  <circle cx="60" cy="22" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="8"/>
+  <circle cx="59" cy="24" r="2.5" fill="#06b6d4" class="particle" data-letter="a" data-index="9"/>
+  <!-- A crossbar -->
+  <circle cx="62" cy="34" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="10"/>
+  <circle cx="64" cy="34" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="11"/>
+  <circle cx="66" cy="33.5" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="12"/>
+  <circle cx="68" cy="33.5" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="13"/>
+  <circle cx="70" cy="33.5" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="14"/>
+  <circle cx="72" cy="34" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="15"/>
+  <circle cx="74" cy="35" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="16"/>
+  <circle cx="75" cy="36" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="17"/>
+  <!-- Left leg -->
+  <circle cx="60" cy="42" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="18"/>
+  <circle cx="59" cy="46" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="19"/>
+  <circle cx="58" cy="50" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="20"/>
+  <circle cx="57" cy="54" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="21"/>
+  <circle cx="56" cy="58" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="22"/>
+  <circle cx="57" cy="62" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="23"/>
+  <!-- Right leg -->
+  <circle cx="76" cy="42" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="24"/>
+  <circle cx="77" cy="46" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="25"/>
+  <circle cx="78" cy="50" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="26"/>
+  <circle cx="79" cy="54" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="27"/>
+  <circle cx="80" cy="58" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="28"/>
+  <circle cx="79" cy="62" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="29"/>
+  <!-- Bottom of legs -->
+  <circle cx="55" cy="66" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="30"/>
+  <circle cx="53" cy="70" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="31"/>
+  <circle cx="77" cy="66" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="32"/>
+  <circle cx="79" cy="70" r="2" fill="#06b6d4" class="particle" data-letter="a" data-index="33"/>
+  <!-- A inner fill -->
+  <circle cx="64" cy="40" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="34"/>
+  <circle cx="66" cy="42" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="35"/>
+  <circle cx="68" cy="44" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="36"/>
+  <circle cx="70" cy="42" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="37"/>
+  <circle cx="62" cy="46" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="38"/>
+  <circle cx="72" cy="46" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="39"/>
+  <circle cx="64" cy="50" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="40"/>
+  <circle cx="70" cy="50" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="41"/>
+  <circle cx="66" cy="54" r="1.5" fill="#06b6d4" class="particle" data-letter="a" data-index="42"/>
+  <!-- Letter C particles -->
+  <circle cx="92" cy="22" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="0"/>
+  <circle cx="96" cy="20" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="1"/>
+  <circle cx="100" cy="19" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="2"/>
+  <circle cx="104" cy="20" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="3"/>
+  <circle cx="106" cy="23" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="4"/>
+  <circle cx="107" cy="27" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="5"/>
+  <circle cx="88" cy="24" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="6"/>
+  <circle cx="86" cy="28" r="2.5" fill="#06b6d4" class="particle" data-letter="c" data-index="7"/>
+  <!-- C top arm -->
+  <circle cx="90" cy="32" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="8"/>
+  <circle cx="94" cy="30" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="9"/>
+  <circle cx="98" cy="28" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="10"/>
+  <circle cx="102" cy="28" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="11"/>
+  <circle cx="105" cy="30" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="12"/>
+  <circle cx="106" cy="34" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="13"/>
+  <!-- C middle vertical -->
+  <circle cx="88" cy="38" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="14"/>
+  <circle cx="86" cy="42" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="15"/>
+  <circle cx="86" cy="46" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="16"/>
+  <circle cx="88" cy="50" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="17"/>
+  <circle cx="92" cy="52" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="18"/>
+  <circle cx="96" cy="54" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="19"/>
+  <!-- C bottom arm -->
+  <circle cx="90" cy="56" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="20"/>
+  <circle cx="94" cy="58" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="21"/>
+  <circle cx="98" cy="60" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="22"/>
+  <circle cx="102" cy="60" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="23"/>
+  <circle cx="105" cy="58" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="24"/>
+  <circle cx="107" cy="54" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="25"/>
+  <circle cx="106" cy="50" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="26"/>
+  <circle cx="104" cy="46" r="2" fill="#06b6d4" class="particle" data-letter="c" data-index="27"/>
+  <!-- C inner fill -->
+  <circle cx="94" cy="34" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="28"/>
+  <circle cx="96" cy="36" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="29"/>
+  <circle cx="98" cy="38" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="30"/>
+  <circle cx="100" cy="40" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="31"/>
+  <circle cx="102" cy="42" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="32"/>
+  <circle cx="98" cy="46" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="33"/>
+  <circle cx="94" cy="48" r="1.5" fill="#06b6d4" class="particle" data-letter="c" data-index="34"/>
+</svg>

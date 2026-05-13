@@ -1,0 +1,174 @@
+/* ==========================================================================
+   SAC IISER Kolkata — Typography & Font Loading
+   ========================================================================== */
+
+/* Google Fonts — loaded via preconnect in index.html */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ===== Base Text Styles ===== */
+
+.text-xs {
+  font-size: var(--text-xs);
+}
+.text-sm {
+  font-size: var(--text-sm);
+}
+.text-base {
+  font-size: var(--text-base);
+}
+.text-lg {
+  font-size: var(--text-lg);
+}
+.text-xl {
+  font-size: var(--text-xl);
+}
+.text-2xl {
+  font-size: var(--text-2xl);
+}
+.text-3xl {
+  font-size: var(--text-3xl);
+}
+.text-hero {
+  font-size: var(--text-hero);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-body {
+  font-family: var(--font-body);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ===== Heading Styles ===== */
+
+.heading-hero {
+  font-family: var(--font-heading);
+  font-size: var(--text-hero);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+}
+
+.heading-xl {
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.heading-lg {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--color-text-primary);
+}
+
+.heading-md {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+}
+
+.heading-sm {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+}
+
+/* ===== Body Text ===== */
+
+.body-lg {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.body-md {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.body-sm {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.body-muted {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* ===== Fluid Typography Helpers ===== */
+
+/* Force text to respect container width */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ===== Monospace / Code Styles ===== */
+
+.code-inline {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  color: var(--color-accent);
+}
+
+/* ===== Label / Tag Styles ===== */
+
+.label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2em 0.6em;
+  border-radius: var(--radius-sm);
+  background: rgba(79, 142, 247, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(79, 142, 247, 0.2);
+}
+
+.label--accent {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-accent);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.label--secondary {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--color-secondary);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+/* ===== Text Gradient ===== */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-glow), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
