@@ -143,29 +143,36 @@ function buildAboutSection(container) {
           </p>
           <p class="body-md">
             We organize academic events, workshops, seminars, and competitions throughout
-            the year. From guest lectures by renowned researchers to peer-led study groups,
-            SAC creates an environment where curiosity thrives and knowledge is shared freely.
+            the year — from guest lectures by renowned researchers to peer-led study groups,
+            hackathons, quizzes, and cultural fests. SAC creates an environment where
+            curiosity thrives and knowledge is shared freely across disciplines.
           </p>
           <p class="body-md">
             Our mission is to bridge the gap between classroom learning and real-world
-            application, empowering students to explore their academic passions beyond
-            the curriculum.
+            application, empowering every student to explore their academic passions
+            beyond the curriculum. We currently oversee <strong>8+ clubs</strong>
+            spanning technical, literary, cultural, and academic domains.
+          </p>
+          <p class="body-md">
+            Built with modern web technologies and deployed via GitHub Actions,
+            this platform serves as a central hub for all SAC activities.
+            <a href="https://github.com/Shuvam-Banerji-Seal/SAC_Website" target="_blank" rel="noopener" class="code-inline">View source on GitHub →</a>
           </p>
         </div>
 
         <div class="about-visual" data-text-anim="fadeInUp" data-anim-delay="0.4">
           <div class="about-visual-placeholder">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="about-visual-svg">
-              <rect x="0" y="0" width="400" height="300" rx="12" fill="#111827"/>
-              <circle cx="100" cy="100" r="40" fill="none" stroke="#4f8ef7" stroke-opacity="0.2" stroke-width="2"/>
-              <circle cx="200" cy="150" r="60" fill="none" stroke="#06b6d4" stroke-opacity="0.2" stroke-width="1.5"/>
-              <circle cx="300" cy="100" r="50" fill="none" stroke="#7c3aed" stroke-opacity="0.2" stroke-width="2"/>
-              <line x1="100" y1="100" x2="200" y2="150" stroke="#334155" stroke-width="1" opacity="0.3"/>
-              <line x1="200" y1="150" x2="300" y2="100" stroke="#334155" stroke-width="1" opacity="0.3"/>
-              <line x1="100" y1="100" x2="300" y2="100" stroke="#334155" stroke-width="1" opacity="0.15"/>
-              <circle cx="100" cy="100" r="4" fill="#4f8ef7" opacity="0.6"/>
-              <circle cx="200" cy="150" r="4" fill="#06b6d4" opacity="0.6"/>
-              <circle cx="300" cy="100" r="4" fill="#7c3aed" opacity="0.6"/>
+              <rect x="0" y="0" width="400" height="300" rx="12" fill="var(--color-surface)"/>
+              <circle cx="100" cy="100" r="40" fill="none" stroke="var(--color-primary)" stroke-opacity="0.25" stroke-width="2"/>
+              <circle cx="200" cy="150" r="60" fill="none" stroke="var(--color-secondary)" stroke-opacity="0.2" stroke-width="1.5"/>
+              <circle cx="300" cy="100" r="50" fill="none" stroke="var(--color-accent)" stroke-opacity="0.2" stroke-width="2"/>
+              <line x1="100" y1="100" x2="200" y2="150" stroke="var(--color-border)" stroke-width="1" opacity="0.4"/>
+              <line x1="200" y1="150" x2="300" y2="100" stroke="var(--color-border)" stroke-width="1" opacity="0.4"/>
+              <line x1="100" y1="100" x2="300" y2="100" stroke="var(--color-border)" stroke-width="1" opacity="0.2"/>
+              <circle cx="100" cy="100" r="4" fill="var(--color-primary)" opacity="0.7"/>
+              <circle cx="200" cy="150" r="4" fill="var(--color-secondary)" opacity="0.7"/>
+              <circle cx="300" cy="100" r="4" fill="var(--color-accent)" opacity="0.7"/>
             </svg>
           </div>
         </div>
