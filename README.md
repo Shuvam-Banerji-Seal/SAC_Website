@@ -2,14 +2,17 @@
 
 ![SAC IISER Kolkata](public/og-image.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![CI](https://github.com/sac-iiserkolkata/sac-iiser-kolkata/workflows/Test%20Suite/badge.svg)
-![Lighthouse](https://img.shields.io/badge/lighthouse-≥85%25-green)
+[![License: MIT](https://img.shields.io/badge/License-MIT-8B7355.svg)](LICENSE)
+![CI](https://github.com/Shuvam-Banerji-Seal/SAC_Website/actions/workflows/test.yml/badge.svg)
+[![GitHub Pages](https://img.shields.io/badge/deployed-GitHub%20Pages-4A6741.svg)](https://shuvam-banerji-seal.github.io/SAC_Website/)
+![Lighthouse](https://img.shields.io/badge/lighthouse-≥85%25-8B7355)
 ![Vite](https://img.shields.io/badge/built%20with-Vite-646CFF.svg)
+
+> **🌐 Live Site:** [shuvam-banerji-seal.github.io/SAC_Website](https://shuvam-banerji-seal.github.io/SAC_Website/)
 
 The **Student Academics Council (SAC)** at **IISER Kolkata** official website — a performant, cinematic, and accessible static website showcasing academic clubs, events, and student initiatives.
 
-> **Design Direction:** _"Deep Space Academia"_ — dark, sophisticated, scientific. Feels like looking at the cosmos through the lens of rigorous scholarship.
+> **Design Direction:** _"Warm Hearth / Morning Brew"_ — a welcoming, warm-toned interface with a dark (warm brown) and light (coffee green + cream) theme.
 
 ---
 
