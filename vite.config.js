@@ -5,10 +5,8 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // Base URL — use '/' for GitHub Pages root deployment.
-  // If deploying to a subpath (e.g., repo name), change to '/repo-name/'
-  // and update the <base> tag in index.html accordingly.
-  base: '/',
+  // Base URL — repo subpath for GitHub Pages deployment
+  base: '/SAC_Website/',
 
   build: {
     outDir: 'dist',
