@@ -221,7 +221,7 @@ function buildClubsSection(container) {
       description: 'Explore the world of theater and stage performance.',
     },
     {
-      name: 'CodSoc',
+      name: 'Slashdot',
       category: 'Technical',
       description: 'Competitive programming and software development community.',
     },
