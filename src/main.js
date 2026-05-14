@@ -196,11 +196,6 @@ function buildClubsSection(container) {
   // Skeleton club data — content to be filled in Phase 2
   const skeletonClubs = [
     {
-      name: 'Robotics Club',
-      category: 'Technical',
-      description: 'Build, program, and compete with robots.',
-    },
-    {
       name: 'Debating Society',
       category: 'Literary',
       description: 'Sharpen your argumentation and public speaking skills.',
