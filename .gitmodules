@@ -1,3 +1,6 @@
 [submodule "public/assets"]
 	path = public/assets
 	url = git@github.com:slashdot-iiserk/SAC_website_assets.git
+[submodule "utils/pretext"]
+	path = utils/pretext
+	url = git@github.com:chenglou/pretext.git
