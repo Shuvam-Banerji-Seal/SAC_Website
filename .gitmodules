@@ -1,0 +1,3 @@
+[submodule "public/assets"]
+	path = public/assets
+	url = git@github.com:slashdot-iiserk/SAC_website_assets.git
