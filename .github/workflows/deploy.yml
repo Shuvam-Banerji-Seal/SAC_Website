@@ -1,0 +1,88 @@
+# =========================================================================
+# SAC_Website — GitHub Pages deploy
+#
+# This site is fully static (HTML/CSS/JS, no build step). The deploy job
+# just uploads the repo contents to GitHub Pages.
+#
+# It also pulls in the public/assets submodule recursively so the
+# processed club images are available at the same paths the website
+# expects (e.g. /SAC_Website/public/assets/processed/...).
+#
+# The site is served from the repo root because the asset URLs are
+# absolute paths starting with /SAC_Website/. The site is served at
+# https://<owner>.github.io/SAC_Website/.
+# =========================================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allow manual re-deploys from the Actions tab
+
+# Cancel in-progress runs of this same workflow on the same branch when a
+# new commit is pushed — keeps the deploy queue short and avoids serving
+# a half-deployed artifact.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# Required for GitHub Pages deploy + OIDC token verification.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Don't leave a stale deploy running forever. 15 minutes is plenty for a
+# static site upload.
+concurrency-timeout: 15m
+
+jobs:
+  deploy:
+    name: Deploy site
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          # The assets submodule at public/assets contains the processed
+          # club photos, OBs, etc. The pretext submodule at utils/pretext
+          # isn't strictly needed for the deployed site, but we fetch
+          # recursively anyway to keep the checkout consistent.
+          submodules: recursive
+          # Full history isn't required for a static deploy, but shallow
+          # + recursive submodules is a common gotcha — GitHub's docs
+          # recommend leaving depth at 0 (default) for submodule fetches
+          # to work cleanly.
+          fetch-depth: 0
+
+      - name: Verify critical paths exist
+        run: |
+          set -euo pipefail
+          test -f index.html || (echo "::error::index.html missing at repo root" && exit 1)
+          test -d styles || (echo "::error::styles/ directory missing" && exit 1)
+          test -d scripts || (echo "::error::scripts/ directory missing" && exit 1)
+          test -d assets || (echo "::error::assets/ directory missing" && exit 1)
+          test -f assets/logos/sac.svg || (echo "::error::SAC logo missing" && exit 1)
+          test -d public/assets/processed || (echo "::error::public/assets submodule not checked out" && exit 1)
+          test -f .nojekyll || (echo "::error::.nojekyll missing — GitHub Pages would try to process the site" && exit 1)
+          echo "All critical paths present."
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the entire repo as the site. The asset URLs are
+          # absolute (start with /SAC_Website/) so subfolder hosting
+          # "just works" once the Pages environment sets the base path.
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

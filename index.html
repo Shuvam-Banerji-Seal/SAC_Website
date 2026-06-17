@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <title>SAC · IISER Kolkata — Student Affairs Council</title>
+  <meta name="description" content="The Student Affairs Council (SAC) of IISER Kolkata — cultural clubs, hostel committees, academics, and the people who make them run." />
+  <meta name="theme-color" content="#06091a" />
+  <meta name="generator" content="SAC Website" />
+
+  <!-- Preload the SAC logo so the droplet stage has no network wait -->
+  <link rel="preload" href="assets/logos/sac.svg" as="image" type="image/svg+xml" />
+
+  <!-- Site styles (loader first; page styles appended below) -->
+  <link rel="stylesheet" href="styles/loader.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+
+  <!-- No-JS fallback: keep the loader hidden, reveal the page shell
+       immediately. With JS enabled, an inline script below removes
+       .no-js and the loader's CSS takes over. -->
+  <style>
+    html.no-js #sac-loader { display: none !important; }
+    html.no-js .site-header,
+    html.no-js .site-main,
+    html.no-js .site-footer { display: revert; opacity: 1; transform: none; }
+  </style>
+</head>
+<body class="no-js">
+  <!-- =====================================================================
+       Loader overlay. The JS in scripts/loader.js will build the film reels
+       and drive the staged animation. On small screens or reduced-motion
+       devices the same code path still works, just snappier.
+       ===================================================================== -->
+  <div id="sac-loader"
+       data-stage="scroll"
+       role="status"
+       aria-live="polite"
+       aria-label="Loading Student Affairs Council website">
+    <!-- Built by scripts/loader.js -->
+  </div>
+
+  <!-- =====================================================================
+       Site shell. Hidden until the loader dispatches sac:loader:done.
+       The reveal class is added by base.js (or inline below if JS is off).
+       ===================================================================== -->
+  <header class="site-header" hidden>
+    <a class="site-header__brand" href="./">
+      <img src="assets/logos/sac.svg" alt="" width="40" height="40" />
+      <span>SAC · IISER Kolkata</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="pages/clubs.html">Clubs</a>
+      <a href="pages/committees.html">Committees</a>
+      <a href="pages/events.html">Events</a>
+      <a href="pages/about.html">About</a>
+    </nav>
+  </header>
+
+  <main id="main" class="site-main" hidden>
+    <section class="hero">
+      <h1>Student Affairs Council</h1>
+      <p class="hero__lede">IISER Kolkata — the cultural clubs, hostel committees, and academic portfolios that make our campus hum.</p>
+      <p class="hero__placeholder">(this page is a placeholder while we build out the site — start with the loader animation, then iterate)</p>
+    </section>
+  </main>
+
+  <footer class="site-footer" hidden>
+    <p>Built with care by the SAC web team · <a href="https://github.com/slashdot-iiserk/SAC_website">source</a></p>
+  </footer>
+
+  <!-- Remove the no-js class once JS has loaded, so the stylesheet can
+       hide #main until the loader finishes. This must come BEFORE the
+       loader script so .no-js is stripped before its init() runs. -->
+  <script>
+    document.documentElement.classList.remove("no-js");
+    document.body.classList.remove("no-js");
+  </script>
+
+  <!-- Loader first so it can start animating immediately on parse.
+       base.js handles the reveal transition once the loader is done. -->
+  <script type="module" src="scripts/loader.js"></script>
+  <script type="module" src="scripts/base.js"></script>
+</body>
+</html>

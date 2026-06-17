@@ -35,3 +35,24 @@ yarn-error.log*
 .env.production.localtest-results/
 
 test-results/
+
+# Raw zips from clubs (we extract & process via public/assets/tools)
+SAC Academics-*.zip
+SAC Food and Hygine-*.zip
+SAC Hostel-*.zip
+SAC Academics/
+SAC Food and Hygine/
+SAC Hostel/
+
+# Raw extracted assets staged for the processing pipeline
+# (the processed output is committed, not the raw staging dir)
+/public/assets/assets/
+
+# Editor / tooling
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+stats.html
+--db-path
