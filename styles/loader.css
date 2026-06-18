@@ -73,29 +73,29 @@
   50% { opacity: 1; }
 }
 
-/* The stage holds the reels. The whole stage is rotated +45deg so the
-   reels read as diagonal film strips. The stage is sized at 200% of the
-   loader so the rotated children extend past the viewport edges — the
-   `top: -50%; left: -50%` keeps it centered. */
+/* The stage holds the reels. We do NOT rotate the stage itself — each
+   reel gets its own tilt (--reel-tilt, set by JS) so they criss-cross
+   instead of all going the same way. The stage is sized 200% so the
+   tilted reels extend past the viewport edges. */
 .loader-stage {
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  transform: rotate(45deg);
   z-index: 1;
   pointer-events: none;
 }
 
-/* Individual film reel strip. Each strip is a long horizontal bar that
-   scrolls vertically (in the rotated frame, this looks like diagonal
-   scroll). The sprocket holes are CSS gradients (cheap, GPU-friendly). */
+/* Individual film reel strip. Each strip is a long horizontal bar. The
+   strip itself rotates by --reel-tilt (set by JS: +45deg for "/" or
+   -45deg for "\") so the reels criss-cross in a zigzag. The sprocket
+   holes are CSS gradients (cheap, GPU-friendly). */
 .reel {
   position: absolute;
   left: 0;
   right: 0;
-  height: 88px;
+  height: 84px;
   background:
     linear-gradient(180deg, var(--reel-strip-hi) 0%, var(--reel-strip) 50%, var(--reel-strip-hi) 100%),
     var(--tape-tint);
@@ -105,56 +105,55 @@
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.4) inset,
     0 6px 24px rgba(0, 0, 0, 0.5);
-  /* Sprocket holes: two rows of small rectangles top & bottom */
-  mask-image:
-    linear-gradient(to right,
-      transparent 0,
-      #000 8px,
-      #000 calc(100% - 8px),
-      transparent 100%
-    ),
-    repeating-linear-gradient(
-      90deg,
-      #000 0,
-      #000 12px,
-      transparent 12px,
-      transparent 24px
-    );
-  -webkit-mask-image:
-    linear-gradient(to right,
-      transparent 0,
-      #000 8px,
-      #000 calc(100% - 8px),
-      transparent 100%
-    ),
-    repeating-linear-gradient(
-      90deg,
-      #000 0,
-      #000 12px,
-      transparent 12px,
-      transparent 24px
-    );
+  /* Apply the per-reel tilt. We translate to the center of the strip
+     first (top: 50%; left: 50%) so rotation pivots around the reel's
+     own midpoint, then translate back. The actual tilt angle comes from
+     --reel-tilt set by JS. */
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--reel-tilt, 45deg))
+    translate(50%, 50%);
+  transform-origin: center center;
+  /* Subtle Y-axis wobble keyframe (different per reel via --reel-wobble-duration).
+     This gives the strips that hand-cranked film jitter. */
+  animation: reel-wobble var(--reel-wobble-duration, 3s) ease-in-out infinite;
+  will-change: transform;
   overflow: hidden;
-  /* Slight rotation jitter for natural film feel */
 }
 
-/* Sprocket holes as actual cutouts via box-shadow, layered on top of the
-   base. These are the little rectangles you see along real 35mm film. */
+/* Sprocket holes as actual cutouts via background-image, layered on top
+   of the base. These are the little rectangles you see along real 35mm
+   film. We use background-image (cheap, GPU-composited) instead of
+   box-shadow which would have to repaint per frame. */
 .reel::before,
 .reel::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  height: 14px;
+  height: 12px;
   background-image: radial-gradient(circle, var(--reel-perf) 0 4px, transparent 5px);
-  background-size: 24px 14px;
+  background-size: 24px 12px;
   background-repeat: repeat-x;
   background-position: 0 center;
   opacity: 0.9;
 }
 .reel::before { top: 4px; }
 .reel::after { bottom: 4px; }
+
+/* Subtle vertical jitter — each strip wobbles a few pixels to feel
+   hand-cranked. The duration is per-reel so they desync over time. */
+@keyframes reel-wobble {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 var(--reel-wobble-amount, 3px); }
+}
+@supports (translate: 0 0) {
+  /* Modern path: use the `translate` shorthand so it composes with the
+     rotation transform without re-triggering paint. */
+  .reel {
+    animation-name: reel-wobble;
+  }
+}
 
 /* The logo track inside each reel. This is what actually scrolls. */
 .reel__track {
@@ -204,14 +203,20 @@
   to   { transform: translateX(-50%); }
 }
 
-/* Position each reel. JS uses CSS custom properties for these so we can
-   stagger them in JS without a wall of class names. */
+/* Position each reel. JS sets --reel-x and --reel-y (as percentages of
+   the oversized stage), --reel-duration (scroll speed), --reel-direction
+   (scroll direction), --reel-tilt (+/- 45deg to zigzag), and
+   --reel-wobble-duration for the hand-cranked jitter. */
 .reel {
-  --reel-y: 0%;
+  --reel-x: 50%;
+  --reel-y: 50%;
   --reel-duration: 18s;
   --reel-direction: normal;
+  --reel-tilt: 45deg;
+  --reel-wobble-duration: 3s;
+  --reel-wobble-amount: 3px;
+  left: var(--reel-x);
   top: var(--reel-y);
-  animation: none; /* JS toggles this */
 }
 .reel__track {
   animation-duration: var(--reel-duration);

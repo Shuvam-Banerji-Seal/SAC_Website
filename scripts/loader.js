@@ -41,16 +41,29 @@
   };
 
   // --- Reel layout -------------------------------------------------------
-  // 7 reels at 45deg, with varied scroll speeds + directions for a
-  // parallax effect. top% positions the reel in the rotated stage.
+  // The zigzag. Each reel is tilted either +45deg (running from bottom-left
+  // to top-right, "/") or -45deg ("\") and positioned at alternating
+  // points along the diagonal. Speeds vary a lot so adjacent strips feel
+  // like independent film reels running at different crank speeds.
+  //
+  // Each reel is a long horizontal bar that gets tilted by --reel-tilt in
+  // CSS. The position (--reel-x, --reel-y) is the centre point of the bar
+  // on the oversized stage.
+  //
+  // The tilt alternates between +45 and -45 so adjacent reels form an X
+  // pattern — they criss-cross through the centre of the screen.
   const REEL_LAYOUT = [
-    { y:  "6%", duration: 16, direction: "normal" },
-    { y: "20%", duration: 22, direction: "reverse" },
-    { y: "34%", duration: 18, direction: "normal" },
-    { y: "48%", duration: 26, direction: "reverse" },
-    { y: "62%", duration: 20, direction: "normal" },
-    { y: "76%", duration: 24, direction: "reverse" },
-    { y: "90%", duration: 19, direction: "normal" },
+    // Top half — running top-right to bottom-left (\)
+    { x: "18%", y: "10%", tilt: -45, duration: 11, direction: "normal",   wobble: 2.4, wobbleAmount: "3px" },
+    { x: "30%", y: "20%", tilt: +45, duration: 17, direction: "reverse",  wobble: 3.1, wobbleAmount: "4px" },
+    { x: "42%", y: "30%", tilt: -45, duration: 9,  direction: "normal",   wobble: 2.8, wobbleAmount: "2px" },
+    // Middle band — criss-crosses the centre
+    { x: "54%", y: "48%", tilt: +45, duration: 22, direction: "reverse",  wobble: 3.6, wobbleAmount: "5px" },
+    { x: "58%", y: "52%", tilt: -45, duration: 14, direction: "normal",   wobble: 2.2, wobbleAmount: "3px" },
+    // Bottom half
+    { x: "70%", y: "65%", tilt: +45, duration: 19, direction: "reverse",  wobble: 3.4, wobbleAmount: "4px" },
+    { x: "82%", y: "78%", tilt: -45, duration: 13, direction: "normal",   wobble: 2.6, wobbleAmount: "3px" },
+    { x: "90%", y: "88%", tilt: +45, duration: 25, direction: "reverse",  wobble: 3.0, wobbleAmount: "5px" },
   ];
 
   // --- Boot --------------------------------------------------------------
@@ -84,9 +97,13 @@
     REEL_LAYOUT.forEach((spec) => {
       const reel = document.createElement("div");
       reel.className = "reel";
+      reel.style.setProperty("--reel-x", spec.x);
       reel.style.setProperty("--reel-y", spec.y);
+      reel.style.setProperty("--reel-tilt", `${spec.tilt}deg`);
       reel.style.setProperty("--reel-duration", `${spec.duration}s`);
       reel.style.setProperty("--reel-direction", spec.direction);
+      reel.style.setProperty("--reel-wobble-duration", `${spec.wobble}s`);
+      reel.style.setProperty("--reel-wobble-amount", spec.wobbleAmount);
 
       const track = document.createElement("div");
       track.className = "reel__track";
