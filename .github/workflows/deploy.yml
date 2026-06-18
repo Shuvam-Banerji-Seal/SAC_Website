@@ -33,14 +33,12 @@ permissions:
   pages: write
   id-token: write
 
-# Don't leave a stale deploy running forever. 15 minutes is plenty for a
-# static site upload.
-concurrency-timeout: 15m
-
 jobs:
   deploy:
     name: Deploy site
     runs-on: ubuntu-latest
+    # Cap the whole job at 15 minutes — plenty for a static site upload.
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
