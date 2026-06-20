@@ -1,0 +1,9 @@
+/* gallery.css — gallery page */
+
+.gallery__club {
+  margin-bottom: var(--space-7);
+}
+.gallery__club-name {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--space-3);
+}

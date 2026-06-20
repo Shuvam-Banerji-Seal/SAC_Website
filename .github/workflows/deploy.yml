@@ -1,16 +1,12 @@
 # =========================================================================
 # SAC_Website — GitHub Pages deploy
 #
-# This site is fully static (HTML/CSS/JS, no build step). The deploy job
-# just uploads the repo contents to GitHub Pages.
+# The site is pure static HTML/CSS/JS with no build step. This workflow
+# just uploads the repo contents to GitHub Pages, after first checking
+# out the public/assets submodule (which holds the canonical
+# assets_map.jsonl + club photos the website reads at runtime).
 #
-# It also pulls in the public/assets submodule recursively so the
-# processed club images are available at the same paths the website
-# expects (e.g. /SAC_Website/public/assets/processed/...).
-#
-# The site is served from the repo root because the asset URLs are
-# absolute paths starting with /SAC_Website/. The site is served at
-# https://<owner>.github.io/SAC_Website/.
+# The site is served at https://<owner>.github.io/SAC_Website/.
 # =========================================================================
 
 name: Deploy to GitHub Pages
@@ -18,11 +14,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: # allow manual re-deploys from the Actions tab
+  workflow_dispatch:  # allow manual re-deploys from the Actions tab
 
-# Cancel in-progress runs of this same workflow on the same branch when a
-# new commit is pushed — keeps the deploy queue short and avoids serving
-# a half-deployed artifact.
+# Cancel any in-progress deploy on the same branch when a new commit
+# lands — keeps the deploy queue short and avoids serving half-deployed
+# artifacts.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -37,7 +33,8 @@ jobs:
   deploy:
     name: Deploy site
     runs-on: ubuntu-latest
-    # Cap the whole job at 15 minutes — plenty for a static site upload.
+    # 15 minutes is plenty for a static-site upload; if a run blows past
+    # that, something else is wrong (huge asset, hung network, etc.).
     timeout-minutes: 15
     environment:
       name: github-pages
@@ -47,27 +44,24 @@ jobs:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
-          # The assets submodule at public/assets contains the processed
-          # club photos, OBs, etc. The pretext submodule at utils/pretext
-          # isn't strictly needed for the deployed site, but we fetch
-          # recursively anyway to keep the checkout consistent.
+          # The SAC_website_assets submodule at public/assets/ contains
+          # the processed images and assets_map.jsonl the website reads
+          # at runtime. The pretext submodule at utils/pretext isn't
+          # strictly needed for the deployed site, but recursive fetch
+          # keeps the checkout consistent.
           submodules: recursive
-          # Full history isn't required for a static deploy, but shallow
-          # + recursive submodules is a common gotcha — GitHub's docs
-          # recommend leaving depth at 0 (default) for submodule fetches
-          # to work cleanly.
           fetch-depth: 0
 
       - name: Verify critical paths exist
         run: |
           set -euo pipefail
-          test -f index.html || (echo "::error::index.html missing at repo root" && exit 1)
-          test -d styles || (echo "::error::styles/ directory missing" && exit 1)
-          test -d scripts || (echo "::error::scripts/ directory missing" && exit 1)
-          test -d assets || (echo "::error::assets/ directory missing" && exit 1)
-          test -f assets/logos/sac.svg || (echo "::error::SAC logo missing" && exit 1)
-          test -d public/assets/processed || (echo "::error::public/assets submodule not checked out" && exit 1)
-          test -f .nojekyll || (echo "::error::.nojekyll missing — GitHub Pages would try to process the site" && exit 1)
+          test -f index.html            || { echo "::error::index.html missing at repo root"; exit 1; }
+          test -d css/                  || { echo "::error::css/ directory missing"; exit 1; }
+          test -d js/                   || { echo "::error::js/ directory missing"; exit 1; }
+          test -d pages/                || { echo "::error::pages/ directory missing"; exit 1; }
+          test -d public/assets/processed || { echo "::error::public/assets submodule not checked out"; exit 1; }
+          test -f public/assets/processed/assets_map.jsonl || { echo "::error::assets_map.jsonl missing"; exit 1; }
+          test -f .nojekyll             || { echo "::error::.nojekyll missing — GitHub Pages would run Jekyll on the site"; exit 1; }
           echo "All critical paths present."
 
       - name: Setup Pages
@@ -76,9 +70,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload the entire repo as the site. The asset URLs are
-          # absolute (start with /SAC_Website/) so subfolder hosting
-          # "just works" once the Pages environment sets the base path.
+          # The entire repo is the site. Asset URLs in the website are
+          # absolute paths starting with /SAC_Website/, which matches
+          # the default GitHub Pages subpath for a project page.
           path: .
 
       - name: Deploy to GitHub Pages

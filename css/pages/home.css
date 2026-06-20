@@ -1,0 +1,33 @@
+/* home.css — landing page */
+
+.hero {
+  text-align: center;
+  padding: var(--space-7) 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-6);
+}
+.hero__title {
+  font-size: var(--fs-4xl);
+  margin-bottom: var(--space-2);
+  background: linear-gradient(135deg, var(--color-fg) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+.hero__sub {
+  font-size: var(--fs-lg);
+  color: var(--color-muted);
+  margin-bottom: var(--space-4);
+}
+.hero__lede {
+  max-width: 60ch;
+  margin: 0 auto;
+  color: var(--color-muted);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+.home-clubs {
+  margin-top: var(--space-6);
+}

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <rect width="200" height="200" rx="20" fill="#2a0d3a"/>
-  <ellipse cx="100" cy="85" rx="30" ry="40" fill="#e879d4" opacity="0.85"/>
-  <text x="100" y="160" font-family="serif" font-size="16" font-weight="600" fill="#ffffff" text-anchor="middle">NRUTYA</text>
-  <text x="100" y="178" font-family="sans-serif" font-size="9" font-weight="500" fill="#e879d4" text-anchor="middle" letter-spacing="2">DANCE</text>
-</svg>

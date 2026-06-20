@@ -1,32 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Events · SAC · IISER Kolkata</title>
-  <link rel="stylesheet" href="../styles/base.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Student Activity Council, IISER Kolkata</title>
+  <meta name="description" content="Events and competitions run by SAC clubs at IISER Kolkata." />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages/events.css" />
 </head>
-<body>
-  <header class="site-header">
-    <a class="site-header__brand" href="../index.html">
-      <img src="../assets/logos/sac.svg" alt="" width="40" height="40" />
-      <span>SAC · IISER Kolkata</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="./clubs.html">Clubs</a>
-      <a href="./committees.html">Committees</a>
-      <a href="./events.html">Events</a>
-      <a href="./about.html">About</a>
-    </nav>
+<body data-page="events">
+  <header>
+    <nav id="navbar" aria-label="Primary"></nav>
   </header>
-  <main class="site-main">
-    <section class="hero">
-      <h1>Events</h1>
-      <p class="hero__lede">IICM, fests, screenings, and stargazing nights — coming soon.</p>
+
+  <main>
+    <h1 class="page-title">Events &amp; competitions</h1>
+    <p class="page-sub">
+      IICM participations, in-house events, and inter-batch competitions
+      from across the SAC clubs.
+    </p>
+
+    <section id="events-list" aria-label="Event timeline">
+      <!-- Filled in by js/pages/events.js -->
+      <p class="muted">Loading…</p>
     </section>
   </main>
-  <footer class="site-footer">
-    <p>Built with care by the SAC web team</p>
-  </footer>
+
+  <div id="footer"></div>
+
+  <script type="module" src="../js/main.js"></script>
 </body>
 </html>

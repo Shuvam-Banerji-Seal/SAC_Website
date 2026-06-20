@@ -1,0 +1,91 @@
+/* main.css — base layout & typography. Components live in components.css. */
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-w-content);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+header {
+  display: contents;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+h1 { font-size: var(--fs-4xl); }
+h2 { font-size: var(--fs-2xl); margin-bottom: var(--space-3); }
+h3 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
+h4 { font-size: var(--fs-lg); margin-bottom: var(--space-2); }
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  margin-bottom: var(--space-3);
+}
+
+ul, ol {
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-5);
+}
+ul li, ol li {
+  margin-bottom: var(--space-1);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-border);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-sm);
+}
+
+img {
+  height: auto;
+}
+
+/* Utility classes */
+.muted { color: var(--color-muted); }
+.section-title { font-size: var(--fs-2xl); margin-bottom: var(--space-1); }
+.section-sub { color: var(--color-muted); margin-bottom: var(--space-4); }
+.page-title { font-size: var(--fs-4xl); margin-bottom: var(--space-2); }
+.page-sub { color: var(--color-muted); font-size: var(--fs-lg); margin-bottom: var(--space-6); }
+.back-link { display: inline-block; margin-bottom: var(--space-3); font-size: var(--fs-sm); }
+
+.noscript-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+  padding: var(--space-3);
+  text-align: center;
+  border-top: 1px solid var(--color-warning-border);
+  font-size: var(--fs-sm);
+}
+
+/* Small-screen tweaks */
+@media (max-width: 640px) {
+  main { padding: var(--space-4) var(--space-3); }
+  h1 { font-size: var(--fs-3xl); }
+  .page-title { font-size: var(--fs-3xl); }
+}
