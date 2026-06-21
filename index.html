@@ -127,6 +127,31 @@
 
   <header>
     <nav id="navbar" aria-label="Primary"></nav>
+    <!-- =========================================================================
+         "Folded corner" trigger — a 64×64 triangular page corner fixed in
+         the top-right of the viewport on desktop (>= 1024px). Hidden on
+         mobile/tablet; the navbar there uses the "curtain pull-down"
+         reveal handled by js/components/navbar-fold.js instead.
+         Behaviour + scaling: see js/components/navbar-fold.js.
+    ========================================================================= -->
+    <button
+      class="navbar-corner"
+      id="navbarCorner"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="navbar"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path
+          d="M5 8h14M5 13h14M5 18h14"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
+    </button>
   </header>
 
   <main class="home">

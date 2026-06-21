@@ -1,14 +1,138 @@
 /* components.css — reusable UI components. */
 
 /* ── Navbar ──────────────────────────────────────────── */
+
+/* Shared base — applies at every breakpoint. The element starts in
+   normal flow so the masthead sits below it. On mobile it stays in
+   flow (pull-down animation); on desktop the breakpoint overrides
+   below move it into a fixed side drawer. */
 .navbar {
   background: var(--color-card-bg);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
   z-index: 100;
-  backdrop-filter: saturate(180%) blur(8px);
 }
+
+/* ── Mobile / tablet (< 1024px): "curtain pull-down" ──────── */
+
+@media (max-width: 1023.98px) {
+  .navbar {
+    position: sticky;
+    top: 0;
+    /* Initially tucked above the viewport — the curtain hangs off
+       the top of the screen. navbar-fold.js adds .is-revealed once
+       the loader (or DOMContentLoaded on non-home pages) is done. */
+    transform: translateY(-100%);
+    transition:
+      transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1),
+      box-shadow 0.4s ease;
+    will-change: transform;
+    box-shadow: 0 1px 0 rgba(24, 20, 16, 0.06);
+  }
+  .navbar.is-revealed {
+    transform: translateY(0);
+  }
+  /* Hide the corner indicator — it's a desktop-only element. */
+  .navbar-corner { display: none; }
+}
+
+/* ── Desktop (>= 1024px): "peel-back corner" + side drawer ─ */
+
+/* The corner button itself: a 64×64 triangular "page corner" fixed
+   in the top-right of the viewport. The triangle is shaped with
+   clip-path; the gradient + texture sells the paper feel. The
+   rotate/translate on hover + .is-open hints at a fold-back.
+   The whole rule lives inside @media (min-width: 1024px) so the
+   corner stays hidden on mobile / tablet — only the .navbar
+   (no corner) is visible there, with the curtain pull-down. */
+@media (min-width: 1024px) {
+  .navbar-corner {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+    z-index: 95;
+    color: var(--ink-base);
+    background:
+      linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
+    background-image:
+      var(--paper-texture),
+      linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
+    clip-path: polygon(100% 0, 100% 100%, 0 0);
+    transform-origin: top right;
+    transition:
+      transform 0.4s cubic-bezier(0.65, 0, 0.35, 1),
+      box-shadow 0.4s ease;
+    box-shadow:
+      -2px 2px 8px rgba(0, 0, 0, 0.18),
+      inset 0 0 0 1px rgba(24, 20, 16, 0.12);
+  }
+  .navbar-corner:hover {
+    transform: scale(1.05);
+    box-shadow:
+      -3px 3px 12px rgba(0, 0, 0, 0.24),
+      inset 0 0 0 1px rgba(24, 20, 16, 0.18);
+  }
+  .navbar-corner.is-open {
+    transform: rotate(-6deg) scale(0.92);
+    box-shadow:
+      -4px 4px 14px rgba(0, 0, 0, 0.22),
+      inset 0 0 0 1px rgba(24, 20, 16, 0.22);
+  }
+  .navbar-corner:focus-visible {
+    outline: 2px solid var(--accent-red);
+    outline-offset: -3px;
+  }
+  .navbar-corner svg {
+    /* Push the icon into the inside-right corner of the triangle
+       (the visual "right-angle" vertex). */
+    transform: translate(18px, -18px);
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    display: block;
+  }
+  .navbar-corner.is-open svg {
+    transform: translate(18px, -18px) rotate(6deg);
+  }
+}
+
+/* The drawer: full-height side panel, slides in from the right.
+   Pulled out of flow (position: fixed) so the masthead can fill
+   the full viewport width on desktop. */
+@media (min-width: 1024px) {
+  .navbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(360px, 90vw);
+    border-bottom: none;
+    border-left: 1px solid var(--ink-rule-strong);
+    transform: translateX(100%);
+    transition:
+      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+      box-shadow 0.45s ease;
+    box-shadow: -10px 0 28px rgba(0, 0, 0, 0.18);
+    overflow-y: auto;
+    /* The drawer sits above the corner button so its inner padding
+       doesn't clip under it. */
+    z-index: 90;
+  }
+  .navbar.is-open {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 1440px) {
+  .navbar {
+    width: min(400px, 30vw);
+  }
+}
+
 .navbar__inner {
   max-width: var(--max-w-content);
   margin: 0 auto;
@@ -19,18 +143,40 @@
   gap: var(--space-4);
   flex-wrap: wrap;
 }
+
+/* On desktop the inner stacks vertically inside the drawer, with
+   the brand up top and the link list below. */
+@media (min-width: 1024px) {
+  .navbar__inner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-7) var(--space-5) var(--space-5);
+    gap: var(--space-4);
+  }
+}
+
 .navbar__brand {
   font-weight: 600;
   font-size: var(--fs-base);
   color: var(--color-fg);
 }
 .navbar__brand:hover { text-decoration: none; }
+
 .navbar__list {
   display: flex;
   gap: var(--space-1);
   flex-wrap: wrap;
 }
+
+@media (min-width: 1024px) {
+  .navbar__list {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
 .navbar__item { display: flex; }
+
 .nav-link {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
@@ -47,6 +193,30 @@
   color: var(--color-accent-fg);
 }
 .nav-link--active:hover { background: var(--color-accent); }
+
+@media (min-width: 1024px) {
+  .nav-link {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-base);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar-corner,
+  .navbar-corner svg {
+    transition-duration: 0.001ms !important;
+  }
+  /* Disable the corner-fold reveal entirely. */
+  .navbar-corner { display: none; }
+  .navbar {
+    transform: none !important;
+    position: sticky;
+    top: 0;
+  }
+}
 
 /* ── Footer ─────────────────────────────────────────── */
 .site-footer {

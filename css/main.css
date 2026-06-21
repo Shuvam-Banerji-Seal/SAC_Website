@@ -125,6 +125,9 @@ body[data-page="home"] .navbar {
   background: var(--paper-base);
   background-image: var(--paper-texture);
   border-bottom-color: var(--ink-rule-strong);
+  /* Remove the modern blur — the masthead already handles separation. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 body[data-page="home"] .navbar__brand,
@@ -141,6 +144,12 @@ body[data-page="home"] .nav-link:hover {
 body[data-page="home"] .nav-link--active {
   background: var(--ink-base);
   color: var(--paper-base);
+}
+
+body[data-page="home"] .navbar-corner {
+  /* The corner sits on top of the masthead's first paper layer, so
+     it inherits the same paper palette + accent ink. */
+  color: var(--ink-base);
 }
 
 body[data-page="home"] .site-footer {

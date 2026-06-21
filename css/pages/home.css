@@ -175,26 +175,47 @@ main.home {
 /* ── Body sections (paper-folding animation) ───────────────────────── */
 
 .bodies {
-  padding: 0 var(--space-4);
+  perspective: 2200px;
+  perspective-origin: 50% 0%;
 }
 
 .body-section {
   margin-bottom: var(--space-8);
   opacity: 0;
-  transform: rotateX(-92deg);
+  transform: rotateX(-85deg);
   transform-origin: top center;
-  transform-style: preserve-3d;
   transition:
     transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.9s ease;
-  will-change: transform, opacity;
-  perspective: 1800px;
+    opacity 0.85s ease,
+    box-shadow 1.1s ease;
+  will-change: transform, opacity, box-shadow;
+  /* Shadow grows with the fold — at rest the section is "tucked"
+     above the page so it casts no shadow; as it unfolds, a soft
+     shadow appears below to sell the 3D depth. */
+  box-shadow: 0 0 0 rgba(24, 20, 16, 0);
 }
+
+/* Per-section stagger so the page has rhythm as the user scrolls
+   past the bodies. Sports is the empty placeholder, so its delay
+   sits between the two populated bodies above/below. */
+.body-section[data-body="academics"] { transition-delay: 0ms; }
+.body-section[data-body="hostel"]    { transition-delay: 80ms; }
+.body-section[data-body="sports"]    { transition-delay: 200ms; }
+.body-section[data-body="cultural"]  { transition-delay: 320ms; }
 
 .body-section.is-visible {
   opacity: 1;
   transform: rotateX(0deg);
+  box-shadow: 0 2px 18px -10px rgba(24, 20, 16, 0.28);
 }
+
+/* Subtle pivot variation so the four folds don't all hinge on the
+   same axis. Academics + cultural stay top-center; hostel pivots
+   from the left, sports from the right. */
+.body-section[data-body="hostel"]   { transform-origin: top left; }
+.body-section[data-body="sports"]   { transform-origin: top right; }
+.body-section.is-visible[data-body="hostel"],
+.body-section.is-visible[data-body="sports"] { transform-origin: top center; }
 
 .body-banner {
   text-align: center;
