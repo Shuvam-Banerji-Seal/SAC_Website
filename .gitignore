@@ -56,3 +56,4 @@ Thumbs.db
 *~
 stats.html
 --db-path
+\.playwright-mcp/
