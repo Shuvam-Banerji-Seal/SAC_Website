@@ -140,16 +140,16 @@ export async function initClub() {
         el(
           "section",
           { class: "club-detail__counts" },
-          el("h2", null, "By the numbers"),
+          el("h2", {}, "By the numbers"),
           el(
             "ul",
             { class: "stat-grid" },
-            el("li", null, el("strong", null, club.counts.total), " total assets"),
-            el("li", null, el("strong", null, club.counts.images), " images"),
-            el("li", null, el("strong", null, club.counts.markdowns), " doc files"),
-            el("li", null, el("strong", null, club.counts.ob), " OB portraits"),
-            el("li", null, el("strong", null, club.counts.iicm), " IICM photos"),
-            el("li", null, el("strong", null, club.counts.event), " event photos"),
+            el("li", {}, el("strong", {}, club.counts.total), " total assets"),
+            el("li", {}, el("strong", {}, club.counts.images), " images"),
+            el("li", {}, el("strong", {}, club.counts.markdowns), " doc files"),
+            el("li", {}, el("strong", {}, club.counts.ob), " OB portraits"),
+            el("li", {}, el("strong", {}, club.counts.iicm), " IICM photos"),
+            el("li", {}, el("strong", {}, club.counts.event), " event photos"),
           ),
         ),
         // OB portraits
@@ -157,8 +157,8 @@ export async function initClub() {
           ? el(
               "section",
               { class: "club-detail__section" },
-              el("h2", null, "Office bearers"),
-              el("ul", { class: "thumb-grid" }, ...obs.map((o) => el("li", null, imageCard(o)))),
+              el("h2", {}, "Office bearers"),
+              el("ul", { class: "thumb-grid" }, ...obs.map((o) => el("li", {}, imageCard(o)))),
             )
           : null,
         // IICM
@@ -166,7 +166,7 @@ export async function initClub() {
           ? el(
               "section",
               { class: "club-detail__section" },
-              el("h2", null, "IICM achievements"),
+              el("h2", {}, "IICM achievements"),
               el("ul", { class: "thumb-grid" }, ...iicm.map(imageCard)),
             )
           : null,
@@ -175,7 +175,7 @@ export async function initClub() {
           ? el(
               "section",
               { class: "club-detail__section" },
-              el("h2", null, "Events"),
+              el("h2", {}, "Events"),
               el("ul", { class: "thumb-grid" }, ...events.map(imageCard)),
             )
           : null,
@@ -188,5 +188,5 @@ export async function initClub() {
 }
 
 function errorBlock(msg) {
-  return el("section", { class: "error-block", id: "club-detail" }, el("p", null, msg));
+  return el("section", { class: "error-block", id: "club-detail" }, el("p", {}, msg));
 }
