@@ -88,7 +88,7 @@ export async function initClub() {
   }
   try {
     const assets = await loadAssetsMap();
-    const club = getClub(slug);
+    const club = getClub(slug, assets);
     if (!club) {
       mount.replaceWith(errorBlock(`Unknown club: ${slug}`));
       return;
