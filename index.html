@@ -129,21 +129,78 @@
     <nav id="navbar" aria-label="Primary"></nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <h1 class="hero__title">Student Activity Council</h1>
-      <p class="hero__sub">IISER Kolkata</p>
-      <p class="hero__lede">
-        The umbrella body for ten cultural clubs on campus. We curate the
-        calendar, support the clubs, and run Inter-IISER Cultural Meet
-        participation.
-      </p>
+  <main class="home">
+    <!-- =========================================================================
+         Masthead — newspaper title bar. Static, server-rendered so it shows up
+         in the no-JS view as a heading.
+    ========================================================================= -->
+    <section class="masthead" aria-labelledby="masthead-title">
+      <div class="masthead__edition">
+        <span>Vol. 01</span>
+        <span id="mastheadDate" data-today>Edition</span>
+        <span>Free</span>
+      </div>
+
+      <p class="masthead__kicker">Student Activity Council · IISER Kolkata</p>
+      <h1 id="masthead-title" class="masthead__title">The SAC Chronicle</h1>
+      <p class="masthead__subtitle">A record of clubs, councils, and the campus they shape</p>
+
+      <div class="masthead__rule">
+        <span class="masthead__rule-mark">✦ ✦ ✦</span>
+      </div>
     </section>
 
-    <section id="home-clubs" aria-label="Clubs preview">
-      <!-- Filled in by js/pages/home.js -->
-      <h2 class="section-title">Our clubs</h2>
-      <p class="section-sub muted">Loading…</p>
+    <!-- =========================================================================
+         Lead article — featured intro below the masthead. Two-column body with
+         a drop cap; "byline" sets the editorial tone.
+    ========================================================================= -->
+    <section class="lead-article" aria-labelledby="lead-headline">
+      <h2 id="lead-headline" class="lead-article__headline">
+        Twelve Clubs, One Campus, Endless Reasons To Show Up
+      </h2>
+      <p class="lead-article__deck">
+        The Student Activity Council is the umbrella body that gathers every cultural
+        and academic society under one editorial roof. This edition is the
+        index — turn the page to find your section.
+      </p>
+      <p class="lead-article__byline">By the Editorial Desk · SAC Communications</p>
+      <div class="lead-article__body">
+        <p>
+          The Student Activity Council (SAC) at IISER Kolkata curates the
+          year-round calendar of cultural and academic life on campus. It
+          coordinates ten cultural clubs, two standing committees, and the
+          institute's contingent for the Inter-IISER Cultural Meet. This page
+          is the printed directory of that ecosystem — laid out by body, with
+          each section unfolding as you scroll.
+        </p>
+        <p>
+          Inside, every society is treated as its own article. The cards that
+          follow carry each club's logo, name, and a short excerpt drawn from
+          the official club information document — the same text you'd find on
+          the individual club page, only here it is set smaller, beside the
+          fold. Click any card to read the full feature.
+        </p>
+        <p>
+          Where a body has no entries yet (Sports, for example), the page
+          leaves the column open rather than invent material that is not in
+          our records. New editions of the Chronicle will arrive with the new
+          tenure's office-bearer portraits and the year's highlights.
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         4 paper-folding body sections (SAC Academics, SAC Hostel, Sports,
+         Cultural). Filled in by js/pages/home.js; the four <section>
+         placeholders are pre-rendered so the layout is visible even before
+         the JSONL arrives.
+    ========================================================================= -->
+    <section class="bodies" id="bodies" aria-label="Bodies of the SAC">
+      <!-- Mount points for the 4 body sections, populated in order -->
+      <div data-body-mount="academics"></div>
+      <div data-body-mount="hostel"></div>
+      <div data-body-mount="sports"></div>
+      <div data-body-mount="cultural"></div>
     </section>
   </main>
 
@@ -158,5 +215,24 @@
 
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/loader.js"></script>
+  <script>
+    // Tiny inline script so the masthead date renders immediately,
+    // without waiting for the JSONL fetch.
+    (function () {
+      var el = document.getElementById("mastheadDate");
+      if (!el) return;
+      try {
+        var d = new Date();
+        el.textContent = d.toLocaleDateString("en-IN", {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      } catch (e) {
+        el.textContent = "Today's Edition";
+      }
+    })();
+  </script>
 </body>
 </html>

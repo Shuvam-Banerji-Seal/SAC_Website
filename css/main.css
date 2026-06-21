@@ -89,3 +89,67 @@ img {
   h1 { font-size: var(--fs-3xl); }
   .page-title { font-size: var(--fs-3xl); }
 }
+
+/* =========================================================================
+   Newspaper theme — scoped to the home page only.
+
+   Switching the global body / nav / footer tokens here (instead of in
+   pages/home.css) keeps the change isolated: other pages still get the
+   modern light theme.
+   ========================================================================= */
+
+body[data-page="home"] {
+  font-family: var(--font-serif);
+  color: var(--ink-base);
+  background-color: var(--paper-base);
+  background-image:
+    var(--paper-stains),
+    var(--paper-texture);
+  background-attachment: fixed, fixed;
+}
+
+body[data-page="home"] h1,
+body[data-page="home"] h2,
+body[data-page="home"] h3,
+body[data-page="home"] h4,
+body[data-page="home"] h5,
+body[data-page="home"] h6 {
+  font-family: var(--font-display);
+}
+
+body[data-page="home"] a {
+  color: var(--accent-red);
+}
+
+body[data-page="home"] .navbar {
+  background: var(--paper-base);
+  background-image: var(--paper-texture);
+  border-bottom-color: var(--ink-rule-strong);
+}
+
+body[data-page="home"] .navbar__brand,
+body[data-page="home"] .nav-link {
+  color: var(--ink-base);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+body[data-page="home"] .nav-link:hover {
+  background: var(--paper-deep);
+}
+
+body[data-page="home"] .nav-link--active {
+  background: var(--ink-base);
+  color: var(--paper-base);
+}
+
+body[data-page="home"] .site-footer {
+  background: var(--paper-base);
+  background-image: var(--paper-texture);
+  border-top-color: var(--ink-rule-strong);
+  color: var(--ink-muted);
+  font-family: var(--font-mono-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+}

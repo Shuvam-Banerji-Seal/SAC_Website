@@ -1,33 +1,419 @@
-/* home.css — landing page */
+/* =========================================================================
+   pages/home.css — newspaper-themed landing page.
 
-.hero {
+   Structure:
+     .masthead          — top banner with newspaper title + date/edition
+     .lead-article      — featured 2-column intro below the masthead
+     .bodies            — wrapper for the 4 paper-folding body sections
+       .body-section    — one foldable section per body
+         .body-banner   — body name + tagline + ornament
+         .paper-card-grid
+           .paper-card  — one card per club (logo, name, excerpt, link)
+     .body-section--empty — placeholder for bodies with no clubs (Sports)
+
+   All colors / typography / texture come from variables.css.
+   ========================================================================= */
+
+/* ── Page wrapper ──────────────────────────────────────────────────── */
+
+main.home {
+  max-width: var(--max-w-content);
+}
+
+/* ── Masthead ──────────────────────────────────────────────────────── */
+
+.masthead {
   text-align: center;
-  padding: var(--space-7) 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-7) var(--space-4) var(--space-5);
+  border-top: 6px double var(--ink-base);
+  border-bottom: 3px solid var(--ink-base);
+  background: var(--paper-base);
+  background-image: var(--paper-texture);
   margin-bottom: var(--space-6);
+  position: relative;
 }
-.hero__title {
-  font-size: var(--fs-4xl);
-  margin-bottom: var(--space-2);
-  background: linear-gradient(135deg, var(--color-fg) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-.hero__sub {
-  font-size: var(--fs-lg);
-  color: var(--color-muted);
+
+.masthead__edition {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--ink-rule);
+  padding-bottom: var(--space-2);
   margin-bottom: var(--space-4);
 }
-.hero__lede {
-  max-width: 60ch;
-  margin: 0 auto;
-  color: var(--color-muted);
-  font-size: var(--fs-base);
-  line-height: 1.6;
+
+.masthead__edition > span { white-space: nowrap; }
+.masthead__edition > span:nth-child(2) { flex: 1; text-align: center; }
+
+.masthead__kicker {
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  margin-bottom: var(--space-2);
 }
 
-.home-clubs {
-  margin-top: var(--space-6);
+.masthead__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-2);
+  color: var(--ink-base);
+}
+
+.masthead__subtitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--ink-muted);
+  margin: 0 0 var(--space-4);
+}
+
+.masthead__rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) auto 0;
+  max-width: 540px;
+}
+
+.masthead__rule::before,
+.masthead__rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--ink-rule-strong);
+}
+
+.masthead__rule-mark {
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.4em;
+  color: var(--ink-muted);
+}
+
+/* ── Lead article (drop cap, 2-column layout) ─────────────────────── */
+
+.lead-article {
+  padding: 0 var(--space-4);
+  margin: 0 auto var(--space-7);
+  max-width: 960px;
+  border-bottom: 3px double var(--ink-rule-strong);
+  padding-bottom: var(--space-6);
+}
+
+.lead-article__headline {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  margin-bottom: var(--space-2);
+  color: var(--ink-base);
+  text-align: center;
+}
+
+.lead-article__deck {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-lg);
+  color: var(--ink-muted);
+  text-align: center;
+  max-width: 60ch;
+  margin: 0 auto var(--space-5);
+}
+
+.lead-article__byline {
+  text-align: center;
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: var(--space-4);
+}
+
+.lead-article__body {
+  column-count: 2;
+  column-gap: var(--space-6);
+  column-rule: 1px solid var(--ink-rule);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.lead-article__body p { margin: 0 0 var(--space-3); }
+
+.lead-article__body p:first-child::first-letter {
+  font-family: var(--font-display);
+  font-weight: 900;
+  float: left;
+  font-size: 4.6em;
+  line-height: 0.85;
+  padding: 0.06em 0.12em 0 0;
+  color: var(--accent-red);
+}
+
+@media (max-width: 720px) {
+  .lead-article__body { column-count: 1; }
+  .lead-article__body p:first-child::first-letter {
+    font-size: 3.4em;
+  }
+}
+
+/* ── Body sections (paper-folding animation) ───────────────────────── */
+
+.bodies {
+  padding: 0 var(--space-4);
+}
+
+.body-section {
+  margin-bottom: var(--space-8);
+  opacity: 0;
+  transform: rotateX(-92deg);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  transition:
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.9s ease;
+  will-change: transform, opacity;
+  perspective: 1800px;
+}
+
+.body-section.is-visible {
+  opacity: 1;
+  transform: rotateX(0deg);
+}
+
+.body-banner {
+  text-align: center;
+  margin-bottom: var(--space-5);
+  border-top: 2px solid var(--ink-base);
+  border-bottom: 1px solid var(--ink-rule-strong);
+  padding: var(--space-3) 0 var(--space-4);
+  background: var(--paper-soft);
+  background-image: var(--paper-texture);
+  position: relative;
+}
+
+.body-banner__kicker {
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  margin-bottom: var(--space-1);
+}
+
+.body-banner__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  line-height: 1.05;
+  margin: 0 0 var(--space-1);
+  color: var(--ink-base);
+}
+
+.body-banner__tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-base);
+  color: var(--ink-muted);
+  max-width: 56ch;
+  margin: 0 auto;
+}
+
+.body-banner__ornament {
+  margin-top: var(--space-3);
+  font-family: var(--font-mono-serif);
+  letter-spacing: 0.6em;
+  color: var(--ink-muted);
+  font-size: var(--fs-xs);
+}
+
+/* ── Paper-card grid ──────────────────────────────────────────────── */
+
+.paper-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.paper-card {
+  background: var(--paper-base);
+  background-image: var(--paper-texture);
+  border: 1px solid var(--ink-rule-strong);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  color: var(--ink-base);
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow:
+    0 1px 0 rgba(24, 20, 16, 0.06),
+    0 4px 12px rgba(24, 20, 16, 0.08);
+}
+
+.paper-card::before,
+.paper-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink-rule);
+}
+.paper-card::before { top: var(--space-3); }
+.paper-card::after  { bottom: var(--space-3); }
+
+.paper-card:hover,
+.paper-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow:
+    0 2px 0 rgba(24, 20, 16, 0.08),
+    0 10px 24px rgba(24, 20, 16, 0.14);
+  text-decoration: none;
+  outline: none;
+}
+
+.paper-card__logo {
+  width: 88px;
+  height: 88px;
+  border: 1.5px solid var(--ink-base);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--paper-base);
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  position: relative;
+}
+
+.paper-card__logo::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--ink-rule-strong);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.paper-card__logo img {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+.paper-card__logo-fallback {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.2rem;
+  color: var(--accent-red);
+  line-height: 1;
+}
+
+.paper-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  line-height: 1.15;
+  margin: 0 0 var(--space-1);
+  color: var(--ink-base);
+}
+
+.paper-card__rule {
+  display: block;
+  width: 56px;
+  height: 1px;
+  background: var(--ink-rule-strong);
+  margin: var(--space-2) auto var(--space-3);
+}
+
+.paper-card__excerpt {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-3);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.paper-card__cta {
+  font-family: var(--font-mono-serif);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  border-top: 1px solid var(--ink-rule);
+  padding-top: var(--space-2);
+  width: 100%;
+}
+
+/* ── Empty body (no clubs — used for Sports today) ────────────────── */
+
+.body-section--empty .paper-card-grid {
+  display: block;
+}
+
+.body-empty {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  border: 1px dashed var(--ink-rule-strong);
+  background: var(--paper-soft);
+  background-image: var(--paper-texture);
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.body-empty strong {
+  display: block;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--ink-base);
+  margin-bottom: var(--space-2);
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .body-section {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── Mobile masthead ──────────────────────────────────────────────── */
+
+@media (max-width: 540px) {
+  .masthead { padding: var(--space-5) var(--space-3) var(--space-4); }
+  .masthead__title { font-size: 2.4rem; }
+  .masthead__edition { font-size: 0.65rem; letter-spacing: 0.18em; }
+  .lead-article { padding: 0 var(--space-3); }
 }
