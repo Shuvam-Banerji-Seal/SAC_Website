@@ -45,6 +45,9 @@
    corner stays hidden on mobile / tablet — only the .navbar
    (no corner) is visible there, with the curtain pull-down. */
 @media (min-width: 1024px) {
+  /* Two layered triangles make the corner feel like a peeled-back page:
+     the top triangle is the visible paper; the underside sits behind,
+     offset down-left, and is revealed as the top rotates / translates. */
   .navbar-corner {
     display: block;
     position: fixed;
@@ -58,45 +61,85 @@
     cursor: pointer;
     z-index: 95;
     color: var(--ink-base);
+    background: transparent;
+    clip-path: none;
+    transform-origin: top right;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  /* The underside: a darker triangle behind the top, offset so it
+     pokes out as the top peels back. Hidden until the corner is
+     hovered or opened. */
+  .navbar-corner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--paper-edge);
+    background-image: var(--paper-grain);
+    clip-path: polygon(100% 0, 100% 100%, 0 0);
+    transform: translate(8px, 8px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.14);
+  }
+  /* The top triangle: the actual paper surface, peels back on hover/open. */
+  .navbar-corner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
     background:
       linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
     background-image:
-      var(--paper-texture),
+      var(--paper-grain),
       linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
     clip-path: polygon(100% 0, 100% 100%, 0 0);
-    transform-origin: top right;
-    transition:
-      transform 0.4s cubic-bezier(0.65, 0, 0.35, 1),
-      box-shadow 0.4s ease;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), box-shadow 0.4s ease;
     box-shadow:
       -2px 2px 8px rgba(0, 0, 0, 0.18),
       inset 0 0 0 1px rgba(24, 20, 16, 0.12);
   }
-  .navbar-corner:hover {
-    transform: scale(1.05);
-    box-shadow:
-      -3px 3px 12px rgba(0, 0, 0, 0.24),
-      inset 0 0 0 1px rgba(24, 20, 16, 0.18);
+  /* SVG icon — sits above the top triangle, anchors at top-right. */
+  .navbar-corner svg {
+    position: relative;
+    z-index: 2;
+    transform: translate(18px, -18px);
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+    display: block;
   }
+
+  /* Hover — slight peel. Underside becomes visible. */
+  .navbar-corner:hover::before {
+    opacity: 1;
+    transform: translate(10px, 10px);
+  }
+  .navbar-corner:hover::after {
+    transform: translate(-2px, -2px) rotate(-2deg);
+  }
+  .navbar-corner:hover svg {
+    transform: translate(18px, -18px) rotate(2deg);
+  }
+
+  /* Open — full peel, corner folded back to ~-22deg around its top-right
+     hinge. The underside triangle is fully revealed. */
   .navbar-corner.is-open {
-    transform: rotate(-6deg) scale(0.92);
+    transform: rotate(-3deg);
+  }
+  .navbar-corner.is-open::before {
+    opacity: 1;
+    transform: translate(14px, 14px);
+  }
+  .navbar-corner.is-open::after {
+    transform: translate(-6px, -6px) rotate(-8deg);
     box-shadow:
-      -4px 4px 14px rgba(0, 0, 0, 0.22),
+      -5px 5px 16px rgba(0, 0, 0, 0.26),
       inset 0 0 0 1px rgba(24, 20, 16, 0.22);
   }
+  .navbar-corner.is-open svg {
+    transform: translate(18px, -18px) rotate(8deg);
+  }
+
   .navbar-corner:focus-visible {
     outline: 2px solid var(--accent-red);
     outline-offset: -3px;
-  }
-  .navbar-corner svg {
-    /* Push the icon into the inside-right corner of the triangle
-       (the visual "right-angle" vertex). */
-    transform: translate(18px, -18px);
-    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-    display: block;
-  }
-  .navbar-corner.is-open svg {
-    transform: translate(18px, -18px) rotate(6deg);
   }
 }
 
@@ -159,8 +202,28 @@
   font-weight: 600;
   font-size: var(--fs-base);
   color: var(--color-fg);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
 }
 .navbar__brand:hover { text-decoration: none; }
+
+/* Brand variants — the long text is hidden on small viewports so the
+   mobile navbar fits in ~56px instead of stretching to 163px. */
+.navbar__brand-full { display: inline; }
+.navbar__brand-short { display: none; }
+
+@media (max-width: 640px) {
+  .navbar__brand-full { display: none; }
+  .navbar__brand-short { display: inline; }
+  .navbar__brand {
+    font-family: var(--font-display, Georgia, serif);
+    font-weight: 900;
+    font-size: 1.25rem;
+    letter-spacing: 0.06em;
+  }
+}
 
 .navbar__list {
   display: flex;
@@ -201,16 +264,28 @@
   }
 }
 
+/* Tighter link padding on small phones so all 5 links fit on one row. */
+@media (max-width: 640px) {
+  .nav-link {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.02em;
+  }
+}
+
 /* ── Reduced motion ──────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .navbar,
   .navbar-corner,
+  .navbar-corner::before,
+  .navbar-corner::after,
   .navbar-corner svg {
     transition-duration: 0.001ms !important;
   }
   /* Disable the corner-fold reveal entirely. */
   .navbar-corner { display: none; }
+  .navbar-corner::before { display: none; }
   .navbar {
     transform: none !important;
     position: sticky;

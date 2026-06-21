@@ -102,10 +102,19 @@ body[data-page="home"] {
   font-family: var(--font-serif);
   color: var(--ink-base);
   background-color: var(--paper-base);
+  /* Stacked newspaper textures for the page background:
+       1. Edge-wear vignette around the page
+       2. Subtle radial stains
+       3. Fine paper grain (feTurbulence SVG)
+     All background-attachment: fixed so they stay locked as the user
+     scrolls — a parallax-free, print-like surface. */
   background-image:
+    var(--paper-edge-wear),
     var(--paper-stains),
-    var(--paper-texture);
-  background-attachment: fixed, fixed;
+    var(--paper-grain);
+  background-size: 320px 320px, 100% 100%, 160px 160px;
+  background-blend-mode: multiply, normal, multiply;
+  background-attachment: fixed, fixed, fixed;
 }
 
 body[data-page="home"] h1,
@@ -122,9 +131,12 @@ body[data-page="home"] a {
 }
 
 body[data-page="home"] .navbar {
-  background: var(--paper-base);
-  background-image: var(--paper-texture);
-  border-bottom-color: var(--ink-rule-strong);
+  background-color: var(--paper-base);
+  background-image:
+    var(--paper-grain),
+    var(--paper-stains);
+  background-size: 160px 160px, 100% 100%;
+  border-bottom: var(--rule-heavy);
   /* Remove the modern blur — the masthead already handles separation. */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -153,12 +165,18 @@ body[data-page="home"] .navbar-corner {
 }
 
 body[data-page="home"] .site-footer {
-  background: var(--paper-base);
-  background-image: var(--paper-texture);
-  border-top-color: var(--ink-rule-strong);
+  background-color: var(--paper-base);
+  background-image:
+    var(--paper-grain),
+    var(--paper-stains);
+  background-size: 160px 160px, 100% 100%;
+  border-top: var(--rule-heavy);
+  border-bottom: var(--rule-double);
   color: var(--ink-muted);
   font-family: var(--font-mono-serif);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: var(--fs-xs);
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
 }

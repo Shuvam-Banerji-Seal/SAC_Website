@@ -34,7 +34,10 @@ export function renderNavbar(activePage) {
       el(
         "div",
         { class: "navbar__inner" },
-        el("a", { href: pageUrl("index.html"), class: "navbar__brand" }, SITE_TITLE),
+        el("a", { href: pageUrl("index.html"), class: "navbar__brand" },
+          el("span", { class: "navbar__brand-full" }, SITE_TITLE),
+          el("span", { class: "navbar__brand-short" }, "SAC"),
+        ),
         el(
           "ul",
           { class: "navbar__list" },

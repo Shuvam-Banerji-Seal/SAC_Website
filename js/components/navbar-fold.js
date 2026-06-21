@@ -82,6 +82,9 @@ function setupDesktopCorner(navbar, corner) {
     // navbar at top: 0; nothing to wire here.
     return;
   }
+  // Avoid double-binding on resize.
+  if (corner.__sacFoldBound) return;
+  corner.__sacFoldBound = true;
 
   const setOpen = (open) => {
     navbar.classList.toggle("is-open", open);
@@ -146,7 +149,16 @@ function setupResizeWatcher(navbar, corner) {
     wasDesktop = isDesk;
     clearNavbarState(navbar, corner);
     if (isDesk) {
-      // No automatic desktop reveal — the user opts in via the corner.
+      // The previous desktop setup's click handler is still on the
+      // corner element (it persists across resizes because the corner
+      // is a static HTML element), but if the user resized from mobile
+      // → desktop in the same session, our initial run() never
+      // attached a desktop handler. Detect that case and attach now.
+      const hasHandler = corner && corner.__sacFoldBound;
+      if (!hasHandler) {
+        setupDesktopCorner(navbar, corner);
+        if (corner) corner.__sacFoldBound = true;
+      }
     } else {
       setupMobileReveal(navbar);
     }

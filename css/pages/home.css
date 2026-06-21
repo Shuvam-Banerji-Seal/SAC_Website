@@ -1,23 +1,35 @@
 /* =========================================================================
    pages/home.css — newspaper-themed landing page.
 
-   Structure:
-     .masthead          — top banner with newspaper title + date/edition
-     .lead-article      — featured 2-column intro below the masthead
-     .bodies            — wrapper for the 4 paper-folding body sections
-       .body-section    — one foldable section per body
-         .body-banner   — body name + tagline + ornament
-         .paper-card-grid
-           .paper-card  — one card per club (logo, name, excerpt, link)
-     .body-section--empty — placeholder for bodies with no clubs (Sports)
+   Layered 3D animations
+   ---------------------
+     * .masthead            — 3D page-turn entrance (rotateY + translateZ)
+     * .lead-article p      — sequential column drop (rotateX + translateY),
+                             stagger via :nth-child(n) animation-delay
+     * .body-section        — paper-fold on scroll (rotateX + translateZ,
+                             multi-layer shadow)
+     * .paper-card          — 3D hover lift (translateY + translateZ +
+                             rotateY), deeper shadow
+     * .body-banner         — small rotateY hover on each banner
+     * .navbar-corner       — peel-back with underside triangle
 
-   All colors / typography / texture come from variables.css.
+   Newspaper textures (defined in variables.css as data: SVG URIs)
+   -----------------------------------------------------------------
+     * --paper-grain       feTurbulence noise overlay
+     * --paper-halftone    subtle dot pattern
+     * --paper-fold-crease horizontal fold shadow
+     * --paper-coffee-stain irregular brown stain
+     * --paper-edge-wear   vignette around edges
+
+   These are layered onto the body, masthead, cards, banners and
+   footer via background-image stacks.
    ========================================================================= */
 
 /* ── Page wrapper ──────────────────────────────────────────────────── */
 
 main.home {
   max-width: var(--max-w-content);
+  perspective: 2400px; /* shared perspective for the page-turn entrance */
 }
 
 /* ── Masthead ──────────────────────────────────────────────────────── */
@@ -25,12 +37,72 @@ main.home {
 .masthead {
   text-align: center;
   padding: var(--space-7) var(--space-4) var(--space-5);
-  border-top: 6px double var(--ink-base);
-  border-bottom: 3px solid var(--ink-base);
+  border-top: var(--rule-double);
+  border-bottom: var(--rule-heavy);
   background: var(--paper-base);
-  background-image: var(--paper-texture);
+  /* Layered newspaper texture: subtle stains + grain. */
+  background-image:
+    var(--paper-stains),
+    var(--paper-grain),
+    var(--paper-stains);
+  background-attachment: fixed, fixed, fixed;
   margin-bottom: var(--space-6);
   position: relative;
+  transform-style: preserve-3d;
+  /* Page-turn entrance. The masthead starts turned away from the
+     viewer (rotateY + translateZ) and rotates into place. */
+  animation: mastheadPageTurn 1.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.15s;
+  transform-origin: center center;
+  box-shadow: var(--shadow-fold-open);
+}
+
+/* Decorative fold-crease element, drawn just under the top double-rule. */
+.masthead::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 8%;
+  right: 8%;
+  height: 4px;
+  background-image: var(--paper-fold-crease);
+  background-repeat: repeat-x;
+  background-size: 200px 4px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Subtle coffee stain in the lower-left corner — a small newspaper
+   detail that adds character. */
+.masthead::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 18px;
+  width: 110px;
+  height: 110px;
+  background-image: var(--paper-coffee-stain);
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+@keyframes mastheadPageTurn {
+  0% {
+    transform: perspective(2400px) rotateY(-22deg) translateZ(-160px) translateX(-6%);
+    opacity: 0;
+    filter: brightness(0.92);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(2400px) rotateY(0deg) translateZ(0) translateX(0);
+    opacity: 1;
+    filter: brightness(1);
+  }
 }
 
 .masthead__edition {
@@ -43,9 +115,11 @@ main.home {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  border-bottom: 1px solid var(--ink-rule);
+  border-bottom: var(--rule-thin);
   padding-bottom: var(--space-2);
   margin-bottom: var(--space-4);
+  position: relative;
+  z-index: 2;
 }
 
 .masthead__edition > span { white-space: nowrap; }
@@ -58,6 +132,8 @@ main.home {
   text-transform: uppercase;
   color: var(--accent-red);
   margin-bottom: var(--space-2);
+  position: relative;
+  z-index: 2;
 }
 
 .masthead__title {
@@ -68,6 +144,8 @@ main.home {
   letter-spacing: -0.02em;
   margin: 0 0 var(--space-2);
   color: var(--ink-base);
+  position: relative;
+  z-index: 2;
 }
 
 .masthead__subtitle {
@@ -77,6 +155,8 @@ main.home {
   font-size: clamp(1rem, 1.6vw, 1.25rem);
   color: var(--ink-muted);
   margin: 0 0 var(--space-4);
+  position: relative;
+  z-index: 2;
 }
 
 .masthead__rule {
@@ -85,6 +165,8 @@ main.home {
   gap: var(--space-3);
   margin: var(--space-4) auto 0;
   max-width: 540px;
+  position: relative;
+  z-index: 2;
 }
 
 .masthead__rule::before,
@@ -102,14 +184,15 @@ main.home {
   color: var(--ink-muted);
 }
 
-/* ── Lead article (drop cap, 2-column layout) ─────────────────────── */
+/* ── Lead article (drop-cap, 2-column layout, sequential drop) ─────── */
 
 .lead-article {
   padding: 0 var(--space-4);
   margin: 0 auto var(--space-7);
   max-width: 960px;
-  border-bottom: 3px double var(--ink-rule-strong);
+  border-bottom: var(--rule-double);
   padding-bottom: var(--space-6);
+  position: relative;
 }
 
 .lead-article__headline {
@@ -120,6 +203,19 @@ main.home {
   margin-bottom: var(--space-2);
   color: var(--ink-base);
   text-align: center;
+  animation: leadHeadlineDrop 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+  transform-origin: top center;
+}
+
+@keyframes leadHeadlineDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) rotateX(-30deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
 }
 
 .lead-article__deck {
@@ -131,6 +227,19 @@ main.home {
   text-align: center;
   max-width: 60ch;
   margin: 0 auto var(--space-5);
+  animation: leadDeckDrop 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+  transform-origin: top center;
+}
+
+@keyframes leadDeckDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) rotateX(-25deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
 }
 
 .lead-article__byline {
@@ -141,6 +250,12 @@ main.home {
   text-transform: uppercase;
   color: var(--ink-muted);
   margin-bottom: var(--space-4);
+  animation: leadBylineFade 0.8s ease 0.7s both;
+}
+
+@keyframes leadBylineFade {
+  0% { opacity: 0; letter-spacing: 0.5em; }
+  100% { opacity: 1; letter-spacing: 0.25em; }
 }
 
 .lead-article__body {
@@ -151,9 +266,37 @@ main.home {
   line-height: 1.65;
   text-align: justify;
   hyphens: auto;
+  perspective: 1200px;
 }
 
-.lead-article__body p { margin: 0 0 var(--space-3); }
+.lead-article__body p {
+  margin: 0 0 var(--space-3);
+  /* Sequential drop — each paragraph falls into place with a slight
+     rotateX, staggered so the column reads top-to-bottom. */
+  transform-origin: top center;
+  animation: leadParaDrop 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.lead-article__body p:nth-child(1) { animation-delay: 0.85s; }
+.lead-article__body p:nth-child(2) { animation-delay: 1.0s; }
+.lead-article__body p:nth-child(3) { animation-delay: 1.15s; }
+.lead-article__body p:nth-child(4) { animation-delay: 1.3s; }
+.lead-article__body p:nth-child(5) { animation-delay: 1.45s; }
+
+@keyframes leadParaDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) rotateX(-32deg);
+    filter: blur(2px);
+  }
+  60% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+    filter: blur(0);
+  }
+}
 
 .lead-article__body p:first-child::first-letter {
   font-family: var(--font-display);
@@ -175,29 +318,29 @@ main.home {
 /* ── Body sections (paper-folding animation) ───────────────────────── */
 
 .bodies {
-  perspective: 2200px;
+  perspective: 2400px;
   perspective-origin: 50% 0%;
 }
 
 .body-section {
   margin-bottom: var(--space-8);
   opacity: 0;
-  transform: rotateX(-85deg);
+  /* Rest state: section is folded up + pushed back in z. As it unfolds,
+     both rotations ease back to identity and translateZ returns to 0,
+     making the section swing toward the viewer. */
+  transform: rotateX(-85deg) translateZ(-180px);
   transform-origin: top center;
+  transform-style: preserve-3d;
   transition:
-    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.85s ease,
-    box-shadow 1.1s ease;
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.9s ease,
+    box-shadow 1.2s ease;
   will-change: transform, opacity, box-shadow;
-  /* Shadow grows with the fold — at rest the section is "tucked"
-     above the page so it casts no shadow; as it unfolds, a soft
-     shadow appears below to sell the 3D depth. */
-  box-shadow: 0 0 0 rgba(24, 20, 16, 0);
+  box-shadow: var(--shadow-fold-rest);
 }
 
 /* Per-section stagger so the page has rhythm as the user scrolls
-   past the bodies. Sports is the empty placeholder, so its delay
-   sits between the two populated bodies above/below. */
+   past the bodies. */
 .body-section[data-body="academics"] { transition-delay: 0ms; }
 .body-section[data-body="hostel"]    { transition-delay: 80ms; }
 .body-section[data-body="sports"]    { transition-delay: 200ms; }
@@ -205,13 +348,14 @@ main.home {
 
 .body-section.is-visible {
   opacity: 1;
-  transform: rotateX(0deg);
-  box-shadow: 0 2px 18px -10px rgba(24, 20, 16, 0.28);
+  transform: rotateX(0deg) translateZ(0);
+  box-shadow: var(--shadow-fold-open);
 }
 
 /* Subtle pivot variation so the four folds don't all hinge on the
    same axis. Academics + cultural stay top-center; hostel pivots
-   from the left, sports from the right. */
+   from the left, sports from the right. Once unfolded, every section
+   sits flat at top-center so the page reads straight. */
 .body-section[data-body="hostel"]   { transform-origin: top left; }
 .body-section[data-body="sports"]   { transform-origin: top right; }
 .body-section.is-visible[data-body="hostel"],
@@ -224,8 +368,14 @@ main.home {
   border-bottom: 1px solid var(--ink-rule-strong);
   padding: var(--space-3) 0 var(--space-4);
   background: var(--paper-soft);
-  background-image: var(--paper-texture);
+  background-image:
+    var(--paper-halftone),
+    var(--paper-grain),
+    var(--paper-stains);
+  background-size: 6px 6px, 160px 160px, 100% 100%;
+  background-blend-mode: multiply;
   position: relative;
+  transform-style: preserve-3d;
 }
 
 .body-banner__kicker {
@@ -272,11 +422,15 @@ main.home {
   padding: 0;
   margin: 0;
   list-style: none;
+  perspective: 1600px;
 }
 
 .paper-card {
   background: var(--paper-base);
-  background-image: var(--paper-texture);
+  background-image:
+    var(--paper-grain),
+    var(--paper-stains);
+  background-size: 160px 160px, 100% 100%;
   border: 1px solid var(--ink-rule-strong);
   padding: var(--space-5) var(--space-4) var(--space-4);
   display: flex;
@@ -286,31 +440,43 @@ main.home {
   position: relative;
   color: var(--ink-base);
   text-decoration: none;
-  transition: transform var(--transition), box-shadow var(--transition);
-  box-shadow:
-    0 1px 0 rgba(24, 20, 16, 0.06),
-    0 4px 12px rgba(24, 20, 16, 0.08);
+  transform-style: preserve-3d;
+  /* Each card starts slightly tilted back so the grid reads as a
+     stack of small papers lying on a desk. On hover the card lifts
+     toward the viewer. */
+  transform: rotateX(2deg) translateZ(0);
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease,
+    border-color 0.4s ease;
+  box-shadow: var(--shadow-fold-rest);
 }
 
+/* Two horizontal fold-crease lines give the card a "folded paper"
+   feel — top and bottom. */
 .paper-card::before,
 .paper-card::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  height: 1px;
-  background: var(--ink-rule);
+  height: 4px;
+  background-image: var(--paper-fold-crease);
+  background-repeat: repeat-x;
+  background-size: 200px 4px;
+  pointer-events: none;
+  opacity: 0.4;
 }
 .paper-card::before { top: var(--space-3); }
 .paper-card::after  { bottom: var(--space-3); }
 
 .paper-card:hover,
 .paper-card:focus-visible {
-  transform: translateY(-3px);
-  box-shadow:
-    0 2px 0 rgba(24, 20, 16, 0.08),
-    0 10px 24px rgba(24, 20, 16, 0.14);
-  text-decoration: none;
+  /* Lift the card toward the viewer and rotate slightly around Y so
+     it feels like it's being picked up off the desk. */
+  transform: translateY(-10px) translateZ(40px) rotateY(3deg) rotateX(0deg);
+  box-shadow: var(--shadow-fold-lift);
+  border-color: var(--ink-base);
   outline: none;
 }
 
@@ -391,6 +557,12 @@ main.home {
   border-top: 1px solid var(--ink-rule);
   padding-top: var(--space-2);
   width: 100%;
+  transition: letter-spacing 0.3s ease, color 0.3s ease;
+}
+.paper-card:hover .paper-card__cta,
+.paper-card:focus-visible .paper-card__cta {
+  letter-spacing: 0.35em;
+  color: var(--accent-red-deep);
 }
 
 /* ── Empty body (no clubs — used for Sports today) ────────────────── */
@@ -404,7 +576,9 @@ main.home {
   padding: var(--space-6) var(--space-4);
   border: 1px dashed var(--ink-rule-strong);
   background: var(--paper-soft);
-  background-image: var(--paper-texture);
+  background-image:
+    var(--paper-grain),
+    var(--paper-stains);
   font-family: var(--font-display);
   font-style: italic;
   color: var(--ink-muted);
@@ -423,10 +597,25 @@ main.home {
 /* ── Reduced motion ───────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
+  .masthead,
+  .lead-article__headline,
+  .lead-article__deck,
+  .lead-article__byline,
+  .lead-article__body p {
+    animation: none !important;
+  }
   .body-section {
     transition: none;
     transform: none;
     opacity: 1;
+  }
+  .paper-card {
+    transition: none;
+    transform: none;
+  }
+  .paper-card:hover,
+  .paper-card:focus-visible {
+    transform: translateY(-4px);
   }
 }
 
@@ -436,5 +625,6 @@ main.home {
   .masthead { padding: var(--space-5) var(--space-3) var(--space-4); }
   .masthead__title { font-size: 2.4rem; }
   .masthead__edition { font-size: 0.65rem; letter-spacing: 0.18em; }
+  .masthead::after { width: 70px; height: 70px; bottom: -6px; left: 10px; }
   .lead-article { padding: 0 var(--space-3); }
 }
