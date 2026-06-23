@@ -151,3 +151,93 @@
     --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 }
+
+/* =========================================================================
+   Theme overrides — data-theme on <html> set by js/components/settings.js
+   ========================================================================= */
+
+/* ── Dark theme (dark coffee-stain newspaper / old map) ─────────── */
+[data-theme="dark"] {
+  --color-bg: #1e1a16;
+  --color-fg: #d4c9b8;
+  --color-muted: #8a7d6e;
+  --color-accent: #d43636;
+  --color-accent-fg: #f4f0e6;
+  --color-border: #3a3328;
+  --color-card-bg: #2a2520;
+  --color-warning-bg: #3a2e0a;
+  --color-warning-fg: #fbbf24;
+  --color-warning-border: #4a3a0a;
+
+  /* Dark newspaper palette */
+  --paper-base: #2a2520;
+  --paper-soft: #332d27;
+  --paper-deep: #1e1a16;
+  --paper-edge: #3a3328;
+  --paper-stain: #4a3e2e;
+  --ink-base: #d4c9b8;
+  --ink-soft: #b8aa98;
+  --ink-muted: #8a7d6e;
+  --ink-rule: rgba(212, 201, 184, 0.22);
+  --ink-rule-strong: rgba(212, 201, 184, 0.45);
+  --accent-red: #d43636;
+  --accent-red-deep: #b02c2c;
+  --accent-gold: #e8c55a;
+  --accent-gold-soft: #f0dc8a;
+
+  /* Dark paper textures (SVG data URIs with lighter grain) */
+  --paper-grain:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0.83  0 0 0 0 0.79  0 0 0 0 0.73  0 0 0 0.12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --paper-halftone:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><circle cx='1' cy='1' r='0.55' fill='rgb(212, 201, 184)'/></svg>");
+  --paper-fold-crease:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(212, 201, 184)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(212, 201, 184)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
+  --paper-coffee-stain:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='9'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(90, 70, 40)' opacity='0.3'/><circle cx='66' cy='74' r='34' fill='rgb(75, 55, 30)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(100, 80, 50)' opacity='0.22'/></g></svg>");
+  --paper-edge-wear:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><radialGradient id='e' cx='50%' cy='50%' r='68%'><stop offset='60%' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='100%' stop-color='rgb(212, 201, 184)' stop-opacity='0.15'/></radialGradient><rect width='100%' height='100%' fill='url(%23e)'/></svg>");
+
+  --shadow-fold-rest: 0 1px 0 rgba(0, 0, 0, 0.12);
+  --shadow-fold-open:
+    0 1px 0 rgba(0, 0, 0, 0.1),
+    0 14px 28px -16px rgba(0, 0, 0, 0.5),
+    0 4px 8px -4px rgba(0, 0, 0, 0.2);
+  --shadow-fold-lift:
+    0 2px 0 rgba(0, 0, 0, 0.14),
+    0 24px 48px -16px rgba(0, 0, 0, 0.55),
+    0 8px 16px -4px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Aged texture preset ────────────────────────────────────────── */
+[data-texture="aged"] {
+  --paper-base: #e8dcbb;
+  --paper-soft: #ddd0a8;
+  --paper-deep: #cfc098;
+  --paper-edge: #c4b488;
+  --ink-base: #2b2016;
+  --ink-muted: #6b5a44;
+  --accent-red: #8b3a3a;
+  --accent-gold: #b8962e;
+}
+
+/* ── Dark texture preset ────────────────────────────────────────── */
+[data-texture="dark"] {
+  --paper-base: #2a2520;
+  --paper-soft: #332d27;
+  --paper-deep: #1e1a16;
+  --ink-base: #d4c9b8;
+  --ink-muted: #8a7d6e;
+  --accent-red: #d43636;
+  --accent-gold: #e8c55a;
+}
+
+/* Dark texture + dark theme — reinforce the dark palette */
+[data-theme="dark"][data-texture="dark"] {
+  --paper-base: #201c18;
+  --paper-soft: #2a2520;
+  --ink-base: #c4b8a4;
+  --ink-rule: rgba(196, 184, 164, 0.22);
+  --ink-rule-strong: rgba(196, 184, 164, 0.45);
+}

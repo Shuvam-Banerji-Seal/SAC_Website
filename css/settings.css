@@ -1,0 +1,323 @@
+/* =========================================================================
+   css/settings.css — floating settings panel UI.
+   Provides dark mode toggle, font picker, and texture picker.
+   ========================================================================= */
+
+/* ── Floating trigger button ──────────────────────────────────────── */
+
+.settings-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-rule-strong, rgba(24,20,16,0.3));
+  background: var(--paper-base, #f4f0e6);
+  background-image: var(--paper-texture, none);
+  color: var(--ink-base, #181410);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.settings-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+}
+.settings-fab.is-open {
+  transform: rotate(90deg);
+}
+
+/* ── Overlay ─────────────────────────────────────────────────────── */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1998;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.settings-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Panel ────────────────────────────────────────────────────────── */
+
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1999;
+  width: min(360px, 88vw);
+  background: var(--paper-base, #f4f0e6);
+  background-image: var(--paper-grain, none);
+  border-left: 1px solid var(--ink-rule-strong, rgba(24,20,16,0.3));
+  box-shadow: -6px 0 28px rgba(0,0,0,0.18);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink-base, #181410);
+}
+.settings-panel.is-open {
+  transform: translateX(0);
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+
+.settings-header {
+  padding: var(--space-5, 1.5rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--ink-rule, rgba(24,20,16,0.22));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.settings-header h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  font-size: 1.25rem;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+.settings-close {
+  background: none;
+  border: 1px solid var(--ink-rule, rgba(24,20,16,0.22));
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: var(--ink-base, #181410);
+  transition: background 0.2s ease;
+}
+.settings-close:hover {
+  background: var(--paper-deep, #ddd2b6);
+}
+
+/* ── Sections ─────────────────────────────────────────────────────── */
+
+.settings-section {
+  padding: var(--space-4, 1rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--ink-rule, rgba(24,20,16,0.22));
+}
+.settings-section:last-child {
+  border-bottom: none;
+}
+.settings-section__label {
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #5b4f3d);
+  margin-bottom: var(--space-3, 0.75rem);
+  display: block;
+}
+
+/* ── Toggle switch (dark mode) ───────────────────────────────────── */
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+}
+.toggle-row__label {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.toggle-row__desc {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 0.78rem;
+  color: var(--ink-muted, #5b4f3d);
+  margin-top: 2px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--ink-rule, rgba(24,20,16,0.22));
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--paper-base, #f4f0e6);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.toggle-switch input:checked + .toggle-track {
+  background: var(--accent-red, #7e0909);
+}
+.toggle-switch input:checked + .toggle-track::after {
+  transform: translateX(20px);
+}
+.toggle-switch input:focus-visible + .toggle-track {
+  outline: 2px solid var(--accent-red, #7e0909);
+  outline-offset: 2px;
+}
+
+/* ── Font picker ──────────────────────────────────────────────────── */
+
+.font-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2, 0.5rem);
+}
+.font-option {
+  position: relative;
+  padding: var(--space-3, 0.75rem);
+  border: 1.5px solid var(--ink-rule, rgba(24,20,16,0.22));
+  border-radius: var(--radius, 8px);
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.font-option:hover {
+  border-color: var(--ink-base, #181410);
+}
+.font-option.is-selected {
+  border-color: var(--accent-red, #7e0909);
+  background: rgba(126,9,9,0.05);
+}
+.font-option__name {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #5b4f3d);
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  margin-bottom: 4px;
+}
+.font-option__preview {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink-base, #181410);
+  line-height: 1.3;
+}
+/* Preset fonts */
+.font-option[data-font="newspaper"] .font-option__preview {
+  font-family: "Playfair Display", Georgia, serif;
+}
+.font-option[data-font="modern"] .font-option__preview {
+  font-family: "EB Garamond", Georgia, serif;
+}
+.font-option[data-font="typewriter"] .font-option__preview {
+  font-family: "Special Elite", "Courier New", monospace;
+}
+
+/* ── Texture picker ───────────────────────────────────────────────── */
+
+.texture-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2, 0.5rem);
+}
+.texture-option {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1.5px solid var(--ink-rule, rgba(24,20,16,0.22));
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+.texture-option:hover {
+  border-color: var(--ink-base, #181410);
+}
+.texture-option.is-selected {
+  border-color: var(--accent-red, #7e0909);
+  box-shadow: 0 0 0 2px var(--accent-red, #7e0909);
+}
+.texture-option__fill {
+  position: absolute;
+  inset: 0;
+}
+.texture-option__label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 4px;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-base, #181410);
+  background: rgba(255,255,255,0.85);
+  text-align: center;
+}
+.texture-option[data-texture="dark"] .texture-option__fill {
+  background: #2a2520;
+}
+.texture-option[data-texture="dark"] .texture-option__label {
+  color: #d4c9b8;
+  background: rgba(42,37,32,0.85);
+}
+
+/* ── Footer credit ────────────────────────────────────────────────── */
+
+.settings-footer {
+  padding: var(--space-4, 1rem);
+  text-align: center;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted, #5b4f3d);
+  text-transform: uppercase;
+  margin-top: auto;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-panel,
+  .settings-overlay,
+  .toggle-track::after {
+    transition: none;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .settings-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+  .settings-panel {
+    width: 100vw;
+  }
+}

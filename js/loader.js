@@ -62,8 +62,9 @@ const ARTICLES = [
   },
 ];
 
-/* How long the SAC seal stays on screen before we dismiss the loader. */
-const HOLD_AFTER_LOGO = 1800;
+/* How long the SAC seal stays on screen before we dismiss the loader.
+   Shorter on mobile to reduce total loader time. */
+const HOLD_AFTER_LOGO = isMobile() ? 800 : 1800;
 
 /* -------------------------------------------------------------------------
  * State
@@ -76,6 +77,10 @@ let skipped = false;
 /* -------------------------------------------------------------------------
  * Helpers
  * ------------------------------------------------------------------------- */
+
+function isMobile() {
+  return window.innerWidth < 520 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 function $(id) {
   return document.getElementById(id);
@@ -195,18 +200,22 @@ function fitStage() {
 
 function spawnSplashDroplets() {
   els.splashLayer.innerHTML = "";
-  const count = window.innerWidth < 520 ? 24 : 38;
+  /* Mobile: 12 droplets (down from 24/38) to reduce DOM work. */
+  const count = isMobile() ? 12 : window.innerWidth < 768 ? 24 : 38;
+  const maxDist = isMobile() ? 120 : 245;
+  const minDist = isMobile() ? 30 : 55;
+  const maxDur = isMobile() ? 0.6 : 1.34;
   for (let i = 0; i < count; i++) {
     const dot = document.createElement("div");
     dot.className = "splash-dot";
     const angle = Math.random() * Math.PI * 2;
-    const distance = 55 + Math.random() * (window.innerWidth < 520 ? 165 : 245);
+    const distance = minDist + Math.random() * maxDist;
     const x = Math.cos(angle) * distance;
     const y = Math.sin(angle) * distance * 0.64;
-    const size = 4 + Math.random() * 18;
-    const duration = 0.72 + Math.random() * 0.62;
+    const size = isMobile() ? 3 + Math.random() * 10 : 4 + Math.random() * 18;
+    const duration = 0.4 + Math.random() * (maxDur - 0.4);
     const delay = Math.random() * 0.11;
-    const arc = 20 + Math.random() * 80;
+    const arc = isMobile() ? 10 + Math.random() * 40 : 20 + Math.random() * 80;
     const squash = 0.82 + Math.random() * 0.55;
     dot.style.setProperty("--x", `${x}px`);
     dot.style.setProperty("--y", `${y}px`);
@@ -224,10 +233,15 @@ function spawnSplashDroplets() {
  * ------------------------------------------------------------------------- */
 
 function startLoader(data) {
-  const total = data.length;
+  /* Mobile optimization: only show 5 clubs (down from 12) to reduce DOM
+     nodes, animation duration, and memory pressure on low-end phones. */
+  const clubLimit = isMobile() ? 5 : data.length;
+  const clubs = data.slice(0, clubLimit);
+  const total = clubs.length;
+
   els.clubLabel.textContent = total ? "Club Editions" : "Student Affairs Council";
 
-  data.forEach((club, index) => {
+  clubs.forEach((club, index) => {
     const paper = createNewspaper(club, index);
     const t = transformsFor(index, total);
     paper.style.transform = t.entrance;
@@ -236,22 +250,35 @@ function startLoader(data) {
     papers.push(paper);
   });
 
+  /* Mobile: reduce stagger delay from 270ms to 150ms per paper. */
+  const stagger = isMobile() ? 150 : 270;
+
   papers.forEach((paper, index) => {
     setTimeout(() => {
       if (skipped) return;
       paper.style.opacity = "1";
       paper.style.transform = paper.dataset.finalTransform;
-      els.clubLabel.textContent = data[index].name;
+      els.clubLabel.textContent = clubs[index].name;
       els.progressFill.style.width = `${((index + 1) / papers.length) * 100}%`;
-      setTimeout(() => paper.classList.add("arrived"), 900);
+      setTimeout(() => paper.classList.add("arrived"), isMobile() ? 500 : 900);
       if (index === papers.length - 1) {
-        setTimeout(() => { if (!skipped) gatherNewspapers(); }, 1050);
+        setTimeout(() => { if (!skipped) gatherNewspapers(); }, isMobile() ? 550 : 1050);
       }
-    }, 320 + index * 270);
+    }, 320 + index * stagger);
   });
 }
 
 function gatherNewspapers() {
+  /* Mobile: skip the gather animation entirely — go straight to ink
+     finale to reduce total loader time from ~6s to ~3.5s. */
+  if (isMobile()) {
+    papers.forEach((p, i) => {
+      p.style.opacity = i === papers.length - 1 ? "1" : "0";
+    });
+    els.status.classList.add("hide");
+    playInkFinale();
+    return;
+  }
   els.paperStage.style.animation = "none";
   papers.forEach((paper, index) => {
     setTimeout(() => {

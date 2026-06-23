@@ -1,0 +1,322 @@
+/**
+ * components/settings.js — settings panel, dark mode, font/texture switching.
+ *
+ * Architecture:
+ *   1. On DOMContentLoaded, read localStorage and apply saved preferences.
+ *   2. Wire up the floating trigger button, overlay, and panel.
+ *   3. On preference change, update CSS data-attributes on <html> and
+ *      save to localStorage.
+ *   4. Google Fonts are loaded lazily (only when a font preset is first
+ *      selected, not on every page load).
+ */
+import { $ } from "../utils/dom.js";
+
+/* -------------------------------------------------------------------------
+ * Constants
+ * ------------------------------------------------------------------------- */
+
+const STORAGE_KEY = "sac-site-prefs";
+
+const FONT_PRESETS = {
+  newspaper: {
+    label: "Newspaper",
+    families: '"Playfair Display", Georgia, serif',
+    weights: "400;700;900",
+    google: "Playfair+Display:wght@400;700;900",
+  },
+  modern: {
+    label: "Modern",
+    families: '"EB Garamond", Georgia, serif',
+    weights: "400;600;700",
+    google: "EB+Garamond:wght@400;600;700",
+  },
+  typewriter: {
+    label: "Typewriter",
+    families: '"Special Elite", "Courier New", monospace',
+    weights: "400",
+    google: "Special+Elite",
+  },
+};
+
+const TEXTURES = {
+  fresh: {
+    label: "Fresh",
+    bg: "#f4f0e6",
+    fg: "#181410",
+    accent: "#7e0909",
+  },
+  aged: {
+    label: "Aged",
+    bg: "#e8dcbb",
+    fg: "#2b2016",
+    accent: "#8b3a3a",
+  },
+  dark: {
+    label: "Dark",
+    bg: "#2a2520",
+    fg: "#d4c9b8",
+    accent: "#d43636",
+  },
+};
+
+/* -------------------------------------------------------------------------
+ * State
+ * ------------------------------------------------------------------------- */
+
+let panelEl = null;
+let overlayEl = null;
+let fabEl = null;
+let loadedFonts = { newspaper: true }; // newspaper is already loaded via <link>
+
+/* -------------------------------------------------------------------------
+ * Persistence
+ * ------------------------------------------------------------------------- */
+
+function loadPrefs() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function savePrefs(prefs) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  } catch { /* quota exceeded, ignore */ }
+}
+
+/* -------------------------------------------------------------------------
+ * Apply helpers
+ * ------------------------------------------------------------------------- */
+
+function applyTheme(prefs) {
+  const root = document.documentElement;
+  // Dark mode
+  if (prefs.dark === true) {
+    root.setAttribute("data-theme", "dark");
+  } else if (prefs.dark === "auto") {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", prefersDark ? "dark" : "light");
+  } else {
+    root.setAttribute("data-theme", "light");
+  }
+}
+
+function applyFont(prefs) {
+  const preset = prefs.font || "newspaper";
+  const config = FONT_PRESETS[preset];
+  if (!config) return;
+  document.documentElement.style.setProperty("--font-display", config.families);
+  document.documentElement.style.setProperty("--font-serif", config.families);
+  loadGoogleFont(preset);
+}
+
+function applyTexture(prefs) {
+  const texture = prefs.texture || "fresh";
+  document.documentElement.setAttribute("data-texture", texture);
+}
+
+function applyAll(prefs) {
+  applyTheme(prefs);
+  applyFont(prefs);
+  applyTexture(prefs);
+}
+
+/* -------------------------------------------------------------------------
+ * Google Fonts loader
+ * ------------------------------------------------------------------------- */
+
+function loadGoogleFont(preset) {
+  if (loadedFonts[preset]) return;
+  const config = FONT_PRESETS[preset];
+  if (!config || !config.google) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${config.google}&display=swap`;
+  document.head.appendChild(link);
+  loadedFonts[preset] = true;
+}
+
+/* Preload all font presets so switching is instant. */
+function preloadFonts() {
+  Object.keys(FONT_PRESETS).forEach(loadGoogleFont);
+}
+
+/* -------------------------------------------------------------------------
+ * Panel open/close
+ * ------------------------------------------------------------------------- */
+
+function openPanel() {
+  if (!panelEl || !overlayEl || !fabEl) return;
+  panelEl.classList.add("is-open");
+  overlayEl.classList.add("is-visible");
+  fabEl.classList.add("is-open");
+  fabEl.setAttribute("aria-expanded", "true");
+}
+
+function closePanel() {
+  if (!panelEl || !overlayEl || !fabEl) return;
+  panelEl.classList.remove("is-open");
+  overlayEl.classList.remove("is-visible");
+  fabEl.classList.remove("is-open");
+  fabEl.setAttribute("aria-expanded", "false");
+}
+
+/* -------------------------------------------------------------------------
+ * Render panel inner HTML
+ * ------------------------------------------------------------------------- */
+
+function renderPanel() {
+  const prefs = loadPrefs();
+  const currentFont = prefs.font || "newspaper";
+  const currentTexture = prefs.texture || "fresh";
+  const isDark = prefs.dark === true || prefs.dark === "auto";
+
+  panelEl.innerHTML = `
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button class="settings-close" aria-label="Close settings">&times;</button>
+    </div>
+
+    <!-- Dark mode -->
+    <div class="settings-section">
+      <span class="settings-section__label">Appearance</span>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row__label">Dark mode</div>
+          <div class="toggle-row__desc">Dark coffee-stain newspaper</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-dark" ${isDark ? "checked" : ""} />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Font -->
+    <div class="settings-section">
+      <span class="settings-section__label">Typography</span>
+      <div class="font-grid">
+        ${Object.entries(FONT_PRESETS)
+          .map(
+            ([key, cfg]) => `
+          <button class="font-option ${currentFont === key ? "is-selected" : ""}"
+                  data-font="${key}" type="button" aria-label="Select ${cfg.label} font">
+            <div class="font-option__name">${cfg.label}</div>
+            <div class="font-option__preview">Aa Bb</div>
+          </button>`,
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <!-- Texture -->
+    <div class="settings-section">
+      <span class="settings-section__label">Paper texture</span>
+      <div class="texture-grid">
+        ${Object.entries(TEXTURES)
+          .map(
+            ([key, cfg]) => `
+          <button class="texture-option ${currentTexture === key ? "is-selected" : ""}"
+                  data-texture="${key}" type="button" aria-label="${cfg.label} texture">
+            <div class="texture-option__fill" style="background: ${cfg.bg}"></div>
+            <div class="texture-option__label">${cfg.label}</div>
+          </button>`,
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <div class="settings-footer">SAC Website &middot; Settings</div>
+  `;
+}
+
+/* -------------------------------------------------------------------------
+ * Event wiring
+ * ------------------------------------------------------------------------- */
+
+function wireEvents() {
+  const prefs = loadPrefs();
+
+  // Toggle panel
+  fabEl.addEventListener("click", () => {
+    const isOpen = panelEl.classList.contains("is-open");
+    if (isOpen) closePanel();
+    else openPanel();
+  });
+
+  overlayEl.addEventListener("click", closePanel);
+
+  panelEl.addEventListener("click", (e) => {
+    if (e.target === panelEl) return;
+    // Close button
+    if (e.target.closest(".settings-close")) {
+      closePanel();
+      return;
+    }
+    // Dark mode toggle
+    const darkToggle = e.target.closest("#settings-dark");
+    if (darkToggle) {
+      prefs.dark = darkToggle.checked;
+      savePrefs(prefs);
+      applyTheme(prefs);
+      return;
+    }
+    // Font option
+    const fontOption = e.target.closest(".font-option");
+    if (fontOption) {
+      prefs.font = fontOption.dataset.font;
+      savePrefs(prefs);
+      applyFont(prefs);
+      panelEl.querySelectorAll(".font-option").forEach((b) => b.classList.remove("is-selected"));
+      fontOption.classList.add("is-selected");
+      return;
+    }
+    // Texture option
+    const textureOption = e.target.closest(".texture-option");
+    if (textureOption) {
+      prefs.texture = textureOption.dataset.texture;
+      savePrefs(prefs);
+      applyTexture(prefs);
+      panelEl.querySelectorAll(".texture-option").forEach((b) => b.classList.remove("is-selected"));
+      textureOption.classList.add("is-selected");
+      return;
+    }
+  });
+
+  // Keyboard: Escape closes
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && panelEl.classList.contains("is-open")) {
+      closePanel();
+      fabEl.focus();
+    }
+  });
+
+  // Listen for system dark mode changes when preference is "auto"
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (prefs.dark === "auto") applyTheme(prefs);
+  });
+}
+
+/* -------------------------------------------------------------------------
+ * Entry point
+ * ------------------------------------------------------------------------- */
+
+export function initSettings() {
+  panelEl = document.getElementById("settings-panel");
+  overlayEl = document.getElementById("settings-overlay");
+  fabEl = document.getElementById("settings-fab");
+  if (!panelEl || !overlayEl || !fabEl) return;
+
+  // Apply saved preferences immediately
+  const prefs = loadPrefs();
+  applyAll(prefs);
+
+  // Render panel content and wire events
+  renderPanel();
+  wireEvents();
+
+  // Preload font presets so font switching is instant
+  preloadFonts();
+}
