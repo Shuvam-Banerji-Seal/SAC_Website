@@ -308,6 +308,14 @@
   }
 }
 
+/* ── Hide FAB during loader ─────────────────────────────────────── */
+
+body.loader-active .settings-fab {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {

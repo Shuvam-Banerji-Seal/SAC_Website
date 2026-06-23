@@ -269,14 +269,32 @@ function startLoader(data) {
 }
 
 function gatherNewspapers() {
-  /* Mobile: skip the gather animation entirely — go straight to ink
-     finale to reduce total loader time from ~6s to ~3.5s. */
+  /* Mobile: fast gather (300ms instead of the desktop's ~900ms).
+     Papers fade out over 300ms, then ink finale starts. This avoids
+     the "flash of empty viewport" that the old instant-hide caused. */
   if (isMobile()) {
-    papers.forEach((p, i) => {
-      p.style.opacity = i === papers.length - 1 ? "1" : "0";
+    els.paperStage.style.animation = "none";
+    papers.forEach((paper, index) => {
+      setTimeout(() => {
+        paper.classList.remove("arrived");
+        const x = (Math.random() - 0.5) * 6;
+        const y = (Math.random() - 0.5) * 6;
+        const z = index * 1.8;
+        const rz = (Math.random() - 0.5) * 3;
+        paper.style.transform = `
+          translate(-50%, -50%)
+          translate3d(${x}px, ${y}px, ${z}px)
+          rotateX(0deg)
+          rotateY(0deg)
+          rotateZ(${rz}deg)
+          scale(0.94)
+        `;
+        paper.style.opacity = index === papers.length - 1 ? "1" : "0";
+        paper.style.transition = "opacity 0.3s ease";
+      }, index * 30);
     });
     els.status.classList.add("hide");
-    playInkFinale();
+    setTimeout(() => { if (!skipped) playInkFinale(); }, 350);
     return;
   }
   els.paperStage.style.animation = "none";
