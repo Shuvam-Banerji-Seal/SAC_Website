@@ -217,6 +217,63 @@
     </section>
 
     <!-- =========================================================================
+         SAC Structure Diagram — newspaper infographic showing the 4 bodies
+         and their clubs. Inline SVG for zero external requests.
+    ========================================================================= -->
+    <section class="sac-diagram-section" aria-label="SAC organizational structure">
+      <div class="sac-diagram-wrap">
+        <svg viewBox="0 0 800 400" class="sac-diagram" aria-hidden="true">
+          <defs>
+            <filter id="paperTex">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="42" />
+              <feColorMatrix values="0 0 0 0 0.96  0 0 0 0 0.94  0 0 0 0 0.90  0 0 0 0.06 0" />
+              <feBlend in="SourceGraphic" mode="multiply" />
+            </filter>
+            <filter id="inkBleed">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="7" />
+              <feDisplacementMap in="SourceGraphic" scale="1.5" />
+            </filter>
+          </defs>
+          <rect width="800" height="400" fill="#f4f0e6" filter="url(#paperTex)" />
+          <text x="400" y="35" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="20" fill="#181410" filter="url(#inkBleed)">The Organizational Structure</text>
+          <line x1="120" y1="46" x2="680" y2="46" stroke="#181410" stroke-width="0.8" />
+          <circle cx="400" cy="110" r="38" fill="none" stroke="#7e0909" stroke-width="1.8" />
+          <circle cx="400" cy="110" r="33" fill="none" stroke="#7e0909" stroke-width="0.4" />
+          <text x="400" y="106" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="20" fill="#7e0909">SAC</text>
+          <text x="400" y="124" text-anchor="middle" font-family="'Courier New', monospace" font-size="7" fill="#5b4f3d" letter-spacing="2">COUNCIL</text>
+          <line x1="400" y1="148" x2="130" y2="195" stroke="#181410" stroke-width="0.8" stroke-dasharray="4,3" />
+          <line x1="400" y1="148" x2="320" y2="195" stroke="#181410" stroke-width="0.8" stroke-dasharray="4,3" />
+          <line x1="400" y1="148" x2="480" y2="195" stroke="#181410" stroke-width="0.8" stroke-dasharray="4,3" />
+          <line x1="400" y1="148" x2="670" y2="195" stroke="#181410" stroke-width="0.8" stroke-dasharray="4,3" />
+          <rect x="55" y="195" width="150" height="65" rx="3" fill="#f4f0e6" stroke="#181410" stroke-width="1" filter="url(#inkBleed)" />
+          <text x="130" y="216" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="12" fill="#7e0909">Academics</text>
+          <line x1="68" y1="225" x2="192" y2="225" stroke="#7e0909" stroke-width="0.5" />
+          <text x="130" y="241" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d">Placement Cell · Singularity</text>
+          <rect x="245" y="195" width="150" height="65" rx="3" fill="#f4f0e6" stroke="#181410" stroke-width="1" filter="url(#inkBleed)" />
+          <text x="320" y="216" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="12" fill="#7e0909">Hostel</text>
+          <line x1="258" y1="225" x2="382" y2="225" stroke="#7e0909" stroke-width="0.5" />
+          <text x="320" y="241" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d">SHC Committee</text>
+          <rect x="405" y="195" width="150" height="65" rx="3" fill="#f4f0e6" stroke="#181410" stroke-width="1" stroke-dasharray="5,3" filter="url(#inkBleed)" />
+          <text x="480" y="216" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="12" fill="#7e0909">Sports</text>
+          <line x1="418" y1="225" x2="542" y2="225" stroke="#7e0909" stroke-width="0.5" />
+          <text x="480" y="241" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d" opacity="0.5">Coming Soon</text>
+          <rect x="595" y="195" width="150" height="65" rx="3" fill="#f4f0e6" stroke="#181410" stroke-width="1" filter="url(#inkBleed)" />
+          <text x="670" y="216" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="12" fill="#7e0909">Cultural</text>
+          <line x1="608" y1="225" x2="732" y2="225" stroke="#7e0909" stroke-width="0.5" />
+          <text x="670" y="241" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d">10 Clubs · IICM</text>
+          <g font-family="'Courier New', monospace" font-size="7" fill="#5b4f3d" text-anchor="middle">
+            <text x="610" y="285">AARSHI</text><text x="670" y="285">Arts</text><text x="730" y="285">Radio</text>
+            <text x="610" y="298">IKQC</text><text x="670" y="298">Literary</text><text x="730" y="298">Movie</text>
+            <text x="610" y="311">Music</text><text x="670" y="311">Nature</text><text x="730" y="311">Nrutya</text>
+            <text x="670" y="324">PIXEL</text>
+          </g>
+          <line x1="55" y1="355" x2="745" y2="355" stroke="#181410" stroke-width="0.5" />
+          <text x="400" y="375" text-anchor="middle" font-family="'Courier New', monospace" font-size="7" fill="#5b4f3d" letter-spacing="2">STUDENT ACTIVITY COUNCIL · IISER KOLKATA · EMPOWERING VOICES</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- =========================================================================
          4 paper-folding body sections (SAC Academics, SAC Hostel, Sports,
          Cultural). Filled in by js/pages/home.js; the four <section>
          placeholders are pre-rendered so the layout is visible even before

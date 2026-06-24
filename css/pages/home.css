@@ -315,6 +315,29 @@ main.home {
   }
 }
 
+/* ── SAC Structure Diagram ─────────────────────────────────────────── */
+
+.sac-diagram-section {
+  padding: 0 var(--space-4);
+  margin: 0 auto var(--space-7);
+  max-width: 960px;
+}
+.sac-diagram-wrap {
+  border: 1.5px solid var(--ink-rule-strong);
+  background: var(--paper-base);
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  padding: var(--space-4);
+  box-shadow:
+    0 2px 0 rgba(24, 20, 16, 0.06),
+    0 8px 24px -8px rgba(24, 20, 16, 0.18);
+}
+.sac-diagram {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* ── Body sections (paper-folding animation) ───────────────────────── */
 
 .bodies {
@@ -472,10 +495,14 @@ main.home {
 
 .paper-card:hover,
 .paper-card:focus-visible {
-  /* Lift the card toward the viewer and rotate slightly around Y so
-     it feels like it's being picked up off the desk. */
-  transform: translateY(-10px) translateZ(40px) rotateY(3deg) rotateX(0deg);
-  box-shadow: var(--shadow-fold-lift);
+  /* Dramatic 3D lift: the card peels off the desk, tilting slightly
+     toward the viewer with a deep shadow trail that sells the depth. */
+  transform: translateY(-12px) translateZ(60px) rotateY(4deg) rotateX(-2deg);
+  box-shadow:
+    0 2px 0 rgba(24, 20, 16, 0.08),
+    0 20px 40px -12px rgba(24, 20, 16, 0.35),
+    0 6px 12px -4px rgba(24, 20, 16, 0.15),
+    0 0 0 1px rgba(24, 20, 16, 0.06);
   border-color: var(--ink-base);
   outline: none;
 }
