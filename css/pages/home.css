@@ -372,7 +372,7 @@ main.home {
     var(--paper-halftone),
     var(--paper-grain),
     var(--paper-stains);
-  background-size: 6px 6px, 160px 160px, 100% 100%;
+  background-size: 6px 10px, 320px 320px, 100% 100%;
   background-blend-mode: multiply;
   position: relative;
   transform-style: preserve-3d;
@@ -430,7 +430,7 @@ main.home {
   background-image:
     var(--paper-grain),
     var(--paper-stains);
-  background-size: 160px 160px, 100% 100%;
+  background-size: 320px 320px, 100% 100%;
   border: 1px solid var(--ink-rule-strong);
   padding: var(--space-5) var(--space-4) var(--space-4);
   display: flex;

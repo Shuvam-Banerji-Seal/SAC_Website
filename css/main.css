@@ -102,17 +102,20 @@ body[data-page="home"] {
   font-family: var(--font-serif);
   color: var(--ink-base);
   background-color: var(--paper-base);
-  /* Stacked newspaper textures for the page background:
-       1. Edge-wear vignette around the page
-       2. Subtle radial stains
-       3. Fine paper grain (feTurbulence SVG)
+  /* Layered newspaper textures:
+       1. Single page-covering vignette (NOT tiled — eliminates the
+          320×320 dark-bordered square grid)
+       2. Subtle radial stains (positioned once, not tiled)
+       3. Fine paper grain (feTurbulence SVG, tiled)
      All background-attachment: fixed so they stay locked as the user
      scrolls — a parallax-free, print-like surface. */
   background-image:
-    var(--paper-edge-wear),
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.10) 100%),
     var(--paper-stains),
     var(--paper-grain);
-  background-size: 320px 320px, 100% 100%, 160px 160px;
+  background-size: 100vw 100vh, 100% 100%, 320px 320px;
+  background-position: center top, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat;
   background-blend-mode: multiply, normal, multiply;
   background-attachment: fixed, fixed, fixed;
 }
@@ -135,7 +138,7 @@ body[data-page="home"] .navbar {
   background-image:
     var(--paper-grain),
     var(--paper-stains);
-  background-size: 160px 160px, 100% 100%;
+  background-size: 320px 320px, 100% 100%;
   border-bottom: var(--rule-heavy);
   /* Remove the modern blur — the masthead already handles separation. */
   backdrop-filter: none;
@@ -169,7 +172,7 @@ body[data-page="home"] .site-footer {
   background-image:
     var(--paper-grain),
     var(--paper-stains);
-  background-size: 160px 160px, 100% 100%;
+  background-size: 320px 320px, 100% 100%;
   border-top: var(--rule-heavy);
   border-bottom: var(--rule-double);
   color: var(--ink-muted);
@@ -179,4 +182,50 @@ body[data-page="home"] .site-footer {
   font-size: var(--fs-xs);
   padding-top: var(--space-6);
   padding-bottom: var(--space-6);
+}
+
+/* =========================================================================
+   Non-home pages — scope the corner button to use modern tokens
+   so it doesn't clash with the modern flat UI.
+   ========================================================================= */
+
+body:not([data-page="home"]) .navbar-corner {
+  color: var(--color-fg);
+}
+body:not([data-page="home"]) .navbar-corner::before {
+  background: var(--color-card-bg);
+}
+body:not([data-page="home"]) .navbar-corner::after {
+  background: var(--color-card-bg);
+  box-shadow:
+    -2px 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px var(--color-border);
+}
+body:not([data-page="home"]) .navbar-corner:hover::after {
+  box-shadow:
+    -3px 3px 12px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px var(--color-border);
+}
+body:not([data-page="home"]) .navbar-corner.is-open::after {
+  box-shadow:
+    -4px 4px 14px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px var(--color-border);
+}
+
+/* Also scope the settings panel to use newspaper tokens only on home */
+body:not([data-page="home"]) .settings-fab {
+  background: var(--color-card-bg);
+  border-color: var(--color-border);
+  color: var(--color-fg);
+}
+body:not([data-page="home"]) .settings-panel {
+  background: var(--color-card-bg);
+  border-left-color: var(--color-border);
+}
+body:not([data-page="home"]) .settings-close {
+  color: var(--color-fg);
+  border-color: var(--color-border);
+}
+body:not([data-page="home"]) .settings-close:hover {
+  background: var(--color-border);
 }
