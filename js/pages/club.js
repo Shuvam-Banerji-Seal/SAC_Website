@@ -39,7 +39,7 @@ function renderMarkdown(md) {
       flushPara();
       if (listOpen) { out.push("</ul>"); listOpen = false; }
       const m = t.match(/!\[(.*?)\]\((.*?)\)/);
-      if (m) out.push(`<img alt="${escapeHtml(m[1])}" src="${escapeAttr(m[2])}">`);
+      if (m) out.push(`<img alt="${escapeHtml(m[1])}" src="${escapeAttr(safeUrl(m[2]))}">`);
     } else if (t.startsWith("- ") || t.startsWith("* ")) {
       flushPara();
       if (!listOpen) { out.push("<ul>"); listOpen = true; }
@@ -62,6 +62,19 @@ function escapeHtml(s) {
   }[c]));
 }
 function escapeAttr(s) { return escapeHtml(s); }
+
+/** Validate that a URL is safe (not javascript: or data: URIs). */
+function safeUrl(url) {
+  if (!url) return "";
+  try {
+    const u = new URL(url, window.location.href);
+    if (u.protocol === "javascript:" || u.protocol === "data:") return "";
+    return url;
+  } catch {
+    // Relative path — treat as safe
+    return url;
+  }
+}
 
 function imageCard(asset) {
   return el(

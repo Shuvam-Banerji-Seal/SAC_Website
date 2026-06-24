@@ -340,6 +340,7 @@ function playInkFinale() {
 function hideLoader() {
   els.loader.classList.add("hidden");
   document.body.classList.remove("loader-active");
+  unwireEvents();
   // Drop the papers after the fade so the DOM stays tidy
   setTimeout(() => {
     papers.forEach((p) => p.remove());
@@ -358,22 +359,28 @@ function skipLoader() {
  * Event wiring
  * ------------------------------------------------------------------------- */
 
-function wireEvents() {
-  document.addEventListener("mousemove", (event) => {
-    if (skipped) return;
-    if (els.loader.classList.contains("hidden")) return;
-    if (els.inkFinale.classList.contains("active")) return;
-    const x = event.clientX / window.innerWidth - 0.5;
-    const y = event.clientY / window.innerHeight - 0.5;
-    els.stageShell.style.setProperty("--ry", `${x * 10}deg`);
-    els.stageShell.style.setProperty("--rx", `${-y * 7}deg`);
-  });
+function mousemoveHandler(event) {
+  if (skipped) return;
+  if (els.loader.classList.contains("hidden")) return;
+  if (els.inkFinale.classList.contains("active")) return;
+  const x = event.clientX / window.innerWidth - 0.5;
+  const y = event.clientY / window.innerHeight - 0.5;
+  els.stageShell.style.setProperty("--ry", `${x * 10}deg`);
+  els.stageShell.style.setProperty("--rx", `${-y * 7}deg`);
+}
 
+function wireEvents() {
+  document.addEventListener("mousemove", mousemoveHandler);
   window.addEventListener("resize", fitStage);
 
   // Skip button (in HTML, has class="skip-btn" and id="skipBtn")
   const skipBtn = $("skipBtn");
   if (skipBtn) skipBtn.addEventListener("click", skipLoader);
+}
+
+function unwireEvents() {
+  document.removeEventListener("mousemove", mousemoveHandler);
+  window.removeEventListener("resize", fitStage);
 }
 
 /* -------------------------------------------------------------------------

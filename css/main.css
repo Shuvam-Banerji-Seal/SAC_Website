@@ -113,7 +113,7 @@ body[data-page="home"] {
      scrolls — a parallax-free, print-like surface. */
   background-image:
     radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.10) 100%),
-    url("assets/natural-paper.png"),
+    url("../assets/natural-paper.png"),
     var(--paper-stains),
     var(--paper-grain);
   background-size: 100vw 100vh, 400px 400px, 100% 100%, 320px 320px;

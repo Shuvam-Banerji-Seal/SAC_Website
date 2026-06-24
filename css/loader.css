@@ -406,7 +406,7 @@ body.loader-active {
 .ink-finale {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 65;
   pointer-events: none;
   opacity: 0;
   perspective: 1000px;
