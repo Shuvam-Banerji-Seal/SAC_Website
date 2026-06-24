@@ -36,6 +36,24 @@ const FONT_PRESETS = {
     weights: "400",
     google: "Special+Elite",
   },
+  gothic: {
+    label: "Gothic",
+    families: '"IM Fell English", Georgia, serif',
+    weights: "400",
+    google: "IM+Fell+English",
+  },
+  classical: {
+    label: "Classical",
+    families: '"Cormorant", Georgia, serif',
+    weights: "400;600;700",
+    google: "Cormorant:wght@400;600;700",
+  },
+  mono: {
+    label: "Monospace",
+    families: '"IBM Plex Mono", "Courier New", monospace',
+    weights: "400;500;700",
+    google: "IBM+Plex+Mono:wght@400;500;700",
+  },
 };
 
 const TEXTURES = {
@@ -56,6 +74,24 @@ const TEXTURES = {
     bg: "#2a2520",
     fg: "#d4c9b8",
     accent: "#d43636",
+  },
+  kraft: {
+    label: "Kraft",
+    bg: "#c4a26c",
+    fg: "#2e1e0a",
+    accent: "#7a1e1e",
+  },
+  parchment: {
+    label: "Parchment",
+    bg: "#f0e6cc",
+    fg: "#3a2a14",
+    accent: "#6b1e1e",
+  },
+  slate: {
+    label: "Slate",
+    bg: "#2d3748",
+    fg: "#e2e8f0",
+    accent: "#fc8181",
   },
 };
 

@@ -222,6 +222,49 @@
   --accent-gold: #e8c55a;
 }
 
+/* ── Kraft paper preset ────────────────────────────────────────── */
+[data-texture="kraft"] {
+  --paper-base: #c4a26c;
+  --paper-soft: #b89658;
+  --paper-deep: #a88548;
+  --paper-edge: #9a7838;
+  --ink-base: #2e1e0a;
+  --ink-soft: #3d2e18;
+  --ink-muted: #6b5540;
+  --ink-rule: rgba(46, 30, 10, 0.22);
+  --ink-rule-strong: rgba(46, 30, 10, 0.45);
+  --accent-red: #7a1e1e;
+  --accent-gold: #b89638;
+}
+
+/* ── Parchment preset ─────────────────────────────────────────── */
+[data-texture="parchment"] {
+  --paper-base: #f0e6cc;
+  --paper-soft: #e8dcc0;
+  --paper-deep: #ddd0b4;
+  --ink-base: #3a2a14;
+  --ink-soft: #4a3a24;
+  --ink-muted: #7a6a54;
+  --ink-rule: rgba(58, 42, 20, 0.22);
+  --ink-rule-strong: rgba(58, 42, 20, 0.45);
+  --accent-red: #6b1e1e;
+  --accent-gold: #a88538;
+}
+
+/* ── Slate preset ──────────────────────────────────────────────── */
+[data-texture="slate"] {
+  --paper-base: #2d3748;
+  --paper-soft: #354254;
+  --paper-deep: #1f2937;
+  --ink-base: #e2e8f0;
+  --ink-soft: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --ink-rule: rgba(226, 232, 240, 0.22);
+  --ink-rule-strong: rgba(226, 232, 240, 0.45);
+  --accent-red: #fc8181;
+  --accent-gold: #f6e05e;
+}
+
 /* Dark texture + dark theme — reinforce the dark palette */
 [data-theme="dark"][data-texture="dark"] {
   --paper-base: #201c18;
