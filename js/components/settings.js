@@ -62,36 +62,42 @@ const TEXTURES = {
     bg: "#f4f0e6",
     fg: "#181410",
     accent: "#7e0909",
+    preview: "url('assets/natural-paper.png')",
   },
   aged: {
     label: "Aged",
     bg: "#e8dcbb",
     fg: "#2b2016",
     accent: "#8b3a3a",
+    preview: "url('assets/paper.png')",
   },
   dark: {
     label: "Dark",
     bg: "#2a2520",
     fg: "#d4c9b8",
     accent: "#d43636",
+    preview: "url('assets/old-wall.png')",
   },
   kraft: {
     label: "Kraft",
     bg: "#c4a26c",
     fg: "#2e1e0a",
     accent: "#7a1e1e",
+    preview: "url('assets/groovepaper.png')",
   },
   parchment: {
     label: "Parchment",
     bg: "#f0e6cc",
     fg: "#3a2a14",
     accent: "#6b1e1e",
+    preview: "url('assets/rice-paper.png')",
   },
   slate: {
     label: "Slate",
     bg: "#2d3748",
     fg: "#e2e8f0",
     accent: "#fc8181",
+    preview: "url('assets/stressed-linen.png')",
   },
 };
 
@@ -256,7 +262,7 @@ function renderPanel() {
             ([key, cfg]) => `
           <button class="texture-option ${currentTexture === key ? "is-selected" : ""}"
                   data-texture="${key}" type="button" aria-label="${cfg.label} texture">
-            <div class="texture-option__fill" style="background: ${cfg.bg}"></div>
+            <div class="texture-option__fill" style="background: ${cfg.bg}; background-image: ${cfg.preview || "none"}; background-size: cover; background-position: center;"></div>
             <div class="texture-option__label">${cfg.label}</div>
           </button>`,
           )

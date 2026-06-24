@@ -1,0 +1,92 @@
+<!-- SAC Structure Diagram — newspaper infographic style
+     This is a self-contained SVG that can be embedded inline in any page.
+     Shows the 4 SAC bodies (Academics, Hostel, Sports, Cultural) with their clubs. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" class="sac-diagram">
+  <defs>
+    <!-- Paper texture filter -->
+    <filter id="paperTex">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="42" />
+      <feColorMatrix values="0 0 0 0 0.96  0 0 0 0 0.94  0 0 0 0 0.90  0 0 0 0.06 0" />
+      <feBlend in="SourceGraphic" mode="multiply" />
+    </filter>
+    <!-- Ink bleed effect -->
+    <filter id="inkBleed">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="7" />
+      <feDisplacementMap in="SourceGraphic" scale="1.5" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="#f4f0e6" filter="url(#paperTex)" />
+
+  <!-- Title -->
+  <text x="400" y="45" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="24" fill="#181410" filter="url(#inkBleed)">
+    Student Activity Council — IISER Kolkata
+  </text>
+  <line x1="100" y1="58" x2="700" y2="58" stroke="#181410" stroke-width="1" />
+  <text x="400" y="75" text-anchor="middle" font-family="'Courier New', monospace" font-size="10" fill="#5b4f3d" letter-spacing="3">
+    FOUR BODIES · TWELVE SOCIETIES
+  </text>
+
+  <!-- Central SAC emblem -->
+  <circle cx="400" cy="160" r="45" fill="none" stroke="#7e0909" stroke-width="2" />
+  <circle cx="400" cy="160" r="40" fill="none" stroke="#7e0909" stroke-width="0.5" />
+  <text x="400" y="155" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="22" fill="#7e0909">SAC</text>
+  <text x="400" y="173" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d" letter-spacing="2">COUNCIL</text>
+
+  <!-- Connecting lines from SAC to 4 bodies -->
+  <line x1="400" y1="205" x2="130" y2="260" stroke="#181410" stroke-width="1" stroke-dasharray="4,3" />
+  <line x1="400" y1="205" x2="320" y2="260" stroke="#181410" stroke-width="1" stroke-dasharray="4,3" />
+  <line x1="400" y1="205" x2="480" y2="260" stroke="#181410" stroke-width="1" stroke-dasharray="4,3" />
+  <line x1="400" y1="205" x2="670" y2="260" stroke="#181410" stroke-width="1" stroke-dasharray="4,3" />
+
+  <!-- Body 1: Academics -->
+  <rect x="50" y="260" width="160" height="80" rx="4" fill="#f4f0e6" stroke="#181410" stroke-width="1.5" filter="url(#inkBleed)" />
+  <text x="130" y="285" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="13" fill="#7e0909">Academics</text>
+  <line x1="65" y1="295" x2="195" y2="295" stroke="#7e0909" stroke-width="0.5" />
+  <text x="130" y="312" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">Placement Cell</text>
+  <text x="130" y="326" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">Singularity Club</text>
+
+  <!-- Body 2: Hostel -->
+  <rect x="240" y="260" width="160" height="80" rx="4" fill="#f4f0e6" stroke="#181410" stroke-width="1.5" filter="url(#inkBleed)" />
+  <text x="320" y="285" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="13" fill="#7e0909">Hostel</text>
+  <line x1="255" y1="295" x2="385" y2="295" stroke="#7e0909" stroke-width="0.5" />
+  <text x="320" y="312" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">SHC Committee</text>
+  <text x="320" y="326" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">Wardens</text>
+
+  <!-- Body 3: Sports -->
+  <rect x="400" y="260" width="160" height="80" rx="4" fill="#f4f0e6" stroke="#181410" stroke-width="1.5" stroke-dasharray="5,3" filter="url(#inkBleed)" />
+  <text x="480" y="285" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="13" fill="#7e0909">Sports</text>
+  <line x1="415" y1="295" x2="545" y2="295" stroke="#7e0909" stroke-width="0.5" />
+  <text x="480" y="312" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d" opacity="0.5">Coming Soon</text>
+
+  <!-- Body 4: Cultural -->
+  <rect x="590" y="260" width="160" height="80" rx="4" fill="#f4f0e6" stroke="#181410" stroke-width="1.5" filter="url(#inkBleed)" />
+  <text x="670" y="285" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="13" fill="#7e0909">Cultural</text>
+  <line x1="605" y1="295" x2="735" y2="295" stroke="#7e0909" stroke-width="0.5" />
+  <text x="670" y="312" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">10 Clubs</text>
+  <text x="670" y="326" text-anchor="middle" font-family="'Courier New', monospace" font-size="9" fill="#5b4f3d">Events · IICM</text>
+
+  <!-- Club list under Cultural -->
+  <g font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d" text-anchor="middle">
+    <text x="610" y="370">AARSHI</text>
+    <text x="670" y="370">Arts</text>
+    <text x="730" y="370">Radio</text>
+    <text x="610" y="385">IKQC</text>
+    <text x="670" y="385">Literary</text>
+    <text x="730" y="385">Movie</text>
+    <text x="610" y="400">Music</text>
+    <text x="670" y="400">Nature</text>
+    <text x="730" y="400">Nrutya</text>
+    <text x="670" y="415">PIXEL</text>
+  </g>
+
+  <!-- Decorative rules -->
+  <line x1="50" y1="445" x2="750" y2="445" stroke="#181410" stroke-width="0.5" />
+  <text x="400" y="465" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#5b4f3d" letter-spacing="2">
+    STUDENT ACTIVITY COUNCIL · IISER KOLKATA · EMPOWERING VOICES
+  </text>
+  <text x="400" y="480" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="10" fill="#5b4f3d">
+    "The umbrella body for ten cultural clubs on campus"
+  </text>
+</svg>

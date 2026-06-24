@@ -105,19 +105,22 @@ body[data-page="home"] {
   /* Layered newspaper textures:
        1. Single page-covering vignette (NOT tiled — eliminates the
           320×320 dark-bordered square grid)
-       2. Subtle radial stains (positioned once, not tiled)
-       3. Fine paper grain (feTurbulence SVG, tiled)
+       2. Real paper texture from Pexels photo (tiled, gives authentic
+          rough-paper feel with visible fibres)
+       3. Subtle radial stains (positioned once, not tiled)
+       4. Fine paper grain (feTurbulence SVG, tiled — adds micro-detail)
      All background-attachment: fixed so they stay locked as the user
      scrolls — a parallax-free, print-like surface. */
   background-image:
     radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.10) 100%),
+    url("assets/natural-paper.png"),
     var(--paper-stains),
     var(--paper-grain);
-  background-size: 100vw 100vh, 100% 100%, 320px 320px;
-  background-position: center top, 0 0, 0 0;
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-blend-mode: multiply, normal, multiply;
-  background-attachment: fixed, fixed, fixed;
+  background-size: 100vw 100vh, 400px 400px, 100% 100%, 320px 320px;
+  background-position: center top, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, repeat, no-repeat, repeat;
+  background-blend-mode: multiply, multiply, normal, multiply;
+  background-attachment: fixed, fixed, fixed, fixed;
 }
 
 body[data-page="home"] h1,
