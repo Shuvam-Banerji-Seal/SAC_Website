@@ -46,4 +46,9 @@ onReady(() => {
   setupNavbarFold();
   initSettings();
   initializers[page]?.();
+
+  // Register Service Worker for asset caching (production only).
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    navigator.serviceWorker.register("/SAC_Website/sw.js").catch(() => {});
+  }
 });
