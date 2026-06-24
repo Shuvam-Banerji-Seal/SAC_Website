@@ -1,4 +1,4 @@
-/* club.css — individual club page */
+/* club.css — newspaper-themed individual club page */
 
 .club-detail__header {
   display: flex;
@@ -7,62 +7,148 @@
   flex-wrap: wrap;
   padding-bottom: var(--space-5);
   margin-bottom: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
+  border-top: var(--rule-double, 6px double #181410);
+  border-bottom: var(--rule-heavy, 3px solid #181410);
 }
+
 .club-detail__title {
   margin: 0;
-  font-size: var(--fs-3xl);
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  color: var(--ink-base, #181410);
   flex: 1 1 auto;
   min-width: 200px;
 }
+
 .club-detail__logo {
   max-width: 120px;
   max-height: 120px;
   object-fit: contain;
   flex: 0 0 auto;
+  border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
+  background: var(--paper-base, #f4f0e6);
+  padding: var(--space-2);
+}
+
+.back-link {
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: var(--fs-xs, 0.75rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #5b4f3d);
+}
+.back-link:hover {
+  color: var(--accent-red, #7e0909);
 }
 
 .club-detail__body {
   margin-bottom: var(--space-6);
-  max-width: 70ch;
+  max-width: 72ch;
+  font-family: var(--font-serif, Georgia, serif);
+  color: var(--ink-base, #181410);
+  line-height: 1.65;
 }
 .club-detail__body h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
   margin-top: var(--space-5);
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-2xl, 1.5rem);
+  color: var(--ink-base, #181410);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
 .club-detail__body h3 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
   margin-top: var(--space-4);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-xl, 1.25rem);
+  color: var(--ink-base, #181410);
 }
 .club-detail__body h4 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 700;
   margin-top: var(--space-3);
-  font-size: var(--fs-lg);
+  font-size: var(--fs-lg, 1.125rem);
 }
 .club-detail__body p {
   margin-bottom: var(--space-3);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 .club-detail__body img {
   max-width: 100%;
-  border-radius: var(--radius);
+  border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
   margin: var(--space-3) 0;
+  background: var(--paper-base, #f4f0e6);
+  padding: var(--space-1);
 }
 .club-detail__body ul {
   margin-bottom: var(--space-4);
   padding-left: var(--space-5);
-  list-style: disc;
+  list-style: none;
 }
-.club-detail__body li {
+.club-detail__body ul li {
   margin-bottom: var(--space-1);
+  padding-left: var(--space-3);
+  position: relative;
+}
+.club-detail__body ul li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent-red, #7e0909);
+  font-weight: 700;
+}
+.club-detail__body a {
+  color: var(--accent-red, #7e0909);
 }
 
 .club-detail__counts {
   margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+  background: var(--paper-base, #f4f0e6);
+  background-image: var(--paper-grain, none);
+  background-size: 320px 320px;
+}
+
+.club-detail__counts h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  font-size: var(--fs-lg, 1.125rem);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+}
+
+.stat-grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.stat-grid li {
+  background: var(--paper-base, #f4f0e6);
+  border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+  padding: var(--space-3);
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: var(--fs-sm, 0.875rem);
+  text-align: center;
+  color: var(--ink-base, #181410);
+}
+
+.stat-grid strong {
+  display: block;
+  font-size: var(--fs-2xl, 1.5rem);
+  color: var(--accent-red, #7e0909);
+  margin-bottom: var(--space-1);
 }
 
 .club-detail__section {
   margin-bottom: var(--space-6);
 }
 .club-detail__section h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
   margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }

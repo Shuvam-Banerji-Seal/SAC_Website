@@ -1,9 +1,8 @@
 /**
- * pages/gallery.js — photo gallery initialiser.
+ * pages/gallery.js — newspaper-themed photo album.
  *
  * Renders a masonry-ish grid of all image assets, grouped by club.
- * Each image is a clickable thumb that opens the underlying file in a
- * new tab (no lightbox dependency — pure HTML for the scaffold).
+ * Each image opens in the viewer lightbox with old album framing.
  */
 import { $, el } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
@@ -18,12 +17,12 @@ export async function initGallery() {
       el(
         "section",
         { class: "gallery", id: "gallery-grid" },
-        el("h2", { class: "section-title" }, "Gallery"),
         ...clubs.map((c) => {
           const images = assets.filter(
             (a) => a.club === c.slug && a.file_type === "image" && !a.is_ob_portrait,
           );
           if (!images.length) return null;
+          const groupName = `gallery-${c.slug}`;
           return el(
             "section",
             { class: "gallery__club" },
@@ -37,7 +36,7 @@ export async function initGallery() {
                   { class: "thumb" },
                   el(
                     "a",
-                    { href: i.public_url, target: "_blank", rel: "noopener" },
+                    { href: i.public_url, "data-viewer": groupName, title: i.title || i.filename },
                     el("img", {
                       src: i.public_url,
                       alt: i.description,

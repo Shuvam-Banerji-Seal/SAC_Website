@@ -14,6 +14,7 @@ import { renderNavbar } from "./components/navbar.js";
 import { renderFooter } from "./components/footer.js";
 import { setupNavbarFold } from "./components/navbar-fold.js";
 import { initSettings } from "./components/settings.js";
+import { initViewer } from "./components/viewer.js";
 import { initHome } from "./pages/home.js";
 import { initClubs } from "./pages/clubs.js";
 import { initClub } from "./pages/club.js";
@@ -45,6 +46,7 @@ onReady(() => {
   renderFooter();
   setupNavbarFold();
   initSettings();
+  initViewer();
   initializers[page]?.();
 
   // Register Service Worker for asset caching (production only).

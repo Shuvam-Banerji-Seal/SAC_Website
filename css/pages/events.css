@@ -1,15 +1,70 @@
-/* events.css — events page */
+/* events.css — newspaper-themed events timeline */
+
+.page-title {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--ink-base, #181410);
+  border-top: var(--rule-double, 6px double #181410);
+  border-bottom: var(--rule-heavy, 3px solid #181410);
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-5);
+}
+
+.page-sub {
+  font-family: var(--font-display, Georgia, serif);
+  font-style: italic;
+  color: var(--ink-muted, #5b4f3d);
+  font-size: var(--fs-lg, 1.125rem);
+  margin-bottom: var(--space-6);
+  max-width: 60ch;
+}
 
 .events__years {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  margin-top: var(--space-4);
+  gap: var(--space-7);
 }
+
 .events__year-label {
-  font-size: var(--fs-2xl);
-  color: var(--color-accent);
-  margin-bottom: var(--space-3);
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  font-size: var(--fs-3xl, 2rem);
+  color: var(--ink-base, #181410);
+  margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--rule-heavy, 3px solid #181410);
+  position: relative;
+}
+.events__year-label::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink-rule, rgba(24, 20, 16, 0.22));
+}
+
+.thumb-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.thumb {
+  background: var(--paper-base, #f4f0e6);
+  background-image: var(--paper-grain, none);
+  background-size: 320px 320px;
+  border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
+  overflow: hidden;
+  position: relative;
+}
+
+.thumb__cap {
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #5b4f3d);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }

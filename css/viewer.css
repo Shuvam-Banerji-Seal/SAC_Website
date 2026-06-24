@@ -1,0 +1,187 @@
+/* =========================================================================
+   css/viewer.css — image viewer / lightbox with old album framing.
+   ========================================================================= */
+
+/* ── Overlay ─────────────────────────────────────────────────────── */
+
+.viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  backdrop-filter: blur(4px);
+  perspective: 1200px;
+}
+.viewer-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Frame (the "old album" mount) ─────────────────────────────── */
+
+.viewer-frame {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  transform: scale(0.92) rotateY(-4deg);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.viewer-overlay.is-open .viewer-frame {
+  transform: scale(1) rotateY(0deg);
+}
+
+/* Paper backing */
+.viewer-frame__backing {
+  position: absolute;
+  inset: -18px;
+  background: var(--paper-base, #f4f0e6);
+  background-image:
+    var(--paper-grain, none),
+    var(--paper-stains, none);
+  background-size: 320px 320px, 100% 100%;
+  border: 1.5px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.35));
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0 0 30px rgba(0, 0, 0, 0.04);
+  transform: rotate(-0.5deg);
+  z-index: -1;
+}
+
+/* Corner decorations — small triangular folds */
+.viewer-frame__corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  z-index: 2;
+}
+.viewer-frame__corner--tl {
+  top: -18px;
+  left: -18px;
+  background: linear-gradient(225deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+}
+.viewer-frame__corner--tr {
+  top: -18px;
+  right: -18px;
+  background: linear-gradient(135deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
+  box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.12);
+}
+.viewer-frame__corner--bl {
+  bottom: -18px;
+  left: -18px;
+  background: linear-gradient(45deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
+  box-shadow: 1px -1px 3px rgba(0, 0, 0, 0.12);
+}
+.viewer-frame__corner--br {
+  bottom: -18px;
+  right: -18px;
+  background: linear-gradient(315deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
+  box-shadow: -1px -1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* The image itself */
+.viewer-img {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  background: var(--paper-base, #f4f0e6);
+  border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+}
+
+/* Caption below the image */
+.viewer-caption {
+  position: absolute;
+  bottom: -50px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Navigation arrows ────────────────────────────────────────────── */
+
+.viewer-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+.viewer-nav:hover {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.viewer-nav--prev { left: 16px; }
+.viewer-nav--next { right: 16px; }
+
+/* ── Close button ─────────────────────────────────────────────────── */
+
+.viewer-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 3002;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+.viewer-close:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Counter ──────────────────────────────────────────────────────── */
+
+.viewer-counter {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3001;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .viewer-frame,
+  .viewer-nav,
+  .viewer-close {
+    transition: none;
+  }
+}
