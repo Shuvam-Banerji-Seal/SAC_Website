@@ -10,7 +10,7 @@
  *   import { measureText } from './utils/text-measure.js';
  *   const { height, lineCount } = measureText('Hello world', '16px Georgia');
  */
-import { prepare, layout } from "../../utils/pretext/dist/layout.js";
+import { prepare, layout } from "../pretext/layout.js";
 
 /* -------------------------------------------------------------------------
  * Cache — stores PreparedText objects keyed by (text, font).
