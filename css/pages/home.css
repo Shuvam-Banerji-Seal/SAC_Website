@@ -41,10 +41,7 @@ main.home {
   border-bottom: var(--rule-heavy);
   background: var(--paper-base);
   /* Layered newspaper texture: subtle stains + grain. */
-  background-image:
-    var(--paper-stains),
-    var(--paper-grain),
-    var(--paper-stains);
+  background-image: var(--paper-stains), var(--paper-grain), var(--paper-stains);
   background-attachment: fixed, fixed, fixed;
   margin-bottom: var(--space-6);
   position: relative;
@@ -122,8 +119,13 @@ main.home {
   z-index: 2;
 }
 
-.masthead__edition > span { white-space: nowrap; }
-.masthead__edition > span:nth-child(2) { flex: 1; text-align: center; }
+.masthead__edition > span {
+  white-space: nowrap;
+}
+.masthead__edition > span:nth-child(2) {
+  flex: 1;
+  text-align: center;
+}
 
 .masthead__kicker {
   font-family: var(--font-mono-serif);
@@ -268,8 +270,14 @@ main.home {
 }
 
 @keyframes leadBylineFade {
-  0% { opacity: 0; letter-spacing: 0.5em; }
-  100% { opacity: 1; letter-spacing: 0.25em; }
+  0% {
+    opacity: 0;
+    letter-spacing: 0.5em;
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.25em;
+  }
 }
 
 .lead-article__body {
@@ -290,11 +298,21 @@ main.home {
   transform-origin: top center;
   animation: leadParaDrop 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.lead-article__body p:nth-child(1) { animation-delay: 0.85s; }
-.lead-article__body p:nth-child(2) { animation-delay: 1.0s; }
-.lead-article__body p:nth-child(3) { animation-delay: 1.15s; }
-.lead-article__body p:nth-child(4) { animation-delay: 1.3s; }
-.lead-article__body p:nth-child(5) { animation-delay: 1.45s; }
+.lead-article__body p:nth-child(1) {
+  animation-delay: 0.85s;
+}
+.lead-article__body p:nth-child(2) {
+  animation-delay: 1s;
+}
+.lead-article__body p:nth-child(3) {
+  animation-delay: 1.15s;
+}
+.lead-article__body p:nth-child(4) {
+  animation-delay: 1.3s;
+}
+.lead-article__body p:nth-child(5) {
+  animation-delay: 1.45s;
+}
 
 @keyframes leadParaDrop {
   0% {
@@ -323,7 +341,9 @@ main.home {
 }
 
 @media (max-width: 720px) {
-  .lead-article__body { column-count: 1; }
+  .lead-article__body {
+    column-count: 1;
+  }
   .lead-article__body p:first-child::first-letter {
     font-size: 3.4em;
   }
@@ -340,7 +360,10 @@ main.home {
   border: 1.5px solid var(--ink-rule-strong);
   background: var(--paper-base);
   background-image: url("../../assets/old-paper.jpg"), var(--paper-grain), var(--paper-stains);
-  background-size: cover, 320px 320px, 100% 100%;
+  background-size:
+    cover,
+    320px 320px,
+    100% 100%;
   background-blend-mode: multiply;
   padding: var(--space-4);
   box-shadow:
@@ -379,10 +402,18 @@ main.home {
 
 /* Per-section stagger so the page has rhythm as the user scrolls
    past the bodies. */
-.body-section[data-body="academics"] { transition-delay: 0ms; }
-.body-section[data-body="hostel"]    { transition-delay: 80ms; }
-.body-section[data-body="sports"]    { transition-delay: 200ms; }
-.body-section[data-body="cultural"]  { transition-delay: 320ms; }
+.body-section[data-body="academics"] {
+  transition-delay: 0ms;
+}
+.body-section[data-body="hostel"] {
+  transition-delay: 80ms;
+}
+.body-section[data-body="sports"] {
+  transition-delay: 200ms;
+}
+.body-section[data-body="cultural"] {
+  transition-delay: 320ms;
+}
 
 .body-section.is-visible {
   opacity: 1;
@@ -394,10 +425,16 @@ main.home {
    same axis. Academics + cultural stay top-center; hostel pivots
    from the left, sports from the right. Once unfolded, every section
    sits flat at top-center so the page reads straight. */
-.body-section[data-body="hostel"]   { transform-origin: top left; }
-.body-section[data-body="sports"]   { transform-origin: top right; }
+.body-section[data-body="hostel"] {
+  transform-origin: top left;
+}
+.body-section[data-body="sports"] {
+  transform-origin: top right;
+}
 .body-section.is-visible[data-body="hostel"],
-.body-section.is-visible[data-body="sports"] { transform-origin: top center; }
+.body-section.is-visible[data-body="sports"] {
+  transform-origin: top center;
+}
 
 .body-banner {
   text-align: center;
@@ -407,11 +444,13 @@ main.home {
   padding: var(--space-3) 0 var(--space-4);
   background: var(--paper-soft);
   background-image:
-    url("../../assets/newspaper-bg.jpg"),
-    var(--paper-halftone),
-    var(--paper-grain),
+    url("../../assets/newspaper-bg.jpg"), var(--paper-halftone), var(--paper-grain),
     var(--paper-stains);
-  background-size: cover, 6px 10px, 320px 320px, 100% 100%;
+  background-size:
+    cover,
+    6px 10px,
+    320px 320px,
+    100% 100%;
   background-blend-mode: soft-light, multiply, normal;
   position: relative;
   transform-style: preserve-3d;
@@ -466,10 +505,10 @@ main.home {
 
 .paper-card {
   background: var(--paper-base);
-  background-image:
-    var(--paper-grain),
-    var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size:
+    320px 320px,
+    100% 100%;
   border: 1px solid var(--ink-rule-strong);
   padding: var(--space-5) var(--space-4) var(--space-4);
   display: flex;
@@ -506,8 +545,12 @@ main.home {
   pointer-events: none;
   opacity: 0.4;
 }
-.paper-card::before { top: var(--space-3); }
-.paper-card::after  { bottom: var(--space-3); }
+.paper-card::before {
+  top: var(--space-3);
+}
+.paper-card::after {
+  bottom: var(--space-3);
+}
 
 .paper-card:hover,
 .paper-card:focus-visible {
@@ -600,12 +643,153 @@ main.home {
   border-top: 1px solid var(--ink-rule);
   padding-top: var(--space-2);
   width: 100%;
-  transition: letter-spacing 0.3s ease, color 0.3s ease;
+  transition:
+    letter-spacing 0.3s ease,
+    color 0.3s ease;
 }
 .paper-card:hover .paper-card__cta,
 .paper-card:focus-visible .paper-card__cta {
   letter-spacing: 0.35em;
   color: var(--accent-red-deep);
+}
+
+/* ── Notice board: nail/pin at top of each card ─────────────────── */
+
+/* A small nail/pin graphic at the top-center of each card, making
+   it look like it's pinned to a notice board. The pin has a subtle
+   shadow and a metallic sheen. */
+.paper-card::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d4a040, #8b6020 60%, #5a4010);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  pointer-events: none;
+  /* Override the fold-crease ::before from above */
+  background-image: none;
+  height: 12px;
+  width: 12px;
+  left: 50%;
+  top: -6px;
+}
+
+/* The bottom fold-crease stays as a separate element */
+.paper-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--space-3);
+  height: 4px;
+  background-image: var(--paper-fold-crease);
+  background-repeat: repeat-x;
+  background-size: 200px 4px;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ── Postmark stamp on body banners ─────────────────────────────── */
+
+/* A circular postmark stamp that appears on each body section banner,
+   like a real newspaper postmark. It's rotated slightly and uses
+   the accent red color for the ink. */
+.body-banner::after {
+  content: "SAC";
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%) rotate(-12deg);
+  width: 60px;
+  height: 60px;
+  border: 2.5px solid var(--accent-red);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono-serif);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--accent-red);
+  opacity: 0.25;
+  pointer-events: none;
+  /* Inner ring for the postmark look */
+  box-shadow: inset 0 0 0 1px var(--accent-red);
+}
+
+/* ── Crooked card effect (notice board) ─────────────────────────── */
+
+/* Cards are slightly rotated at random angles, like postcards
+   pinned to a notice board. The rotation is applied via JS
+   (home.js) using --card-rotate CSS variable. */
+.paper-card {
+  --card-rotate: 0deg;
+  transform: rotateX(2deg) translateZ(0) rotate(var(--card-rotate));
+}
+
+/* On hover, the card straightens out and lifts */
+.paper-card:hover,
+.paper-card:focus-visible {
+  transform: translateY(-12px) translateZ(60px) rotateY(4deg) rotateX(-2deg) rotate(0deg) !important;
+}
+
+/* ── Click interaction: card folds on click ─────────────────────── */
+
+.paper-card.is-folding {
+  transform: rotateX(80deg) translateZ(-100px) scale(0.9) !important;
+  opacity: 0.5;
+  transition:
+    transform 0.4s ease-in,
+    opacity 0.4s ease !important;
+  pointer-events: none;
+}
+
+/* ── Texture-specific overrides ─────────────────────────────────── */
+
+/* Rustic: heavier coffee stains, more visible fold creases */
+[data-texture="rustic"] .paper-card {
+  background-image: var(--paper-coffee-stain), var(--paper-grain), var(--paper-stains);
+  background-size:
+    160px 160px,
+    320px 320px,
+    100% 100%;
+  background-blend-mode: multiply;
+}
+[data-texture="rustic"] .paper-card::after {
+  opacity: 0.6;
+}
+
+/* Notice Board: corkboard background, pinned look */
+[data-texture="notice"] .paper-card {
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size:
+    320px 320px,
+    100% 100%;
+  box-shadow:
+    0 2px 0 rgba(42, 30, 10, 0.1),
+    0 6px 16px -4px rgba(42, 30, 10, 0.2);
+}
+[data-texture="notice"] .paper-card::before {
+  /* Larger, brass-colored pin for notice board */
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 35% 35%, #e8c060, #a08030 60%, #604010);
+}
+
+/* Fresh: minimal texture, clean look */
+[data-texture="fresh"] .paper-card {
+  background-image: var(--paper-grain);
+  background-size: 320px 320px;
+}
+[data-texture="fresh"] .paper-card::after {
+  opacity: 0.2;
 }
 
 /* ── Empty body (no clubs — used for Sports today) ────────────────── */
@@ -619,9 +803,7 @@ main.home {
   padding: var(--space-6) var(--space-4);
   border: 1px dashed var(--ink-rule-strong);
   background: var(--paper-soft);
-  background-image:
-    var(--paper-grain),
-    var(--paper-stains);
+  background-image: var(--paper-grain), var(--paper-stains);
   font-family: var(--font-display);
   font-style: italic;
   color: var(--ink-muted);
@@ -676,9 +858,23 @@ body.loader-active .lead-article__body p {
 /* ── Mobile masthead ──────────────────────────────────────────────── */
 
 @media (max-width: 540px) {
-  .masthead { padding: var(--space-5) var(--space-3) var(--space-4); }
-  .masthead__title { font-size: 2.4rem; }
-  .masthead__edition { font-size: 0.65rem; letter-spacing: 0.18em; }
-  .masthead::after { width: 70px; height: 70px; bottom: -6px; left: 10px; }
-  .lead-article { padding: 0 var(--space-3); }
+  .masthead {
+    padding: var(--space-5) var(--space-3) var(--space-4);
+  }
+  .masthead__title {
+    font-size: 2.4rem;
+  }
+  .masthead__edition {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+  }
+  .masthead::after {
+    width: 70px;
+    height: 70px;
+    bottom: -6px;
+    left: 10px;
+  }
+  .lead-article {
+    padding: 0 var(--space-3);
+  }
 }

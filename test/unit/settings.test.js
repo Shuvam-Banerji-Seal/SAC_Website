@@ -37,8 +37,8 @@ describe("settings module", () => {
     expect(panel.innerHTML).toContain("Paper texture");
     // Should have 6 font options
     expect(panel.querySelectorAll(".font-option").length).toBe(6);
-    // Should have 6 texture options
-    expect(panel.querySelectorAll(".texture-option").length).toBe(6);
+    // Should have 8 texture options (fresh, aged, rustic, notice, dark, kraft, parchment, slate)
+    expect(panel.querySelectorAll(".texture-option").length).toBe(8);
   });
 
   it("applies dark mode from localStorage on init", async () => {

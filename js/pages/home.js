@@ -100,11 +100,11 @@ const EXCERPT_MIN = 30;
 
 function isHeadingLike(line) {
   if (!line) return true;
-  if (line.startsWith("#")) return true;          // md heading
-  if (line.startsWith("!")) return true;          // md image
-  if (line.startsWith("|")) return true;          // md table
-  if (line.startsWith("---")) return true;        // md hr
-  if (line.startsWith("```")) return true;        // md code fence
+  if (line.startsWith("#")) return true; // md heading
+  if (line.startsWith("!")) return true; // md image
+  if (line.startsWith("|")) return true; // md table
+  if (line.startsWith("---")) return true; // md hr
+  if (line.startsWith("```")) return true; // md code fence
   // ALL-CAPS section labels common to club docs (e.g. "INTRODUCTION :")
   if (line.length < 40 && /^[A-Z0-9 ,.&'()\-:]+$/.test(line)) return true;
   // Bare numeric lists / phone numbers
@@ -167,19 +167,35 @@ function renderPaperCard(club) {
 
   const excerpt = club.excerpt || "An official club under the Student Activity Council.";
 
+  // Random slight rotation for the notice board look (-2deg to +2deg)
+  const rotate = (Math.random() - 0.5) * 4;
+
   const card = el(
     "a",
     {
       class: "paper-card",
       href: pageUrl("pages/club.html?id=" + encodeURIComponent(club.slug)),
       "aria-label": "Read more about " + club.name,
+      style: "--card-rotate: " + rotate.toFixed(2) + "deg",
     },
     el("div", { class: "paper-card__logo" }, logoContent),
     el("h3", { class: "paper-card__name" }, club.name),
     el("span", { class: "paper-card__rule", "aria-hidden": "true" }),
     el("p", { class: "paper-card__excerpt" }, excerpt),
-    el("span", { class: "paper-card__cta" }, "Read More \u2192"),
+    el("span", { class: "paper-card__cta" }, "Read More \u2192")
   );
+
+  // Click interaction: card folds like paper before navigating
+  card.addEventListener("click", (e) => {
+    // Only intercept left-clicks without modifier keys
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    card.classList.add("is-folding");
+    // Navigate after the fold animation completes
+    setTimeout(() => {
+      window.location.href = card.href;
+    }, 400);
+  });
 
   return el("li", { class: "paper-card-wrap" }, card);
 }
@@ -199,8 +215,8 @@ function renderBodySection(bodyId, info, clubs, mountEl) {
       el("p", { class: "body-banner__kicker" }, info.kicker),
       el("h2", { class: "body-banner__title", id: "body-" + bodyId + "-title" }, info.title),
       el("p", { class: "body-banner__tagline" }, info.tagline),
-      el("div", { class: "body-banner__ornament", "aria-hidden": "true" }, info.ornament),
-    ),
+      el("div", { class: "body-banner__ornament", "aria-hidden": "true" }, info.ornament)
+    )
   );
 
   if (clubs.length === 0) {
@@ -210,13 +226,11 @@ function renderBodySection(bodyId, info, clubs, mountEl) {
         "div",
         { class: "body-empty", role: "status" },
         el("strong", {}, info.title + " Desk"),
-        "No clubs are listed under this body yet. The Chronicle will print the entries as soon as they reach the editorial desk.",
-      ),
+        "No clubs are listed under this body yet. The Chronicle will print the entries as soon as they reach the editorial desk."
+      )
     );
   } else {
-    section.appendChild(
-      el("ul", { class: "paper-card-grid" }, ...clubs.map(renderPaperCard)),
-    );
+    section.appendChild(el("ul", { class: "paper-card-grid" }, ...clubs.map(renderPaperCard)));
   }
 
   mountEl.replaceWith(section);
@@ -256,7 +270,7 @@ function setupFolding() {
         }
       }
     },
-    { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+    { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
   );
 
   sections.forEach((s) => observer.observe(s));
@@ -323,7 +337,7 @@ export async function initHome() {
   await Promise.all(
     clubs.map(async (c) => {
       if (c.markdown) c.excerpt = await fetchExcerpt(c.markdown);
-    }),
+    })
   );
 
   // Bucket clubs into the 4 bodies, alphabetically within each bucket.

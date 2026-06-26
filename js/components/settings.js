@@ -59,9 +59,9 @@ const FONT_PRESETS = {
 const TEXTURES = {
   fresh: {
     label: "Fresh",
-    bg: "#f4f0e6",
-    fg: "#181410",
-    accent: "#7e0909",
+    bg: "#f8f5ef",
+    fg: "#1a1612",
+    accent: "#9e1818",
     preview: "assets/natural-paper.png",
   },
   aged: {
@@ -70,6 +70,20 @@ const TEXTURES = {
     fg: "#2b2016",
     accent: "#8b3a3a",
     preview: "assets/paper.png",
+  },
+  rustic: {
+    label: "Rustic",
+    bg: "#e0d4b8",
+    fg: "#2a1e0e",
+    accent: "#8b2828",
+    preview: "assets/old-paper.jpg",
+  },
+  notice: {
+    label: "Notice Board",
+    bg: "#c9a87c",
+    fg: "#2a1e0a",
+    accent: "#8b2020",
+    preview: "assets/groovepaper.png",
   },
   dark: {
     label: "Dark",
@@ -125,7 +139,9 @@ function loadPrefs() {
 function savePrefs(prefs) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-  } catch { /* quota exceeded, ignore */ }
+  } catch {
+    /* quota exceeded, ignore */
+  }
 }
 
 /* -------------------------------------------------------------------------
@@ -247,7 +263,7 @@ function renderPanel() {
                   data-font="${key}" type="button" aria-label="Select ${cfg.label} font">
             <div class="font-option__name">${cfg.label}</div>
             <div class="font-option__preview">Aa Bb</div>
-          </button>`,
+          </button>`
           )
           .join("")}
       </div>
@@ -264,7 +280,7 @@ function renderPanel() {
                   data-texture="${key}" type="button" aria-label="${cfg.label} texture">
             <div class="texture-option__fill" style="background-color: ${cfg.bg}; background-image: url('${pageUrl(cfg.preview)}'); background-size: cover; background-position: center;"></div>
             <div class="texture-option__label">${cfg.label}</div>
-          </button>`,
+          </button>`
           )
           .join("")}
       </div>

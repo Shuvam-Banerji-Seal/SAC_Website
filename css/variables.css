@@ -26,9 +26,13 @@
   --space-8: 4rem;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Helvetica Neue", Arial, sans-serif;
   --font-display: var(--font-sans);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
 
   --fs-xs: 0.75rem;
   --fs-sm: 0.875rem;
@@ -71,14 +75,13 @@
 
   /* Newspaper texture: layered noise + warm radial stains. */
   --paper-texture:
-    /* Single diagonal stripe — laid-paper feel, no crossing grid */
-    repeating-linear-gradient(
-      135deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(24, 20, 16, 0.018) 3px,
-      rgba(24, 20, 16, 0.018) 4px
-    );
+    /* Single diagonal stripe — laid-paper feel, no crossing grid */ repeating-linear-gradient(
+    135deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(24, 20, 16, 0.018) 3px,
+    rgba(24, 20, 16, 0.018) 4px
+  );
 
   --paper-stains:
     radial-gradient(circle at 18% 78%, rgba(130, 88, 36, 0.13), transparent 32%),
@@ -97,14 +100,10 @@
                            Tile size: 200x4, drawn edge-to-edge.
        --paper-coffee-stain  Irregular brown stain with feDisplacement
                            distortion. Tile size: 160x160. */
-  --paper-grain:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  --paper-halftone:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/><circle cx='4' cy='6' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/></svg>");
-  --paper-fold-crease:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(24, 20, 16)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(24, 20, 16)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(24, 20, 16)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
-  --paper-coffee-stain:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='5'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(139, 90, 43)' opacity='0.32'/><circle cx='66' cy='74' r='34' fill='rgb(101, 67, 33)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(165, 110, 50)' opacity='0.22'/></g></svg>");
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --paper-halftone: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/><circle cx='4' cy='6' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/></svg>");
+  --paper-fold-crease: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(24, 20, 16)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(24, 20, 16)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(24, 20, 16)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
+  --paper-coffee-stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='5'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(139, 90, 43)' opacity='0.32'/><circle cx='66' cy='74' r='34' fill='rgb(101, 67, 33)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(165, 110, 50)' opacity='0.22'/></g></svg>");
 
   /* Newspaper "X-fold" divider — two thin ink rules separated by a thin
      gap, used as section breaks. */
@@ -115,12 +114,10 @@
   /* Drop-shadow tokens used by the fold animations. */
   --shadow-fold-rest: 0 1px 0 rgba(24, 20, 16, 0.04);
   --shadow-fold-open:
-    0 1px 0 rgba(24, 20, 16, 0.06),
-    0 14px 28px -16px rgba(24, 20, 16, 0.32),
+    0 1px 0 rgba(24, 20, 16, 0.06), 0 14px 28px -16px rgba(24, 20, 16, 0.32),
     0 4px 8px -4px rgba(24, 20, 16, 0.14);
   --shadow-fold-lift:
-    0 2px 0 rgba(24, 20, 16, 0.08),
-    0 24px 48px -16px rgba(24, 20, 16, 0.36),
+    0 2px 0 rgba(24, 20, 16, 0.08), 0 24px 48px -16px rgba(24, 20, 16, 0.36),
     0 8px 16px -4px rgba(24, 20, 16, 0.16);
 }
 
@@ -179,35 +176,27 @@
     radial-gradient(circle at 18% 78%, rgba(60, 50, 35, 0.15), transparent 32%),
     radial-gradient(circle at 90% 10%, rgba(55, 45, 30, 0.12), transparent 28%);
   /* Dark-mode texture override (light-on-dark diagonal stripe) */
-  --paper-texture:
-    repeating-linear-gradient(
-      135deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(212, 201, 184, 0.015) 3px,
-      rgba(212, 201, 184, 0.015) 4px
-    );
+  --paper-texture: repeating-linear-gradient(
+    135deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(212, 201, 184, 0.015) 3px,
+    rgba(212, 201, 184, 0.015) 4px
+  );
 
   /* Dark paper textures (SVG data URIs with lighter grain) */
-  --paper-grain:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.83  0 0 0 0 0.79  0 0 0 0 0.73  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  --paper-halftone:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/><circle cx='4' cy='6' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/></svg>");
-  --paper-fold-crease:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(212, 201, 184)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(212, 201, 184)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
-  --paper-coffee-stain:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='9'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(90, 70, 40)' opacity='0.3'/><circle cx='66' cy='74' r='34' fill='rgb(75, 55, 30)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(100, 80, 50)' opacity='0.22'/></g></svg>");
-  --paper-edge-wear:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><radialGradient id='e' cx='50%' cy='50%' r='68%'><stop offset='60%' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='100%' stop-color='rgb(212, 201, 184)' stop-opacity='0.15'/></radialGradient><rect width='100%' height='100%' fill='url(%23e)'/></svg>");
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.83  0 0 0 0 0.79  0 0 0 0 0.73  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --paper-halftone: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/><circle cx='4' cy='6' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/></svg>");
+  --paper-fold-crease: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(212, 201, 184)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(212, 201, 184)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
+  --paper-coffee-stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='9'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(90, 70, 40)' opacity='0.3'/><circle cx='66' cy='74' r='34' fill='rgb(75, 55, 30)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(100, 80, 50)' opacity='0.22'/></g></svg>");
+  --paper-edge-wear: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><radialGradient id='e' cx='50%' cy='50%' r='68%'><stop offset='60%' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='100%' stop-color='rgb(212, 201, 184)' stop-opacity='0.15'/></radialGradient><rect width='100%' height='100%' fill='url(%23e)'/></svg>");
 
   --shadow-fold-rest: 0 1px 0 rgba(0, 0, 0, 0.12);
   --shadow-fold-open:
-    0 1px 0 rgba(0, 0, 0, 0.1),
-    0 14px 28px -16px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(0, 0, 0, 0.1), 0 14px 28px -16px rgba(0, 0, 0, 0.5),
     0 4px 8px -4px rgba(0, 0, 0, 0.2);
   --shadow-fold-lift:
-    0 2px 0 rgba(0, 0, 0, 0.14),
-    0 24px 48px -16px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(0, 0, 0, 0.14), 0 24px 48px -16px rgba(0, 0, 0, 0.55),
     0 8px 16px -4px rgba(0, 0, 0, 0.25);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -277,6 +266,66 @@
   --ink-rule-strong: rgba(226, 232, 240, 0.45);
   --accent-red: #fc8181;
   --accent-gold: #f6e05e;
+}
+
+/* ── Rustic preset — coffee-stained, aged, warm ─────────────────── */
+[data-texture="rustic"] {
+  --paper-base: #e0d4b8;
+  --paper-soft: #d4c4a0;
+  --paper-deep: #c4b088;
+  --paper-edge: #b09868;
+  --paper-stain: #8b6b3a;
+  --ink-base: #2a1e0e;
+  --ink-soft: #3d2e18;
+  --ink-muted: #6b5540;
+  --ink-rule: rgba(42, 30, 14, 0.22);
+  --ink-rule-strong: rgba(42, 30, 14, 0.5);
+  --accent-red: #8b2828;
+  --accent-gold: #a07820;
+  /* Heavier stains for the rustic look */
+  --paper-stains:
+    radial-gradient(circle at 15% 75%, rgba(139, 107, 58, 0.25), transparent 35%),
+    radial-gradient(circle at 85% 20%, rgba(139, 90, 43, 0.2), transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(101, 67, 33, 0.08), transparent 45%);
+}
+
+/* ── Fresh preset — clean, bright, modern ───────────────────────── */
+[data-texture="fresh"] {
+  --paper-base: #f8f5ef;
+  --paper-soft: #f0ece2;
+  --paper-deep: #e4ddd0;
+  --paper-edge: #d0c8b8;
+  --paper-stain: #b8a878;
+  --ink-base: #1a1612;
+  --ink-soft: #2b2520;
+  --ink-muted: #6b655c;
+  --ink-rule: rgba(26, 22, 18, 0.15);
+  --ink-rule-strong: rgba(26, 22, 18, 0.35);
+  --accent-red: #9e1818;
+  --accent-gold: #c9a84c;
+  /* Minimal stains for the fresh look */
+  --paper-stains: radial-gradient(circle at 90% 10%, rgba(184, 168, 120, 0.06), transparent 25%);
+}
+
+/* ── Notice Board preset — corkboard with pinned cards ──────────── */
+[data-texture="notice"] {
+  --paper-base: #c9a87c;
+  --paper-soft: #b89868;
+  --paper-deep: #a08850;
+  --paper-edge: #8a7040;
+  --paper-stain: #7a5c30;
+  --ink-base: #2a1e0a;
+  --ink-soft: #3d2e18;
+  --ink-muted: #6b5535;
+  --ink-rule: rgba(42, 30, 10, 0.25);
+  --ink-rule-strong: rgba(42, 30, 10, 0.5);
+  --accent-red: #8b2020;
+  --accent-gold: #a08020;
+  /* Corkboard texture stains */
+  --paper-stains:
+    radial-gradient(circle at 20% 30%, rgba(122, 92, 48, 0.15), transparent 30%),
+    radial-gradient(circle at 70% 60%, rgba(100, 75, 40, 0.12), transparent 28%),
+    radial-gradient(circle at 45% 85%, rgba(90, 68, 35, 0.1), transparent 25%);
 }
 
 /* Dark texture + dark theme — reinforce the dark palette */
