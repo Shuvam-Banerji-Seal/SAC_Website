@@ -29,6 +29,7 @@
  */
 import { el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
+import { measureText } from "../utils/text-measure.js";
 
 /* -------------------------------------------------------------------------
  * Bodies — the 4 sections of the SAC, in page order.
@@ -263,6 +264,41 @@ function setupFolding() {
 }
 
 /* -------------------------------------------------------------------------
+ * Lead-article column calculation (pretext)
+ *
+ * Uses canvas-based text measurement to decide whether the lead article
+ * is long enough for a 2-column grid. Short text gets 1 column even on
+ * wide viewports, avoiding sparse-looking columns.
+ * ------------------------------------------------------------------------- */
+
+const LEAD_MIN_2COL_HEIGHT = 350; // px — below this, collapse to 1 column
+
+export function adjustLeadLayout() {
+  const body = document.querySelector(".lead-article__body");
+  if (!body) return;
+  if (window.innerWidth <= 720) return; // CSS already handles this
+
+  const text = body.innerText;
+  if (!text) return;
+
+  const style = window.getComputedStyle(body);
+  const font = style.font;
+  const lineHeight = parseFloat(style.lineHeight) || 26.4;
+  const gap = parseFloat(style.columnGap) || 24;
+  const fullWidth = body.offsetWidth;
+  const colWidth = Math.max((fullWidth - gap) / 2, 100);
+
+  try {
+    const { height } = measureText(text, font, colWidth, lineHeight);
+    if (height > 0 && height < LEAD_MIN_2COL_HEIGHT) {
+      body.style.columnCount = "1";
+    }
+  } catch {
+    // fallback: keep CSS default (2 columns)
+  }
+}
+
+/* -------------------------------------------------------------------------
  * Entry point
  * ------------------------------------------------------------------------- */
 
@@ -306,4 +342,10 @@ export async function initHome() {
   }
 
   setupFolding();
+
+  // Measure lead-article text and adjust column layout.
+  // Also re-measure on font load since canvas metrics depend on it.
+  adjustLeadLayout();
+  document.fonts?.ready?.then(adjustLeadLayout);
+  window.addEventListener("resize", adjustLeadLayout);
 }

@@ -195,6 +195,20 @@ main.home {
   position: relative;
 }
 
+.lead-article::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--space-6) + 18px);
+  width: 120px;
+  height: 120px;
+  background: url("../../assets/newspaper-bg.jpg") center/cover no-repeat;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  border-radius: 2px;
+}
+
 .lead-article__headline {
   font-family: var(--font-display);
   font-weight: 900;
@@ -325,8 +339,9 @@ main.home {
 .sac-diagram-wrap {
   border: 1.5px solid var(--ink-rule-strong);
   background: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-image: url("../../assets/old-paper.jpg"), var(--paper-grain), var(--paper-stains);
+  background-size: cover, 320px 320px, 100% 100%;
+  background-blend-mode: multiply;
   padding: var(--space-4);
   box-shadow:
     0 2px 0 rgba(24, 20, 16, 0.06),
@@ -392,11 +407,12 @@ main.home {
   padding: var(--space-3) 0 var(--space-4);
   background: var(--paper-soft);
   background-image:
+    url("../../assets/newspaper-bg.jpg"),
     var(--paper-halftone),
     var(--paper-grain),
     var(--paper-stains);
-  background-size: 6px 10px, 320px 320px, 100% 100%;
-  background-blend-mode: multiply;
+  background-size: cover, 6px 10px, 320px 320px, 100% 100%;
+  background-blend-mode: soft-light, multiply, normal;
   position: relative;
   transform-style: preserve-3d;
 }
