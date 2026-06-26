@@ -1,84 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About — Student Activity Council, IISER Kolkata</title>
-  <meta name="description" content="About the Student Activity Council at IISER Kolkata — our mission, structure, and the clubs under us." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Student Activity Council, IISER Kolkata</title>
+    <meta
+      name="description"
+      content="About the Student Activity Council at IISER Kolkata — our mission, structure, and the clubs under us."
+    />
 
-  <link rel="stylesheet" href="../css/reset.css" />
-  <link rel="stylesheet" href="../css/variables.css" />
-  <link rel="stylesheet" href="../css/main.css" />
-  <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/pages/about.css" />
-  <link rel="stylesheet" href="../css/settings.css" />
-  <link rel="stylesheet" href="../css/viewer.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>" />
-</head>
-<body data-page="about">
-  <header>
-    <nav id="navbar" aria-label="Primary"></nav>
-    <button
-      class="navbar-corner"
-      id="navbarCorner"
-      type="button"
-      aria-label="Open navigation"
-      aria-expanded="false"
-      aria-controls="navbar"
-    >
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <path
-          d="M5 8h14M5 13h14M5 18h14"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          fill="none"
-        />
-      </svg>
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/pages/about.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+  </head>
+  <body data-page="about">
+    <!-- Pre-loader — pre-fetches assets for smooth loading -->
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar">
+        <div class="preloader__fill"></div>
+      </div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="prose">
+        <h1>About the SAC</h1>
+        <p class="lede">
+          The Student Activity Council (SAC) is the elected student body that coordinates cultural
+          activity at IISER Kolkata. We work with the ten cultural clubs on campus to plan events,
+          allocate resources, and represent the student community.
+        </p>
+
+        <h2>What we do</h2>
+        <ul>
+          <li>Coordinate the academic-year event calendar across clubs.</li>
+          <li>Manage budgets and shared resources for cultural activities.</li>
+          <li>Select and send delegations to the Inter-IISER Cultural Meet (IICM).</li>
+          <li>Run the annual election for office bearers across all clubs.</li>
+        </ul>
+
+        <h2>Clubs under SAC</h2>
+        <p>
+          The SAC oversees ten cultural clubs spanning performing arts, media, literary, and visual
+          arts. Visit the <a href="clubs.html">Clubs</a> page to see them all, or check the
+          <a href="gallery.html">Gallery</a>
+          for photos from recent events.
+        </p>
+
+        <h2>Get in touch</h2>
+        <p>
+          Questions, ideas, or feedback? Reach out via your club's office bearers, or look out for
+          SAC office hours during the semester.
+        </p>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+
+    <script type="module" src="../js/main.js"></script>
+
+    <!-- Settings panel -->
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      ⚙
     </button>
-  </header>
-
-  <main>
-    <article class="prose">
-      <h1>About the SAC</h1>
-      <p class="lede">
-        The Student Activity Council (SAC) is the elected student body
-        that coordinates cultural activity at IISER Kolkata. We work
-        with the ten cultural clubs on campus to plan events, allocate
-        resources, and represent the student community.
-      </p>
-
-      <h2>What we do</h2>
-      <ul>
-        <li>Coordinate the academic-year event calendar across clubs.</li>
-        <li>Manage budgets and shared resources for cultural activities.</li>
-        <li>Select and send delegations to the Inter-IISER Cultural Meet (IICM).</li>
-        <li>Run the annual election for office bearers across all clubs.</li>
-      </ul>
-
-      <h2>Clubs under SAC</h2>
-      <p>
-        The SAC oversees ten cultural clubs spanning performing arts,
-        media, literary, and visual arts. Visit the <a href="clubs.html">Clubs</a>
-        page to see them all, or check the <a href="gallery.html">Gallery</a>
-        for photos from recent events.
-      </p>
-
-      <h2>Get in touch</h2>
-      <p>
-        Questions, ideas, or feedback? Reach out via your club's office
-        bearers, or look out for SAC office hours during the semester.
-      </p>
-    </article>
-  </main>
-
-  <div id="footer"></div>
-
-  <script type="module" src="../js/main.js"></script>
-
-  <!-- Settings panel -->
-  <div class="settings-overlay" id="settings-overlay"></div>
-  <div class="settings-panel" id="settings-panel"></div>
-  <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">⚙</button>
-</body>
+  </body>
 </html>

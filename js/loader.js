@@ -26,18 +26,18 @@ import { loadAssetsMap, indexByClub } from "./data.js";
  * ------------------------------------------------------------------------- */
 
 const TAGLINES = {
-  "AARSHI - Drama Club":             "Where art meets expression and culture finds its voice",
-  "Arts Club of IISER Kolkata":      "Colours, lines, and the courage to make something new",
+  "AARSHI - Drama Club": "Where art meets expression and culture finds its voice",
+  "Arts Club of IISER Kolkata": "Colours, lines, and the courage to make something new",
   "Campus Radio IISER KOLKATA (IKCR)": "The voice of the campus, on air and online",
   "IKQC - Quiz Club of IISER Kolkata": "Questions, curiosity, and the thrill of the right answer",
-  "Literary Club of IISER Kolkata":   "Words weave worlds — read, write, recite",
-  "Movie Club of IISER K":            "Frame by frame, story by story",
-  "Music Club of IISER K":            "Every rhythm finds a soul",
-  "Nature Club of IISER Kolkata":     "Trails, trees, and a planet worth protecting",
+  "Literary Club of IISER Kolkata": "Words weave worlds — read, write, recite",
+  "Movie Club of IISER K": "Frame by frame, story by story",
+  "Music Club of IISER K": "Every rhythm finds a soul",
+  "Nature Club of IISER Kolkata": "Trails, trees, and a planet worth protecting",
   "Nrutya - Dance Club of IISER Kolkata": "Motion becomes memory",
-  "PIXEL - Photography Club":         "Capturing moments time forgets",
-  "SAC Academics":                   "Where scholarship meets the wider campus",
-  "SAC Hostel Committee":            "Community, comfort, and the everyday essentials",
+  "PIXEL - Photography Club": "Capturing moments time forgets",
+  "SAC Academics": "Where scholarship meets the wider campus",
+  "SAC Hostel Committee": "Community, comfort, and the everyday essentials",
 };
 
 /* Article templates rotated per newspaper (i % ARTICLES.length) */
@@ -152,9 +152,17 @@ function createNewspaper(club, index) {
 }
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]
+  );
 }
 
 function transformsFor(index, total) {
@@ -190,11 +198,7 @@ function transformsFor(index, total) {
 }
 
 function fitStage() {
-  const scale = Math.min(
-    window.innerWidth / 440,
-    window.innerHeight / 650,
-    1.18,
-  );
+  const scale = Math.min(window.innerWidth / 440, window.innerHeight / 650, 1.18);
   els.stageShell.style.setProperty("--stage-scale", Math.max(scale, 0.58).toFixed(3));
 }
 
@@ -254,17 +258,25 @@ function startLoader(data) {
   const stagger = isMobile() ? 150 : 270;
 
   papers.forEach((paper, index) => {
-    setTimeout(() => {
-      if (skipped) return;
-      paper.style.opacity = "1";
-      paper.style.transform = paper.dataset.finalTransform;
-      els.clubLabel.textContent = clubs[index].name;
-      els.progressFill.style.width = `${((index + 1) / papers.length) * 100}%`;
-      setTimeout(() => paper.classList.add("arrived"), isMobile() ? 500 : 900);
-      if (index === papers.length - 1) {
-        setTimeout(() => { if (!skipped) gatherNewspapers(); }, isMobile() ? 550 : 1050);
-      }
-    }, 320 + index * stagger);
+    setTimeout(
+      () => {
+        if (skipped) return;
+        paper.style.opacity = "1";
+        paper.style.transform = paper.dataset.finalTransform;
+        els.clubLabel.textContent = clubs[index].name;
+        els.progressFill.style.width = `${((index + 1) / papers.length) * 100}%`;
+        setTimeout(() => paper.classList.add("arrived"), isMobile() ? 500 : 900);
+        if (index === papers.length - 1) {
+          setTimeout(
+            () => {
+              if (!skipped) gatherNewspapers();
+            },
+            isMobile() ? 550 : 1050
+          );
+        }
+      },
+      320 + index * stagger
+    );
   });
 }
 
@@ -294,7 +306,9 @@ function gatherNewspapers() {
       }, index * 30);
     });
     els.status.classList.add("hide");
-    setTimeout(() => { if (!skipped) playInkFinale(); }, 350);
+    setTimeout(() => {
+      if (!skipped) playInkFinale();
+    }, 350);
     return;
   }
   els.paperStage.style.animation = "none";
@@ -317,7 +331,9 @@ function gatherNewspapers() {
     }, index * 42);
   });
   els.status.classList.add("hide");
-  setTimeout(() => { if (!skipped) playInkFinale(); }, 900);
+  setTimeout(() => {
+    if (!skipped) playInkFinale();
+  }, 900);
 }
 
 function playInkFinale() {
@@ -331,10 +347,13 @@ function playInkFinale() {
     if (skipped) return;
     els.inkFinale.classList.add("logo");
   }, 2200);
-  setTimeout(() => {
-    if (skipped) return;
-    hideLoader();
-  }, 2200 + HOLD_AFTER_LOGO + 1200);
+  setTimeout(
+    () => {
+      if (skipped) return;
+      hideLoader();
+    },
+    2200 + HOLD_AFTER_LOGO + 1200
+  );
 }
 
 function hideLoader() {
@@ -404,6 +423,18 @@ async function init() {
   // Wire events + responsive scaling
   wireEvents();
   fitStage();
+
+  // Wait for the pre-loader to finish (it pre-caches assets so the
+  // loader animation plays smoothly). If there's no pre-loader
+  // (e.g., on sub-pages), proceed immediately.
+  var preloader = $("preloader");
+  if (preloader && !preloader.classList.contains("is-done")) {
+    await new Promise(function (resolve) {
+      window.addEventListener("preloader-done", resolve, { once: true });
+      // Safety timeout: if pre-loader takes too long, proceed anyway
+      setTimeout(resolve, 5000);
+    });
+  }
 
   // Fetch data, build newspaper data
   let data = [];

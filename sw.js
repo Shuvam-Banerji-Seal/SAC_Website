@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v2";
+const CACHE_NAME = "sac-v3";
 
 const STATIC_ASSETS = [
   // Core
@@ -25,10 +25,12 @@ const STATIC_ASSETS = [
   "css/pages/events.css",
   "css/pages/gallery.css",
   "css/loader.css",
+  "css/preloader.css",
   "js/main.js",
   "js/config.js",
   "js/data.js",
   "js/loader.js",
+  "js/preloader.js",
   "js/utils/dom.js",
   "js/utils/text-measure.js",
   "js/pretext/analysis.js",
@@ -65,9 +67,7 @@ const STATIC_ASSETS = [
   "pages/gallery.html",
 ];
 
-const DYNAMIC_ASSETS = [
-  "public/assets/processed/assets_map.jsonl",
-];
+const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];
 
 /* -------------------------------------------------------------------------
  * Install — cache static assets
@@ -94,11 +94,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
+      return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)));
     })
   );
 });
@@ -132,12 +128,14 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((cached) => {
-        const networkFetch = fetch(event.request).then((response) => {
-          if (response.ok && url.pathname.startsWith("/SAC_Website/")) {
-            cache.put(event.request, response.clone());
-          }
-          return response;
-        }).catch(() => cached);
+        const networkFetch = fetch(event.request)
+          .then((response) => {
+            if (response.ok && url.pathname.startsWith("/SAC_Website/")) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          })
+          .catch(() => cached);
         return cached || networkFetch;
       });
     })
