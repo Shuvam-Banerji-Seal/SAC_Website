@@ -29,7 +29,6 @@
  */
 import { el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
-import { measureText } from "../utils/text-measure.js";
 
 /* -------------------------------------------------------------------------
  * Bodies — the 4 sections of the SAC, in page order.
@@ -273,7 +272,7 @@ function setupFolding() {
 
 const LEAD_MIN_2COL_HEIGHT = 350; // px — below this, collapse to 1 column
 
-export function adjustLeadLayout() {
+export async function adjustLeadLayout() {
   const body = document.querySelector(".lead-article__body");
   if (!body) return;
   if (window.innerWidth <= 720) return; // CSS already handles this
@@ -289,6 +288,8 @@ export function adjustLeadLayout() {
   const colWidth = Math.max((fullWidth - gap) / 2, 100);
 
   try {
+    // Dynamic import so a pretext failure doesn't kill the whole page
+    const { measureText } = await import("../utils/text-measure.js");
     const { height } = measureText(text, font, colWidth, lineHeight);
     if (height > 0 && height < LEAD_MIN_2COL_HEIGHT) {
       body.style.columnCount = "1";
