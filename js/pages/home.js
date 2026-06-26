@@ -29,6 +29,7 @@
  */
 import { el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
+import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 
 /* -------------------------------------------------------------------------
  * Bodies — the 4 sections of the SAC, in page order.
@@ -39,6 +40,13 @@ import { loadAssetsMap, indexByClub } from "../data.js";
  * ------------------------------------------------------------------------- */
 
 const BODY_INFO = {
+  council: {
+    kicker: "Preface",
+    title: "SAC Council",
+    tagline:
+      "The elected student body — General Secretary, Joint Secretary, and the officers who coordinate the year's calendar.",
+    ornament: "— ✦ ✦ ✦ —",
+  },
   academics: {
     kicker: "Section I",
     title: "SAC Academics",
@@ -70,19 +78,55 @@ const BODY_INFO = {
 };
 
 /* The order bodies are rendered on the page. */
-const BODY_ORDER = ["academics", "hostel", "sports", "cultural"];
+const BODY_ORDER = ["council", "academics", "hostel", "sports", "cultural"];
 
 /* -------------------------------------------------------------------------
  * Body assignment
  *
- * Today the JSONL has 12 clubs: SAC Academics, SAC Hostel Committee,
- * and 10 cultural clubs. Sports has 0 entries — we show the empty
- * placeholder rather than invent material.
+ * The JSONL carries clubs grouped by their SAC body. Today we have:
+ *   - SAC Academics, SAC Hostel Committee → academics, hostel
+ *   - 10 cultural clubs → cultural
+ *   - Sports clubs → sports (empty today, ready for when data arrives)
+ *   - SAC Council (General Secretary, etc.) → council
+ *
+ * The detection is flexible: it checks for known club names AND
+ * pattern-matches on club names that contain "sports", "council",
+ * "secretary", etc. so new clubs are automatically bucketed correctly.
  * ------------------------------------------------------------------------- */
 
 function assignBody(clubName) {
-  if (clubName === "SAC Academics") return "academics";
-  if (clubName === "SAC Hostel Committee") return "hostel";
+  const name = clubName.toLowerCase();
+  // SAC Council (general secretary, joint secretary, etc.)
+  if (
+    name === "sac council" ||
+    name.includes("general secretary") ||
+    name.includes("sac council")
+  ) {
+    return "council";
+  }
+  // SAC Academics
+  if (clubName === "SAC Academics" || name.includes("academics") || name.includes("placement")) {
+    return "academics";
+  }
+  // SAC Hostel Committee
+  if (clubName === "SAC Hostel Committee" || name.includes("hostel") || name.includes("shc")) {
+    return "hostel";
+  }
+  // Sports clubs
+  if (
+    name.includes("sports") ||
+    name.includes("cricket") ||
+    name.includes("football") ||
+    name.includes("badminton") ||
+    name.includes("athletics") ||
+    name.includes("table tennis") ||
+    name.includes("basketball") ||
+    name.includes("volleyball") ||
+    name.includes("chess")
+  ) {
+    return "sports";
+  }
+  // Default: cultural clubs
   return "cultural";
 }
 
@@ -363,4 +407,20 @@ export async function initHome() {
   adjustLeadLayout();
   document.fonts?.ready?.then(adjustLeadLayout);
   window.addEventListener("resize", adjustLeadLayout);
+
+  // Calligraphy text reveal: headline appears as if being written.
+  // Only on first visit (not on resize or re-init).
+  if (!window.__sacCalligraphyDone) {
+    window.__sacCalligraphyDone = true;
+    const headline = document.querySelector(".lead-article__headline");
+    if (headline) {
+      // Wait for fonts to load before revealing
+      document.fonts?.ready?.then(() => {
+        revealText(headline, 2000);
+      });
+    }
+  }
+
+  // Initialize scroll-based paper scratch sounds
+  initScrollSounds();
 }

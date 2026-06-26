@@ -819,6 +819,34 @@ main.home {
   margin-bottom: var(--space-2);
 }
 
+/* ── Calligraphy text reveal animation ──────────────────────────── */
+
+.calligraphy-char {
+  display: inline-block;
+  opacity: 0;
+  animation: calligraphyReveal 0.3s ease forwards;
+}
+
+@keyframes calligraphyReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) rotate(-3deg) scale(0.8);
+    filter: blur(2px);
+  }
+  60% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.lead-article__headline.calligraphy-active {
+  overflow: hidden;
+}
+
 /* ── Reduced motion ───────────────────────────────────────────────── */
 
 /* Pause all entrance animations while the loader is covering the page.
