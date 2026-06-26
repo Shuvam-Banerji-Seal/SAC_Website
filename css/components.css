@@ -32,7 +32,9 @@
     transform: translateY(0);
   }
   /* Hide the corner indicator — it's a desktop-only element. */
-  .navbar-corner { display: none; }
+  .navbar-corner {
+    display: none;
+  }
 }
 
 /* ── Desktop (>= 1024px): "peel-back corner" + side drawer ─ */
@@ -78,7 +80,9 @@
     clip-path: polygon(100% 0, 100% 100%, 0 0);
     transform: translate(8px, 8px);
     opacity: 0;
-    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+    transition:
+      opacity 0.3s ease,
+      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
     box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.14);
   }
   /* The top triangle: the actual paper surface, peels back on hover/open. */
@@ -86,13 +90,13 @@
     content: "";
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
+    background: linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
     background-image:
-      var(--paper-grain),
-      linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
+      var(--paper-grain), linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
     clip-path: polygon(100% 0, 100% 100%, 0 0);
-    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), box-shadow 0.4s ease;
+    transition:
+      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+      box-shadow 0.4s ease;
     box-shadow:
       -2px 2px 8px rgba(0, 0, 0, 0.18),
       inset 0 0 0 1px rgba(24, 20, 16, 0.12);
@@ -155,18 +159,85 @@
     width: min(360px, 90vw);
     border-bottom: none;
     border-left: 1px solid var(--ink-rule-strong);
-    transform: translateX(100%);
+    /* Paper-fold entrance: slide + rotateY for a tearing-paper feel */
+    transform: translateX(100%) rotateY(15deg);
+    transform-origin: right center;
     transition:
-      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+      transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
       box-shadow 0.45s ease;
     box-shadow: -10px 0 28px rgba(0, 0, 0, 0.18);
     overflow-y: auto;
-    /* The drawer sits above the corner button so its inner padding
-       doesn't clip under it. */
+    /* Paper texture background */
+    background-color: var(--paper-base);
+    background-image: var(--paper-grain), var(--paper-stains), var(--paper-fold-crease);
+    background-size:
+      320px 320px,
+      100% 100%,
+      200px 4px;
+    background-repeat: repeat, no-repeat, repeat-x;
+    background-position:
+      0 0,
+      0 0,
+      0 20%;
     z-index: 90;
   }
   .navbar.is-open {
-    transform: translateX(0);
+    transform: translateX(0) rotateY(0deg);
+    box-shadow:
+      -10px 0 28px rgba(0, 0, 0, 0.22),
+      -2px 0 0 var(--ink-rule-strong);
+  }
+
+  /* Nav links drop in one by one, like being pinned to a notice board */
+  .navbar.is-open .nav-link {
+    animation: navLinkPinDrop 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  }
+  .navbar.is-open .nav-link:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  .navbar.is-open .nav-link:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .navbar.is-open .nav-link:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .navbar.is-open .nav-link:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  .navbar.is-open .nav-link:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+
+  @keyframes navLinkPinDrop {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px) rotate(-5deg);
+    }
+    60% {
+      transform: translateY(4px) rotate(1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+    }
+  }
+
+  /* Pin/nail decoration on each nav link (notice board look) */
+  .navbar.is-open .nav-link::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #d4a040, #8b6020 60%, #5a4010);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+  .navbar.is-open .nav-link {
+    position: relative;
   }
 }
 
@@ -208,16 +279,26 @@
   gap: var(--space-2);
   white-space: nowrap;
 }
-.navbar__brand:hover { text-decoration: none; }
+.navbar__brand:hover {
+  text-decoration: none;
+}
 
 /* Brand variants — the long text is hidden on small viewports so the
    mobile navbar fits in ~56px instead of stretching to 163px. */
-.navbar__brand-full { display: inline; }
-.navbar__brand-short { display: none; }
+.navbar__brand-full {
+  display: inline;
+}
+.navbar__brand-short {
+  display: none;
+}
 
 @media (max-width: 640px) {
-  .navbar__brand-full { display: none; }
-  .navbar__brand-short { display: inline; }
+  .navbar__brand-full {
+    display: none;
+  }
+  .navbar__brand-short {
+    display: inline;
+  }
   .navbar__brand {
     font-family: var(--font-display, Georgia, serif);
     font-weight: 900;
@@ -239,7 +320,9 @@
   }
 }
 
-.navbar__item { display: flex; }
+.navbar__item {
+  display: flex;
+}
 
 .nav-link {
   padding: var(--space-2) var(--space-3);
@@ -247,7 +330,9 @@
   color: var(--ink-base);
   font-family: var(--font-display);
   font-size: var(--fs-sm);
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 .nav-link:hover {
   background: var(--paper-deep);
@@ -257,7 +342,9 @@
   background: var(--ink-base);
   color: var(--paper-base);
 }
-.nav-link--active:hover { background: var(--ink-base); }
+.nav-link--active:hover {
+  background: var(--ink-base);
+}
 
 @media (min-width: 1024px) {
   .nav-link {
@@ -286,8 +373,12 @@
     transition-duration: 0.001ms !important;
   }
   /* Disable the corner-fold reveal entirely. */
-  .navbar-corner { display: none; }
-  .navbar-corner::before { display: none; }
+  .navbar-corner {
+    display: none;
+  }
+  .navbar-corner::before {
+    display: none;
+  }
   .navbar {
     transform: none !important;
     position: sticky;
@@ -299,7 +390,9 @@
 .site-footer {
   background-color: var(--paper-base);
   background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-size:
+    320px 320px,
+    100% 100%;
   border-top: var(--rule-heavy);
   padding: var(--space-6) 0;
   margin-top: var(--space-7);
@@ -315,8 +408,13 @@
   text-transform: uppercase;
   font-size: var(--fs-xs);
 }
-.site-footer__credit { margin-bottom: var(--space-1); }
-.site-footer__meta { color: var(--ink-muted); opacity: 0.8; }
+.site-footer__credit {
+  margin-bottom: var(--space-1);
+}
+.site-footer__meta {
+  color: var(--ink-muted);
+  opacity: 0.8;
+}
 
 /* ── Club card (used in home + clubs pages) ─────────── */
 .club-grid {
@@ -333,14 +431,18 @@
   align-items: center;
   background: var(--paper-base);
   background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-size:
+    320px 320px,
+    100% 100%;
   border: 1px solid var(--ink-rule-strong);
   border-radius: var(--radius);
   padding: var(--space-5) var(--space-3);
   color: var(--ink-base);
   text-align: center;
   height: 100%;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 .club-card a:hover {
   transform: translateY(-2px);
@@ -372,8 +474,15 @@
   font-size: 2.25rem;
   font-weight: 600;
 }
-.club-card__name { font-size: var(--fs-base); margin-bottom: var(--space-1); }
-.club-card__count { font-size: var(--fs-xs); color: var(--ink-muted); margin: 0; }
+.club-card__name {
+  font-size: var(--fs-base);
+  margin-bottom: var(--space-1);
+}
+.club-card__count {
+  font-size: var(--fs-xs);
+  color: var(--ink-muted);
+  margin: 0;
+}
 
 /* ── Thumb (image card) ─────────────────────────────── */
 .thumb-grid {
@@ -439,4 +548,6 @@
   padding: var(--space-4);
   color: var(--ink-muted);
 }
-.error-block p { margin: 0; }
+.error-block p {
+  margin: 0;
+}
