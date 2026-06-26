@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v1";
+const CACHE_NAME = "sac-v2";
 
 const STATIC_ASSETS = [
   // Core
@@ -74,6 +74,7 @@ const DYNAMIC_ASSETS = [
  * ------------------------------------------------------------------------- */
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
@@ -90,6 +91,7 @@ self.addEventListener("install", (event) => {
  * ------------------------------------------------------------------------- */
 
 self.addEventListener("activate", (event) => {
+  self.clients.claim();
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
@@ -125,17 +127,18 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets — cache first, network fallback
+  // Static assets — stale-while-revalidate: serve from cache instantly,
+  // update cache from network in the background so next load is fresh.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        // Cache successful responses for future use
-        if (response.ok && url.pathname.startsWith("/SAC_Website/")) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cached) => {
+        const networkFetch = fetch(event.request).then((response) => {
+          if (response.ok && url.pathname.startsWith("/SAC_Website/")) {
+            cache.put(event.request, response.clone());
+          }
+          return response;
+        }).catch(() => cached);
+        return cached || networkFetch;
       });
     })
   );
