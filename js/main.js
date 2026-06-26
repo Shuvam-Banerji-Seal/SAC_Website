@@ -18,7 +18,6 @@ import { initViewer } from "./components/viewer.js";
 import { initPaperFold } from "./components/three-fold.js";
 import { initHome } from "./pages/home.js";
 import { initClubs } from "./pages/clubs.js";
-import { initClub } from "./pages/club.js";
 import { initClubImages } from "./pages/club-images.js";
 import { initEvents } from "./pages/events.js";
 import { initGallery } from "./pages/gallery.js";
@@ -26,7 +25,6 @@ import { initGallery } from "./pages/gallery.js";
 const initializers = {
   home: initHome,
   clubs: initClubs,
-  club: initClub,
   events: initEvents,
   gallery: initGallery,
 };

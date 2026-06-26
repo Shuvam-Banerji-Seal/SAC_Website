@@ -198,6 +198,7 @@ function transformsFor(index, total) {
 }
 
 function fitStage() {
+  if (!els.stageShell) return;
   const scale = Math.min(window.innerWidth / 440, window.innerHeight / 650, 1.18);
   els.stageShell.style.setProperty("--stage-scale", Math.max(scale, 0.58).toFixed(3));
 }
@@ -380,8 +381,8 @@ function skipLoader() {
 
 function mousemoveHandler(event) {
   if (skipped) return;
-  if (els.loader.classList.contains("hidden")) return;
-  if (els.inkFinale.classList.contains("active")) return;
+  if (!els.loader || els.loader.classList.contains("hidden")) return;
+  if (!els.stageShell || els.inkFinale.classList.contains("active")) return;
   const x = event.clientX / window.innerWidth - 0.5;
   const y = event.clientY / window.innerHeight - 0.5;
   els.stageShell.style.setProperty("--ry", `${x * 10}deg`);
@@ -407,12 +408,21 @@ function unwireEvents() {
  * ------------------------------------------------------------------------- */
 
 async function init() {
-  // Lock body scroll while the loader is up
-  document.body.classList.add("loader-active");
-
   // Cache DOM references
   els.loader = $("loader");
   els.stageShell = $("stageShell");
+
+  // If the loader HTML doesn't exist on this page (e.g. individual
+  // club pages), skip the loader entirely — just remove loader-active
+  // so the page is scrollable and interactive.
+  if (!els.loader) {
+    document.body.classList.remove("loader-active");
+    return;
+  }
+
+  // Lock body scroll while the loader is up
+  document.body.classList.add("loader-active");
+
   els.paperStage = $("paperStage");
   els.progressFill = $("progressFill");
   els.clubLabel = $("clubLabel");
