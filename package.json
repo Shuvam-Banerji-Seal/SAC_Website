@@ -1,0 +1,49 @@
+{
+  "name": "sac-website",
+  "version": "1.0.0",
+  "description": "Official website of the Student Activity Council (SAC) at IISER Kolkata — newspaper-themed static site with 3D paper-fold animations, pretext text measurement, and dynamic textures.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run --config vitest.e2e.config.js",
+    "lint": "eslint js/ test/ --ext .js,.mjs",
+    "lint:fix": "eslint js/ test/ --ext .js,.mjs --fix",
+    "format": "prettier --write \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \"*.yml\"",
+    "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \"*.yml\"",
+    "audit": "npm audit --audit-level=moderate",
+    "serve": "npx http-server . -p 8000 -c-1 --cors",
+    "build:pretext": "cd utils/pretext && npm install --legacy-peer-deps && npx tsc -p tsconfig.build.json && cp -r dist/generated dist/ 2>/dev/null; cp dist/*.js ../../js/pretext/ 2>/dev/null; cp -r dist/generated ../../js/pretext/ 2>/dev/null; echo 'Pretext built and copied to js/pretext/'"
+  },
+  "keywords": [
+    "sac",
+    "iiser-kolkata",
+    "newspaper",
+    "paper-fold",
+    "3d-animations",
+    "pretext",
+    "static-site",
+    "github-pages"
+  ],
+  "author": "SAC IISER Kolkata",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/ui": "^4.1.9",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "http-server": "^14.1.1",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
+    "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "three": "^0.171.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
