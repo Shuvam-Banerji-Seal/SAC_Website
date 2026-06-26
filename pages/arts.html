@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arts Club · SAC IISER Kolkata</title>
+    <meta name="description" content="Arts Club of IISER Kolkata — creativity in every form" />
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/loader.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link rel="stylesheet" href="../css/pages/club.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
+    </script>
+  </head>
+  <body data-page="club" data-club-slug="Arts_Club_of_IISER_Kolkata">
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar"><div class="preloader__fill"></div></div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="club-detail">
+        <!-- Header -->
+        <header class="club-detail__header">
+          <a href="clubs.html" class="back-link">&larr; All clubs</a>
+          <h1 class="club-detail__title" id="clubTitle">Arts Club — IISER Kolkata</h1>
+        </header>
+
+        <!-- Introduction -->
+        <section class="club-detail__body reveal-section">
+          <p>
+            Arts Club of IISER Kolkata is undoubtedly the ultimate powerhouse for creativity in the
+            campus, where all forms of imagination and visual expression are celebrated under one
+            roof. From painting and sketching to sculpting, crafting, and mixed-media
+            experimentation, the club provides a vibrant space for students to explore and hone
+            their artistic abilities regardless of prior experience.
+          </p>
+          <p>
+            The club thrives on the belief that art is not limited to a canvas &mdash; it lives in
+            every idea, every colour, and every act of creation. Members are encouraged to
+            experiment freely, collaborate across disciplines, and push the boundaries of visual
+            storytelling. Workshops, exhibitions, and interactive sessions form the backbone of the
+            club&rsquo;s activities throughout the year.
+          </p>
+          <p>
+            Beyond the creative pursuits, the Arts Club fosters a close-knit community bound by
+            mutual appreciation for aesthetics and expression. It is a space where beginners find
+            encouragement, seasoned artists find stimulation, and everyone finds a home for their
+            imagination.
+          </p>
+        </section>
+
+        <!-- Office Bearers 2026-27 -->
+        <section class="club-detail__section reveal-section">
+          <h2>Office Bearers &mdash; 2026-27</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Omkar Shinde</td>
+                <td>+91 9823787760</td>
+                <td><a href="mailto:oss25ms034@iiserkol.ac.in">oss25ms034@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Secretary</span></td>
+              </tr>
+              <tr>
+                <td>Soumik Roy</td>
+                <td>+91 6299325462</td>
+                <td><a href="mailto:sr24ms009@iiserkol.ac.in">sr24ms009@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Convener</span></td>
+              </tr>
+              <tr>
+                <td>Samadrita Saha</td>
+                <td>+91 8900626325</td>
+                <td><a href="mailto:ss25ms057@iiserkol.ac.in">ss25ms057@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Treasurer</span></td>
+              </tr>
+              <tr>
+                <td>Moupiya Mondal</td>
+                <td>+91 8017425916</td>
+                <td><a href="mailto:mm25ms282@iiserkol.ac.in">mm25ms282@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Event Organiser</span></td>
+              </tr>
+              <tr>
+                <td>Ritisneha Shyamali</td>
+                <td>+91 9707732565</td>
+                <td><a href="mailto:rs25ms076@iiserkol.ac.in">rs25ms076@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Social Media Manager</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- OB Portraits (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Arts_Club_of_IISER_Kolkata"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
+          ></div>
+        </section>
+
+        <!-- Events -->
+        <section class="club-detail__body reveal-section">
+          <h2>Events</h2>
+          <p>
+            The Arts Club organises a diverse range of events throughout the academic year, from
+            large-scale exhibitions to immersive themed gatherings that bring the campus together
+            through creativity.
+          </p>
+
+          <h3>Chitrakavyam</h3>
+          <p>
+            Chitrakavyam is the club&rsquo;s flagship event &mdash; an exhibition-cum-auction of
+            artworks created by the members and the broader campus community. The event provides a
+            platform for artists to showcase their work, engage with art enthusiasts, and see their
+            creations find new homes through a lively auction process. It celebrates the
+            intersection of art, community, and expression.
+          </p>
+
+          <h3>Halloween</h3>
+          <p>
+            The Arts Club&rsquo;s annual Halloween celebration transforms the campus into a festive
+            spectacle featuring a costume party, an immersive escape room, and a DJ night. The event
+            blends creative costume design with interactive entertainment, drawing participation
+            from across batches and departments.
+          </p>
+        </section>
+
+        <!-- Event Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Arts_Club_of_IISER_Kolkata"
+            data-role="event"
+            data-title="Event Photos"
+          ></div>
+        </section>
+
+        <!-- Historical OBs -->
+        <section class="club-detail__section reveal-section">
+          <h2>Previous Office Bearers</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Tenure</th>
+                <th>Secretary</th>
+                <th>Convener</th>
+                <th>Treasurer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>25-26</td>
+                <td>Nandita Sriram</td>
+                <td>Harman</td>
+                <td>Shristi Chanda</td>
+              </tr>
+              <tr>
+                <td>24-25</td>
+                <td>Sneha Chakraborty</td>
+                <td>Nandita Sriram</td>
+                <td>Tanisha Nath</td>
+              </tr>
+              <tr>
+                <td>23-24</td>
+                <td>Rounak Mukhopadhyay</td>
+                <td>Aikya Banerjee</td>
+                <td>Ditsa Roy</td>
+              </tr>
+              <tr>
+                <td>22-23</td>
+                <td>Kusumita Pradhan</td>
+                <td>Fathima Anjum EC</td>
+                <td>Sourashis Das</td>
+              </tr>
+              <tr>
+                <td>21-22</td>
+                <td>Trishita Patra</td>
+                <td>Biyas Choudhury</td>
+                <td>Baivab Kumar Saha</td>
+              </tr>
+              <tr>
+                <td>20-21</td>
+                <td>Aesha Lahiri</td>
+                <td>Mukil M</td>
+                <td>Sourin Chatterjee</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Contact -->
+        <section class="club-detail__body reveal-section">
+          <h2>Get in Touch</h2>
+          <ul class="contact-list">
+            <li>
+              Instagram:
+              <a href="https://www.instagram.com/arts_club_iiserk" target="_blank" rel="noopener"
+                >@arts_club_iiserk</a
+              >
+            </li>
+            <li>
+              Facebook:
+              <a href="https://www.facebook.com/arts.activity" target="_blank" rel="noopener"
+                >Arts Club IISERK</a
+              >
+            </li>
+            <li>
+              Email: <a href="mailto:arts.activity@iiserkol.ac.in">arts.activity@iiserkol.ac.in</a>
+            </li>
+            <li>WhatsApp: Arts Club WhatsApp Group</li>
+          </ul>
+        </section>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/loader.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("mastheadDate");
+        if (el)
+          el.textContent = new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+      })();
+    </script>
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      &#9881;
+    </button>
+  </body>
+</html>

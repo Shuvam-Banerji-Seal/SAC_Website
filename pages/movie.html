@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Club — IISER K · SAC IISER Kolkata</title>
+    <meta
+      name="description"
+      content="Movie Club — exquisite taste in movies. We stream, we craft, we develop films."
+    />
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/loader.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link rel="stylesheet" href="../css/pages/club.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
+    </script>
+  </head>
+  <body data-page="club" data-club-slug="Movie_Club_of_IISER_K">
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar"><div class="preloader__fill"></div></div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="club-detail">
+        <!-- Header -->
+        <header class="club-detail__header">
+          <a href="clubs.html" class="back-link">&larr; All clubs</a>
+          <h1 class="club-detail__title" id="clubTitle">Movie Club &mdash; IISER K</h1>
+        </header>
+
+        <!-- Introduction -->
+        <section class="club-detail__body reveal-section">
+          <p>
+            Movie Club of IISER Kolkata is dedicated to providing exquisite taste in movies to the
+            campus community. We stream, we craft, we develop films &mdash; and in doing so, we
+            bring people from different backgrounds together under the banner of a shared love for
+            cinema.
+          </p>
+          <p>
+            Whether you are a cinephile who can recite entire screenplays or someone who just enjoys
+            a good story on a lazy weekend, Movie Club welcomes you. Our screenings span genres,
+            languages, and eras &mdash; from timeless classics to contemporary independent cinema
+            &mdash; ensuring there is always something for everyone.
+          </p>
+          <p>
+            Beyond screenings, the club actively engages members in filmmaking, from scriptwriting
+            and storyboarding to shooting and post-production. It is a space where creativity meets
+            collaboration, and where every frame tells a story worth sharing.
+          </p>
+        </section>
+
+        <!-- Office Bearers 2026-27 -->
+        <section class="club-detail__section reveal-section">
+          <h2>Office Bearers &mdash; 2026-27</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Samarjit Das</td>
+                <td><a href="tel:8761072134">8761072134</a></td>
+                <td><a href="mailto:sd24ms071@iiserkol.ac.in">sd24ms071@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Secretary</span></td>
+              </tr>
+              <tr>
+                <td>Snigdho Biswas</td>
+                <td><a href="tel:8100109448">8100109448</a></td>
+                <td><a href="mailto:sb25ms055@iiserkol.ac.in">sb25ms055@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Convener</span></td>
+              </tr>
+              <tr>
+                <td>Uditansh Gupta</td>
+                <td><a href="tel:7380430340">7380430340</a></td>
+                <td><a href="mailto:ug25ms002@iiserkol.ac.in">ug25ms002@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Treasurer</span></td>
+              </tr>
+              <tr>
+                <td>Spoorthi Shyamaprasad</td>
+                <td><a href="tel:6360185016">6360185016</a></td>
+                <td><a href="mailto:ss24ms032@iiserkol.ac.in">ss24ms032@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Social Media Manager</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- OB Portraits (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Movie_Club_of_IISER_K"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
+          ></div>
+        </section>
+
+        <!-- Events -->
+        <section class="club-detail__body reveal-section">
+          <h2>Events</h2>
+          <p>
+            Movie Club organizes a range of film-centric events throughout the year, from curated
+            screenings to hands-on filmmaking competitions, keeping the campus engaged with the art
+            of cinema.
+          </p>
+
+          <h3>Visit to KIFF</h3>
+          <p>
+            One of the most anticipated outings of the year, members of Movie Club get the
+            opportunity to attend screenings and events at the Kolkata International Film Festival,
+            exposing them to global cinema, industry discussions, and the vibrant culture of a major
+            film festival.
+          </p>
+
+          <h3>Interbatch Filmmaking Competition</h3>
+          <p>
+            An annual showcase of campus talent, this competition invites teams from different
+            batches to produce short films on a given theme. From concept to final cut, it is a
+            complete filmmaking experience that brings out the best storytellers on campus.
+          </p>
+
+          <h3>Regular Weekend Screenings</h3>
+          <p>
+            On most weekends, the club hosts curated movie screenings for members and non-members
+            alike. These events range from themed marathon sessions to single-film discussions,
+            always accompanied by lively conversations about the craft of filmmaking and the stories
+            told on screen.
+          </p>
+        </section>
+
+        <!-- Event Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Movie_Club_of_IISER_K"
+            data-role="event"
+            data-title="Event Photos"
+          ></div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="club-detail__body reveal-section">
+          <h2>Achievements</h2>
+          <h3>IICM Achievements</h3>
+          <p>
+            Movie Club has represented IISER Kolkata at the Indian Inter-College Meet with pride.
+            Notably, the club secured a <strong>Bronze Medal at IICM 2024</strong> with the short
+            film <em>&ldquo;Orphaned&rdquo;</em>, a powerful piece that resonated with audiences and
+            judges alike.
+          </p>
+          <p>
+            <a href="https://youtu.be/Cb4CFsdGlRw" target="_blank" rel="noopener"
+              >Watch &ldquo;Orphaned&rdquo; on YouTube &rarr;</a
+            >
+          </p>
+        </section>
+
+        <!-- IICM Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Movie_Club_of_IISER_K"
+            data-role="iicm"
+            data-title="IICM Achievements"
+          ></div>
+        </section>
+
+        <!-- Club Assets -->
+        <section class="club-detail__body reveal-section">
+          <h2>Club Assets</h2>
+          <ul>
+            <li>Gimbal &mdash; DJI RS3 Mini</li>
+          </ul>
+        </section>
+
+        <!-- Historical OBs -->
+        <section class="club-detail__section reveal-section">
+          <h2>Previous Office Bearers</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Tenure</th>
+                <th>Secretary</th>
+                <th>Convener</th>
+                <th>Treasurer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>25-26</td>
+                <td>Samarjit Das</td>
+                <td>Snigdho Biswas</td>
+                <td>Uditansh Gupta</td>
+              </tr>
+              <tr>
+                <td>24-25</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>23-24</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>22-23</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>21-22</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>20-21</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Contact -->
+        <section class="club-detail__body reveal-section">
+          <h2>Get in Touch</h2>
+          <ul class="contact-list">
+            <li>
+              Email:
+              <a href="mailto:movie.activity@iiserkol.ac.in">movie.activity@iiserkol.ac.in</a>
+            </li>
+          </ul>
+        </section>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/loader.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("mastheadDate");
+        if (el)
+          el.textContent = new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+      })();
+    </script>
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      &#9881;
+    </button>
+  </body>
+</html>

@@ -19,6 +19,7 @@ import { initPaperFold } from "./components/three-fold.js";
 import { initHome } from "./pages/home.js";
 import { initClubs } from "./pages/clubs.js";
 import { initClub } from "./pages/club.js";
+import { initClubImages } from "./pages/club-images.js";
 import { initEvents } from "./pages/events.js";
 import { initGallery } from "./pages/gallery.js";
 
@@ -52,6 +53,11 @@ onReady(() => {
   initViewer();
   initPaperFold();
   initializers[page]?.();
+
+  // Individual club pages (data-club-slug) — load images from JSONL
+  if (document.body.dataset.clubSlug) {
+    initClubImages();
+  }
 
   // Register Service Worker for asset caching (production only).
   if ("serviceWorker" in navigator && location.protocol === "https:") {

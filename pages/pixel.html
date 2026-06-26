@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIXEL — Photography Club of IISER Kolkata · SAC IISER Kolkata</title>
+    <meta
+      name="description"
+      content="PIXEL — not just to take pictures, but to learn how to truly see."
+    />
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/loader.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link rel="stylesheet" href="../css/pages/club.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
+    </script>
+  </head>
+  <body data-page="club" data-club-slug="PIXEL-Photography_Club">
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar"><div class="preloader__fill"></div></div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="club-detail">
+        <!-- Header -->
+        <header class="club-detail__header">
+          <a href="clubs.html" class="back-link">&larr; All clubs</a>
+          <h1 class="club-detail__title" id="clubTitle">
+            PIXEL &mdash; Photography Club of IISER Kolkata
+          </h1>
+        </header>
+
+        <!-- Introduction -->
+        <section class="club-detail__body reveal-section">
+          <p>
+            PIXEL is the Photography Club of IISER Kolkata, a community of phone and DSLR
+            photographers united by a shared passion for visual storytelling. We are not just here
+            to take pictures &mdash; we are here to learn how to truly see.
+          </p>
+          <p>
+            From the fleeting golden hour over the campus fields to the quiet intensity of a
+            late-night studio session, PIXEL finds meaning in everyday moments. We believe every
+            frame is an opportunity to discover something new about the world and ourselves.
+          </p>
+          <p>
+            Whether you shoot on your phone during a walk or carry a full-frame camera on a
+            photowalk, PIXEL provides the community, the mentorship, and the platform to grow as a
+            photographer and as a keen observer of life.
+          </p>
+        </section>
+
+        <!-- Office Bearers 2026-27 -->
+        <section class="club-detail__section reveal-section">
+          <h2>Office Bearers &mdash; 2026-27</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Pratham B. Sarma</td>
+                <td><a href="tel:+919954971648">+91 9954971648</a></td>
+                <td><a href="mailto:pbs25ms048@iiserkol.ac.in">pbs25ms048@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Secretary</span></td>
+              </tr>
+              <tr>
+                <td>Mayank Acharya</td>
+                <td><a href="tel:+918093424670">+91 8093424670</a></td>
+                <td><a href="mailto:ma25ms129@iiserkol.ac.in">ma25ms129@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Convener</span></td>
+              </tr>
+              <tr>
+                <td>Soham Choudhury</td>
+                <td><a href="tel:+918584015899">+91 8584015899</a></td>
+                <td><a href="mailto:sc25ms110@iiserkol.ac.in">sc25ms110@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Treasurer</span></td>
+              </tr>
+              <tr>
+                <td>Swapnadeep Sil</td>
+                <td><a href="tel:+918777830188">+91 8777830188</a></td>
+                <td><a href="mailto:ss25ms074@iiserkol.ac.in">ss25ms074@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Event Organiser</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- OB Portraits (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="PIXEL-Photography_Club"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
+          ></div>
+        </section>
+
+        <!-- Events -->
+        <section class="club-detail__body reveal-section">
+          <h2>Events</h2>
+          <p>
+            PIXEL organizes a wide range of photographic events throughout the year, from photowalks
+            to inter-college competitions, giving members ample opportunity to sharpen their skills
+            and showcase their work.
+          </p>
+
+          <h3>Photowalks</h3>
+          <p>
+            The club organizes 3 to 4 photowalks per year, covering diverse locations around Kolkata
+            and beyond. These walks bring members together to explore, observe, and capture the
+            world through their lenses while learning from each other&rsquo;s perspectives and
+            techniques.
+          </p>
+
+          <h3>PHOTON &mdash; at Inquivesta</h3>
+          <p>
+            PHOTON is PIXEL&rsquo;s flagship event held during Inquivesta, the annual science fest
+            of IISER Kolkata. It features competitive photography rounds that test
+            participants&rsquo; technical skill, creative vision, and ability to tell a story
+            through images.
+          </p>
+
+          <h3>Shuttercycles</h3>
+          <p>
+            A weekly themed photography challenge where members are given a prompt and a timeframe
+            to shoot and share their best frame. Shuttercycles keep the creative juices flowing
+            throughout the semester and build a vibrant culture of consistent practice and peer
+            feedback.
+          </p>
+        </section>
+
+        <!-- Event Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="PIXEL-Photography_Club"
+            data-role="event"
+            data-title="Event Photos"
+          ></div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="club-detail__body reveal-section">
+          <h2>Achievements</h2>
+          <h3>IICM Achievements</h3>
+          <p>
+            PIXEL has consistently brought home medals from IICM, the Indian Inter-College Meet,
+            across multiple categories in photography and visual storytelling.
+          </p>
+          <ul>
+            <li><strong>2025</strong> &mdash; Gold in Themed Photography, Silver in Photostory</li>
+            <li>
+              <strong>2024</strong> &mdash; Gold in Themed Photography, Bronze in Stories in Clicks
+            </li>
+            <li><strong>2023</strong> &mdash; Multiple medals across photography categories</li>
+          </ul>
+        </section>
+
+        <!-- IICM Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="PIXEL-Photography_Club"
+            data-role="iicm"
+            data-title="IICM Achievements"
+          ></div>
+        </section>
+
+        <!-- Equipment & Rules -->
+        <section class="club-detail__body reveal-section">
+          <h2>Equipment</h2>
+          <h3>Available Gear</h3>
+          <ul>
+            <li>Sony Alpha ILCE 6400L</li>
+            <li>Nikon D5300</li>
+            <li>Nikon AF-P 18-55mm lens</li>
+            <li>AF-S NIKKOR 200-500mm lens</li>
+            <li>Sony Alpha 16-50mm lens</li>
+            <li>Kodak Tripod</li>
+            <li>Samsung / SanDisk 256 GB SD Cards</li>
+          </ul>
+
+          <h3>Equipment Rules</h3>
+          <ol>
+            <li>Equipment is available only for club members with valid membership.</li>
+            <li>
+              Items must be borrowed and returned on the same day unless otherwise approved by the
+              OB.
+            </li>
+            <li>A valid college ID must be submitted as collateral when borrowing any item.</li>
+            <li>
+              Handle all equipment with care. Any damage must be reported immediately to the OB.
+            </li>
+            <li>
+              Do not lend club equipment to non-members or outside individuals under any
+              circumstances.
+            </li>
+            <li>
+              Equipment requests must be made at least 24 hours in advance via the club email.
+            </li>
+            <li>
+              All stored data on SD cards must be copied and deleted before returning the card.
+            </li>
+            <li>
+              Violation of any rule may result in temporary suspension of borrowing privileges.
+            </li>
+          </ol>
+        </section>
+
+        <!-- Equipment Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="PIXEL-Photography_Club"
+            data-role="equipment"
+            data-title="Club Equipment"
+          ></div>
+        </section>
+
+        <!-- Historical OBs -->
+        <section class="club-detail__section reveal-section">
+          <h2>Previous Office Bearers</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Tenure</th>
+                <th>Secretary</th>
+                <th>Convener</th>
+                <th>Treasurer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>25-26</td>
+                <td>Pratham B. Sarma</td>
+                <td>Mayank Acharya</td>
+                <td>Soham Choudhury</td>
+              </tr>
+              <tr>
+                <td>24-25</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>23-24</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>22-23</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>21-22</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>20-21</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>19-20</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>18-19</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>17-18</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>2016-17</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Contact -->
+        <section class="club-detail__body reveal-section">
+          <h2>Get in Touch</h2>
+          <ul class="contact-list">
+            <li>
+              Instagram:
+              <a href="https://www.instagram.com/pixel.iiser_kolkata" target="_blank" rel="noopener"
+                >@pixel.iiser_kolkata</a
+              >
+            </li>
+            <li>
+              WhatsApp: Join the
+              <a href="https://chat.whatsapp.com/" target="_blank" rel="noopener"
+                >PIXEL WhatsApp Group</a
+              >
+            </li>
+            <li>
+              Website:
+              <a href="https://iiserkol.ac.in/~photography.activity" target="_blank" rel="noopener"
+                >iiserkol.ac.in/~photography.activity</a
+              >
+            </li>
+          </ul>
+        </section>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/loader.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("mastheadDate");
+        if (el)
+          el.textContent = new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+      })();
+    </script>
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      &#9881;
+    </button>
+  </body>
+</html>

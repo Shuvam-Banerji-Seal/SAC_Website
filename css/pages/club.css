@@ -217,3 +217,89 @@
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
+
+/* ── Section title for dynamically loaded sections ──────────────── */
+.club-detail__section-title {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+}
+
+/* ── OB Table ──────────────────────────────────────────────────── */
+.ob-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--ink-base, #181410);
+  margin-bottom: var(--space-4);
+}
+.ob-table thead {
+  border-bottom: 2px solid var(--ink-base, #181410);
+}
+.ob-table th {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 700;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-xs, 0.75rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted, #5b4f3d);
+}
+.ob-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+  vertical-align: top;
+}
+.ob-table tbody tr:hover {
+  background: rgba(126, 9, 9, 0.03);
+}
+.ob-table a {
+  color: var(--accent-red, #7e0909);
+  text-decoration: none;
+}
+.ob-table a:hover {
+  text-decoration: underline;
+}
+
+/* ── Role badge ─────────────────────────────────────────────────── */
+.ob-role {
+  display: inline-block;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid var(--accent-red, #7e0909);
+  color: var(--accent-red, #7e0909);
+  white-space: nowrap;
+}
+
+/* ── Contact list ───────────────────────────────────────────────── */
+.contact-list {
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+.contact-list li {
+  padding-left: 0 !important;
+  margin-bottom: var(--space-2) !important;
+}
+.contact-list li::before {
+  display: none !important;
+}
+
+/* ── Section reveal on scroll ───────────────────────────────────── */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-section.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}

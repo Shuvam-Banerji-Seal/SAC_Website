@@ -32,6 +32,28 @@ import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 
 /* -------------------------------------------------------------------------
+ * Club slug → individual page URL mapping
+ * ------------------------------------------------------------------------- */
+
+function getClubPageUrl(slug) {
+  const urlMap = {
+    "AARSHI_-_Drama_Club": "pages/aarshi.html",
+    Arts_Club_of_IISER_Kolkata: "pages/arts.html",
+    Campus_Radio_IISER_KOLKATA: "pages/radio.html",
+    "IKQC_-_Quiz_Club_of_IISER_Kolkata": "pages/ikqc.html",
+    Literary_Club_of_IISER_Kolkata: "pages/literary.html",
+    Movie_Club_of_IISER_K: "pages/movie.html",
+    Music_Club_of_IISER_K: "pages/music.html",
+    Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
+    "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
+    "PIXEL-Photography_Club": "pages/pixel.html",
+    SAC_Academics: "pages/academics.html",
+    SAC_Hostel: "pages/hostel.html",
+  };
+  return urlMap[slug] || "pages/clubs.html";
+}
+
+/* -------------------------------------------------------------------------
  * Bodies — the 4 sections of the SAC, in page order.
  *
  * BODY_INFO carries the editorial copy for each section banner.
@@ -214,11 +236,14 @@ function renderPaperCard(club) {
   // Random slight rotation for the notice board look (-2deg to +2deg)
   const rotate = (Math.random() - 0.5) * 4;
 
+  // Map club slug to individual page URL
+  const pageUrl = getClubPageUrl(club.slug);
+
   const card = el(
     "a",
     {
       class: "paper-card",
-      href: pageUrl("pages/club.html?id=" + encodeURIComponent(club.slug)),
+      href: pageUrl,
       "aria-label": "Read more about " + club.name,
       style: "--card-rotate: " + rotate.toFixed(2) + "deg",
     },

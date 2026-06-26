@@ -7,6 +7,24 @@
 import { $, el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 
+function getClubPageUrl(slug) {
+  const urlMap = {
+    "AARSHI_-_Drama_Club": "pages/aarshi.html",
+    Arts_Club_of_IISER_Kolkata: "pages/arts.html",
+    Campus_Radio_IISER_KOLKATA: "pages/radio.html",
+    "IKQC_-_Quiz_Club_of_IISER_Kolkata": "pages/ikqc.html",
+    Literary_Club_of_IISER_Kolkata: "pages/literary.html",
+    Movie_Club_of_IISER_K: "pages/movie.html",
+    Music_Club_of_IISER_K: "pages/music.html",
+    Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
+    "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
+    "PIXEL-Photography_Club": "pages/pixel.html",
+    SAC_Academics: "pages/academics.html",
+    SAC_Hostel: "pages/hostel.html",
+  };
+  return urlMap[slug] || "pages/clubs.html";
+}
+
 export async function initClubs() {
   const mount = $("#clubs-grid");
   if (!mount) return;
@@ -26,7 +44,7 @@ export async function initClubs() {
               { class: "club-card" },
               el(
                 "a",
-                { href: pageUrl(`pages/club.html?id=${encodeURIComponent(c.slug)}`) },
+                { href: pageUrl(getClubPageUrl(c.slug)) },
                 el(
                   "div",
                   { class: "club-card__logo" },
@@ -38,19 +56,19 @@ export async function initClubs() {
                         width: c.logo.width || 96,
                         height: c.logo.height || 96,
                       })
-                    : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0)),
+                    : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
                 ),
                 el("h3", { class: "club-card__name" }, c.name),
                 el(
                   "p",
                   { class: "club-card__count" },
-                  `${c.counts.images} images · ${c.counts.markdowns} doc${c.counts.markdowns === 1 ? "" : "s"}`,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                  `${c.counts.images} images · ${c.counts.markdowns} doc${c.counts.markdowns === 1 ? "" : "s"}`
+                )
+              )
+            )
+          )
+        )
+      )
     );
   } catch (err) {
     console.error("initClubs failed:", err);

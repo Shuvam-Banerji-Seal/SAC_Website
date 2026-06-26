@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Club — IISER K · SAC IISER Kolkata</title>
+    <meta
+      name="description"
+      content="The Music Club of IISER Kolkata — a community of students brought together by a shared love for music, based in Room 104."
+    />
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/loader.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link rel="stylesheet" href="../css/pages/club.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
+    </script>
+  </head>
+  <body data-page="club" data-club-slug="Music_Club_of_IISER_K">
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar"><div class="preloader__fill"></div></div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="club-detail">
+        <!-- Header -->
+        <header class="club-detail__header">
+          <a href="clubs.html" class="back-link">&larr; All clubs</a>
+          <h1 class="club-detail__title" id="clubTitle">Music Club &mdash; IISER K</h1>
+        </header>
+
+        <!-- Introduction -->
+        <section class="club-detail__body reveal-section">
+          <p>
+            The Music Club of IISER Kolkata is a vibrant community of students brought together by a
+            shared love for music. Based in the dedicated music room (Room 104), the club serves as
+            a creative haven where musical enthusiasts can practise, collaborate, and express
+            themselves freely.
+          </p>
+          <p>
+            From jamming sessions and band rehearsals to solo practice hours, the club provides
+            students with a space to explore and hone their musical abilities. Whether you are a
+            seasoned musician or someone just beginning your musical journey, the Music Club
+            welcomes all with open arms.
+          </p>
+          <p>
+            The club actively participates in inter-IISER and inter-college festivals, bringing
+            laurels to the institute through its performances. Throughout the year, the Music Club
+            organizes a range of events that celebrate every genre and style of music, fostering a
+            rich culture of musical expression on campus.
+          </p>
+        </section>
+
+        <!-- Office Bearers 2026-27 -->
+        <section class="club-detail__section reveal-section">
+          <h2>Office Bearers &mdash; 2026-27</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Niranjan K</td>
+                <td>7356309609</td>
+                <td><a href="mailto:nk25ms007@iiserkol.ac.in">nk25ms007@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Secretary</span></td>
+              </tr>
+              <tr>
+                <td>Barboza Shanaya Joseph</td>
+                <td>9309416515</td>
+                <td><a href="mailto:bsj25ms033@iiserkol.ac.in">bsj25ms033@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Convener</span></td>
+              </tr>
+              <tr>
+                <td>Adarsh Ranjan</td>
+                <td>9508321116</td>
+                <td><a href="mailto:ar25ms313@iiserkol.ac.in">ar25ms313@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Treasurer</span></td>
+              </tr>
+              <tr>
+                <td>Neil Joshi</td>
+                <td>9455512777</td>
+                <td><a href="mailto:nj25ms247@iiserkol.ac.in">nj25ms247@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Event Organizer</span></td>
+              </tr>
+              <tr>
+                <td>Marvellyne Grace Kharshiing</td>
+                <td>8415936637</td>
+                <td><a href="mailto:mgk25ms085@iiserkol.ac.in">mgk25ms085@iiserkol.ac.in</a></td>
+                <td><span class="ob-role">Social Media Manager</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- OB Portraits (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Music_Club_of_IISER_K"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
+          ></div>
+        </section>
+
+        <!-- Events -->
+        <section class="club-detail__body reveal-section">
+          <h2>Events</h2>
+          <p>
+            The Music Club hosts a range of events throughout the academic year that celebrate
+            diverse musical genres and provide students with platforms to showcase their talent.
+          </p>
+
+          <h3>Rampage &mdash; Battle of Bands</h3>
+          <p>
+            Rampage is the flagship Battle of Bands event of the Music Club, bringing together bands
+            from across campuses to compete in an electrifying showcase of musical prowess. The
+            event is known for its high energy, enthusiastic crowds, and outstanding performances
+            spanning rock, metal, fusion, and more.
+          </p>
+
+          <h3>Jhankaar</h3>
+          <p>
+            Jhankaar celebrates the rich tradition of classical music at IISER Kolkata. The event
+            provides a platform for students to perform and appreciate Indian classical music,
+            including vocal and instrumental performances rooted in Hindustani and Carnatic
+            traditions.
+          </p>
+
+          <h3>Voice &mdash; Singing Competition</h3>
+          <p>
+            Voice is a popular solo singing competition that draws participants from all batches of
+            IISER Kolkata. The competition provides an open stage for singers of all genres and
+            styles to showcase their vocal abilities and passion for music.
+          </p>
+        </section>
+
+        <!-- Event Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Music_Club_of_IISER_K"
+            data-role="event"
+            data-title="Event Photos"
+          ></div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="club-detail__body reveal-section">
+          <h2>Achievements</h2>
+          <h3>IICM Achievements</h3>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Achievement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025</td>
+                <td>3rd in Battle of Bands, 3rd in Duet</td>
+              </tr>
+              <tr>
+                <td>2024</td>
+                <td>2nd in Battle of Bands, 2nd in Mehfil, 3rd in Duet, 1st in Western Vocal</td>
+              </tr>
+              <tr>
+                <td>2023</td>
+                <td>1st in Battle of Bands, 1st in Mehfil, 3rd in Duet</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- IICM Photos (loaded from JSONL) -->
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="Music_Club_of_IISER_K"
+            data-role="iicm"
+            data-title="IICM Achievements"
+          ></div>
+        </section>
+
+        <!-- Contact -->
+        <section class="club-detail__body reveal-section">
+          <h2>Get in Touch</h2>
+          <ul class="contact-list">
+            <li>
+              Instagram:
+              <a href="https://www.instagram.com/musicclub_iiserk" target="_blank" rel="noopener"
+                >@musicclub_iiserk</a
+              >
+            </li>
+            <li>
+              YouTube:
+              <a href="https://www.youtube.com/@musicclub_iiserk" target="_blank" rel="noopener"
+                >@musicclub_iiserk</a
+              >
+            </li>
+            <li>
+              Facebook:
+              <a
+                href="https://www.facebook.com/musicclubiiserkolkata"
+                target="_blank"
+                rel="noopener"
+                >@musicclubiiserkolkata</a
+              >
+            </li>
+          </ul>
+        </section>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/loader.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("mastheadDate");
+        if (el)
+          el.textContent = new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+      })();
+    </script>
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      &#9881;
+    </button>
+  </body>
+</html>
