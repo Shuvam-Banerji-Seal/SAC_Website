@@ -1,28 +1,39 @@
 # Student Activity Council — IISER Kolkata
 
 Official website of the **Student Activity Council (SAC)** at IISER Kolkata.
-Pure static HTML, CSS, and JavaScript — **no build step, no framework, no
-runtime dependency** beyond a modern browser.
+A newspaper-themed static site with 3D paper-fold animations, calligraphy text
+reveal, pretext-based text measurement, and dynamic textures.
 
 ---
 
 ## What this is
 
-A static site that showcases the ten cultural clubs under the SAC umbrella at
-IISER Kolkata. Every image and club document is served from a git submodule
-(`public/assets/`) and described by a canonical `assets_map.jsonl` that the
-website fetches at runtime to render club pages, event timelines, and the
-gallery.
+A static site that showcases the cultural clubs, academic bodies, hostel
+committee, and sports societies under the SAC umbrella at IISER Kolkata.
+Every image and club document is served from a git submodule (`public/assets/`)
+and described by a canonical `assets_map.jsonl` that the website fetches at
+runtime to render club pages, event timelines, and the gallery.
 
-The website is built around `assets_map.jsonl` as the single source of truth.
-Regenerate that file (see *Regenerating the asset map* below) and the website
-re-renders against the new data.
+## Features
+
+- **Newspaper theme** — paper textures, ink colors, serif fonts, fold creases
+- **Pre-loader** — 0-100% progress bar that pre-caches assets before the main loader
+- **3D paper-fold animations** — masthead page-turn, body section fold reveal, card hover lift
+- **Notice board effects** — nail/pin decorations, crooked cards, postmark stamps
+- **Calligraphy text reveal** — headline appears as if being written, letter by letter
+- **Sound effects** — paper scratching on scroll, printing press sounds (Web Audio API)
+- **8 texture presets** — Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
+- **6 font presets** — Newspaper, Modern, Typewriter, Gothic, Classical, Monospace
+- **Dark mode** — consistent across all pages, respects `prefers-color-scheme`
+- **Pretext integration** — canvas-based text measurement for dynamic column layout
+- **Service Worker** — stale-while-revalidate caching for fast subsequent loads
+- **Responsive** — works on desktop, tablet, and mobile
 
 ## Folder structure
 
 ```
 SAC_Website/
-├── index.html              ← landing page (at repo root, served at /)
+├── index.html              ← landing page with pre-loader + main loader
 ├── pages/                  ← all other HTML pages
 │   ├── about.html
 │   ├── clubs.html          ← all-clubs grid
@@ -30,152 +41,170 @@ SAC_Website/
 │   ├── events.html
 │   └── gallery.html
 ├── css/
+│   ├── preloader.css       ← pre-loader progress bar
 │   ├── reset.css           ← minimal modern reset
-│   ├── variables.css       ← theme tokens (colors, spacing, typography)
-│   ├── main.css            ← base layout, typography, utility classes
+│   ├── variables.css       ← theme tokens + 8 texture presets + dark mode
+│   ├── main.css            ← base layout, typography, entrance animations
 │   ├── components.css      ← navbar, club-card, thumb, footer, stat-grid
+│   ├── settings.css        ← settings panel (dark mode, font, texture)
+│   ├── viewer.css          ← image viewer/lightbox
+│   ├── loader.css          ← newspaper ink loader animation
 │   └── pages/              ← per-page stylesheets
 ├── js/
-│   ├── config.js           ← site title, NAV_ITEMS
+│   ├── preloader.js        ← asset pre-fetcher (plain script, no ES module)
 │   ├── main.js             ← entry: renders nav + footer, dispatches by page
+│   ├── config.js           ← site title, NAV_ITEMS
 │   ├── data.js             ← loads + indexes assets_map.jsonl
+│   ├── loader.js           ← newspaper ink loader animation
+│   ├── pretext/            ← built pretext dist (text measurement library)
 │   ├── components/
 │   │   ├── navbar.js
-│   │   └── footer.js
+│   │   ├── navbar-fold.js
+│   │   ├── footer.js
+│   │   ├── settings.js     ← dark mode, font, texture picker
+│   │   └── viewer.js       ← image lightbox
 │   ├── pages/
-│   │   ├── home.js
+│   │   ├── home.js         ← landing page with calligraphy + paper fold
 │   │   ├── clubs.js
 │   │   ├── club.js         ← individual club template
 │   │   ├── events.js
 │   │   └── gallery.js
 │   └── utils/
-│       └── dom.js          ← $, el(), onReady, isInPagesDir(), pageUrl()
+│       ├── dom.js          ← $, el(), onReady, pageUrl()
+│       ├── text-measure.js ← pretext wrapper for text measurement
+│       └── calligraphy.js  ← text reveal animation + sound effects
+├── test/
+│   ├── setup.js            ← global test setup (jsdom, mocks)
+│   └── unit/
+│       ├── dom.test.js
+│       ├── data.test.js
+│       ├── settings.test.js
+│       ├── home-excerpt.test.js
+│       ├── text-measure.test.js
+│       ├── calligraphy.test.js
+│       ├── preloader.test.js
+│       └── config.test.js
+├── package.json            ← npm scripts, dependencies, devDependencies
+├── vitest.config.js        ← test configuration
+├── eslint.config.js        ← linting rules
+├── .prettierrc.json        ← code formatting
+├── sw.js                   ← Service Worker (stale-while-revalidate)
 ├── public/
 │   └── assets/             ← git submodule (SAC_website_assets)
 │       └── processed/
-│           ├── <10 clubs>/     ← website-ready WebP images + markdown
-│           └── assets_map.jsonl ← canonical index (single source of truth)
+│           ├── <clubs>/    ← website-ready WebP images + markdown
+│           └── assets_map.jsonl ← canonical index
 └── utils/
     └── pretext/            ← git submodule (chenglou/pretext)
 ```
 
-## How a page is loaded
+## Development
 
-1. `index.html` (or one of the files in `pages/`) is served by GitHub Pages.
-2. The HTML includes a placeholder for the navbar (`<nav id="navbar">`) and
-   the footer (`<div id="footer">`), and a `<main>` with a content mount
-   element (e.g. `<section id="clubs-grid">`).
-3. `<script type="module" src="js/main.js">` is the entry point.
-4. `main.js`:
-   - reads `body[data-page]` to know which page it's on,
-   - renders the navbar and footer,
-   - dispatches to the matching initialiser in `js/pages/`.
-5. The page initialiser fetches `public/assets/processed/assets_map.jsonl`
-   (via `js/data.js`) and renders the content into the mount element.
+### Prerequisites
 
-## How URLs are handled (no build step, no `<base>` tag)
+- Node.js 18+ (for testing and tooling)
+- A modern browser (the site itself is pure static HTML/CSS/JS)
 
-The site uses **pure relative URLs everywhere** — no `<base href="…">`, no
-absolute paths. A small helper in `js/utils/dom.js`:
-
-```js
-import { pageUrl } from "./utils/dom.js";
-pageUrl("pages/clubs.html");
-// from /index.html        → "pages/clubs.html"
-// from /pages/about.html  → "../pages/clubs.html"
-```
-
-is used by `components/navbar.js`, `pages/home.js`, `pages/clubs.js`, and
-`pages/club.js` so that links and `fetch()` calls resolve correctly from any
-page depth.
-
-Image and markdown URLs that the site puts in `<img src>` and `fetch()` come
-straight from the `public_url` field in `assets_map.jsonl`, which is already
-an absolute path (with the deploy prefix baked in by the generator).
-
-## Local development
-
-The site is pure static, so any HTTP server works. The simplest options:
+### Setup
 
 ```bash
-# From the repo root:
-python3 -m http.server 8000 --directory .
+# Install dev dependencies
+npm install
 
-# Then open:
-#   http://localhost:8000/                         ← index.html
-#   http://localhost:8000/pages/about.html
-#   http://localhost:8000/pages/club.html?id=AARSHI_-_Drama_Club
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Lint
+npm run lint
+
+# Format code
+npm run format
+
+# Security audit
+npm audit
+
+# Start a local dev server
+npm run serve
+# Then open http://localhost:8000/
 ```
 
-**Note on submodule paths:** the website uses `fetch()` to load
-`public/assets/processed/assets_map.jsonl`. When serving from the repo root,
-this resolves to `http://localhost:8000/public/assets/processed/assets_map.jsonl`,
-which is correct.
+### Building pretext
 
-ES modules (`<script type="module">`) require an HTTP server — they will
-**not** work over `file://`. Use one of the commands above.
-
-## Deployment (GitHub Pages)
-
-The site is configured for GitHub Pages at **`/SAC_Website/`** (the default
-for project pages on `github.com/<user>/SAC_Website`):
-
-1. Push to `main`.
-2. In the repo's GitHub settings, enable Pages: source = `main`, root.
-3. Visit `https://<user>.github.io/SAC_Website/`.
-
-The `public_url` field in `assets_map.jsonl` already encodes `/SAC_Website/`
-as the deploy path, so the website works out of the box on this default
-hosting setup.
-
-### Custom domain / different subpath
-
-If you ever deploy under a different path (custom domain, organisation page,
-etc.), regenerate the asset map with the new base:
+The pretext library (text measurement) is a git submodule. To rebuild it:
 
 ```bash
-cd public/assets/tools
-uv sync
-sac-assets-map --site-base /your/new/path/
+npm run build:pretext
 ```
 
-Then commit the new `processed/assets_map.jsonl` inside the
-`public/assets` submodule.
+This installs pretext's dependencies, compiles the TypeScript, and copies the
+built files to `js/pretext/`.
 
-## Regenerating the asset map
+## Testing
 
-The `assets_map.jsonl` is the canonical index that drives the website. To
-regenerate it (e.g. after the assets submodule updates):
+The project uses **Vitest** with **jsdom** for unit testing. Tests are in
+`test/unit/` and cover:
+
+- DOM utilities (`el()`, `$()`, `pageUrl()`, `isInPagesDir()`)
+- Data indexing (`indexByClub()`, `pickLogo()`, `getClubEntries()`)
+- Settings panel (dark mode, font selection, texture selection)
+- Excerpt extraction from markdown
+- Pretext text measurement wrapper
+- Calligraphy animation
+- Pre-loader
 
 ```bash
-cd public/assets
-git pull                            # get the latest assets
-uv sync                             # if not already done
-sac-assets-map                      # writes processed/assets_map.jsonl
-git add processed/assets_map.jsonl
-git commit -m "..."
-git push
+npm test          # run all tests
+npm run test:coverage  # with coverage report
 ```
 
-The `sac-assets-map` tool lives in the submodule's `tools/` and is a thin
-wrapper around `python3 -m generate_assets_map`.
+## CI/CD
 
-## Conventions
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) runs:
 
-- **HTML:** minimal, semantic, with placeholders for JS-rendered content
-  (navbar, footer, page-specific mounts). Each page has `data-page="<id>"`
-  on `<body>` to drive the JS dispatch.
-- **CSS:** layered — reset → variables → main → components → per-page.
-  Theme via CSS custom properties in `css/variables.css`. Dark mode is
-  automatic via `prefers-color-scheme`.
-- **JS:** ES modules natively, no bundler, no transpilation. Each page
-  initialiser is in `js/pages/<page>.js` and exports an `init<Page>()`.
-  Shared helpers live in `js/utils/dom.js`. Data fetching lives in
-  `js/data.js`.
-- **No build step.** What you write is what ships.
+1. **Test job**: lint, format check, security audit, unit tests, coverage upload
+2. **Deploy job** (main branch only): verify critical paths, deploy to GitHub Pages
+
+## Deployment
+
+The site is configured for GitHub Pages at **`/SAC_Website/`**:
+
+1. Push to `main`
+2. CI/CD pipeline runs tests
+3. If tests pass, the site is deployed to GitHub Pages
+4. Visit `https://<user>.github.io/SAC_Website/`
+
+## SAC Bodies
+
+The website organizes clubs into 5 SAC bodies:
+
+| Body      | Section     | Description                                            |
+| --------- | ----------- | ------------------------------------------------------ |
+| Council   | Preface     | SAC General Secretary, Joint Secretary, and officers   |
+| Academics | Section I   | Academic initiatives, placement cell, talks            |
+| Hostel    | Section II  | Hostel committee, residence life, welfare              |
+| Sports    | Section III | Sports clubs (cricket, football, etc.) — data arriving |
+| Cultural  | Section IV  | 10 cultural clubs (drama, music, dance, film, etc.)    |
+
+## Texture Presets
+
+| Preset       | Look                                              |
+| ------------ | ------------------------------------------------- |
+| Fresh        | Clean, bright, minimal texture — modern newspaper |
+| Aged         | Warm, slightly yellowed — vintage paper           |
+| Rustic       | Coffee-stained, heavy aging — old document        |
+| Notice Board | Corkboard with brass pins — pinned postcards      |
+| Dark         | Dark coffee-stain — night reading mode            |
+| Kraft        | Brown kraft paper — raw packaging                 |
+| Parchment    | Cream parchment — medieval manuscript             |
+| Slate        | Cool blue-gray — modern dark UI                   |
 
 ## License
 
 The website source (HTML/CSS/JS) is part of the SAC_Website repo. Assets in
-`public/assets/` belong to their respective owners and clubs; see the
-`SAC_website_assets` repository for asset licensing.
+`public/assets/` belong to their respective owners and clubs.
