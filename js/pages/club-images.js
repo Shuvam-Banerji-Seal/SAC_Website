@@ -97,4 +97,32 @@ export async function initClubImages() {
   } catch (err) {
     console.error("[club-images] Failed to load images:", err);
   }
+
+  // Setup IntersectionObserver for section reveals
+  setupSectionReveal();
+}
+
+function setupSectionReveal() {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    // Immediately reveal all sections for reduced motion
+    document.querySelectorAll(".reveal-section").forEach((s) => s.classList.add("is-revealed"));
+    return;
+  }
+  if (!("IntersectionObserver" in window)) {
+    document.querySelectorAll(".reveal-section").forEach((s) => s.classList.add("is-revealed"));
+    return;
+  }
+  const sections = document.querySelectorAll(".reveal-section");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+  sections.forEach((s) => observer.observe(s));
 }
