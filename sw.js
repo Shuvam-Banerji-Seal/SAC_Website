@@ -38,6 +38,7 @@ const STATIC_ASSETS = [
   "js/pretext/line-text.js",
   "js/pretext/measurement.js",
   "js/pretext/rich-inline.js",
+  "js/pretext/generated/bidi-data.js",
   "js/components/navbar.js",
   "js/components/navbar-fold.js",
   "js/components/footer.js",
