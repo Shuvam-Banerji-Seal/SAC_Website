@@ -7,8 +7,8 @@
    flow (pull-down animation); on desktop the breakpoint overrides
    below move it into a fixed side drawer. */
 .navbar {
-  background: var(--color-card-bg);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--paper-base);
+  border-bottom: var(--rule-heavy);
   z-index: 100;
 }
 
@@ -201,7 +201,8 @@
 .navbar__brand {
   font-weight: 600;
   font-size: var(--fs-base);
-  color: var(--color-fg);
+  color: var(--ink-base);
+  font-family: var(--font-display);
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-2);
@@ -243,19 +244,20 @@
 .nav-link {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
-  color: var(--color-fg);
+  color: var(--ink-base);
+  font-family: var(--font-display);
   font-size: var(--fs-sm);
   transition: background var(--transition), color var(--transition);
 }
 .nav-link:hover {
-  background: var(--color-border);
+  background: var(--paper-deep);
   text-decoration: none;
 }
 .nav-link--active {
-  background: var(--color-accent);
-  color: var(--color-accent-fg);
+  background: var(--ink-base);
+  color: var(--paper-base);
 }
-.nav-link--active:hover { background: var(--color-accent); }
+.nav-link--active:hover { background: var(--ink-base); }
 
 @media (min-width: 1024px) {
   .nav-link {
@@ -295,8 +297,10 @@
 
 /* ── Footer ─────────────────────────────────────────── */
 .site-footer {
-  background: var(--color-card-bg);
-  border-top: 1px solid var(--color-border);
+  background-color: var(--paper-base);
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  border-top: var(--rule-heavy);
   padding: var(--space-6) 0;
   margin-top: var(--space-7);
 }
@@ -305,11 +309,14 @@
   margin: 0 auto;
   padding: 0 var(--space-4);
   text-align: center;
-  color: var(--color-muted);
-  font-size: var(--fs-sm);
+  color: var(--ink-muted);
+  font-family: var(--font-mono-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
 }
 .site-footer__credit { margin-bottom: var(--space-1); }
-.site-footer__meta { color: var(--color-muted); opacity: 0.8; }
+.site-footer__meta { color: var(--ink-muted); opacity: 0.8; }
 
 /* ── Club card (used in home + clubs pages) ─────────── */
 .club-grid {
@@ -324,18 +331,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
+  background: var(--paper-base);
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  border: 1px solid var(--ink-rule-strong);
   border-radius: var(--radius);
   padding: var(--space-5) var(--space-3);
-  color: var(--color-fg);
+  color: var(--ink-base);
   text-align: center;
   height: 100%;
   transition: transform var(--transition), box-shadow var(--transition);
 }
 .club-card a:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: var(--shadow-fold-lift);
   text-decoration: none;
 }
 .club-card__logo {
@@ -354,8 +363,8 @@
 .club-card__logo-fallback {
   width: 96px;
   height: 96px;
-  background: var(--color-accent);
-  color: var(--color-accent-fg);
+  background: var(--accent-red);
+  color: var(--paper-base);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -364,7 +373,7 @@
   font-weight: 600;
 }
 .club-card__name { font-size: var(--fs-base); margin-bottom: var(--space-1); }
-.club-card__count { font-size: var(--fs-xs); color: var(--color-muted); margin: 0; }
+.club-card__count { font-size: var(--fs-xs); color: var(--ink-muted); margin: 0; }
 
 /* ── Thumb (image card) ─────────────────────────────── */
 .thumb-grid {
@@ -376,8 +385,8 @@
   list-style: none;
 }
 .thumb {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
+  background: var(--paper-base);
+  border: 1px solid var(--ink-rule-strong);
   border-radius: var(--radius);
   overflow: hidden;
   margin: 0;
@@ -386,12 +395,12 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: var(--color-border);
+  background: var(--ink-rule);
 }
 .thumb__cap {
   padding: var(--space-2) var(--space-3);
   font-size: var(--fs-xs);
-  color: var(--color-muted);
+  color: var(--ink-muted);
   line-height: 1.4;
 }
 
@@ -405,8 +414,10 @@
   margin-top: var(--space-3);
 }
 .stat-grid li {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
+  background: var(--paper-base);
+  background-image: var(--paper-grain);
+  background-size: 320px 320px;
+  border: 1px solid var(--ink-rule-strong);
   border-radius: var(--radius);
   padding: var(--space-3);
   font-size: var(--fs-sm);
@@ -415,17 +426,17 @@
 .stat-grid strong {
   display: block;
   font-size: var(--fs-2xl);
-  color: var(--color-accent);
+  color: var(--accent-red);
   margin-bottom: var(--space-1);
 }
 
 /* ── Error block (used when a page fails to render) ── */
 .error-block {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
+  background: var(--paper-base);
+  border: 1px solid var(--ink-rule-strong);
   border-left: 4px solid #dc2626;
   border-radius: var(--radius);
   padding: var(--space-4);
-  color: var(--color-muted);
+  color: var(--ink-muted);
 }
 .error-block p { margin: 0; }

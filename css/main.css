@@ -1,13 +1,21 @@
 /* main.css — base layout & typography. Components live in components.css. */
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: var(--fs-base);
-  background: var(--color-bg);
-  color: var(--color-fg);
+  background-color: var(--paper-base);
+  color: var(--ink-base);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Shared paper texture: grain + stains on every page, so theme
+     and texture settings apply consistently. */
+  background-image:
+    var(--paper-grain),
+    var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  background-attachment: fixed, fixed;
 }
 
 main {
@@ -26,6 +34,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: 1.2;
   font-weight: 600;
+  color: var(--ink-base);
 }
 
 h1 { font-size: var(--fs-4xl); }
@@ -34,7 +43,7 @@ h3 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
 h4 { font-size: var(--fs-lg); margin-bottom: var(--space-2); }
 
 a {
-  color: var(--color-accent);
+  color: var(--accent-red);
   text-decoration: none;
   transition: color var(--transition);
 }
@@ -67,11 +76,11 @@ img {
 }
 
 /* Utility classes */
-.muted { color: var(--color-muted); }
+.muted { color: var(--ink-muted); }
 .section-title { font-size: var(--fs-2xl); margin-bottom: var(--space-1); }
-.section-sub { color: var(--color-muted); margin-bottom: var(--space-4); }
+.section-sub { color: var(--ink-muted); margin-bottom: var(--space-4); }
 .page-title { font-size: var(--fs-4xl); margin-bottom: var(--space-2); }
-.page-sub { color: var(--color-muted); font-size: var(--fs-lg); margin-bottom: var(--space-6); }
+.page-sub { color: var(--ink-muted); font-size: var(--fs-lg); margin-bottom: var(--space-6); }
 .back-link { display: inline-block; margin-bottom: var(--space-3); font-size: var(--fs-sm); }
 
 .noscript-warning {
@@ -88,6 +97,77 @@ img {
   main { padding: var(--space-4) var(--space-3); }
   h1 { font-size: var(--fs-3xl); }
   .page-title { font-size: var(--fs-3xl); }
+}
+
+/* =========================================================================
+   Entrance animations — shared across all pages.
+
+   Headings drop in with a slight rotateX, paragraphs fade up, and
+   the whole content block has a subtle perspective shift. These fire
+   immediately (small delays) so the user sees motion right away.
+   Paused while the loader is active on the home page.
+   ========================================================================= */
+
+main h1,
+main h2,
+main h3 {
+  animation: subPageHeadingDrop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top center;
+}
+main h1 { animation-delay: 0.1s; }
+main h2 { animation-delay: 0.2s; }
+main h3 { animation-delay: 0.3s; }
+
+main p,
+main li,
+main blockquote {
+  animation: subPageContentFade 0.6s ease both;
+}
+main p:nth-child(1) { animation-delay: 0.15s; }
+main p:nth-child(2) { animation-delay: 0.25s; }
+main p:nth-child(3) { animation-delay: 0.35s; }
+main p:nth-child(4) { animation-delay: 0.45s; }
+main p:nth-child(5) { animation-delay: 0.55s; }
+main li { animation-delay: 0.3s; }
+main blockquote { animation-delay: 0.2s; }
+
+@keyframes subPageHeadingDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) rotateX(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+@keyframes subPageContentFade {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pause sub-page animations while the home page loader is active */
+body.loader-active main h1,
+body.loader-active main h2,
+body.loader-active main h3,
+body.loader-active main p,
+body.loader-active main li,
+body.loader-active main blockquote {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main h1, main h2, main h3,
+  main p, main li, main blockquote {
+    animation: none !important;
+  }
 }
 
 /* =========================================================================
@@ -188,47 +268,82 @@ body[data-page="home"] .site-footer {
 }
 
 /* =========================================================================
-   Non-home pages — scope the corner button to use modern tokens
-   so it doesn't clash with the modern flat UI.
+   Non-home pages — use the same newspaper tokens as the home page.
+   The paper texture and ink colors now cascade from :root, so non-home
+   pages get the same visual treatment. Only the extra newspaper-specific
+   overlays (vignette, natural-paper.png) are home-only.
    ========================================================================= */
 
+/* Navbar on non-home pages: newspaper tokens */
+body:not([data-page="home"]) .navbar {
+  background-color: var(--paper-base);
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  border-bottom: var(--rule-heavy);
+}
+body:not([data-page="home"]) .navbar .nav-link {
+  color: var(--ink-base);
+  font-family: var(--font-display);
+}
+body:not([data-page="home"]) .navbar .nav-link:hover {
+  background: var(--paper-deep);
+}
+body:not([data-page="home"]) .navbar .nav-link--active {
+  background: var(--ink-base);
+  color: var(--paper-base);
+}
+
+/* Footer on non-home pages: newspaper tokens */
+body:not([data-page="home"]) .site-footer {
+  background-color: var(--paper-base);
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size: 320px 320px, 100% 100%;
+  border-top: var(--rule-heavy);
+  color: var(--ink-muted);
+  font-family: var(--font-mono-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+}
+
+/* Corner button */
 body:not([data-page="home"]) .navbar-corner {
-  color: var(--color-fg);
+  color: var(--ink-base);
 }
 body:not([data-page="home"]) .navbar-corner::before {
-  background: var(--color-card-bg);
+  background: var(--paper-base);
 }
 body:not([data-page="home"]) .navbar-corner::after {
-  background: var(--color-card-bg);
+  background: var(--paper-base);
   box-shadow:
     -2px 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px var(--color-border);
+    inset 0 0 0 1px var(--ink-rule-strong);
 }
 body:not([data-page="home"]) .navbar-corner:hover::after {
   box-shadow:
     -3px 3px 12px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px var(--color-border);
+    inset 0 0 0 1px var(--ink-rule-strong);
 }
 body:not([data-page="home"]) .navbar-corner.is-open::after {
   box-shadow:
     -4px 4px 14px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px var(--color-border);
+    inset 0 0 0 1px var(--ink-rule-strong);
 }
 
-/* Also scope the settings panel to use newspaper tokens only on home */
+/* Settings panel uses newspaper tokens on all pages now */
 body:not([data-page="home"]) .settings-fab {
-  background: var(--color-card-bg);
-  border-color: var(--color-border);
-  color: var(--color-fg);
+  background: var(--paper-base);
+  border-color: var(--ink-rule-strong);
+  color: var(--ink-base);
 }
 body:not([data-page="home"]) .settings-panel {
-  background: var(--color-card-bg);
-  border-left-color: var(--color-border);
+  background: var(--paper-base);
+  border-left-color: var(--ink-rule-strong);
 }
 body:not([data-page="home"]) .settings-close {
-  color: var(--color-fg);
-  border-color: var(--color-border);
+  color: var(--ink-base);
+  border-color: var(--ink-rule-strong);
 }
 body:not([data-page="home"]) .settings-close:hover {
-  background: var(--color-border);
+  background: var(--ink-rule);
 }

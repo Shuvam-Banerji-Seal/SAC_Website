@@ -639,6 +639,17 @@ main.home {
 
 /* ── Reduced motion ───────────────────────────────────────────────── */
 
+/* Pause all entrance animations while the loader is covering the page.
+   When the loader hides (body.loader-active removed), animations
+   resume from where they were paused — so the user actually sees them. */
+body.loader-active .masthead,
+body.loader-active .lead-article__headline,
+body.loader-active .lead-article__deck,
+body.loader-active .lead-article__byline,
+body.loader-active .lead-article__body p {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .lead-article__headline,
