@@ -6,6 +6,7 @@
  */
 import { $, el } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
+import { revealText } from "../utils/calligraphy.js";
 
 export async function initGallery() {
   const mount = $("#gallery-grid");
@@ -17,23 +18,27 @@ export async function initGallery() {
       el(
         "section",
         { class: "gallery", id: "gallery-grid" },
+        el("h3", { class: "gallery__section-title reveal-section" }, "Photo Album"),
         ...clubs.map((c) => {
           const images = assets.filter(
-            (a) => a.club === c.slug && a.file_type === "image" && !a.is_ob_portrait,
+            (a) => a.club === c.slug && a.file_type === "image" && !a.is_ob_portrait
           );
           if (!images.length) return null;
           const groupName = `gallery-${c.slug}`;
           return el(
             "section",
-            { class: "gallery__club" },
+            { class: "gallery__club reveal-section" },
             el("h3", { class: "gallery__club-name" }, c.name),
             el(
               "ul",
-              { class: "thumb-grid" },
+              { class: "thumb-grid pinned-thumbs" },
               ...images.map((i) =>
                 el(
                   "li",
-                  { class: "thumb" },
+                  {
+                    class: "thumb",
+                    style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
+                  },
                   el(
                     "a",
                     { href: i.public_url, "data-viewer": groupName, title: i.title || i.filename },
@@ -43,16 +48,36 @@ export async function initGallery() {
                       loading: "lazy",
                       width: i.width || undefined,
                       height: i.height || undefined,
-                    }),
+                    })
                   ),
-                  el("figcaption", { class: "thumb__cap" }, i.title || i.filename),
-                ),
-              ),
-            ),
+                  el("figcaption", { class: "thumb__cap" }, i.title || i.filename)
+                )
+              )
+            )
           );
-        }),
-      ),
+        })
+      )
     );
+
+    // IntersectionObserver for section reveals
+    if (
+      !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches &&
+      "IntersectionObserver" in window
+    ) {
+      const sections = document.querySelectorAll(".reveal-section");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-revealed");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      sections.forEach((s) => observer.observe(s));
+    }
   } catch (err) {
     console.error("initGallery failed:", err);
   }

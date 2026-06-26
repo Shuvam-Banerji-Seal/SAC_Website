@@ -6,6 +6,7 @@
  */
 import { $, el } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
+import { revealText } from "../utils/calligraphy.js";
 
 export async function initEvents() {
   const mount = $("#events-list");
@@ -32,7 +33,7 @@ export async function initEvents() {
       el(
         "section",
         { class: "events", id: "events-list" },
-        el("h2", { class: "section-title" }, "Events & competitions"),
+        el("h2", { class: "section-title", id: "eventsTitle" }, "Events & competitions"),
         years.length === 0
           ? el("p", { class: "muted" }, "No events indexed yet.")
           : el(
@@ -41,15 +42,18 @@ export async function initEvents() {
               ...years.map((y) =>
                 el(
                   "section",
-                  { class: "events__year" },
+                  { class: "events__year reveal-section" },
                   el("h3", { class: "events__year-label" }, String(y)),
                   el(
                     "ul",
-                    { class: "thumb-grid" },
+                    { class: "thumb-grid pinned-thumbs" },
                     ...byYear.get(y).map((e) =>
                       el(
                         "li",
-                        { class: "thumb" },
+                        {
+                          class: "thumb",
+                          style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
+                        },
                         el("img", {
                           src: e.public_url,
                           alt: e.description,
@@ -57,15 +61,43 @@ export async function initEvents() {
                           width: e.width || undefined,
                           height: e.height || undefined,
                         }),
-                        el("figcaption", { class: "thumb__cap" }, e.title || e.filename),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-      ),
+                        el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
+                      )
+                    )
+                  )
+                )
+              )
+            )
+      )
     );
+
+    // Calligraphy text reveal for the events title
+    const title = document.getElementById("eventsTitle");
+    if (title) {
+      document.fonts?.ready?.then(() => {
+        if (title.offsetParent !== null) revealText(title, 1500);
+      });
+    }
+
+    // IntersectionObserver for section reveals
+    if (
+      !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches &&
+      "IntersectionObserver" in window
+    ) {
+      const sections = document.querySelectorAll(".reveal-section");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-revealed");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      sections.forEach((s) => observer.observe(s));
+    }
   } catch (err) {
     console.error("initEvents failed:", err);
   }

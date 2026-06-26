@@ -15,6 +15,7 @@ import { renderFooter } from "./components/footer.js";
 import { setupNavbarFold } from "./components/navbar-fold.js";
 import { initSettings } from "./components/settings.js";
 import { initViewer } from "./components/viewer.js";
+import { initPaperFold } from "./components/three-fold.js";
 import { initHome } from "./pages/home.js";
 import { initClubs } from "./pages/clubs.js";
 import { initClub } from "./pages/club.js";
@@ -40,13 +41,16 @@ onReady(() => {
     else if (prefs.dark === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches)
       document.documentElement.setAttribute("data-theme", "dark");
     if (prefs.texture) document.documentElement.setAttribute("data-texture", prefs.texture);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   renderNavbar(page);
   renderFooter();
   setupNavbarFold();
   initSettings();
   initViewer();
+  initPaperFold();
   initializers[page]?.();
 
   // Register Service Worker for asset caching (production only).

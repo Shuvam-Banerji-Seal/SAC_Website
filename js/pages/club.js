@@ -7,6 +7,7 @@
  */
 import { $, el, getQueryParam, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries, getClub } from "../data.js";
+import { revealText } from "../utils/calligraphy.js";
 
 /** Tiny markdown subset: headings, paragraphs, images, bullet lists.
  *  All text is HTML-escaped. */
@@ -25,28 +26,46 @@ function renderMarkdown(md) {
     const t = line.trim();
     if (t.startsWith("# ")) {
       flushPara();
-      if (listOpen) { out.push("</ul>"); listOpen = false; }
+      if (listOpen) {
+        out.push("</ul>");
+        listOpen = false;
+      }
       out.push(`<h2>${escapeHtml(t.slice(2))}</h2>`);
     } else if (t.startsWith("## ")) {
       flushPara();
-      if (listOpen) { out.push("</ul>"); listOpen = false; }
+      if (listOpen) {
+        out.push("</ul>");
+        listOpen = false;
+      }
       out.push(`<h3>${escapeHtml(t.slice(3))}</h3>`);
     } else if (t.startsWith("### ")) {
       flushPara();
-      if (listOpen) { out.push("</ul>"); listOpen = false; }
+      if (listOpen) {
+        out.push("</ul>");
+        listOpen = false;
+      }
       out.push(`<h4>${escapeHtml(t.slice(4))}</h4>`);
     } else if (t.startsWith("![")) {
       flushPara();
-      if (listOpen) { out.push("</ul>"); listOpen = false; }
+      if (listOpen) {
+        out.push("</ul>");
+        listOpen = false;
+      }
       const m = t.match(/!\[(.*?)\]\((.*?)\)/);
       if (m) out.push(`<img alt="${escapeHtml(m[1])}" src="${escapeAttr(safeUrl(m[2]))}">`);
     } else if (t.startsWith("- ") || t.startsWith("* ")) {
       flushPara();
-      if (!listOpen) { out.push("<ul>"); listOpen = true; }
+      if (!listOpen) {
+        out.push("<ul>");
+        listOpen = true;
+      }
       out.push(`<li>${escapeHtml(t.slice(2))}</li>`);
     } else if (t === "") {
       flushPara();
-      if (listOpen) { out.push("</ul>"); listOpen = false; }
+      if (listOpen) {
+        out.push("</ul>");
+        listOpen = false;
+      }
     } else {
       buf.push(t);
     }
@@ -57,11 +76,21 @@ function renderMarkdown(md) {
 }
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]
+  );
 }
-function escapeAttr(s) { return escapeHtml(s); }
+function escapeAttr(s) {
+  return escapeHtml(s);
+}
 
 /** Validate that a URL is safe (not javascript: or data: URIs). */
 function safeUrl(url) {
@@ -87,7 +116,7 @@ function imageCard(asset) {
       width: asset.width || undefined,
       height: asset.height || undefined,
     }),
-    el("figcaption", { class: "thumb__cap" }, asset.title || asset.filename),
+    el("figcaption", { class: "thumb__cap" }, asset.title || asset.filename)
   );
 }
 
@@ -134,7 +163,7 @@ export async function initClub() {
           "header",
           { class: "club-detail__header" },
           el("a", { href: pageUrl("pages/clubs.html"), class: "back-link" }, "← All clubs"),
-          el("h1", { class: "club-detail__title" }, club.name),
+          el("h1", { class: "club-detail__title", id: "clubTitle" }, club.name),
           logos[0]
             ? el("img", {
                 src: logos[0].public_url,
@@ -143,12 +172,10 @@ export async function initClub() {
                 width: logos[0].width || 160,
                 height: logos[0].height || 160,
               })
-            : null,
+            : null
         ),
         // Markdown body (only if fetched successfully)
-        mdHtml
-          ? el("section", { class: "club-detail__body", innerHTML: mdHtml })
-          : null,
+        mdHtml ? el("section", { class: "club-detail__body", innerHTML: mdHtml }) : null,
         // Counts summary
         el(
           "section",
@@ -162,8 +189,8 @@ export async function initClub() {
             el("li", {}, el("strong", {}, club.counts.markdowns), " doc files"),
             el("li", {}, el("strong", {}, club.counts.ob), " OB portraits"),
             el("li", {}, el("strong", {}, club.counts.iicm), " IICM photos"),
-            el("li", {}, el("strong", {}, club.counts.event), " event photos"),
-          ),
+            el("li", {}, el("strong", {}, club.counts.event), " event photos")
+          )
         ),
         // OB portraits
         obs.length
@@ -171,7 +198,7 @@ export async function initClub() {
               "section",
               { class: "club-detail__section" },
               el("h2", {}, "Office bearers"),
-              el("ul", { class: "thumb-grid" }, ...obs.map((o) => el("li", {}, imageCard(o)))),
+              el("ul", { class: "thumb-grid" }, ...obs.map((o) => el("li", {}, imageCard(o))))
             )
           : null,
         // IICM
@@ -180,7 +207,7 @@ export async function initClub() {
               "section",
               { class: "club-detail__section" },
               el("h2", {}, "IICM achievements"),
-              el("ul", { class: "thumb-grid" }, ...iicm.map(imageCard)),
+              el("ul", { class: "thumb-grid" }, ...iicm.map(imageCard))
             )
           : null,
         // Events
@@ -189,15 +216,45 @@ export async function initClub() {
               "section",
               { class: "club-detail__section" },
               el("h2", {}, "Events"),
-              el("ul", { class: "thumb-grid" }, ...events.map(imageCard)),
+              el("ul", { class: "thumb-grid" }, ...events.map(imageCard))
             )
-          : null,
-      ),
+          : null
+      )
     );
+
+    // Calligraphy text reveal for the club title
+    const title = document.getElementById("clubTitle");
+    if (title) {
+      document.fonts?.ready?.then(() => {
+        if (title.offsetParent !== null) revealText(title, 1800);
+      });
+    }
+
+    // IntersectionObserver: reveal sections as they scroll into view
+    setupSectionReveal();
   } catch (err) {
     console.error("initClub failed:", err);
     mount.replaceWith(errorBlock(`Failed to load club: ${err.message}`));
   }
+}
+
+function setupSectionReveal() {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+  if (!("IntersectionObserver" in window)) return;
+
+  const sections = document.querySelectorAll(".reveal-section");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+  sections.forEach((s) => observer.observe(s));
 }
 
 function errorBlock(msg) {
