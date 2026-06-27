@@ -55,8 +55,8 @@ function getAudioCtx() {
 
 /**
  * Create and resume the AudioContext. This MUST be called from a user
- * gesture handler (click, touchstart, keydown, pointerdown). Browsers
- * will block AudioContext creation/resumption from non-gesture contexts.
+ * gesture handler (click, touchstart). Browsers will block AudioContext
+ * creation/resumption from non-gesture contexts.
  */
 function unlockAudio() {
   if (audioUnlocked) return;
@@ -75,24 +75,36 @@ function unlockAudio() {
 
     // Resume if suspended (Chrome starts contexts suspended)
     if (audioCtx.state === "suspended") {
-      audioCtx.resume().then(function () {
+      const resumePromise = audioCtx.resume();
+      // Handle both native Promise and non-Promise resume (older browsers)
+      if (resumePromise && typeof resumePromise.then === "function") {
+        resumePromise
+          .then(function () {
+            audioUnlocked = true;
+          })
+          .catch(function () {
+            // Resume failed — context may need another gesture.
+            // Don't mark as unlocked; the next gesture will retry.
+          });
+      } else {
         audioUnlocked = true;
-      });
-    } else {
+      }
+    } else if (audioCtx.state === "running") {
       audioUnlocked = true;
     }
+    // If state is "closed" (destroyed), don't set unlocked — can't recover
   } catch {
-    // AudioContext not supported or blocked
+    // AudioContext not supported or blocked — fail silently
   }
 }
 
 // Register unlock listeners on user gestures only.
-// once: true — we only need the first gesture to unlock.
+// Chrome treats click and touchstart as trusted gestures for AudioContext.
+// keydown/pointerdown are NOT reliable — Tab navigation, arrow keys, etc.
+// don't count as gestures and trigger the console warning.
 if (typeof window !== "undefined") {
-  const unlockEvents = ["click", "touchstart", "keydown", "pointerdown"];
-  unlockEvents.forEach(function (evt) {
-    window.addEventListener(evt, unlockAudio, { once: true, passive: true });
-  });
+  document.addEventListener("click", unlockAudio, { once: true, passive: true });
+  document.addEventListener("touchstart", unlockAudio, { once: true, passive: true });
 }
 
 /**
