@@ -254,17 +254,10 @@ function renderPaperCard(club) {
     el("span", { class: "paper-card__cta" }, "Read More \u2192")
   );
 
-  // Click interaction: card folds like paper before navigating
-  card.addEventListener("click", (e) => {
-    // Only intercept left-clicks without modifier keys
-    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
-    e.preventDefault();
-    card.classList.add("is-folding");
-    // Navigate after the fold animation completes
-    setTimeout(() => {
-      window.location.href = card.href;
-    }, 400);
-  });
+  // Navigation is handled by the native <a href> — no custom click handler.
+  // The fold animation was removed because it caused transform interpolation
+  // glitches between the hover and folding states.
+  // Hover effect (3D lift + shadow) is purely CSS and works correctly.
 
   return el("li", { class: "paper-card-wrap" }, card);
 }

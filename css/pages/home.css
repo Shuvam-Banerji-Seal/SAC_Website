@@ -738,28 +738,12 @@ main.home {
 }
 
 /* On hover, the card straightens out and lifts.
-   NOTE: no !important — .is-folding (same specificity, later in file)
-   wins cleanly when the user clicks. */
+   Note: the click-to-fold animation was removed because it caused
+   transform function interpolation glitches between hover and fold
+   states. Hover-only is smooth and reliable. */
 .paper-card:hover,
 .paper-card:focus-visible {
   transform: translateY(-12px) translateZ(60px) rotateY(4deg) rotateX(-2deg) rotate(0deg);
-}
-
-/* ── Click interaction: card folds on click ───────────────────────
-   The transform FUNCTIONS must match the hover state's function
-   POSITIONS so CSS transitions interpolate smoothly. CSS matches
-   transforms by position, not by name — a 3-function fold transform
-   with a 5-function hover transform causes incompatible function
-   interpolation (e.g. translateY→rotateX = visual glitch). */
-
-.paper-card.is-folding {
-  /* Positions match hover's: translateY / translateZ / rotateY / rotateX / scale */
-  transform: translateY(-12px) translateZ(-100px) rotateY(0deg) rotateX(80deg) scale(0.9);
-  opacity: 0.5;
-  transition:
-    transform 0.4s ease-in,
-    opacity 0.4s ease;
-  pointer-events: none;
 }
 
 /* ── Texture-specific overrides ─────────────────────────────────── */
