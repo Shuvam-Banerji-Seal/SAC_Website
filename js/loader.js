@@ -181,36 +181,20 @@ function transformsFor(index, total) {
   const rotY = (index - mid) * 6;
   const rotZ = -7 + index * 1.55;
 
-  if (isMobile()) {
-    /* Mobile: simplified transforms — only translate3d + rotateZ.
-       Full rotateX/Y + preserve-3d causes GPU thrashing on low-end
-       mobile GPUs. The visual effect is preserved (papers fly in from
-       different angles and stack with depth) but the GPU only composites
-       2D layers instead of full 3D. */
-    const entranceX = (Math.random() - 0.5) * 500;
-    const entranceY = -300 - Math.random() * 200;
-    const entranceRotZ = (Math.random() - 0.5) * 60;
-    return {
-      entrance: `
-        translate(-50%, -50%)
-        translate(${entranceX}px, ${entranceY}px)
-        rotate(${entranceRotZ}deg)
-        scale(0.7)
-      `,
-      final: `
-        translate(-50%, -50%)
-        translate3d(${finalX}px, ${finalY}px, ${finalZ}px)
-        rotateZ(${rotZ}deg)
-      `,
-    };
-  }
+  /* Mobile: same 3D entrance as desktop (translate3d + rotateX/Y/Z)
+     but with smaller random ranges so the GPU has less work per frame.
+     The visual effect is the same — papers fly in from different angles
+     and stack with depth — but the smaller ranges mean fewer pixels to
+     composite per transform. */
+  const scale = isMobile() ? 0.75 : 1;
+  const range = isMobile() ? 0.6 : 1; // fraction of desktop random range
 
-  const entranceX = (Math.random() - 0.5) * 760;
-  const entranceY = -390 - Math.random() * 250;
-  const entranceZ = 260 + Math.random() * 430;
-  const entranceRotX = 45 + Math.random() * 45;
-  const entranceRotY = (Math.random() - 0.5) * 130;
-  const entranceRotZ = (Math.random() - 0.5) * 90;
+  const entranceX = (Math.random() - 0.5) * 760 * range;
+  const entranceY = (-390 - Math.random() * 250) * range;
+  const entranceZ = (260 + Math.random() * 430) * range;
+  const entranceRotX = (45 + Math.random() * 45) * range;
+  const entranceRotY = (Math.random() - 0.5) * 130 * range;
+  const entranceRotZ = (Math.random() - 0.5) * 90 * range;
   return {
     entrance: `
       translate(-50%, -50%)
@@ -218,6 +202,7 @@ function transformsFor(index, total) {
       rotateX(${entranceRotX}deg)
       rotateY(${entranceRotY}deg)
       rotateZ(${entranceRotZ}deg)
+      scale(${scale})
     `,
     final: `
       translate(-50%, -50%)
@@ -302,10 +287,10 @@ function startLoader(data) {
   // Append all papers in one DOM operation
   els.paperStage.appendChild(fragment);
 
-  /* Mobile: more generous stagger (220ms vs 270ms desktop) to give the
-     GPU time to render each paper's 3D transform before the next one
-     starts. Desktop uses 270ms because it has more GPU headroom. */
-  const stagger = isMobile() ? 220 : 270;
+  /* Mobile: generous stagger (300ms vs 270ms desktop) so each paper's
+     3D entrance is fully visible before the next one starts. Desktop
+     is slightly faster because the GPU can keep up. */
+  const stagger = isMobile() ? 300 : 270;
 
   /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
      rAF ensures the browser has finished processing the previous frame
@@ -354,11 +339,12 @@ function startLoader(data) {
 
         // If this is the last paper, schedule the gather
         if (i === papers.length - 1) {
-          /* Mobile: generous gather delay (900ms vs 1050ms desktop).
+          /* Mobile: generous gather delay (1200ms vs 1050ms desktop).
              The last paper needs time to be seen before everything
              gathers. Previously 550ms — barely 50ms after the last
-             paper arrived. */
-          const gatherDelay = isMobile() ? 900 : 1050;
+             paper arrived. Now 1200ms — the user sees all 5 papers
+             stacked with depth before they fade. */
+          const gatherDelay = isMobile() ? 1200 : 1050;
           setTimeout(() => {
             if (!skipped) gatherNewspapers();
           }, gatherDelay);
@@ -390,11 +376,14 @@ function gatherNewspapers() {
         paper.classList.remove("arrived");
         const x = (Math.random() - 0.5) * 6;
         const y = (Math.random() - 0.5) * 6;
+        const z = index * 1.8;
         const rz = (Math.random() - 0.5) * 3;
         paper.style.transform = `
           translate(-50%, -50%)
-          translate(${x}px, ${y}px)
-          rotate(${rz}deg)
+          translate3d(${x}px, ${y}px, ${z}px)
+          rotateX(0deg)
+          rotateY(0deg)
+          rotateZ(${rz}deg)
           scale(0.94)
         `;
         paper.style.opacity = index === papers.length - 1 ? "1" : "0";
