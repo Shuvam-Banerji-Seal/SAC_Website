@@ -545,6 +545,9 @@ export function revealParagraphs(container, perCharDelay) {
  */
 export function initScrollSounds() {
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Guard: prevent double-binding when called from both home.js and club-images.js
+  if (window.__sacScrollSoundsBound) return;
+  window.__sacScrollSoundsBound = true;
 
   let lastScratch = 0;
   let lastScrollY = window.scrollY || 0;

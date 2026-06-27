@@ -90,10 +90,7 @@ function setupDesktopCorner(navbar, corner) {
     navbar.classList.toggle("is-open", open);
     corner.classList.toggle("is-open", open);
     corner.setAttribute("aria-expanded", String(open));
-    corner.setAttribute(
-      "aria-label",
-      open ? "Close navigation" : "Open navigation",
-    );
+    corner.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
   };
 
   // Click on the corner toggles.
@@ -142,6 +139,10 @@ function clearNavbarState(navbar, corner) {
 
 function setupResizeWatcher(navbar, corner) {
   if (isReducedMotion()) return;
+  // Guard: only one resize listener per session
+  if (window.__sacNavbarResizeBound) return;
+  window.__sacNavbarResizeBound = true;
+
   let wasDesktop = window.innerWidth >= BREAKPOINT_PX;
   window.addEventListener("resize", () => {
     const isDesk = window.innerWidth >= BREAKPOINT_PX;
@@ -172,11 +173,13 @@ function setupResizeWatcher(navbar, corner) {
 function waitForNavbar(callback) {
   // navbar.js renders the .navbar after onReady; it may not be in the
   // DOM yet when this module first runs.
+  let retries = 0;
+  const MAX_RETRIES = 100; // ~1.6s at 60fps
   const tick = () => {
     const n = $(".navbar");
     const c = $("#navbarCorner");
     if (n) callback(n, c);
-    else requestAnimationFrame(tick);
+    else if (retries++ < MAX_RETRIES) requestAnimationFrame(tick);
   };
   tick();
 }

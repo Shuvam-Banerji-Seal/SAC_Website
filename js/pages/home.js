@@ -431,7 +431,12 @@ export async function initHome() {
   // Also re-measure on font load since canvas metrics depend on it.
   adjustLeadLayout();
   document.fonts?.ready?.then(adjustLeadLayout);
-  window.addEventListener("resize", adjustLeadLayout);
+  // Debounced resize: canvas text measurement is expensive, don't run on every event
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    if (resizeTimer) cancelAnimationFrame(resizeTimer);
+    resizeTimer = requestAnimationFrame(adjustLeadLayout);
+  });
 
   // Calligraphy text reveal: headline appears as if being written.
   // Only on first visit (not on resize or re-init).

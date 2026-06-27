@@ -66,12 +66,15 @@ const ARTICLES = [
    Mobile gets more time than before — the logo stamp animation is 0.72s,
    printReveal is 1.05s, captionUp is 0.75s. We need the user to actually
    SEE the logo, not just flash it. */
-const HOLD_AFTER_LOGO = isMobile() ? 1200 : 1800;
+const HOLD_AFTER_LOGO = MOBILE ? 1200 : 1800;
 
 /* Device tier from preloader (falls back to runtime detection).
    "low" = few cores/RAM, "medium" = typical mobile, "high" = desktop.
    Used to scale splash droplets, SVG filter complexity, and rAF batching. */
-const DEVICE_TIER = window.__sacDeviceTier || (isMobile() ? "low" : "high");
+const DEVICE_TIER = window.__sacDeviceTier || (MOBILE ? "low" : "high");
+
+/* Cache isMobile() — called ~10+ times during loader init. */
+const MOBILE = isMobile();
 
 /* -------------------------------------------------------------------------
  * State
@@ -186,8 +189,8 @@ function transformsFor(index, total) {
      The visual effect is the same — papers fly in from different angles
      and stack with depth — but the smaller ranges mean fewer pixels to
      composite per transform. */
-  const scale = isMobile() ? 0.75 : 1;
-  const range = isMobile() ? 0.6 : 1; // fraction of desktop random range
+  const scale = MOBILE ? 0.75 : 1;
+  const range = MOBILE ? 0.6 : 1; // fraction of desktop random range
 
   const entranceX = (Math.random() - 0.5) * 760 * range;
   const entranceY = (-390 - Math.random() * 250) * range;
@@ -226,12 +229,12 @@ function spawnSplashDroplets() {
      the compositor, but fewer DOM nodes = less jank on low-end devices. */
   let count;
   if (DEVICE_TIER === "low") count = 10;
-  else if (DEVICE_TIER === "medium") count = isMobile() ? 18 : 28;
-  else count = isMobile() ? 12 : window.innerWidth < 768 ? 24 : 38;
+  else if (DEVICE_TIER === "medium") count = MOBILE ? 18 : 28;
+  else count = MOBILE ? 12 : window.innerWidth < 768 ? 24 : 38;
 
-  const maxDist = isMobile() ? 120 : 245;
-  const minDist = isMobile() ? 30 : 55;
-  const maxDur = isMobile() ? 0.6 : 1.34;
+  const maxDist = MOBILE ? 120 : 245;
+  const minDist = MOBILE ? 30 : 55;
+  const maxDur = MOBILE ? 0.6 : 1.34;
   for (let i = 0; i < count; i++) {
     const dot = document.createElement("div");
     dot.className = "splash-dot";
@@ -239,10 +242,10 @@ function spawnSplashDroplets() {
     const distance = minDist + Math.random() * maxDist;
     const x = Math.cos(angle) * distance;
     const y = Math.sin(angle) * distance * 0.64;
-    const size = isMobile() ? 3 + Math.random() * 10 : 4 + Math.random() * 18;
+    const size = MOBILE ? 3 + Math.random() * 10 : 4 + Math.random() * 18;
     const duration = 0.4 + Math.random() * (maxDur - 0.4);
     const delay = Math.random() * 0.11;
-    const arc = isMobile() ? 10 + Math.random() * 40 : 20 + Math.random() * 80;
+    const arc = MOBILE ? 10 + Math.random() * 40 : 20 + Math.random() * 80;
     const squash = 0.82 + Math.random() * 0.55;
     dot.style.setProperty("--x", `${x}px`);
     dot.style.setProperty("--y", `${y}px`);
@@ -262,7 +265,7 @@ function spawnSplashDroplets() {
 function startLoader(data) {
   /* Mobile optimization: only show 5 clubs (down from 12) to reduce DOM
      nodes, animation duration, and memory pressure on low-end phones. */
-  const clubLimit = isMobile() ? 5 : data.length;
+  const clubLimit = MOBILE ? 5 : data.length;
   const clubs = data.slice(0, clubLimit);
   const total = clubs.length;
 
@@ -292,7 +295,7 @@ function startLoader(data) {
      the next one starts. At 300ms, papers overlapped heavily — the GPU
      was compositing 3-4 in-flight transforms simultaneously. At 400ms,
      at most 2 overlap. */
-  const stagger = isMobile() ? 400 : 270;
+  const stagger = MOBILE ? 400 : 270;
 
   /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
      rAF ensures the browser has finished processing the previous frame
@@ -324,15 +327,15 @@ function startLoader(data) {
            papers simultaneously causes jank on low-end mobile GPUs. The
            CSS transition on transform/opacity is enough for a smooth
            entrance. */
-        if (!isMobile()) {
-          const arriveDelay = 900;
+        if (!MOBILE) {
+          /* Desktop: the arrived class is kept for future styling. */
           setTimeout(() => {
             if (!skipped) papers[i].classList.add("arrived");
-          }, arriveDelay);
+          }, 900);
         }
 
         // Remove will-change after the transition completes to free GPU memory
-        const transitionDuration = isMobile() ? 950 : 1000;
+        const transitionDuration = MOBILE ? 950 : 1000;
         setTimeout(() => {
           if (papers[i] && !skipped) {
             papers[i].style.willChange = "auto";
@@ -345,7 +348,7 @@ function startLoader(data) {
              All 5 papers need to be visible stacked with depth for a
              beat before they fade. At 1200ms the last paper had barely
              settled. At 1500ms the user sees the full stack. */
-          const gatherDelay = isMobile() ? 1500 : 1050;
+          const gatherDelay = MOBILE ? 1500 : 1050;
           setTimeout(() => {
             if (!skipped) gatherNewspapers();
           }, gatherDelay);
@@ -370,7 +373,7 @@ function gatherNewspapers() {
      fading when the ink drop started, causing GPU overlap jank.
      Now: 60ms per paper, 600ms to ink finale — papers fully faded
      before the ink drop begins. */
-  if (isMobile()) {
+  if (MOBILE) {
     els.paperStage.style.animation = "none";
     papers.forEach((paper, index) => {
       setTimeout(() => {
@@ -428,7 +431,10 @@ function playInkFinale() {
   /* Mobile: the dropFall3D CSS animation is 1.12s (1120ms). Impact must
      fire AFTER the drop finishes, not before. Desktop uses 1080ms which
      is already 40ms early — we fix that too. */
-  const impactDelay = 1200;
+  /* The dropFall3D CSS animation is 1.12s (1120ms). Impact fires just
+     after the drop finishes so the splash begins the moment the ink
+     arrives (no visible gap where the drop sits motionless). */
+  const impactDelay = 1140;
   /* Mobile: logo stamp needs to be fully visible before the loader fades.
      Logo stamp CSS is 0.72s, printReveal is 1.05s + 0.18s delay.
      Logo is fully revealed at ~1230ms after logo class. Add buffer. */
@@ -474,14 +480,26 @@ function skipLoader() {
  * Event wiring
  * ------------------------------------------------------------------------- */
 
+/* Throttled mousemove: store coordinates on each event, update CSS
+   vars via rAF so the browser only re-composites once per frame. */
+let _rafMove = null;
+let _moveX = 0,
+  _moveY = 0;
+
 function mousemoveHandler(event) {
   if (skipped) return;
   if (!els.loader || els.loader.classList.contains("hidden")) return;
   if (!els.stageShell || els.inkFinale.classList.contains("active")) return;
-  const x = event.clientX / window.innerWidth - 0.5;
-  const y = event.clientY / window.innerHeight - 0.5;
-  els.stageShell.style.setProperty("--ry", `${x * 10}deg`);
-  els.stageShell.style.setProperty("--rx", `${-y * 7}deg`);
+  _moveX = event.clientX / window.innerWidth - 0.5;
+  _moveY = event.clientY / window.innerHeight - 0.5;
+  if (!_rafMove) {
+    _rafMove = requestAnimationFrame(() => {
+      _rafMove = null;
+      if (!els.stageShell) return;
+      els.stageShell.style.setProperty("--ry", `${_moveX * 10}deg`);
+      els.stageShell.style.setProperty("--rx", `${-_moveY * 7}deg`);
+    });
+  }
 }
 
 function wireEvents() {

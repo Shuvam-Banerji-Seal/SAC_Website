@@ -17,6 +17,7 @@ import { $ } from "../utils/dom.js";
 let overlay = null;
 let frameImg = null;
 let frameCaption = null;
+let frameEl = null;
 let currentGroup = [];
 let currentIndex = 0;
 let isOpen = false;
@@ -59,13 +60,17 @@ function open(groupName, startIndex) {
   if (!overlay) overlay = buildOverlay();
 
   // Collect all images with matching data-viewer
-  currentGroup = Array.from(
-    document.querySelectorAll(`[data-viewer="${groupName}"]`)
-  ).filter((img) => img.tagName === "IMG" || img.querySelector("img"));
+  currentGroup = Array.from(document.querySelectorAll(`[data-viewer="${groupName}"]`)).filter(
+    (img) => img.tagName === "IMG" || img.querySelector("img")
+  );
   if (!currentGroup.length) return;
 
   currentIndex = startIndex || 0;
   isOpen = true;
+
+  // Promote the frame to its own compositor layer while the viewer is open
+  frameEl = overlay.querySelector(".viewer-frame");
+  if (frameEl) frameEl.style.willChange = "transform";
 
   overlay.classList.add("is-open");
   document.body.style.overflow = "hidden";
@@ -94,6 +99,11 @@ function close() {
   overlay.classList.remove("is-open");
   document.body.style.overflow = "";
   document.removeEventListener("keydown", handleKey);
+  // Remove compositor layer promotion — viewer is closed
+  if (frameEl) {
+    frameEl.style.willChange = "auto";
+    frameEl = null;
+  }
 }
 
 function prev() {
@@ -135,17 +145,12 @@ function updateImage() {
 
   // Caption: use title, alt, or figcaption text
   const caption =
-    img.title ||
-    img.alt ||
-    el.closest("figure")?.querySelector("figcaption")?.textContent ||
-    "";
+    img.title || img.alt || el.closest("figure")?.querySelector("figcaption")?.textContent || "";
   viewerCaption.textContent = caption;
 
   // Counter
   viewerCounter.textContent =
-    currentGroup.length > 1
-      ? `${currentIndex + 1} / ${currentGroup.length}`
-      : "";
+    currentGroup.length > 1 ? `${currentIndex + 1} / ${currentGroup.length}` : "";
 
   // Show/hide nav buttons
   overlay.querySelector(".viewer-nav--prev").style.display =
@@ -172,9 +177,9 @@ export function setupViewer() {
     if (!img) return;
 
     // Find index in group
-    const group = Array.from(
-      document.querySelectorAll(`[data-viewer="${groupName}"]`)
-    ).filter((i) => i.tagName === "IMG" || i.querySelector("img"));
+    const group = Array.from(document.querySelectorAll(`[data-viewer="${groupName}"]`)).filter(
+      (i) => i.tagName === "IMG" || i.querySelector("img")
+    );
     const index = group.indexOf(el);
 
     open(groupName, index >= 0 ? index : 0);

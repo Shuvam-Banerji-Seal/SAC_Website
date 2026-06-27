@@ -5,6 +5,13 @@
  * mouse movement with a gentle parallax curl. Uses dynamic import
  * so a missing/unavailable Three.js doesn't break the page.
  *
+ * Performance:
+ *   - Render loop pauses after 2 seconds of no mouse movement (idle)
+ *   - Pauses when the tab is hidden (Page Visibility API)
+ *   - All event listeners are properly cleaned up on destroy()
+ *   - Passive listeners on mouse/touch to avoid blocking scrolling
+ *   - Canvas promoted to its own compositor layer with will-change
+ *
  * Usage:
  *   import { initPaperFold } from "./components/three-fold.js";
  *   initPaperFold();
@@ -19,6 +26,52 @@ let mouseX = 0,
   mouseY = 0,
   targetX = 0,
   targetY = 0;
+let lastMoveTime = 0;
+let destroyed = false;
+let tabHidden = false;
+
+/* Idle timeout: stop rendering after this many ms of no mouse movement. */
+const IDLE_MS = 2000;
+
+/* ── Event handler refs (needed for removeEventListener in destroy) ── */
+
+function onMouseMove(e) {
+  mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+  mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+  lastMoveTime = Date.now();
+  // If the render loop was idle (no pending rAF), restart it
+  if (!animationId && !destroyed && !tabHidden) {
+    animate();
+  }
+}
+
+function onResize() {
+  if (!camera || !renderer) return;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onVisibilityChange() {
+  tabHidden = document.hidden;
+  if (document.hidden) {
+    // Tab hidden — stop the loop (cancel the next frame)
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+  } else {
+    // Tab visible again — restart if not destroyed
+    if (!destroyed && !animationId) {
+      // Don't restart if idle — let next mousemove restart it
+      if (Date.now() - lastMoveTime < IDLE_MS) {
+        animate();
+      }
+    }
+  }
+}
+
+/* ── Public API ────────────────────────────────────────────────────── */
 
 export async function initPaperFold() {
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
@@ -28,6 +81,7 @@ export async function initPaperFold() {
   try {
     const THREE = await import("three");
     setupThree(THREE);
+    lastMoveTime = Date.now();
     animate();
   } catch {
     // Three.js not loaded or WebGL not available — fail silently
@@ -43,6 +97,7 @@ function setupThree(THREE) {
   renderer.domElement.style.left = "0";
   renderer.domElement.style.zIndex = "-1";
   renderer.domElement.style.pointerEvents = "none";
+  renderer.domElement.style.willChange = "transform";
   renderer.domElement.setAttribute("aria-hidden", "true");
   document.body.prepend(renderer.domElement);
 
@@ -61,19 +116,22 @@ function setupThree(THREE) {
   scene.add(paperMesh);
   scene.add(new THREE.AmbientLight(0xffffff, 0.2));
 
-  document.addEventListener("mousemove", (e) => {
-    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-  });
-  window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+  document.addEventListener("mousemove", onMouseMove, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
+  document.addEventListener("visibilitychange", onVisibilityChange);
 }
 
 function animate() {
+  if (destroyed) return;
+
   animationId = requestAnimationFrame(animate);
+
+  // Idle detection: if the mouse hasn't moved for IDLE_MS, stop rendering
+  if (Date.now() - lastMoveTime > IDLE_MS) {
+    animationId = null; // Clear so mousemove can restart
+    return; // Don't render or request next frame
+  }
+
   targetX += (mouseX * 0.1 - targetX) * 0.05;
   targetY += (mouseY * 0.05 - targetY) * 0.05;
   if (paperMesh) {
@@ -85,7 +143,20 @@ function animate() {
 }
 
 export function destroy() {
-  if (animationId) cancelAnimationFrame(animationId);
+  destroyed = true;
+
+  // Stop the render loop
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  // Remove event listeners (fixes memory leak)
+  document.removeEventListener("mousemove", onMouseMove);
+  window.removeEventListener("resize", onResize);
+  document.removeEventListener("visibilitychange", onVisibilityChange);
+
+  // Dispose Three.js resources
   if (renderer) {
     renderer.dispose();
     renderer.domElement?.remove();
@@ -93,4 +164,5 @@ export function destroy() {
   paperMesh?.geometry?.dispose();
   paperMesh?.material?.dispose();
   renderer = scene = camera = paperMesh = null;
+  mouseX = mouseY = targetX = targetY = 0;
 }

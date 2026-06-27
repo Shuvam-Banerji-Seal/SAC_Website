@@ -297,6 +297,10 @@ main.home {
      rotateX, staggered so the column reads top-to-bottom. */
   transform-origin: top center;
   animation: leadParaDrop 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* Override main.css subPageContentFade which animates the same
+     transform/opacity properties on main p — they would conflict
+     on lead article paragraphs. */
+  animation-name: leadParaDrop !important;
 }
 .lead-article__body p:nth-child(1) {
   animation-delay: 0.85s;
@@ -396,7 +400,6 @@ main.home {
     transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.9s ease,
     box-shadow 1.2s ease;
-  will-change: transform, opacity, box-shadow;
   box-shadow: var(--shadow-fold-rest);
 }
 
@@ -734,20 +737,28 @@ main.home {
   transform: rotateX(2deg) translateZ(0) rotate(var(--card-rotate));
 }
 
-/* On hover, the card straightens out and lifts */
+/* On hover, the card straightens out and lifts.
+   NOTE: no !important — .is-folding (same specificity, later in file)
+   wins cleanly when the user clicks. */
 .paper-card:hover,
 .paper-card:focus-visible {
-  transform: translateY(-12px) translateZ(60px) rotateY(4deg) rotateX(-2deg) rotate(0deg) !important;
+  transform: translateY(-12px) translateZ(60px) rotateY(4deg) rotateX(-2deg) rotate(0deg);
 }
 
-/* ── Click interaction: card folds on click ─────────────────────── */
+/* ── Click interaction: card folds on click ───────────────────────
+   The transform FUNCTIONS must match the hover state's function
+   POSITIONS so CSS transitions interpolate smoothly. CSS matches
+   transforms by position, not by name — a 3-function fold transform
+   with a 5-function hover transform causes incompatible function
+   interpolation (e.g. translateY→rotateX = visual glitch). */
 
 .paper-card.is-folding {
-  transform: rotateX(80deg) translateZ(-100px) scale(0.9) !important;
+  /* Positions match hover's: translateY / translateZ / rotateY / rotateX / scale */
+  transform: translateY(-12px) translateZ(-100px) rotateY(0deg) rotateX(80deg) scale(0.9);
   opacity: 0.5;
   transition:
     transform 0.4s ease-in,
-    opacity 0.4s ease !important;
+    opacity 0.4s ease;
   pointer-events: none;
 }
 

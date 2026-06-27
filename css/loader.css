@@ -148,20 +148,6 @@ body.loader-active {
     radial-gradient(circle at 50% 50%, transparent 62%, rgba(0, 0, 0, 0.08) 100%);
 }
 
-.newspaper.arrived {
-  animation: paperBreath 3s ease-in-out infinite;
-}
-
-@keyframes paperBreath {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.045);
-  }
-}
-
 .news-inner {
   position: relative;
   z-index: 2;
