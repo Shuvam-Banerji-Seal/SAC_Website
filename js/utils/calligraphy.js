@@ -26,6 +26,16 @@
 
 /* -------------------------------------------------------------------------
  * Audio system — lazy init, gesture-unlocked
+ *
+ * CRITICAL: The AudioContext must only be CREATED inside unlockAudio(),
+ * which is triggered by a user gesture (click/touch/keydown/pointerdown).
+ * Browsers block AudioContext creation from non-gesture contexts (scroll,
+ * page load, setTimeout). If we create it early, the browser refuses and
+ * all subsequent sound calls silently fail.
+ *
+ * All sound functions check `audioUnlocked` BEFORE calling getAudioCtx().
+ * If audio isn't unlocked yet, they return immediately — no sound, but
+ * no console warning either.
  * ------------------------------------------------------------------------- */
 
 let audioCtx = null;
@@ -33,42 +43,55 @@ let audioUnlocked = false;
 let masterGain = null;
 let soundEnabled = true;
 
+/**
+ * Get the existing AudioContext WITHOUT creating one.
+ * Returns null if the context hasn't been created yet.
+ * This is safe to call from any context (scroll, timer, etc.)
+ * because it never creates a new context.
+ */
 function getAudioCtx() {
-  if (!audioCtx) {
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
+  return audioCtx;
+}
+
+/**
+ * Create and resume the AudioContext. This MUST be called from a user
+ * gesture handler (click, touchstart, keydown, pointerdown). Browsers
+ * will block AudioContext creation/resumption from non-gesture contexts.
+ */
+function unlockAudio() {
+  if (audioUnlocked) return;
+
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+
+    // Create the context — this is allowed because we're in a gesture handler
+    if (!audioCtx) {
       audioCtx = new AC();
       masterGain = audioCtx.createGain();
       masterGain.gain.value = 0.7;
       masterGain.connect(audioCtx.destination);
-    } catch {
-      return null;
     }
-  }
-  return audioCtx;
-}
 
-// Browsers suspend AudioContext until a user gesture. We listen for
-// the first interaction and resume + mark as unlocked.
-function unlockAudio() {
-  if (audioUnlocked) return;
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-  if (ctx.state === "suspended") {
-    ctx.resume().then(function () {
+    // Resume if suspended (Chrome starts contexts suspended)
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().then(function () {
+        audioUnlocked = true;
+      });
+    } else {
       audioUnlocked = true;
-    });
-  } else {
-    audioUnlocked = true;
+    }
+  } catch {
+    // AudioContext not supported or blocked
   }
 }
 
-// Register unlock listeners once
+// Register unlock listeners on user gestures only.
+// once: true — we only need the first gesture to unlock.
 if (typeof window !== "undefined") {
   const unlockEvents = ["click", "touchstart", "keydown", "pointerdown"];
   unlockEvents.forEach(function (evt) {
-    window.addEventListener(evt, unlockAudio, { once: false, passive: true });
+    window.addEventListener(evt, unlockAudio, { once: true, passive: true });
   });
 }
 
@@ -144,11 +167,11 @@ function createNoiseBuffer(ctx, duration, type) {
  * @param {number} volume - 0-1 (default 0.04)
  */
 export function playPaperScratch(duration, volume) {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !audioUnlocked) return;
   duration = duration || 0.12;
   volume = volume || 0.04;
   const ctx = getAudioCtx();
-  if (!ctx || !audioUnlocked) return;
+  if (!ctx) return;
 
   const now = ctx.currentTime;
 
@@ -220,10 +243,10 @@ export function playPaperScratch(duration, volume) {
  * @param {number} volume - 0-1 (default 0.06)
  */
 export function playPrintSound(volume) {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !audioUnlocked) return;
   volume = volume || 0.06;
   const ctx = getAudioCtx();
-  if (!ctx || !audioUnlocked) return;
+  if (!ctx) return;
 
   const now = ctx.currentTime;
 
@@ -298,10 +321,10 @@ export function playPrintSound(volume) {
  * @param {number} volume - 0-1 (default 0.015)
  */
 export function playPenScratch(volume) {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !audioUnlocked) return;
   volume = volume || 0.015;
   const ctx = getAudioCtx();
-  if (!ctx || !audioUnlocked) return;
+  if (!ctx) return;
 
   const now = ctx.currentTime;
   const dur = 0.04 + Math.random() * 0.02;

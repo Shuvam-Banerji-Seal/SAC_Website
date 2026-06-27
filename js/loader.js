@@ -268,8 +268,6 @@ function startLoader(data) {
     const t = transformsFor(index, total);
     paper.style.transform = t.entrance;
     paper.dataset.finalTransform = t.final;
-    // Pre-set will-change so the compositor creates layers immediately
-    paper.style.willChange = "transform, opacity, filter";
     papers.push(paper);
     fragment.appendChild(paper);
   });
@@ -297,6 +295,9 @@ function startLoader(data) {
       const paperStartTime = initialDelay + i * stagger;
       if (elapsed >= paperStartTime && !papers[i].dataset.started) {
         papers[i].dataset.started = "true";
+        // Set will-change ONLY on this paper (not all at once) to stay
+        // within the browser's will-change memory budget.
+        papers[i].style.willChange = "transform, opacity";
         papers[i].style.opacity = "1";
         papers[i].style.transform = papers[i].dataset.finalTransform;
         els.clubLabel.textContent = clubs[i].name;
@@ -306,6 +307,13 @@ function startLoader(data) {
         setTimeout(() => {
           if (!skipped) papers[i].classList.add("arrived");
         }, arriveDelay);
+
+        // Remove will-change after the transition completes to free GPU memory
+        setTimeout(() => {
+          if (papers[i] && !skipped) {
+            papers[i].style.willChange = "auto";
+          }
+        }, arriveDelay + 1000);
 
         // If this is the last paper, schedule the gather
         if (i === papers.length - 1) {
@@ -408,12 +416,9 @@ function hideLoader() {
   els.loader.classList.add("hidden");
   document.body.classList.remove("loader-active");
   unwireEvents();
-  // Clean up will-change hints to free GPU memory, then drop the papers
+  // Drop the papers after the fade so the DOM stays tidy
   setTimeout(() => {
-    papers.forEach((p) => {
-      p.style.willChange = "auto";
-      p.remove();
-    });
+    papers.forEach((p) => p.remove());
     papers = [];
   }, 1000);
 }
