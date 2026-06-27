@@ -551,3 +551,109 @@
 .error-block p {
   margin: 0;
 }
+
+/* =========================================================================
+   Calligraphy text reveal animation
+   — used on home page headline AND club page titles.
+   — Moved here from home.css so it's available on all pages.
+   — Each character is wrapped in .calligraphy-char with:
+     .calligraphy-char__ink  — the visible text (clip-path reveals left→right)
+     .calligraphy-char__bleed — a blurred shadow that fades in after the char
+   — CSS custom properties per char:
+     --char-delay  — cumulative delay before this char starts (ms)
+     --char-wobble — rotation offset for hand-pressure variance (deg)
+     --char-speed  — duration multiplier (0.25=fast, 1.4=slow)
+   ========================================================================= */
+
+.calligraphy-active {
+  overflow: hidden;
+}
+
+.calligraphy-char {
+  display: inline-block;
+  position: relative;
+  opacity: 0;
+  transform: rotate(var(--char-wobble, 0deg));
+  animation: calligraphyCharIn 0.4s ease forwards;
+  animation-delay: var(--char-delay, 0ms);
+  will-change: opacity, transform, clip-path;
+}
+
+/* The ink layer: the actual visible character.
+   Clip-path reveals it left-to-right, simulating pen movement. */
+.calligraphy-char__ink {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+  animation: calligraphyInkReveal calc(0.35s * var(--char-speed, 1)) ease-out forwards;
+  animation-delay: var(--char-delay, 0ms);
+}
+
+/* The bleed layer: a blurred, slightly offset copy that fades in
+   after the ink, simulating ink soaking into paper. */
+.calligraphy-char__bleed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  opacity: 0;
+  filter: blur(1.5px);
+  transform: translate(0.5px, 0.5px) scale(1.02);
+  color: inherit;
+  animation: calligraphyBleedIn 0.5s ease forwards;
+  animation-delay: calc(var(--char-delay, 0ms) + calc(0.2s * var(--char-speed, 1)));
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes calligraphyCharIn {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--char-wobble, 0deg)) translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--char-wobble, 0deg)) translateY(0);
+  }
+}
+
+@keyframes calligraphyInkReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  60% {
+    clip-path: inset(0 40% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes calligraphyBleedIn {
+  0% {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translate(1px, 1px) scale(1.05);
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.15;
+    filter: blur(1.5px);
+    transform: translate(0.5px, 0.5px) scale(1.02);
+  }
+}
+
+/* ── Reduced motion: skip all calligraphy animation ──────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .calligraphy-char,
+  .calligraphy-char__ink,
+  .calligraphy-char__bleed {
+    animation: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

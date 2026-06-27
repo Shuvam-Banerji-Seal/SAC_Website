@@ -73,6 +73,9 @@
   text-transform: uppercase;
   color: rgba(212, 201, 184, 0.4);
   margin-bottom: 1.5rem;
+  transition: color 0.4s ease;
+  text-align: center;
+  min-height: 0.6rem;
 }
 
 /* ── Ink drop decoration ──────────────────────────────────────────── */

@@ -441,7 +441,7 @@ export async function initHome() {
     if (headline) {
       // Wait for fonts to load before revealing
       document.fonts?.ready?.then(() => {
-        revealText(headline, 2000);
+        revealText(headline, 2000, undefined, { sound: true, trail: true });
       });
     }
   }

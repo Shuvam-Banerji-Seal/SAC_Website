@@ -66,6 +66,11 @@ const ARTICLES = [
    Shorter on mobile to reduce total loader time. */
 const HOLD_AFTER_LOGO = isMobile() ? 800 : 1800;
 
+/* Device tier from preloader (falls back to runtime detection).
+   "low" = few cores/RAM, "medium" = typical mobile, "high" = desktop.
+   Used to scale splash droplets, SVG filter complexity, and rAF batching. */
+const DEVICE_TIER = window.__sacDeviceTier || (isMobile() ? "low" : "high");
+
 /* -------------------------------------------------------------------------
  * State
  * ------------------------------------------------------------------------- */
@@ -205,8 +210,13 @@ function fitStage() {
 
 function spawnSplashDroplets() {
   els.splashLayer.innerHTML = "";
-  /* Mobile: 12 droplets (down from 24/38) to reduce DOM work. */
-  const count = isMobile() ? 12 : window.innerWidth < 768 ? 24 : 38;
+  /* Scale droplet count by device tier. The preloader already warmed up
+     the compositor, but fewer DOM nodes = less jank on low-end devices. */
+  let count;
+  if (DEVICE_TIER === "low") count = 10;
+  else if (DEVICE_TIER === "medium") count = isMobile() ? 18 : 28;
+  else count = isMobile() ? 12 : window.innerWidth < 768 ? 24 : 38;
+
   const maxDist = isMobile() ? 120 : 245;
   const minDist = isMobile() ? 30 : 55;
   const maxDur = isMobile() ? 0.6 : 1.34;
@@ -246,39 +256,76 @@ function startLoader(data) {
 
   els.clubLabel.textContent = total ? "Club Editions" : "Student Affairs Council";
 
+  /* PRE-BUILD PHASE: Create all newspaper DOM nodes in a DocumentFragment
+     before appending to the stage. This lets the browser parse the HTML
+     and build the DOM tree in one batch, rather than triggering a
+     reflow per append. The preloader already warmed up the compositor,
+     so the layer creation for these nodes will be fast. */
+  const fragment = document.createDocumentFragment();
+
   clubs.forEach((club, index) => {
     const paper = createNewspaper(club, index);
     const t = transformsFor(index, total);
     paper.style.transform = t.entrance;
     paper.dataset.finalTransform = t.final;
-    els.paperStage.appendChild(paper);
+    // Pre-set will-change so the compositor creates layers immediately
+    paper.style.willChange = "transform, opacity, filter";
     papers.push(paper);
+    fragment.appendChild(paper);
   });
+
+  // Append all papers in one DOM operation
+  els.paperStage.appendChild(fragment);
 
   /* Mobile: reduce stagger delay from 270ms to 150ms per paper. */
   const stagger = isMobile() ? 150 : 270;
 
-  papers.forEach((paper, index) => {
-    setTimeout(
-      () => {
-        if (skipped) return;
-        paper.style.opacity = "1";
-        paper.style.transform = paper.dataset.finalTransform;
-        els.clubLabel.textContent = clubs[index].name;
-        els.progressFill.style.width = `${((index + 1) / papers.length) * 100}%`;
-        setTimeout(() => paper.classList.add("arrived"), isMobile() ? 500 : 900);
-        if (index === papers.length - 1) {
-          setTimeout(
-            () => {
-              if (!skipped) gatherNewspapers();
-            },
-            isMobile() ? 550 : 1050
-          );
+  /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
+     rAF ensures the browser has finished processing the previous frame
+     before we start the next paper's animation, preventing dropped frames
+     on low-powered devices. */
+  let startTime = null;
+  const initialDelay = 320; // ms before first paper starts
+
+  function animateFrame(timestamp) {
+    if (skipped) return;
+    if (startTime === null) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+
+    // Check which papers should start based on elapsed time
+    for (let i = 0; i < papers.length; i++) {
+      const paperStartTime = initialDelay + i * stagger;
+      if (elapsed >= paperStartTime && !papers[i].dataset.started) {
+        papers[i].dataset.started = "true";
+        papers[i].style.opacity = "1";
+        papers[i].style.transform = papers[i].dataset.finalTransform;
+        els.clubLabel.textContent = clubs[i].name;
+        els.progressFill.style.width = `${((i + 1) / papers.length) * 100}%`;
+
+        const arriveDelay = isMobile() ? 500 : 900;
+        setTimeout(() => {
+          if (!skipped) papers[i].classList.add("arrived");
+        }, arriveDelay);
+
+        // If this is the last paper, schedule the gather
+        if (i === papers.length - 1) {
+          const gatherDelay = isMobile() ? 550 : 1050;
+          setTimeout(() => {
+            if (!skipped) gatherNewspapers();
+          }, gatherDelay);
         }
-      },
-      320 + index * stagger
-    );
-  });
+      }
+    }
+
+    // Continue the rAF loop if not all papers have started
+    const allStarted = papers.every((p) => p.dataset.started);
+    if (!allStarted && !skipped) {
+      requestAnimationFrame(animateFrame);
+    }
+  }
+
+  // Start the rAF loop on the next frame
+  requestAnimationFrame(animateFrame);
 }
 
 function gatherNewspapers() {
@@ -361,9 +408,12 @@ function hideLoader() {
   els.loader.classList.add("hidden");
   document.body.classList.remove("loader-active");
   unwireEvents();
-  // Drop the papers after the fade so the DOM stays tidy
+  // Clean up will-change hints to free GPU memory, then drop the papers
   setTimeout(() => {
-    papers.forEach((p) => p.remove());
+    papers.forEach((p) => {
+      p.style.willChange = "auto";
+      p.remove();
+    });
     papers = [];
   }, 1000);
 }
@@ -434,10 +484,11 @@ async function init() {
   wireEvents();
   fitStage();
 
-  // Wait for the pre-loader to finish (it pre-caches assets so the
-  // loader animation plays smoothly). If there's no pre-loader
-  // (e.g., on sub-pages), proceed immediately.
-  var preloader = $("preloader");
+  // Wait for the pre-loader to finish (it pre-caches assets AND warms
+  // up the compositor so the loader animation plays smoothly). The
+  // preloader dispatches "preloader-done" with a device tier detail.
+  // If there's no pre-loader (e.g., on sub-pages), proceed immediately.
+  const preloader = $("preloader");
   if (preloader && !preloader.classList.contains("is-done")) {
     await new Promise(function (resolve) {
       window.addEventListener("preloader-done", resolve, { once: true });

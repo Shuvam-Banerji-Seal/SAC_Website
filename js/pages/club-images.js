@@ -106,7 +106,8 @@ export async function initClubImages() {
   const title = document.getElementById("clubTitle");
   if (title && !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
     document.fonts?.ready?.then(() => {
-      if (title.offsetParent !== null) revealText(title, 1800);
+      if (title.offsetParent !== null)
+        revealText(title, 1800, undefined, { sound: true, trail: true });
     });
   }
 

@@ -75,7 +75,8 @@ export async function initEvents() {
     const title = document.getElementById("eventsTitle");
     if (title) {
       document.fonts?.ready?.then(() => {
-        if (title.offsetParent !== null) revealText(title, 1500);
+        if (title.offsetParent !== null)
+          revealText(title, 1500, undefined, { sound: true, trail: true });
       });
     }
 
