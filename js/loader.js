@@ -287,10 +287,12 @@ function startLoader(data) {
   // Append all papers in one DOM operation
   els.paperStage.appendChild(fragment);
 
-  /* Mobile: generous stagger (300ms vs 270ms desktop) so each paper's
-     3D entrance is fully visible before the next one starts. Desktop
-     is slightly faster because the GPU can keep up. */
-  const stagger = isMobile() ? 300 : 270;
+  /* Mobile: generous stagger (400ms vs 270ms desktop) so each paper's
+     3D entrance (0.95s CSS transition) has time to mostly complete before
+     the next one starts. At 300ms, papers overlapped heavily — the GPU
+     was compositing 3-4 in-flight transforms simultaneously. At 400ms,
+     at most 2 overlap. */
+  const stagger = isMobile() ? 400 : 270;
 
   /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
      rAF ensures the browser has finished processing the previous frame
@@ -339,12 +341,11 @@ function startLoader(data) {
 
         // If this is the last paper, schedule the gather
         if (i === papers.length - 1) {
-          /* Mobile: generous gather delay (1200ms vs 1050ms desktop).
-             The last paper needs time to be seen before everything
-             gathers. Previously 550ms — barely 50ms after the last
-             paper arrived. Now 1200ms — the user sees all 5 papers
-             stacked with depth before they fade. */
-          const gatherDelay = isMobile() ? 1200 : 1050;
+          /* Mobile: generous gather delay (1500ms vs 1050ms desktop).
+             All 5 papers need to be visible stacked with depth for a
+             beat before they fade. At 1200ms the last paper had barely
+             settled. At 1500ms the user sees the full stack. */
+          const gatherDelay = isMobile() ? 1500 : 1050;
           setTimeout(() => {
             if (!skipped) gatherNewspapers();
           }, gatherDelay);
