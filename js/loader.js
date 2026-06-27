@@ -62,6 +62,10 @@ const ARTICLES = [
   },
 ];
 
+/* Cache isMobile() — called ~10+ times during loader init.
+   Defined BEFORE use to avoid TDZ ReferenceError. */
+const MOBILE = isMobile();
+
 /* How long the SAC seal stays on screen before we dismiss the loader.
    Mobile gets more time than before — the logo stamp animation is 0.72s,
    printReveal is 1.05s, captionUp is 0.75s. We need the user to actually
@@ -72,9 +76,6 @@ const HOLD_AFTER_LOGO = MOBILE ? 1200 : 1800;
    "low" = few cores/RAM, "medium" = typical mobile, "high" = desktop.
    Used to scale splash droplets, SVG filter complexity, and rAF batching. */
 const DEVICE_TIER = window.__sacDeviceTier || (MOBILE ? "low" : "high");
-
-/* Cache isMobile() — called ~10+ times during loader init. */
-const MOBILE = isMobile();
 
 /* -------------------------------------------------------------------------
  * State
