@@ -1,16 +1,37 @@
-/* club.css — newspaper-themed individual club page */
+/* club.css — newspaper-themed individual club page with animations, 3D, negative space */
+
+/* ── Page wrapper ──────────────────────────────────────────────── */
+main {
+  perspective: 1200px;
+  padding-bottom: var(--space-8);
+}
+
+/* ── Header ────────────────────────────────────────────────────── */
 
 .club-detail__header {
   display: flex;
   align-items: center;
   gap: var(--space-5);
   flex-wrap: wrap;
-  padding-bottom: var(--space-5);
-  margin-bottom: var(--space-5);
+  padding: var(--space-6) 0 var(--space-5);
+  margin-bottom: var(--space-7);
   border-top: var(--rule-double, 6px double #181410);
   border-bottom: var(--rule-heavy, 3px solid #181410);
   position: relative;
   overflow: hidden;
+  /* 3D entrance: the header drops in from above */
+  animation: clubHeaderDrop 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@keyframes clubHeaderDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) rotateX(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
 }
 
 /* Postmark stamp on club header */
@@ -34,56 +55,33 @@
   pointer-events: none;
   box-shadow: inset 0 0 0 1px var(--accent-red);
   transform: rotate(-12deg);
+  animation: stampAppear 0.5s ease 1.2s both;
 }
 
-/* ── Section reveal on scroll ───────────────────────────────────── */
-
-.reveal-section {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal-section.is-revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ── Pinned thumbnails (nail decoration + slight rotation) ──────── */
-
-.pinned-thumbs .thumb {
-  position: relative;
-  transform: rotate(calc(var(--pin-rotate, 0) * 1deg));
-  transition: transform 0.3s ease;
-}
-.pinned-thumbs .thumb:hover {
-  transform: rotate(0deg) translateY(-4px) !important;
-  z-index: 2;
-}
-.pinned-thumbs .thumb::before {
-  content: "";
-  position: absolute;
-  top: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #d4a040, #8b6020 60%, #5a4010);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  z-index: 3;
-  pointer-events: none;
+@keyframes stampAppear {
+  0% {
+    opacity: 0;
+    transform: rotate(-12deg) scale(1.5);
+  }
+  60% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0.18;
+    transform: rotate(-12deg) scale(1);
+  }
 }
 
 .club-detail__title {
   margin: 0;
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.1;
   color: var(--ink-base, #181410);
   flex: 1 1 auto;
   min-width: 200px;
+  /* Negative space: generous margin below */
 }
 
 .club-detail__logo {
@@ -94,6 +92,14 @@
   border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
   background: var(--paper-base, #f4f0e6);
   padding: var(--space-2);
+  /* 3D hover effect */
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.club-detail__logo:hover {
+  transform: scale(1.05) rotateY(5deg);
+  box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .back-link {
@@ -102,13 +108,19 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--ink-muted, #5b4f3d);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 .back-link:hover {
   color: var(--accent-red, #7e0909);
+  transform: translateX(-4px);
 }
 
+/* ── Body text sections ────────────────────────────────────────── */
+
 .club-detail__body {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
   max-width: 72ch;
   font-family: var(--font-serif, Georgia, serif);
   color: var(--ink-base, #181410);
@@ -117,7 +129,8 @@
 .club-detail__body h2 {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
-  margin-top: var(--space-5);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
   font-size: var(--fs-2xl, 1.5rem);
   color: var(--ink-base, #181410);
   padding-bottom: var(--space-2);
@@ -126,36 +139,49 @@
 .club-detail__body h3 {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-2);
   font-size: var(--fs-xl, 1.25rem);
   color: var(--ink-base, #181410);
 }
 .club-detail__body h4 {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 700;
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
   font-size: var(--fs-lg, 1.125rem);
 }
 .club-detail__body p {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   line-height: 1.65;
 }
 .club-detail__body img {
   max-width: 100%;
   border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
-  margin: var(--space-3) 0;
+  margin: var(--space-4) 0;
   background: var(--paper-base, #f4f0e6);
   padding: var(--space-1);
+  /* 3D hover on images */
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.club-detail__body img:hover {
+  transform: scale(1.02) rotateY(2deg);
+  box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.12);
 }
 .club-detail__body ul {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
   padding-left: var(--space-5);
   list-style: none;
 }
 .club-detail__body ul li {
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
   padding-left: var(--space-3);
   position: relative;
+  transition: transform 0.2s ease;
+}
+.club-detail__body ul li:hover {
+  transform: translateX(4px);
 }
 .club-detail__body ul li::before {
   content: "—";
@@ -166,15 +192,37 @@
 }
 .club-detail__body a {
   color: var(--accent-red, #7e0909);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+.club-detail__body a:hover {
+  border-bottom-color: var(--accent-red, #7e0909);
 }
 
+.club-detail__body em {
+  font-style: italic;
+  color: var(--ink-muted, #5b4f3d);
+}
+
+/* ── Counts section ────────────────────────────────────────────── */
+
 .club-detail__counts {
-  margin-bottom: var(--space-6);
-  padding: var(--space-4);
+  margin-bottom: var(--space-8);
+  padding: var(--space-5);
   border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
   background: var(--paper-base, #f4f0e6);
   background-image: var(--paper-grain, none);
   background-size: 320px 320px;
+  /* 3D card effect */
+  transform: perspective(800px) rotateX(1deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.club-detail__counts:hover {
+  transform: perspective(800px) rotateX(0deg) translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.15);
 }
 
 .club-detail__counts h2 {
@@ -198,6 +246,13 @@
   font-size: var(--fs-sm, 0.875rem);
   text-align: center;
   color: var(--ink-base, #181410);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.stat-grid li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.1);
 }
 
 .stat-grid strong {
@@ -207,13 +262,15 @@
   margin-bottom: var(--space-1);
 }
 
+/* ── Section containers ────────────────────────────────────────── */
+
 .club-detail__section {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 .club-detail__section h2 {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
@@ -222,7 +279,7 @@
 .club-detail__section-title {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
@@ -234,7 +291,7 @@
   font-family: var(--font-serif, Georgia, serif);
   font-size: var(--fs-sm, 0.875rem);
   color: var(--ink-base, #181410);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 .ob-table thead {
   border-bottom: 2px solid var(--ink-base, #181410);
@@ -253,16 +310,26 @@
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
   vertical-align: top;
+  transition: background 0.2s ease;
+}
+.ob-table tbody tr {
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 .ob-table tbody tr:hover {
   background: rgba(126, 9, 9, 0.03);
+  transform: translateX(2px);
 }
 .ob-table a {
   color: var(--accent-red, #7e0909);
   text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
 }
 .ob-table a:hover {
   text-decoration: underline;
+  border-bottom-color: var(--accent-red, #7e0909);
 }
 
 /* ── Role badge ─────────────────────────────────────────────────── */
@@ -272,10 +339,17 @@
   font-size: 0.65rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border: 1px solid var(--accent-red, #7e0909);
   color: var(--accent-red, #7e0909);
   white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.ob-table tbody tr:hover .ob-role {
+  background: var(--accent-red, #7e0909);
+  color: var(--paper-base, #f4f0e6);
 }
 
 /* ── Contact list ───────────────────────────────────────────────── */
@@ -285,10 +359,13 @@
 }
 .contact-list li {
   padding-left: 0 !important;
-  margin-bottom: var(--space-2) !important;
+  margin-bottom: var(--space-3) !important;
 }
 .contact-list li::before {
   display: none !important;
+}
+.contact-list a {
+  transition: color 0.2s ease;
 }
 
 /* ── Section reveal on scroll ───────────────────────────────────── */
@@ -302,4 +379,51 @@
 .reveal-section.is-revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ── Image grid enhancements ────────────────────────────────────── */
+
+.thumb-grid {
+  perspective: 1200px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .club-detail__header,
+  .club-detail__header::after,
+  .club-detail__logo,
+  .club-detail__body img,
+  .club-detail__body ul li,
+  .club-detail__counts,
+  .stat-grid li,
+  .ob-table tbody tr,
+  .reveal-section {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .reveal-section {
+    opacity: 1;
+  }
+}
+
+/* ── Mobile adjustments ─────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .club-detail__header {
+    padding: var(--space-4) 0 var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+  .club-detail__title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
+  .club-detail__body {
+    margin-bottom: var(--space-6);
+  }
+  .ob-table {
+    font-size: var(--fs-xs, 0.75rem);
+  }
+  .ob-table th,
+  .ob-table td {
+    padding: var(--space-1) var(--space-2);
+  }
 }

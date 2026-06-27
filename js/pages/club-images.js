@@ -9,6 +9,7 @@
  */
 import { el } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries } from "../data.js";
+import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 
 export async function initClubImages() {
   const slug = document.body.dataset.clubSlug;
@@ -100,6 +101,17 @@ export async function initClubImages() {
 
   // Setup IntersectionObserver for section reveals
   setupSectionReveal();
+
+  // Calligraphy text reveal for the club title
+  const title = document.getElementById("clubTitle");
+  if (title && !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    document.fonts?.ready?.then(() => {
+      if (title.offsetParent !== null) revealText(title, 1800);
+    });
+  }
+
+  // Initialize scroll-based paper scratch sounds
+  initScrollSounds();
 }
 
 function setupSectionReveal() {
