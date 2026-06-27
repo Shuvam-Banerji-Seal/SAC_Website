@@ -930,6 +930,12 @@ body.loader-active {
   .sac-caption {
     bottom: 9%;
   }
+  /* Disable stageFloat on mobile — the continuous translateY/rotateZ
+     animation is a constant GPU drain that causes jank when combined
+     with the newspaper entrance transforms. */
+  .paper-stage {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

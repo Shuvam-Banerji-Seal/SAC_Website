@@ -63,8 +63,10 @@ const ARTICLES = [
 ];
 
 /* How long the SAC seal stays on screen before we dismiss the loader.
-   Shorter on mobile to reduce total loader time. */
-const HOLD_AFTER_LOGO = isMobile() ? 800 : 1800;
+   Mobile gets more time than before — the logo stamp animation is 0.72s,
+   printReveal is 1.05s, captionUp is 0.75s. We need the user to actually
+   SEE the logo, not just flash it. */
+const HOLD_AFTER_LOGO = isMobile() ? 1200 : 1800;
 
 /* Device tier from preloader (falls back to runtime detection).
    "low" = few cores/RAM, "medium" = typical mobile, "high" = desktop.
@@ -178,6 +180,31 @@ function transformsFor(index, total) {
   const rotX = -5 + Math.sin(index) * 5;
   const rotY = (index - mid) * 6;
   const rotZ = -7 + index * 1.55;
+
+  if (isMobile()) {
+    /* Mobile: simplified transforms — only translate3d + rotateZ.
+       Full rotateX/Y + preserve-3d causes GPU thrashing on low-end
+       mobile GPUs. The visual effect is preserved (papers fly in from
+       different angles and stack with depth) but the GPU only composites
+       2D layers instead of full 3D. */
+    const entranceX = (Math.random() - 0.5) * 500;
+    const entranceY = -300 - Math.random() * 200;
+    const entranceRotZ = (Math.random() - 0.5) * 60;
+    return {
+      entrance: `
+        translate(-50%, -50%)
+        translate(${entranceX}px, ${entranceY}px)
+        rotate(${entranceRotZ}deg)
+        scale(0.7)
+      `,
+      final: `
+        translate(-50%, -50%)
+        translate3d(${finalX}px, ${finalY}px, ${finalZ}px)
+        rotateZ(${rotZ}deg)
+      `,
+    };
+  }
+
   const entranceX = (Math.random() - 0.5) * 760;
   const entranceY = -390 - Math.random() * 250;
   const entranceZ = 260 + Math.random() * 430;
@@ -275,8 +302,10 @@ function startLoader(data) {
   // Append all papers in one DOM operation
   els.paperStage.appendChild(fragment);
 
-  /* Mobile: reduce stagger delay from 270ms to 150ms per paper. */
-  const stagger = isMobile() ? 150 : 270;
+  /* Mobile: more generous stagger (220ms vs 270ms desktop) to give the
+     GPU time to render each paper's 3D transform before the next one
+     starts. Desktop uses 270ms because it has more GPU headroom. */
+  const stagger = isMobile() ? 220 : 270;
 
   /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
      rAF ensures the browser has finished processing the previous frame
@@ -303,21 +332,33 @@ function startLoader(data) {
         els.clubLabel.textContent = clubs[i].name;
         els.progressFill.style.width = `${((i + 1) / papers.length) * 100}%`;
 
-        const arriveDelay = isMobile() ? 500 : 900;
-        setTimeout(() => {
-          if (!skipped) papers[i].classList.add("arrived");
-        }, arriveDelay);
+        /* Mobile: skip the paperBreath animation entirely. The brightness
+           pulse (filter: brightness) is GPU-intensive — running it on 5
+           papers simultaneously causes jank on low-end mobile GPUs. The
+           CSS transition on transform/opacity is enough for a smooth
+           entrance. */
+        if (!isMobile()) {
+          const arriveDelay = 900;
+          setTimeout(() => {
+            if (!skipped) papers[i].classList.add("arrived");
+          }, arriveDelay);
+        }
 
         // Remove will-change after the transition completes to free GPU memory
+        const transitionDuration = isMobile() ? 950 : 1000;
         setTimeout(() => {
           if (papers[i] && !skipped) {
             papers[i].style.willChange = "auto";
           }
-        }, arriveDelay + 1000);
+        }, transitionDuration);
 
         // If this is the last paper, schedule the gather
         if (i === papers.length - 1) {
-          const gatherDelay = isMobile() ? 550 : 1050;
+          /* Mobile: generous gather delay (900ms vs 1050ms desktop).
+             The last paper needs time to be seen before everything
+             gathers. Previously 550ms — barely 50ms after the last
+             paper arrived. */
+          const gatherDelay = isMobile() ? 900 : 1050;
           setTimeout(() => {
             if (!skipped) gatherNewspapers();
           }, gatherDelay);
@@ -337,9 +378,11 @@ function startLoader(data) {
 }
 
 function gatherNewspapers() {
-  /* Mobile: fast gather (300ms instead of the desktop's ~900ms).
-     Papers fade out over 300ms, then ink finale starts. This avoids
-     the "flash of empty viewport" that the old instant-hide caused. */
+  /* Mobile: slower gather with more time before ink finale.
+     Previously: 30ms per paper, 350ms to ink finale — papers were still
+     fading when the ink drop started, causing GPU overlap jank.
+     Now: 60ms per paper, 600ms to ink finale — papers fully faded
+     before the ink drop begins. */
   if (isMobile()) {
     els.paperStage.style.animation = "none";
     papers.forEach((paper, index) => {
@@ -347,24 +390,22 @@ function gatherNewspapers() {
         paper.classList.remove("arrived");
         const x = (Math.random() - 0.5) * 6;
         const y = (Math.random() - 0.5) * 6;
-        const z = index * 1.8;
         const rz = (Math.random() - 0.5) * 3;
         paper.style.transform = `
           translate(-50%, -50%)
-          translate3d(${x}px, ${y}px, ${z}px)
-          rotateX(0deg)
-          rotateY(0deg)
-          rotateZ(${rz}deg)
+          translate(${x}px, ${y}px)
+          rotate(${rz}deg)
           scale(0.94)
         `;
         paper.style.opacity = index === papers.length - 1 ? "1" : "0";
         paper.style.transition = "opacity 0.3s ease";
-      }, index * 30);
+      }, index * 60);
     });
     els.status.classList.add("hide");
+    // Wait for all papers to finish fading (60ms × 5 + 300ms transition = 600ms)
     setTimeout(() => {
       if (!skipped) playInkFinale();
-    }, 350);
+    }, 600);
     return;
   }
   els.paperStage.style.animation = "none";
@@ -394,21 +435,30 @@ function gatherNewspapers() {
 
 function playInkFinale() {
   els.inkFinale.classList.add("active");
+  /* Mobile: the dropFall3D CSS animation is 1.12s (1120ms). Impact must
+     fire AFTER the drop finishes, not before. Desktop uses 1080ms which
+     is already 40ms early — we fix that too. */
+  const impactDelay = 1200;
+  /* Mobile: logo stamp needs to be fully visible before the loader fades.
+     Logo stamp CSS is 0.72s, printReveal is 1.05s + 0.18s delay.
+     Logo is fully revealed at ~1230ms after logo class. Add buffer. */
+  const logoDelay = 2500;
+
   setTimeout(() => {
     if (skipped) return;
     spawnSplashDroplets();
     els.inkFinale.classList.add("impact");
-  }, 1080);
+  }, impactDelay);
   setTimeout(() => {
     if (skipped) return;
     els.inkFinale.classList.add("logo");
-  }, 2200);
+  }, logoDelay);
   setTimeout(
     () => {
       if (skipped) return;
       hideLoader();
     },
-    2200 + HOLD_AFTER_LOGO + 1200
+    logoDelay + HOLD_AFTER_LOGO + 1200
   );
 }
 
