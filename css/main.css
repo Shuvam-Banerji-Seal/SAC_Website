@@ -10,10 +10,10 @@ body {
   flex-direction: column;
   /* Shared paper texture: grain + stains on every page, so theme
      and texture settings apply consistently. */
-  background-image:
-    var(--paper-grain),
-    var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size:
+    320px 320px,
+    100% 100%;
   background-repeat: repeat, no-repeat;
   background-attachment: fixed, fixed;
 }
@@ -30,17 +30,33 @@ header {
   display: contents;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   line-height: 1.2;
   font-weight: 600;
   color: var(--ink-base);
 }
 
-h1 { font-size: var(--fs-4xl); }
-h2 { font-size: var(--fs-2xl); margin-bottom: var(--space-3); }
-h3 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
-h4 { font-size: var(--fs-lg); margin-bottom: var(--space-2); }
+h1 {
+  font-size: var(--fs-4xl);
+}
+h2 {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--space-3);
+}
+h3 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-2);
+}
+h4 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--space-2);
+}
 
 a {
   color: var(--accent-red);
@@ -55,11 +71,13 @@ p {
   margin-bottom: var(--space-3);
 }
 
-ul, ol {
+ul,
+ol {
   margin-bottom: var(--space-3);
   padding-left: var(--space-5);
 }
-ul li, ol li {
+ul li,
+ol li {
   margin-bottom: var(--space-1);
 }
 
@@ -76,12 +94,31 @@ img {
 }
 
 /* Utility classes */
-.muted { color: var(--ink-muted); }
-.section-title { font-size: var(--fs-2xl); margin-bottom: var(--space-1); }
-.section-sub { color: var(--ink-muted); margin-bottom: var(--space-4); }
-.page-title { font-size: var(--fs-4xl); margin-bottom: var(--space-2); }
-.page-sub { color: var(--ink-muted); font-size: var(--fs-lg); margin-bottom: var(--space-6); }
-.back-link { display: inline-block; margin-bottom: var(--space-3); font-size: var(--fs-sm); }
+.muted {
+  color: var(--ink-muted);
+}
+.section-title {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--space-1);
+}
+.section-sub {
+  color: var(--ink-muted);
+  margin-bottom: var(--space-4);
+}
+.page-title {
+  font-size: var(--fs-4xl);
+  margin-bottom: var(--space-2);
+}
+.page-sub {
+  color: var(--ink-muted);
+  font-size: var(--fs-lg);
+  margin-bottom: var(--space-6);
+}
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-sm);
+}
 
 .noscript-warning {
   background: var(--color-warning-bg);
@@ -94,9 +131,15 @@ img {
 
 /* Small-screen tweaks */
 @media (max-width: 640px) {
-  main { padding: var(--space-4) var(--space-3); }
-  h1 { font-size: var(--fs-3xl); }
-  .page-title { font-size: var(--fs-3xl); }
+  main {
+    padding: var(--space-4) var(--space-3);
+  }
+  h1 {
+    font-size: var(--fs-3xl);
+  }
+  .page-title {
+    font-size: var(--fs-3xl);
+  }
 }
 
 /* =========================================================================
@@ -114,22 +157,42 @@ main h3 {
   animation: subPageHeadingDrop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   transform-origin: top center;
 }
-main h1 { animation-delay: 0.1s; }
-main h2 { animation-delay: 0.2s; }
-main h3 { animation-delay: 0.3s; }
+main h1 {
+  animation-delay: 0.1s;
+}
+main h2 {
+  animation-delay: 0.2s;
+}
+main h3 {
+  animation-delay: 0.3s;
+}
 
 main p,
 main li,
 main blockquote {
   animation: subPageContentFade 0.6s ease both;
 }
-main p:nth-child(1) { animation-delay: 0.15s; }
-main p:nth-child(2) { animation-delay: 0.25s; }
-main p:nth-child(3) { animation-delay: 0.35s; }
-main p:nth-child(4) { animation-delay: 0.45s; }
-main p:nth-child(5) { animation-delay: 0.55s; }
-main li { animation-delay: 0.3s; }
-main blockquote { animation-delay: 0.2s; }
+main p:nth-child(1) {
+  animation-delay: 0.15s;
+}
+main p:nth-child(2) {
+  animation-delay: 0.25s;
+}
+main p:nth-child(3) {
+  animation-delay: 0.35s;
+}
+main p:nth-child(4) {
+  animation-delay: 0.45s;
+}
+main p:nth-child(5) {
+  animation-delay: 0.55s;
+}
+main li {
+  animation-delay: 0.3s;
+}
+main blockquote {
+  animation-delay: 0.2s;
+}
 
 @keyframes subPageHeadingDrop {
   0% {
@@ -164,8 +227,12 @@ body.loader-active main blockquote {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  main h1, main h2, main h3,
-  main p, main li, main blockquote {
+  main h1,
+  main h2,
+  main h3,
+  main p,
+  main li,
+  main blockquote {
     animation: none !important;
   }
 }
@@ -192,12 +259,18 @@ body[data-page="home"] {
      All background-attachment: fixed so they stay locked as the user
      scrolls — a parallax-free, print-like surface. */
   background-image:
-    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.10) 100%),
-    url("../assets/natural-paper.png"),
-    var(--paper-stains),
-    var(--paper-grain);
-  background-size: 100vw 100vh, 400px 400px, 100% 100%, 320px 320px;
-  background-position: center top, 0 0, 0 0, 0 0;
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    url("../assets/natural-paper.png"), var(--paper-stains), var(--paper-grain);
+  background-size:
+    100vw 100vh,
+    400px auto,
+    100% 100%,
+    320px 320px;
+  background-position:
+    center top,
+    0 0,
+    0 0,
+    0 0;
   background-repeat: no-repeat, repeat, no-repeat, repeat;
   background-blend-mode: multiply, multiply, normal, multiply;
   background-attachment: fixed, fixed, fixed, fixed;
@@ -218,10 +291,10 @@ body[data-page="home"] a {
 
 body[data-page="home"] .navbar {
   background-color: var(--paper-base);
-  background-image:
-    var(--paper-grain),
-    var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size:
+    320px 320px,
+    100% 100%;
   border-bottom: var(--rule-heavy);
   /* Remove the modern blur — the masthead already handles separation. */
   backdrop-filter: none;
@@ -252,10 +325,10 @@ body[data-page="home"] .navbar-corner {
 
 body[data-page="home"] .site-footer {
   background-color: var(--paper-base);
-  background-image:
-    var(--paper-grain),
-    var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-image: var(--paper-grain), var(--paper-stains);
+  background-size:
+    320px 320px,
+    100% 100%;
   border-top: var(--rule-heavy);
   border-bottom: var(--rule-double);
   color: var(--ink-muted);
@@ -278,7 +351,9 @@ body[data-page="home"] .site-footer {
 body:not([data-page="home"]) .navbar {
   background-color: var(--paper-base);
   background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-size:
+    320px 320px,
+    100% 100%;
   border-bottom: var(--rule-heavy);
 }
 body:not([data-page="home"]) .navbar .nav-link {
@@ -297,7 +372,9 @@ body:not([data-page="home"]) .navbar .nav-link--active {
 body:not([data-page="home"]) .site-footer {
   background-color: var(--paper-base);
   background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
+  background-size:
+    320px 320px,
+    100% 100%;
   border-top: var(--rule-heavy);
   color: var(--ink-muted);
   font-family: var(--font-mono-serif);
@@ -346,4 +423,17 @@ body:not([data-page="home"]) .settings-close {
 }
 body:not([data-page="home"]) .settings-close:hover {
   background: var(--ink-rule);
+}
+
+/* ── Touch device override ───────────────────────────────────────────
+   iOS Safari silently treats background-attachment: fixed as scroll on
+   non-root elements, and the 4-fixed-layer stack on body causes scroll
+   jank on mobile browsers that do attempt to honour it. Switch to scroll
+   on all touch/coarse-pointer devices to match actual rendering behaviour
+   and eliminate the jank. */
+@media (hover: none) and (pointer: coarse) {
+  body,
+  body[data-page="home"] {
+    background-attachment: scroll;
+  }
 }

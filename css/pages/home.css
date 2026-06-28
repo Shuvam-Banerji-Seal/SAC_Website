@@ -873,3 +873,13 @@ body.loader-active .lead-article__body p {
     padding: 0 var(--space-3);
   }
 }
+
+/* ── Touch device override ───────────────────────────────────────────
+   .masthead uses background-attachment: fixed which iOS Safari silently
+   treats as scroll (it's a non-root element). Override to scroll on all
+   touch devices so the rendering matches the intent and eliminates jank. */
+@media (hover: none) and (pointer: coarse) {
+  .masthead {
+    background-attachment: scroll;
+  }
+}

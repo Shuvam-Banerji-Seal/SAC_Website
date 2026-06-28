@@ -15,7 +15,7 @@
     "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \"*.yml\"",
     "audit": "npm audit --audit-level=moderate",
     "serve": "npx http-server . -p 8000 -c-1 --cors",
-    "build:pretext": "cd utils/pretext && npm install --legacy-peer-deps && npx tsc -p tsconfig.build.json && cp -r dist/generated dist/ 2>/dev/null; cp dist/*.js ../../js/pretext/ 2>/dev/null; cp -r dist/generated ../../js/pretext/ 2>/dev/null; echo 'Pretext built and copied to js/pretext/'"
+    "build:pretext": "cd utils/pretext && npm install --legacy-peer-deps && npx tsc -p tsconfig.build.json && cp -r dist/generated dist/ && cp dist/*.js ../../js/pretext/ && cp -r dist/generated ../../js/pretext/ && echo 'Pretext built and copied to js/pretext/'"
   },
   "keywords": [
     "sac",

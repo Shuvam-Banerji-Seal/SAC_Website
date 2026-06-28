@@ -45,15 +45,23 @@
     const memory = navigator.deviceMemory || 4; // GB, Chrome only
     const conn = navigator.connection;
     const effType = conn ? conn.effectiveType : "4g";
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const saveData = conn ? conn.saveData : false;
 
-    // Low tier: <= 4 cores, <= 2 GB RAM, slow network, or save-data
-    if (cores <= 4 || memory <= 2 || effType === "2g" || effType === "slow-2g" || saveData) {
+    /* Low tier: very limited hardware (≤2 cores or ≤2 GB RAM),
+       slow network (2g/slow-2g), or save-data request.
+       Note: ≤4 cores alone is NOT low — many capable phones and tablets
+       report 4 logical cores but have decent GPUs. The old threshold
+       (cores <= 4 → low) was too aggressive and misclassified tablets. */
+    if (cores <= 2 || memory <= 2 || effType === "2g" || effType === "slow-2g" || saveData) {
       return "low";
     }
-    // Medium tier: <= 8 cores, <= 4 GB RAM, 3g, or mobile
-    if (cores <= 8 || memory <= 4 || effType === "3g" || isMobile) {
+    /* Medium tier: mobile/tablet UA with decent hardware, or 3g network,
+       or limited desktop (≤4 cores / ≤4 GB RAM).
+       The old threshold (cores <= 8 → medium) misclassified 8-core
+       desktops as medium. Now only mobile UA or genuinely limited
+       hardware gets medium. */
+    if (isMobileUA || cores <= 4 || memory <= 4 || effType === "3g") {
       return "medium";
     }
     return "high";

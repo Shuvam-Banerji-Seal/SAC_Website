@@ -62,15 +62,108 @@ const ARTICLES = [
   },
 ];
 
-/* Cache isMobile() — called ~10+ times during loader init.
-   Defined BEFORE use to avoid TDZ ReferenceError. */
-const MOBILE = isMobile();
+/* classifyDevice() — three-tier device classification.
+   Replaces the old binary isMobile() which misclassified tablets:
+   - iPads (768px+) matched the UA regex → MOBILE=true → only 5 papers
+     shown on a large screen with desktop CSS → sparse, broken layout.
+   - Android tablets in landscape (800px+) had width > 520 → MOBILE=false
+     → full desktop experience on a tablet GPU → glitchy animation.
+   Now we distinguish phone / tablet / desktop and scale timing accordingly. */
+function classifyDevice() {
+  const ua = navigator.userAgent;
+  const hasTouch = navigator.maxTouchPoints > 0 || "ontouchstart" in window;
+  /* iPadOS 13+ reports as "Macintosh" in Safari — detect via Mac + touch. */
+  const isIPad = /iPad/i.test(ua) || (/Macintosh/i.test(ua) && hasTouch);
+  const isIPhone = /iPhone|iPod/i.test(ua);
+  const isAndroidPhone = /Android.*Mobile/i.test(ua);
+  const isAndroidTablet = /Android/i.test(ua) && !isAndroidPhone;
+  const width = window.innerWidth;
 
-/* How long the SAC seal stays on screen before we dismiss the loader.
-   Mobile gets more time than before — the logo stamp animation is 0.72s,
-   printReveal is 1.05s, captionUp is 0.75s. We need the user to actually
-   SEE the logo, not just flash it. */
-const HOLD_AFTER_LOGO = MOBILE ? 1200 : 1800;
+  if (isIPhone || isAndroidPhone || width < 520) return "phone";
+  if (isIPad || isAndroidTablet || (width >= 520 && width < 1024 && hasTouch)) return "tablet";
+  return "desktop";
+}
+
+const DEVICE_CLASS = classifyDevice();
+/* MOBILE is kept for backward-compat in code paths that need a binary
+   phone/not-phone check (e.g. CSS @media max-width:520 aligns with phone). */
+const MOBILE = DEVICE_CLASS === "phone";
+
+/* Per-device-class timing configuration. Each value was chosen to give
+   the GPU enough time to composite each frame without overlapping too
+   many simultaneous transforms.
+
+   phone:   5 papers, 400ms stagger, 1500ms gather delay — low GPU headroom.
+   tablet:  8 papers, 320ms stagger, 1200ms gather delay — medium GPU.
+   desktop: all papers, 270ms stagger, 1050ms gather delay — high GPU.
+
+   clubLimit = 0 means "all clubs" (no slicing). */
+const TIMING = {
+  phone: {
+    clubLimit: 5,
+    stagger: 400,
+    gatherDelay: 1500,
+    holdAfterLogo: 1200,
+    scale: 0.75,
+    range: 0.6,
+    transitionMs: 950,
+    gatherPerPaper: 60,
+    gatherToInk: 600,
+    gatherOpacity: 0,
+    gatherScale: 0.94,
+    splashMax: 120,
+    splashMin: 30,
+    splashMaxDur: 0.6,
+    splashSizeBase: 3,
+    splashSizeRange: 10,
+    splashArcBase: 10,
+    splashArcRange: 40,
+  },
+  tablet: {
+    clubLimit: 8,
+    stagger: 320,
+    gatherDelay: 1200,
+    holdAfterLogo: 1500,
+    scale: 0.85,
+    range: 0.8,
+    transitionMs: 950,
+    gatherPerPaper: 50,
+    gatherToInk: 750,
+    gatherOpacity: 0.3,
+    gatherScale: 0.93,
+    splashMax: 180,
+    splashMin: 40,
+    splashMaxDur: 0.9,
+    splashSizeBase: 4,
+    splashSizeRange: 14,
+    splashArcBase: 15,
+    splashArcRange: 60,
+  },
+  desktop: {
+    clubLimit: 0,
+    stagger: 270,
+    gatherDelay: 1050,
+    holdAfterLogo: 1800,
+    scale: 1,
+    range: 1,
+    transitionMs: 1000,
+    gatherPerPaper: 42,
+    gatherToInk: 900,
+    gatherOpacity: 0.62,
+    gatherScale: 0.92,
+    splashMax: 245,
+    splashMin: 55,
+    splashMaxDur: 1.34,
+    splashSizeBase: 4,
+    splashSizeRange: 18,
+    splashArcBase: 20,
+    splashArcRange: 80,
+  },
+};
+const T = TIMING[DEVICE_CLASS] || TIMING.desktop;
+
+/* How long the SAC seal stays on screen before we dismiss the loader. */
+const HOLD_AFTER_LOGO = T.holdAfterLogo;
 
 /* Device tier from preloader (falls back to runtime detection).
    "low" = few cores/RAM, "medium" = typical mobile, "high" = desktop.
@@ -88,10 +181,6 @@ let skipped = false;
 /* -------------------------------------------------------------------------
  * Helpers
  * ------------------------------------------------------------------------- */
-
-function isMobile() {
-  return window.innerWidth < 520 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
 
 function $(id) {
   return document.getElementById(id);
@@ -185,13 +274,13 @@ function transformsFor(index, total) {
   const rotY = (index - mid) * 6;
   const rotZ = -7 + index * 1.55;
 
-  /* Mobile: same 3D entrance as desktop (translate3d + rotateX/Y/Z)
-     but with smaller random ranges so the GPU has less work per frame.
-     The visual effect is the same — papers fly in from different angles
-     and stack with depth — but the smaller ranges mean fewer pixels to
-     composite per transform. */
-  const scale = MOBILE ? 0.75 : 1;
-  const range = MOBILE ? 0.6 : 1; // fraction of desktop random range
+  /* Mobile/tablet: same 3D entrance as desktop (translate3d + rotateX/Y/Z)
+      but with smaller random ranges so the GPU has less work per frame.
+      The visual effect is the same — papers fly in from different angles
+      and stack with depth — but the smaller ranges mean fewer pixels to
+      composite per transform. */
+  const scale = T.scale;
+  const range = T.range;
 
   const entranceX = (Math.random() - 0.5) * 760 * range;
   const entranceY = (-390 - Math.random() * 250) * range;
@@ -230,12 +319,21 @@ function spawnSplashDroplets() {
      the compositor, but fewer DOM nodes = less jank on low-end devices. */
   let count;
   if (DEVICE_TIER === "low") count = 10;
-  else if (DEVICE_TIER === "medium") count = MOBILE ? 18 : 28;
-  else count = MOBILE ? 12 : window.innerWidth < 768 ? 24 : 38;
+  else if (DEVICE_TIER === "medium")
+    count = DEVICE_CLASS === "phone" ? 18 : DEVICE_CLASS === "tablet" ? 22 : 28;
+  else
+    count =
+      DEVICE_CLASS === "phone"
+        ? 12
+        : DEVICE_CLASS === "tablet"
+          ? 28
+          : window.innerWidth < 768
+            ? 24
+            : 38;
 
-  const maxDist = MOBILE ? 120 : 245;
-  const minDist = MOBILE ? 30 : 55;
-  const maxDur = MOBILE ? 0.6 : 1.34;
+  const maxDist = T.splashMax;
+  const minDist = T.splashMin;
+  const maxDur = T.splashMaxDur;
   for (let i = 0; i < count; i++) {
     const dot = document.createElement("div");
     dot.className = "splash-dot";
@@ -243,10 +341,10 @@ function spawnSplashDroplets() {
     const distance = minDist + Math.random() * maxDist;
     const x = Math.cos(angle) * distance;
     const y = Math.sin(angle) * distance * 0.64;
-    const size = MOBILE ? 3 + Math.random() * 10 : 4 + Math.random() * 18;
+    const size = T.splashSizeBase + Math.random() * T.splashSizeRange;
     const duration = 0.4 + Math.random() * (maxDur - 0.4);
     const delay = Math.random() * 0.11;
-    const arc = MOBILE ? 10 + Math.random() * 40 : 20 + Math.random() * 80;
+    const arc = T.splashArcBase + Math.random() * T.splashArcRange;
     const squash = 0.82 + Math.random() * 0.55;
     dot.style.setProperty("--x", `${x}px`);
     dot.style.setProperty("--y", `${y}px`);
@@ -264,9 +362,10 @@ function spawnSplashDroplets() {
  * ------------------------------------------------------------------------- */
 
 function startLoader(data) {
-  /* Mobile optimization: only show 5 clubs (down from 12) to reduce DOM
-     nodes, animation duration, and memory pressure on low-end phones. */
-  const clubLimit = MOBILE ? 5 : data.length;
+  /* Scale club count by device class to reduce DOM nodes, animation
+     duration, and memory pressure on lower-end devices.
+     phone: 5 papers, tablet: 8, desktop: all. */
+  const clubLimit = T.clubLimit || data.length;
   const clubs = data.slice(0, clubLimit);
   const total = clubs.length;
 
@@ -291,12 +390,13 @@ function startLoader(data) {
   // Append all papers in one DOM operation
   els.paperStage.appendChild(fragment);
 
-  /* Mobile: generous stagger (400ms vs 270ms desktop) so each paper's
-     3D entrance (0.95s CSS transition) has time to mostly complete before
-     the next one starts. At 300ms, papers overlapped heavily — the GPU
-     was compositing 3-4 in-flight transforms simultaneously. At 400ms,
-     at most 2 overlap. */
-  const stagger = MOBILE ? 400 : 270;
+  /* Stagger timing from the per-device-class config.
+     phone: 400ms — each paper's 0.95s CSS transition has time to mostly
+            complete before the next starts. At 300ms, papers overlapped
+            heavily — the GPU was compositing 3-4 in-flight transforms.
+     tablet: 320ms — moderate overlap, at most 2-3 in-flight.
+     desktop: 270ms — tight overlap, GPU can handle 3-4 simultaneously. */
+  const stagger = T.stagger;
 
   /* Use requestAnimationFrame for the stagger timing instead of setTimeout.
      rAF ensures the browser has finished processing the previous frame
@@ -323,20 +423,19 @@ function startLoader(data) {
         els.clubLabel.textContent = clubs[i].name;
         els.progressFill.style.width = `${((i + 1) / papers.length) * 100}%`;
 
-        /* Mobile: skip the paperBreath animation entirely. The brightness
+        /* Phone: skip the paperBreath animation entirely. The brightness
            pulse (filter: brightness) is GPU-intensive — running it on 5
            papers simultaneously causes jank on low-end mobile GPUs. The
            CSS transition on transform/opacity is enough for a smooth
-           entrance. */
-        if (!MOBILE) {
-          /* Desktop: the arrived class is kept for future styling. */
+           entrance. Tablet and desktop get the arrived class. */
+        if (DEVICE_CLASS !== "phone") {
           setTimeout(() => {
             if (!skipped) papers[i].classList.add("arrived");
           }, 900);
         }
 
         // Remove will-change after the transition completes to free GPU memory
-        const transitionDuration = MOBILE ? 950 : 1000;
+        const transitionDuration = T.transitionMs;
         setTimeout(() => {
           if (papers[i] && !skipped) {
             papers[i].style.willChange = "auto";
@@ -345,11 +444,10 @@ function startLoader(data) {
 
         // If this is the last paper, schedule the gather
         if (i === papers.length - 1) {
-          /* Mobile: generous gather delay (1500ms vs 1050ms desktop).
-             All 5 papers need to be visible stacked with depth for a
-             beat before they fade. At 1200ms the last paper had barely
-             settled. At 1500ms the user sees the full stack. */
-          const gatherDelay = MOBILE ? 1500 : 1050;
+          /* Per-device-class gather delay. All papers need to be visible
+             stacked with depth for a beat before they fade.
+             phone: 1500ms, tablet: 1200ms, desktop: 1050ms. */
+          const gatherDelay = T.gatherDelay;
           setTimeout(() => {
             if (!skipped) gatherNewspapers();
           }, gatherDelay);
@@ -369,62 +467,35 @@ function startLoader(data) {
 }
 
 function gatherNewspapers() {
-  /* Mobile: slower gather with more time before ink finale.
-     Previously: 30ms per paper, 350ms to ink finale — papers were still
-     fading when the ink drop started, causing GPU overlap jank.
-     Now: 60ms per paper, 600ms to ink finale — papers fully faded
-     before the ink drop begins. */
-  if (MOBILE) {
-    els.paperStage.style.animation = "none";
-    papers.forEach((paper, index) => {
-      setTimeout(() => {
-        paper.classList.remove("arrived");
-        const x = (Math.random() - 0.5) * 6;
-        const y = (Math.random() - 0.5) * 6;
-        const z = index * 1.8;
-        const rz = (Math.random() - 0.5) * 3;
-        paper.style.transform = `
-          translate(-50%, -50%)
-          translate3d(${x}px, ${y}px, ${z}px)
-          rotateX(0deg)
-          rotateY(0deg)
-          rotateZ(${rz}deg)
-          scale(0.94)
-        `;
-        paper.style.opacity = index === papers.length - 1 ? "1" : "0";
-        paper.style.transition = "opacity 0.3s ease";
-      }, index * 60);
-    });
-    els.status.classList.add("hide");
-    // Wait for all papers to finish fading (60ms × 5 + 300ms transition = 600ms)
-    setTimeout(() => {
-      if (!skipped) playInkFinale();
-    }, 600);
-    return;
-  }
+  /* Unified gather for all device classes. The per-class TIMING config
+     controls the speed, opacity, and scale. Phone gets an explicit
+     opacity transition for a smooth fade; tablet and desktop rely on
+     the CSS transition already on the paper element. */
   els.paperStage.style.animation = "none";
+  const isPhone = DEVICE_CLASS === "phone";
   papers.forEach((paper, index) => {
     setTimeout(() => {
       paper.classList.remove("arrived");
-      const x = (Math.random() - 0.5) * 8;
-      const y = (Math.random() - 0.5) * 8;
-      const z = index * 2.2;
-      const rz = (Math.random() - 0.5) * 4;
+      const x = (Math.random() - 0.5) * (isPhone ? 6 : 8);
+      const y = (Math.random() - 0.5) * (isPhone ? 6 : 8);
+      const z = index * (isPhone ? 1.8 : 2.2);
+      const rz = (Math.random() - 0.5) * (isPhone ? 3 : 4);
       paper.style.transform = `
         translate(-50%, -50%)
         translate3d(${x}px, ${y}px, ${z}px)
         rotateX(0deg)
         rotateY(0deg)
         rotateZ(${rz}deg)
-        scale(0.92)
+        scale(${T.gatherScale})
       `;
-      paper.style.opacity = index === papers.length - 1 ? "1" : "0.62";
-    }, index * 42);
+      paper.style.opacity = index === papers.length - 1 ? "1" : String(T.gatherOpacity);
+      if (isPhone) paper.style.transition = "opacity 0.3s ease";
+    }, index * T.gatherPerPaper);
   });
   els.status.classList.add("hide");
   setTimeout(() => {
     if (!skipped) playInkFinale();
-  }, 900);
+  }, T.gatherToInk);
 }
 
 function playInkFinale() {
@@ -554,10 +625,15 @@ async function init() {
   // If there's no pre-loader (e.g., on sub-pages), proceed immediately.
   const preloader = $("preloader");
   if (preloader && !preloader.classList.contains("is-done")) {
+    /* Safety timeout MUST be longer than the preloader's own safety
+       timeout (preloader.js: 8s low / 6s medium / 4s high). If the
+       loader's timeout fires first, the animation starts before assets
+       are decoded and the compositor is warmed up → jank.
+       We add 2s buffer over the preloader's max. */
+    const safetyMs = DEVICE_TIER === "low" ? 10000 : DEVICE_TIER === "medium" ? 8000 : 6000;
     await new Promise(function (resolve) {
       window.addEventListener("preloader-done", resolve, { once: true });
-      // Safety timeout: if pre-loader takes too long, proceed anyway
-      setTimeout(resolve, 5000);
+      setTimeout(resolve, safetyMs);
     });
   }
 
