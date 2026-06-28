@@ -66,35 +66,35 @@ const BODY_INFO = {
     kicker: "Preface",
     title: "SAC Council",
     tagline:
-      "The elected student body — General Secretary, Joint Secretary, and the officers who coordinate the year's calendar.",
+      "The elected student body — General Secretary, Joint Secretary, and the officers who coordinate the year's calendar across every club and committee.",
     ornament: "— ✦ ✦ ✦ —",
   },
   academics: {
     kicker: "Section I",
     title: "SAC Academics",
     tagline:
-      "Where scholarship meets the wider life of the campus — academic initiatives, talks, and bridges to industry.",
+      "Where scholarly life meets the wider campus — academic initiatives, guest lectures, industry bridges, and the pursuit of ideas beyond the classroom.",
     ornament: "— ✦ ✦ ✦ —",
   },
   hostel: {
     kicker: "Section II",
     title: "SAC Hostel Committee",
     tagline:
-      "The standing committee for residence life — community events, welfare, and the everyday essentials.",
+      "The standing committee for residence life — community events, student welfare, and the everyday essentials that make campus a home.",
     ornament: "— ✦ ✦ ✦ —",
   },
   sports: {
     kicker: "Section III",
     title: "Sports",
     tagline:
-      "The playing fields are part of the Chronicle too — a section reserved for the games societies as their records arrive.",
+      "The playing fields have their place in the Chronicle too — this section is reserved for the games societies and will carry their records as soon as they arrive.",
     ornament: "— ✦ ✦ ✦ —",
   },
   cultural: {
     kicker: "Section IV",
     title: "Cultural Clubs",
     tagline:
-      "Ten societies — drama, music, dance, film, words, art, and the airwaves — gathered under one editorial roof.",
+      "Ten societies spanning drama, music, dance, film, literature, visual art, radio, and the quizzing circuit — the creative pulse of the institute, gathered in one section.",
     ornament: "— ✦ ✦ ✦ —",
   },
 };
@@ -231,7 +231,8 @@ function renderPaperCard(club) {
       })
     : el("span", { class: "paper-card__logo-fallback" }, club.name.charAt(0));
 
-  const excerpt = club.excerpt || "An official club under the Student Activity Council.";
+  const excerpt =
+    club.excerpt || "An active society under the Student Activity Council, IISER Kolkata.";
 
   // Random slight rotation for the notice board look (-2deg to +2deg)
   const rotate = (Math.random() - 0.5) * 4;
@@ -288,7 +289,7 @@ function renderBodySection(bodyId, info, clubs, mountEl) {
         "div",
         { class: "body-empty", role: "status" },
         el("strong", {}, info.title + " Desk"),
-        "No clubs are listed under this body yet. The Chronicle will print the entries as soon as they reach the editorial desk."
+        "No clubs are listed under this body yet. The Chronicle will carry their entries as soon as the editorial desk receives them."
       )
     );
   } else {
