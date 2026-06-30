@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v8";
+const CACHE_NAME = "sac-v9";
 
 const STATIC_ASSETS = [
   // Core
@@ -62,9 +62,20 @@ const STATIC_ASSETS = [
   // Sub-pages
   "pages/about.html",
   "pages/clubs.html",
-  "pages/club.html",
   "pages/events.html",
   "pages/gallery.html",
+  "pages/aarshi.html",
+  "pages/arts.html",
+  "pages/radio.html",
+  "pages/ikqc.html",
+  "pages/literary.html",
+  "pages/movie.html",
+  "pages/music.html",
+  "pages/nature.html",
+  "pages/nrutya.html",
+  "pages/pixel.html",
+  "pages/academics.html",
+  "pages/hostel.html",
 ];
 
 const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];

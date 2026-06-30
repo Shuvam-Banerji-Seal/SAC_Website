@@ -655,7 +655,11 @@ function charWobble(char, index) {
  */
 export function revealText(el, duration, stagger, opts) {
   if (!el || !el.textContent.trim()) return;
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (
+    (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) ||
+    document.documentElement.getAttribute("data-reduce-motion") === "on"
+  )
+    return;
 
   opts = opts || {};
   const enableSound = opts.sound !== false;
@@ -788,7 +792,11 @@ export function revealParagraphs(container, perCharDelay) {
  *   - No print-on-stop (the old behavior was confusing)
  */
 export function initScrollSounds() {
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (
+    (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) ||
+    document.documentElement.getAttribute("data-reduce-motion") === "on"
+  )
+    return;
   // Guard: prevent double-binding when called from both home.js and club-images.js
   if (window.__sacScrollSoundsBound) return;
   window.__sacScrollSoundsBound = true;

@@ -1,76 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clubs — Student Activity Council, IISER Kolkata</title>
-  <meta name="description" content="All ten cultural clubs under the SAC umbrella at IISER Kolkata." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clubs — Student Activity Council, IISER Kolkata</title>
+    <meta
+      name="description"
+      content="All ten cultural clubs under the SAC umbrella at IISER Kolkata."
+    />
 
-  <link rel="stylesheet" href="../css/preloader.css" />
-  <link rel="stylesheet" href="../css/reset.css" />
-  <link rel="stylesheet" href="../css/variables.css" />
-  <link rel="stylesheet" href="../css/main.css" />
-  <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/pages/clubs.css" />
-  <link rel="stylesheet" href="../css/settings.css" />
-  <link rel="stylesheet" href="../css/viewer.css" />
-  <script type="importmap">
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/pages/clubs.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <script type="importmap">
       { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
     </script>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>" />
-</head>
-<body data-page="clubs">
-  <!-- Pre-loader — pre-fetches assets for smooth loading -->
-  <div id="preloader" class="preloader">
-    <div class="preloader__ink"></div>
-    <div class="preloader__kicker">The SAC Chronicle</div>
-    <div class="preloader__bar">
-      <div class="preloader__fill"></div>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+  </head>
+  <body data-page="clubs">
+    <!-- Pre-loader — pre-fetches assets for smooth loading -->
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar">
+        <div class="preloader__fill"></div>
+      </div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
     </div>
-    <div class="preloader__percent">
-      <span class="preloader__percent-num">0</span>% loaded
-    </div>
-  </div>
-  <script src="../js/preloader.js"></script>
-  <header>
-    <nav id="navbar" aria-label="Primary"></nav>
-    <button
-      class="navbar-corner"
-      id="navbarCorner"
-      type="button"
-      aria-label="Open navigation"
-      aria-expanded="false"
-      aria-controls="navbar"
-    >
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <path
-          d="M5 8h14M5 13h14M5 18h14"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          fill="none"
+    <script src="../js/preloader.js"></script>
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <h1 class="page-title">Clubs</h1>
+      <p class="page-sub">Ten cultural clubs under the SAC umbrella.</p>
+
+      <div class="clubs-search-wrap">
+        <input
+          type="search"
+          id="clubs-search"
+          class="clubs-search"
+          placeholder="Search clubs\u2026"
+          aria-label="Search clubs by name"
+          autocomplete="off"
         />
-      </svg>
+      </div>
+
+      <section id="clubs-grid" aria-label="All clubs">
+        <!-- Filled in by js/pages/clubs.js -->
+        <p class="muted">Loading\u2026</p>
+      </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <script type="module" src="../js/main.js"></script>
+
+    <!-- Settings panel -->
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      ⚙
     </button>
-  </header>
-
-  <main>
-    <h1 class="page-title">Clubs</h1>
-    <p class="page-sub">Ten cultural clubs under the SAC umbrella.</p>
-
-    <section id="clubs-grid" aria-label="All clubs">
-      <!-- Filled in by js/pages/clubs.js -->
-      <p class="muted">Loading…</p>
-    </section>
-  </main>
-
-  <div id="footer"></div>
-
-  <script type="module" src="../js/main.js"></script>
-
-  <!-- Settings panel -->
-  <div class="settings-overlay" id="settings-overlay"></div>
-  <div class="settings-panel" id="settings-panel"></div>
-  <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">⚙</button>
-</body>
+  </body>
 </html>

@@ -204,7 +204,9 @@ main.home {
   bottom: calc(var(--space-6) + 18px);
   width: 120px;
   height: 120px;
+  /* image-set() ready for @2x assets when generated. */
   background: url("../../assets/newspaper-bg.jpg") center/cover no-repeat;
+  background: image-set(url("../../assets/newspaper-bg.jpg") 1x) center/cover no-repeat;
   opacity: 0.08;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -363,7 +365,10 @@ main.home {
 .sac-diagram-wrap {
   border: 1.5px solid var(--ink-rule-strong);
   background: var(--paper-base);
+  /* image-set() ready for @2x assets when generated. */
   background-image: url("../../assets/old-paper.jpg"), var(--paper-grain), var(--paper-stains);
+  background-image:
+    image-set(url("../../assets/old-paper.jpg") 1x), var(--paper-grain), var(--paper-stains);
   background-size:
     cover,
     320px 320px,
@@ -448,6 +453,9 @@ main.home {
   background: var(--paper-soft);
   background-image:
     url("../../assets/newspaper-bg.jpg"), var(--paper-halftone), var(--paper-grain),
+    var(--paper-stains);
+  background-image:
+    image-set(url("../../assets/newspaper-bg.jpg") 1x), var(--paper-halftone), var(--paper-grain),
     var(--paper-stains);
   background-size:
     cover,

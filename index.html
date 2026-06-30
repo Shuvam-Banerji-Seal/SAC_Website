@@ -19,7 +19,16 @@
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/settings.css" />
     <link rel="stylesheet" href="css/viewer.css" />
-    <!-- Three.js CDN — loaded as module for 3D paper-fold effects -->
+    <!-- Three.js CDN — loaded as module for 3D paper-fold effects.
+         The importmap defines the bare specifier; the modulepreload
+         warms the network cache and, with integrity, verifies the
+         file hasn't been tampered with by a CDN compromise. -->
+    <link
+      rel="modulepreload"
+      href="https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js"
+      integrity="sha384-u+VykAKeL4ZnM4aIDWzqvG2G/XJtXtrdNfBeIn3gGrgMUCGh300cp5h8q6Cl2p+y"
+      crossorigin="anonymous"
+    />
     <script type="importmap">
       { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
     </script>

@@ -50,7 +50,9 @@
   border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .thumb:hover {
   transform: translateY(-3px);

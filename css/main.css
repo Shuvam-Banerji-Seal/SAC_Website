@@ -2,7 +2,7 @@
 
 body {
   font-family: var(--font-serif);
-  font-size: var(--fs-base);
+  font-size: calc(var(--fs-base) * var(--fs-scale));
   background-color: var(--paper-base);
   color: var(--ink-base);
   min-height: 100vh;
@@ -258,9 +258,22 @@ body[data-page="home"] {
        4. Fine paper grain (feTurbulence SVG, tiled — adds micro-detail)
      All background-attachment: fixed so they stay locked as the user
      scrolls — a parallax-free, print-like surface. */
+  /* image-set() lets us swap in @2x assets later without touching
+     this rule. Today the only DPI is 1x; when @2x variants are
+     generated, append `, url("../assets/natural-paper@2x.png") 2x`.
+     Plain url() fallback is declared first for browsers without
+     image-set() support; the -webkit- prefix covers Safari < 16.4. */
   background-image:
     radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
     url("../assets/natural-paper.png"), var(--paper-stains), var(--paper-grain);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    -webkit-image-set(url("../assets/natural-paper.png") 1x),
+    var(--paper-stains),
+    var(--paper-grain);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    image-set(url("../assets/natural-paper.png") 1x), var(--paper-stains), var(--paper-grain);
   background-size:
     100vw 100vh,
     400px auto,
@@ -435,5 +448,14 @@ body:not([data-page="home"]) .settings-close:hover {
   body,
   body[data-page="home"] {
     background-attachment: scroll;
+  }
+  /* Reduce compositor layers on touch devices: the 4-layer fixed
+     background stack (vignette + natural-paper + stains + grain)
+     causes scroll jank on mobile GPUs. On touch devices we keep
+     only the grain overlay (vector, tile-friendly) and the base
+     colour — the visual impact is minimal at phone scale. */
+  body[data-page="home"] {
+    background-image: var(--paper-grain);
+    background-size: 320px 320px;
   }
 }

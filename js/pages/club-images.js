@@ -80,6 +80,7 @@ export async function initClubImages() {
               src: asset.public_url,
               alt: asset.description || asset.filename || "",
               loading: "lazy",
+              decoding: "async",
               width: asset.width || undefined,
               height: asset.height || undefined,
             })

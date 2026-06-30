@@ -46,6 +46,7 @@ export async function initGallery() {
                       src: i.public_url,
                       alt: i.description,
                       loading: "lazy",
+                      decoding: "async",
                       width: i.width || undefined,
                       height: i.height || undefined,
                     })

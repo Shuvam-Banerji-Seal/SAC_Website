@@ -1,5 +1,33 @@
 /* components.css — reusable UI components. */
 
+/* ── Skip-to-content link ───────────────────────────────
+   Visually hidden until focused via Tab, then slides into view
+   at the top of the page. Standard WCAG 2.1 accessibility
+   pattern (SC 2.4.1 Bypass Blocks). */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 0.75rem 1.5rem;
+  background: var(--ink-base, #181410);
+  color: var(--paper-base, #f4f0e6);
+  font-family: var(--font-display, var(--font-sans));
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow-hover);
+  transition: top 0.15s ease-out;
+  white-space: nowrap;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent-red, #7e0909);
+  outline-offset: 2px;
+}
+
 /* ── Navbar ──────────────────────────────────────────── */
 
 /* Shared base — applies at every breakpoint. The element starts in

@@ -23,7 +23,7 @@ export function renderNavbar(activePage) {
         class: isActive ? "nav-link nav-link--active" : "nav-link",
         "aria-current": isActive ? "page" : null,
       },
-      item.label,
+      item.label
     );
   });
 
@@ -34,16 +34,18 @@ export function renderNavbar(activePage) {
       el(
         "div",
         { class: "navbar__inner" },
-        el("a", { href: pageUrl("index.html"), class: "navbar__brand" },
+        el(
+          "a",
+          { href: pageUrl("index.html"), class: "navbar__brand" },
           el("span", { class: "navbar__brand-full" }, SITE_TITLE),
-          el("span", { class: "navbar__brand-short" }, "SAC"),
+          el("span", { class: "navbar__brand-short" }, "SAC")
         ),
         el(
           "ul",
           { class: "navbar__list" },
-          ...links.map((a) => el("li", { class: "navbar__item" }, a)),
-        ),
-      ),
-    ),
+          ...links.map((a) => el("li", { class: "navbar__item" }, a))
+        )
+      )
+    )
   );
 }

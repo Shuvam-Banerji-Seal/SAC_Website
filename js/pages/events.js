@@ -58,6 +58,7 @@ export async function initEvents() {
                           src: e.public_url,
                           alt: e.description,
                           loading: "lazy",
+                          decoding: "async",
                           width: e.width || undefined,
                           height: e.height || undefined,
                         }),

@@ -52,6 +52,17 @@ onReady(() => {
   initPaperFold();
   initializers[page]?.();
 
+  // Skip-to-content link — injected once, targets <main>.
+  // WCAG 2.1 SC 2.4.1 (Bypass Blocks): keyboard users must be
+  // able to skip past repeated navigation blocks.
+  const mainEl = document.querySelector("main");
+  if (mainEl && !mainEl.id) mainEl.id = "main-content";
+  const skipLink = document.createElement("a");
+  skipLink.href = "#main-content";
+  skipLink.className = "skip-link";
+  skipLink.textContent = "Skip to content";
+  document.body.prepend(skipLink);
+
   // Individual club pages (data-club-slug) — load images from JSONL
   if (document.body.dataset.clubSlug) {
     initClubImages();

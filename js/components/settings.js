@@ -179,6 +179,34 @@ function applyAll(prefs) {
   applyTheme(prefs);
   applyFont(prefs);
   applyTexture(prefs);
+  applyFontSize(prefs);
+  applyReduceMotion(prefs);
+  applySound(prefs);
+}
+
+/* ── Font size ────────────────────────────────────────── */
+const FONT_SIZE_MAP = { s: "0.85", m: "1", l: "1.2" };
+function applyFontSize(prefs) {
+  const scale = FONT_SIZE_MAP[prefs.fontSize] || "1";
+  document.documentElement.style.setProperty("--fs-scale", scale);
+}
+
+/* ── Reduce motion ─────────────────────────────────────── */
+function applyReduceMotion(prefs) {
+  if (prefs.reduceMotion === "on") {
+    document.documentElement.setAttribute("data-reduce-motion", "on");
+  } else {
+    document.documentElement.removeAttribute("data-reduce-motion");
+  }
+}
+
+/* ── Sound ─────────────────────────────────────────────── */
+function applySound(prefs) {
+  // Import setSoundEnabled lazily to avoid loading the audio module
+  // if sound settings haven't been changed.
+  import("../utils/calligraphy.js")
+    .then((mod) => mod.setSoundEnabled(prefs.sound !== false))
+    .catch(() => {});
 }
 
 /* -------------------------------------------------------------------------
@@ -230,6 +258,9 @@ function renderPanel() {
   const currentFont = prefs.font || "newspaper";
   const currentTexture = prefs.texture || "fresh";
   const isDark = prefs.dark === true || prefs.dark === "auto";
+  const fontSize = prefs.fontSize || "m";
+  const reduceMotion = prefs.reduceMotion || "auto";
+  const soundEnabled = prefs.sound !== false;
 
   panelEl.innerHTML = `
     <div class="settings-header">
@@ -269,6 +300,22 @@ function renderPanel() {
       </div>
     </div>
 
+    <!-- Font size -->
+    <div class="settings-section">
+      <span class="settings-section__label">Text size</span>
+      <div class="font-size-row">
+        <button class="font-size-btn ${fontSize === "s" ? "is-selected" : ""}" data-font-size="s" type="button" aria-label="Small text">
+          <span style="font-size:0.75rem">A</span> Small
+        </button>
+        <button class="font-size-btn ${fontSize === "m" ? "is-selected" : ""}" data-font-size="m" type="button" aria-label="Medium text">
+          <span style="font-size:1rem">A</span> Medium
+        </button>
+        <button class="font-size-btn ${fontSize === "l" ? "is-selected" : ""}" data-font-size="l" type="button" aria-label="Large text">
+          <span style="font-size:1.25rem">A</span> Large
+        </button>
+      </div>
+    </div>
+
     <!-- Texture -->
     <div class="settings-section">
       <span class="settings-section__label">Paper texture</span>
@@ -283,6 +330,31 @@ function renderPanel() {
           </button>`
           )
           .join("")}
+      </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="settings-section">
+      <span class="settings-section__label">Accessibility</span>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row__label">Reduce motion</div>
+          <div class="toggle-row__desc">Disable animations and parallax</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-reduce-motion" ${reduceMotion === "on" ? "checked" : ""} />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row__label">Sound effects</div>
+          <div class="toggle-row__desc">Paper scratch, pen, print sounds</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-sound" ${soundEnabled ? "checked" : ""} />
+          <span class="toggle-track"></span>
+        </label>
       </div>
     </div>
 
@@ -339,6 +411,32 @@ function wireEvents() {
       applyTexture(prefs);
       panelEl.querySelectorAll(".texture-option").forEach((b) => b.classList.remove("is-selected"));
       textureOption.classList.add("is-selected");
+      return;
+    }
+    // Font size
+    const fontSizeBtn = e.target.closest(".font-size-btn");
+    if (fontSizeBtn) {
+      prefs.fontSize = fontSizeBtn.dataset.fontSize;
+      savePrefs(prefs);
+      applyFontSize(prefs);
+      panelEl.querySelectorAll(".font-size-btn").forEach((b) => b.classList.remove("is-selected"));
+      fontSizeBtn.classList.add("is-selected");
+      return;
+    }
+    // Reduce motion toggle
+    const reduceMotionToggle = e.target.closest("#settings-reduce-motion");
+    if (reduceMotionToggle) {
+      prefs.reduceMotion = reduceMotionToggle.checked ? "on" : "off";
+      savePrefs(prefs);
+      applyReduceMotion(prefs);
+      return;
+    }
+    // Sound toggle
+    const soundToggle = e.target.closest("#settings-sound");
+    if (soundToggle) {
+      prefs.sound = soundToggle.checked;
+      savePrefs(prefs);
+      applySound(prefs);
       return;
     }
   });
