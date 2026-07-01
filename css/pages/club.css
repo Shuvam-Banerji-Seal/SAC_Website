@@ -427,3 +427,51 @@ main {
     padding: var(--space-1) var(--space-2);
   }
 }
+
+/* ── OB table: card layout on very small screens ───────────────────
+   On screens < 480px the traditional table layout is too cramped.
+   Convert to a stacked card layout where each row becomes a card
+   and each cell is labelled by its column header via CSS. */
+@media (max-width: 480px) {
+  .ob-table,
+  .ob-table thead,
+  .ob-table tbody,
+  .ob-table tr,
+  .ob-table th,
+  .ob-table td {
+    display: block;
+  }
+  .ob-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .ob-table tbody tr {
+    border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+    border-radius: var(--radius, 8px);
+    margin-bottom: var(--space-3, 0.75rem);
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+    background: var(--paper-soft, #ece5d3);
+  }
+  .ob-table td {
+    padding: var(--space-1, 0.25rem) 0;
+    border-bottom: none;
+    position: relative;
+    padding-left: 40%;
+  }
+  .ob-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: var(--space-1, 0.25rem);
+    width: 38%;
+    font-weight: 700;
+    font-size: var(--fs-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted, #5b4f3d);
+  }
+}

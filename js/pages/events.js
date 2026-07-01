@@ -2,9 +2,9 @@
  * pages/events.js — events page initialiser.
  *
  * Pulls all is_iicm / is_event entries from the assets map, groups them
- * by year (newest first), and renders a timeline.
+ * by year (newest first), and renders a timeline with client-side search.
  */
-import { $, el } from "../utils/dom.js";
+import { $, el, showError } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { revealText } from "../utils/calligraphy.js";
 
@@ -52,6 +52,17 @@ export async function initEvents() {
                         "li",
                         {
                           class: "thumb",
+                          "data-event-search": (
+                            (e.title || "") +
+                            " " +
+                            (e.description || "") +
+                            " " +
+                            (e.club_name || "") +
+                            " " +
+                            (e.venue || "") +
+                            " " +
+                            (e.competition || "")
+                          ).toLowerCase(),
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
                         el("img", {
@@ -81,9 +92,46 @@ export async function initEvents() {
       });
     }
 
+    // Client-side search
+    const searchInput = $("#events-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.toLowerCase().trim();
+        const items = document.querySelectorAll(".thumb[data-event-search]");
+        let visibleCount = 0;
+        items.forEach((item) => {
+          const haystack = item.dataset.eventSearch || "";
+          const match = !q || haystack.includes(q);
+          item.style.display = match ? "" : "none";
+          if (match) visibleCount++;
+        });
+        // Hide year sections with no visible items
+        document.querySelectorAll(".events__year").forEach((section) => {
+          const visibleItems = section.querySelectorAll(".thumb:not([style*='display: none'])");
+          section.style.display = visibleItems.length === 0 ? "none" : "";
+        });
+        // Show/hide no-results message
+        let noResults = $(".events-no-results");
+        if (!q || visibleCount > 0) {
+          if (noResults) noResults.remove();
+        } else if (!noResults) {
+          mount.appendChild(
+            el(
+              "p",
+              { class: "clubs-no-results events-no-results", role: "status" },
+              "No events match that search."
+            )
+          );
+        }
+      });
+    }
+
     // IntersectionObserver for section reveals
     if (
-      !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches &&
+      !(
+        window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
+        document.documentElement.getAttribute("data-reduce-motion") === "on"
+      ) &&
       "IntersectionObserver" in window
     ) {
       const sections = document.querySelectorAll(".reveal-section");
@@ -100,7 +148,11 @@ export async function initEvents() {
       );
       sections.forEach((s) => observer.observe(s));
     }
-  } catch (err) {
-    console.error("initEvents failed:", err);
+  } catch {
+    showError(
+      mount,
+      "Could not load events",
+      "The events timeline failed to load. Check your connection and try again."
+    );
   }
 }

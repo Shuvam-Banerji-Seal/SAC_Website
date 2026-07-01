@@ -103,6 +103,9 @@ export async function initClubImages() {
   // Setup IntersectionObserver for section reveals
   setupSectionReveal();
 
+  // Add data-label attributes to OB table cells for responsive card layout
+  addTableDataLabels();
+
   // Calligraphy text reveal for the club title
   const title = document.getElementById("clubTitle");
   if (title && !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
@@ -139,4 +142,22 @@ function setupSectionReveal() {
     { threshold: 0.1 }
   );
   sections.forEach((s) => observer.observe(s));
+}
+
+/**
+ * Add data-label attributes to OB table cells for responsive card layout.
+ * On screens < 480px, the CSS converts the table to a stacked card layout
+ * and uses data-label to show the column header above each cell value.
+ */
+function addTableDataLabels() {
+  document.querySelectorAll(".ob-table").forEach((table) => {
+    const headers = Array.from(table.querySelectorAll("thead th")).map((th) =>
+      th.textContent.trim()
+    );
+    table.querySelectorAll("tbody tr").forEach((row) => {
+      row.querySelectorAll("td").forEach((td, i) => {
+        if (headers[i]) td.setAttribute("data-label", headers[i]);
+      });
+    });
+  });
 }

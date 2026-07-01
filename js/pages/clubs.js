@@ -5,7 +5,7 @@
  * Each card links to the single template at club.html?id=<slug>.
  * Includes a client-side search input that filters cards by name.
  */
-import { $, el, pageUrl } from "../utils/dom.js";
+import { $, el, pageUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 
 function getClubPageUrl(slug) {
@@ -101,7 +101,11 @@ export async function initClubs() {
         }
       });
     }
-  } catch (err) {
-    console.error("initClubs failed:", err);
+  } catch {
+    showError(
+      mount,
+      "Could not load clubs",
+      "The clubs directory failed to load. Check your connection and try again."
+    );
   }
 }

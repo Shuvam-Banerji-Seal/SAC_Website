@@ -252,3 +252,173 @@ describe("Phase 3.4: clubs search", () => {
     expect(clubsCss).toContain(".clubs-search-wrap");
   });
 });
+
+describe("Phase 6.1: Open Graph + JSON-LD", () => {
+  const index = read("/index.html");
+
+  it("index.html has Open Graph meta tags", () => {
+    expect(index).toContain('property="og:type"');
+    expect(index).toContain('property="og:title"');
+    expect(index).toContain('property="og:description"');
+    expect(index).toContain('property="og:image"');
+    expect(index).toContain('property="og:site_name"');
+  });
+
+  it("index.html has Twitter Card meta tags", () => {
+    expect(index).toContain('name="twitter:card"');
+    expect(index).toContain('name="twitter:title"');
+    expect(index).toContain('name="twitter:description"');
+    expect(index).toContain('name="twitter:image"');
+  });
+
+  it("index.html has JSON-LD structured data", () => {
+    expect(index).toContain('type="application/ld+json"');
+    expect(index).toContain('"@type": "Organization"');
+    expect(index).toContain("Student Activity Council");
+  });
+});
+
+describe("Phase 6.2: Print stylesheet", () => {
+  const printCss = read("/css/print.css");
+  const index = read("/index.html");
+
+  it("print.css exists and targets @media print", () => {
+    expect(printCss).toContain("@media print");
+  });
+
+  it("print.css hides interactive elements", () => {
+    expect(printCss).toContain("#loader");
+    expect(printCss).toContain(".settings-fab");
+    expect(printCss).toContain(".viewer-overlay");
+    expect(printCss).toContain(".skip-link");
+  });
+
+  it("print.css styles the ob-table for print", () => {
+    expect(printCss).toContain(".ob-table");
+    expect(printCss).toContain("border-collapse");
+  });
+
+  it("index.html links print.css with media=print", () => {
+    expect(index).toContain('media="print"');
+    expect(index).toContain("print.css");
+  });
+});
+
+describe("Phase 6.3: Events page search", () => {
+  const eventsHtml = read("/pages/events.html");
+  const eventsJs = read("/js/pages/events.js");
+
+  it("events.html has search input", () => {
+    expect(eventsHtml).toContain('id="events-search"');
+    expect(eventsHtml).toContain('type="search"');
+  });
+
+  it("events.js wires search input", () => {
+    expect(eventsJs).toContain("events-search");
+    expect(eventsJs).toContain('addEventListener("input"');
+    expect(eventsJs).toContain("data-event-search");
+  });
+
+  it("events.js shows no-results message", () => {
+    expect(eventsJs).toContain("No events match");
+  });
+
+  it("events.js respects manual reduce-motion override", () => {
+    expect(eventsJs).toContain("data-reduce-motion");
+  });
+});
+
+describe("Phase 6.4: Gallery category filter tabs", () => {
+  const galleryHtml = read("/pages/gallery.html");
+  const galleryJs = read("/js/pages/gallery.js");
+  const galleryCss = read("/css/pages/gallery.css");
+
+  it("gallery.html has filter wrap element", () => {
+    expect(galleryHtml).toContain('id="gallery-filter-wrap"');
+  });
+
+  it("gallery.js creates filter tabs", () => {
+    expect(galleryJs).toContain("gallery-filter-tab");
+    expect(galleryJs).toContain("data-filter");
+    expect(galleryJs).toContain("gallery__club");
+    expect(galleryJs).toContain("data-gallery-club");
+  });
+
+  it("gallery.js wires filter click handler", () => {
+    expect(galleryJs).toContain("gallery-filter-tab");
+    expect(galleryJs).toContain("is-selected");
+  });
+
+  it("gallery.css styles filter tabs", () => {
+    expect(galleryCss).toContain(".gallery-filter-tab");
+    expect(galleryCss).toContain(".gallery-filter-bar");
+    expect(galleryCss).toContain(".gallery-filter-wrap");
+  });
+
+  it("gallery.js respects manual reduce-motion override", () => {
+    expect(galleryJs).toContain("data-reduce-motion");
+  });
+});
+
+describe("Phase 6.5: Error states for failed JSONL", () => {
+  const dom = read("/js/utils/dom.js");
+  const mainCss = read("/css/main.css");
+
+  it("dom.js exports showError helper", () => {
+    expect(dom).toContain("export function showError");
+    expect(dom).toContain("error-state");
+    expect(dom).toContain('role: "alert"');
+  });
+
+  it("dom.js showError has retry button", () => {
+    expect(dom).toContain("location.reload");
+  });
+
+  it("main.css styles error state", () => {
+    expect(mainCss).toContain(".error-state");
+    expect(mainCss).toContain(".error-state__title");
+    expect(mainCss).toContain(".error-state__detail");
+    expect(mainCss).toContain(".error-state__btn");
+  });
+
+  it("home.js uses showError on fetch failure", () => {
+    const home = read("/js/pages/home.js");
+    expect(home).toContain("showError");
+    expect(home).toContain("Could not load club data");
+  });
+
+  it("clubs.js uses showError on fetch failure", () => {
+    const clubs = read("/js/pages/clubs.js");
+    expect(clubs).toContain("showError");
+    expect(clubs).toContain("Could not load clubs");
+  });
+
+  it("events.js uses showError on fetch failure", () => {
+    const events = read("/js/pages/events.js");
+    expect(events).toContain("showError");
+    expect(events).toContain("Could not load events");
+  });
+
+  it("gallery.js uses showError on fetch failure", () => {
+    const gallery = read("/js/pages/gallery.js");
+    expect(gallery).toContain("showError");
+    expect(gallery).toContain("Could not load gallery");
+  });
+});
+
+describe("Phase 6.6: Responsive tables for club OB data", () => {
+  const clubCss = read("/css/pages/club.css");
+  const clubImages = read("/js/pages/club-images.js");
+
+  it("club.css has card layout for small screens", () => {
+    expect(clubCss).toContain("max-width: 480px");
+    expect(clubCss).toContain("data-label");
+    expect(clubCss).toContain("content: attr(data-label)");
+  });
+
+  it("club-images.js adds data-label to table cells", () => {
+    expect(clubImages).toContain("addTableDataLabels");
+    expect(clubImages).toContain("data-label");
+    expect(clubImages).toContain(".ob-table");
+  });
+});

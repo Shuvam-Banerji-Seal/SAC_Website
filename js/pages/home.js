@@ -27,7 +27,7 @@
  *      body section as it scrolls into view — that's the
  *      "paper-folding" reveal (CSS in pages/home.css).
  */
-import { el, pageUrl } from "../utils/dom.js";
+import { el, pageUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 
@@ -387,8 +387,12 @@ export async function initHome() {
   let assets;
   try {
     assets = await loadAssetsMap();
-  } catch (err) {
-    console.error("[home] failed to load assets_map.jsonl:", err);
+  } catch {
+    showError(
+      bodies,
+      "Could not load club data",
+      "The club directory failed to load. Check your connection and try again."
+    );
     return;
   }
 

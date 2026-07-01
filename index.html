@@ -8,6 +8,48 @@
       name="description"
       content="Official website of the Student Activity Council (SAC) at IISER Kolkata — a directory of ten cultural clubs, two committees, their members, events, and achievements."
     />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Student Activity Council — IISER Kolkata" />
+    <meta
+      property="og:description"
+      content="A newspaper-themed directory of ten cultural clubs, two committees, their members, events, and achievements at IISER Kolkata."
+    />
+    <meta property="og:site_name" content="SAC Chronicle — IISER Kolkata" />
+    <meta
+      property="og:image"
+      content="https://shuvam-banerji-seal.github.io/SAC_Website/assets/newspaper-bg.jpg"
+    />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Student Activity Council — IISER Kolkata" />
+    <meta
+      name="twitter:description"
+      content="A newspaper-themed directory of ten cultural clubs, two committees, their members, events, and achievements at IISER Kolkata."
+    />
+    <meta
+      name="twitter:image"
+      content="https://shuvam-banerji-seal.github.io/SAC_Website/assets/newspaper-bg.jpg"
+    />
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Student Activity Council, IISER Kolkata",
+        "url": "https://shuvam-banerji-seal.github.io/SAC_Website/",
+        "description": "Official website of the Student Activity Council (SAC) at IISER Kolkata — a directory of ten cultural clubs, two committees, their members, events, and achievements.",
+        "parentOrganization": {
+          "@type": "CollegeOrUniversity",
+          "name": "Indian Institute of Science Education and Research Kolkata",
+          "url": "https://www.iiserkol.ac.in"
+        },
+        "memberOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "Indian Institute of Science Education and Research Kolkata"
+        }
+      }
+    </script>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/preloader.css" />
@@ -19,6 +61,7 @@
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/settings.css" />
     <link rel="stylesheet" href="css/viewer.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
     <!-- Three.js CDN — loaded as module for 3D paper-fold effects.
          The importmap defines the bare specifier; the modulepreload
          warms the network cache and, with integrity, verifies the

@@ -459,3 +459,40 @@ body:not([data-page="home"]) .settings-close:hover {
     background-size: 320px 320px;
   }
 }
+
+/* ── Error state ───────────────────────────────────────────────────
+   Displayed when data loading fails (JSONL fetch, network, etc.).
+   Styled to match the newspaper theme — muted tones, serif fonts. */
+.error-state {
+  text-align: center;
+  padding: var(--space-7, 3rem) var(--space-4, 1rem);
+  max-width: 480px;
+  margin: 0 auto;
+}
+.error-state__title {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: var(--fs-xl, 1.25rem);
+  font-weight: 700;
+  color: var(--ink-base, #181410);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+.error-state__detail {
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--ink-muted, #5b4f3d);
+  margin-bottom: var(--space-5, 1.5rem);
+  line-height: 1.6;
+}
+.error-state__btn {
+  padding: 0.5rem 1.2rem;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--paper-base, #f4f0e6);
+  background: var(--ink-base, #181410);
+  border: none;
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.error-state__btn:hover {
+  opacity: 0.85;
+}
