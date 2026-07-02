@@ -30,7 +30,6 @@
 import { el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
-import { initImageReveal } from "../utils/reveal.js";
 
 /* -------------------------------------------------------------------------
  * Club slug → individual page URL mapping
@@ -341,6 +340,18 @@ function setupFolding() {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
+
+          // Stagger-reveal paper cards inside this section
+          const cards = entry.target.querySelectorAll(".paper-card-wrap");
+          cards.forEach((card, i) => {
+            card.style.transitionDelay = i * 0.06 + "s";
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                card.classList.add("is-revealed");
+              });
+            });
+          });
+
           obs.unobserve(entry.target);
         }
       }
@@ -432,9 +443,6 @@ export async function initHome() {
   }
 
   setupFolding();
-
-  // Paper-slide image reveal on the paper-card-grid
-  initImageReveal(document);
 
   // Measure lead-article text and adjust column layout.
   // Also re-measure on font load since canvas metrics depend on it.

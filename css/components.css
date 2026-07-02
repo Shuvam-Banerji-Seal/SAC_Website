@@ -628,6 +628,29 @@
     opacity: 1;
     transition: none;
   }
+  .paper-card-wrap {
+    clip-path: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ── Paper card stagger reveal (home page) ────────────────────────
+   When a .body-section becomes visible, each .paper-card-wrap slides
+   in from the right with a clip-path reveal. The JS staggers the
+   transition-delay per card. */
+
+.paper-card-wrap {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  transition:
+    clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease 0.1s;
+  transition-delay: inherit; /* Set by JS stagger */
+}
+.paper-card-wrap.is-revealed {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
 }
 
 /* ── Stat grid (used in club-detail) ─────────────────── */

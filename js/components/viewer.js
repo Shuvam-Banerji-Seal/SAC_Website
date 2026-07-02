@@ -51,6 +51,7 @@ function buildOverlay() {
       <div class="viewer-info__desc"></div>
       <div class="viewer-info__credit"></div>
     </div>
+    <div class="viewer-strip" aria-label="Image thumbnails"></div>
     <div class="viewer-counter"></div>
   `;
   document.body.appendChild(el);
@@ -104,6 +105,7 @@ function close() {
   overlay.classList.remove("is-open");
   document.body.style.overflow = "";
   document.removeEventListener("keydown", handleKey);
+  lastStripGroup = ""; // Reset so strip rebuilds for next group
   // Remove compositor layer promotion — viewer is closed
   if (frameEl) {
     frameEl.style.willChange = "auto";
@@ -128,6 +130,65 @@ function handleKey(e) {
   if (e.key === "Escape") close();
   if (e.key === "ArrowLeft") prev();
   if (e.key === "ArrowRight") next();
+}
+
+/* -------------------------------------------------------------------------
+ * Thumbnail strip
+ * ------------------------------------------------------------------------- */
+
+let lastStripGroup = "";
+
+function buildThumbnailStrip() {
+  const strip = overlay.querySelector(".viewer-strip");
+  if (!strip) return;
+
+  // Rebuild only when the group changes
+  const groupKey = currentGroup.map((el) => {
+    const img = el.tagName === "IMG" ? el : el.querySelector("img");
+    return img?.src || "";
+  }).join("|");
+
+  if (groupKey !== lastStripGroup) {
+    lastStripGroup = groupKey;
+    strip.innerHTML = "";
+
+    if (currentGroup.length < 2) {
+      strip.style.display = "none";
+      return;
+    }
+    strip.style.display = "";
+
+    currentGroup.forEach((item, i) => {
+      const img = item.tagName === "IMG" ? item : item.querySelector("img");
+      if (!img) return;
+      const thumb = document.createElement("button");
+      thumb.className = "viewer-strip__thumb";
+      thumb.setAttribute("aria-label", `Go to image ${i + 1}`);
+      const thumbImg = document.createElement("img");
+      thumbImg.src = img.src;
+      thumbImg.alt = img.alt || "";
+      thumbImg.loading = "lazy";
+      thumbImg.decoding = "async";
+      thumb.appendChild(thumbImg);
+      thumb.addEventListener("click", () => {
+        currentIndex = i;
+        updateImage();
+      });
+      strip.appendChild(thumb);
+    });
+  }
+
+  // Highlight active thumbnail
+  const thumbs = strip.querySelectorAll(".viewer-strip__thumb");
+  thumbs.forEach((t, i) => {
+    t.classList.toggle("is-active", i === currentIndex);
+  });
+
+  // Scroll active thumbnail into view
+  const active = strip.querySelector(".is-active");
+  if (active) {
+    active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
 }
 
 /* -------------------------------------------------------------------------
@@ -190,6 +251,9 @@ function updateImage() {
     currentGroup.length > 1 ? "grid" : "none";
   overlay.querySelector(".viewer-nav--next").style.display =
     currentGroup.length > 1 ? "grid" : "none";
+
+  // Thumbnail strip: build once per group, then highlight active
+  buildThumbnailStrip();
 }
 
 /* -------------------------------------------------------------------------

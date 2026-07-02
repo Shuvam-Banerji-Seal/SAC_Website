@@ -63,6 +63,8 @@ const STATIC_ASSETS = [
   "assets/rice-paper.png",
   "assets/stressed-linen.png",
   "assets/old-wall.png",
+  // Audio
+  "assets/audio/ambient.mp3",
   // Sub-pages
   "pages/about.html",
   "pages/clubs.html",
