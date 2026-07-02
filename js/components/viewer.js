@@ -45,7 +45,12 @@ function buildOverlay() {
       <div class="viewer-frame__corner viewer-frame__corner--br"></div>
       <img class="viewer-img" src="" alt="" />
     </div>
-    <div class="viewer-caption"></div>
+    <div class="viewer-info">
+      <div class="viewer-info__context"></div>
+      <div class="viewer-info__title"></div>
+      <div class="viewer-info__desc"></div>
+      <div class="viewer-info__credit"></div>
+    </div>
     <div class="viewer-counter"></div>
   `;
   document.body.appendChild(el);
@@ -133,20 +138,48 @@ function updateImage() {
   const el = currentGroup[currentIndex];
   if (!el) return;
 
+  // The clickable element is the <a data-viewer> wrapper (or sometimes a bare <img>)
+  const anchor = el.tagName === "A" ? el : el.closest("a[data-viewer]");
   const img = el.tagName === "IMG" ? el : el.querySelector("img");
   if (!img) return;
 
   const viewerImg = overlay.querySelector(".viewer-img");
-  const viewerCaption = overlay.querySelector(".viewer-caption");
   const viewerCounter = overlay.querySelector(".viewer-counter");
+
+  // Caption fields: rich metadata from data-* attributes set by
+  // gallery.js / club-images.js / events.js.
+  const infoContext = overlay.querySelector(".viewer-info__context");
+  const infoTitle = overlay.querySelector(".viewer-info__title");
+  const infoDesc = overlay.querySelector(".viewer-info__desc");
+  const infoCredit = overlay.querySelector(".viewer-info__credit");
 
   viewerImg.src = img.src;
   viewerImg.alt = img.alt || "";
 
-  // Caption: use title, alt, or figcaption text
-  const caption =
-    img.title || img.alt || el.closest("figure")?.querySelector("figcaption")?.textContent || "";
-  viewerCaption.textContent = caption;
+  // Context (e.g., "AARSHI · Event Photos" or "Gallery · All")
+  const context = anchor?.dataset.context || "";
+  // Title of the image
+  const title =
+    anchor?.dataset.title ||
+    img.title ||
+    img.alt ||
+    el.closest("figure")?.querySelector("figcaption")?.textContent ||
+    "";
+  // Longer description
+  const desc = anchor?.dataset.desc || "";
+  // Credit / photographer
+  const credit = anchor?.dataset.credit || "";
+
+  infoContext.textContent = context;
+  infoTitle.textContent = title;
+  infoDesc.textContent = desc;
+  infoCredit.textContent = credit;
+
+  // Hide empty caption sub-blocks gracefully
+  infoContext.style.display = context ? "" : "none";
+  infoTitle.style.display = title ? "" : "none";
+  infoDesc.style.display = desc ? "" : "none";
+  infoCredit.style.display = credit ? "" : "none";
 
   // Counter
   viewerCounter.textContent =

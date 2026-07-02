@@ -513,6 +513,123 @@
   line-height: 1.4;
 }
 
+/* ── Pinned thumbs (pushpin board look) ───────────────────────────────
+   The JS in events.js / gallery.js / club-images.js already sets
+   --pin-rotate on each thumb and adds class="thumb-grid pinned-thumbs",
+   but no CSS consumed it before, so the rotate + pin were dead. These
+   rules resurrect them: each thumb sits at a hand-pinned angle with a
+   realistic brass pushpin head and a soft drop shadow on the paper. */
+
+.pinned-thumbs {
+  /* A little breathing room so rotated thumbs don't clip neighbours. */
+  gap: var(--space-5);
+  padding-top: var(--space-4);
+}
+.pinned-thumbs .thumb {
+  position: relative;
+  padding-top: var(--space-4);
+  transform: rotate(var(--pin-rotate, 0deg));
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+  box-shadow:
+    0 1px 0 rgba(24, 20, 16, 0.08),
+    0 6px 14px -8px rgba(24, 20, 16, 0.35);
+}
+.pinned-thumbs .thumb:hover,
+.pinned-thumbs .thumb:focus-within {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow:
+    0 2px 0 rgba(24, 20, 16, 0.1),
+    0 14px 24px -10px rgba(24, 20, 16, 0.45);
+  z-index: 2;
+}
+
+/* Pushpin head (top-center of each thumb) — same metallic dome language
+   as the home page paper-cards. */
+.pinned-thumbs .thumb::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 38% 30%,
+    rgba(255, 245, 210, 0.95) 0%,
+    rgba(232, 188, 110, 0.95) 22%,
+    rgba(196, 148, 56, 0.98) 48%,
+    rgba(120, 84, 28, 1) 78%,
+    rgba(70, 48, 14, 1) 100%
+  );
+  box-shadow:
+    0 4px 0 -3px rgba(40, 28, 10, 0.55),
+    0 1px 2px rgba(40, 28, 10, 0.6),
+    inset 1px 1px 1.5px rgba(255, 250, 230, 0.9);
+  transform: translateX(-50%) rotate(var(--pin-tilt, -3deg));
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Soft elliptical drop shadow where the pin pierces the paper. */
+.pinned-thumbs .thumb::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 24px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(40, 28, 10, 0.22) 0%,
+    rgba(40, 28, 10, 0.08) 60%,
+    transparent 80%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Paper-slide reveal animation for thumbs ─────────────────────
+   Each thumb starts clipped from the right (hidden behind a paper
+   cover) and slides into view when .is-revealed is added. Used by
+   events.js, gallery.js, club-images.js, and the home card grid. */
+
+@keyframes paperSlideReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    transform: translateX(-12px) rotate(var(--pin-rotate, 0deg));
+  }
+  to {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+    transform: translateX(0) rotate(var(--pin-rotate, 0deg));
+  }
+}
+
+.thumb--reveal {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  transition:
+    clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s ease 0.15s,
+    transform 0.5s ease 0.15s;
+}
+.thumb--reveal.is-revealed {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
+}
+/* Reduced-motion: show immediately, no clip animation. */
+@media (prefers-reduced-motion: reduce) {
+  .thumb--reveal {
+    clip-path: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
 /* ── Stat grid (used in club-detail) ─────────────────── */
 .stat-grid {
   display: grid;
@@ -656,4 +773,9 @@
     transform: none !important;
     filter: none !important;
   }
+}
+
+/* ── Tablet (768–1024px) ──────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .thumb-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }

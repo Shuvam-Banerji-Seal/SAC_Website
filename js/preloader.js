@@ -327,6 +327,12 @@
 
     setTimeout(function () {
       preloader.classList.add("is-done");
+      // Mark this session so subsequent navigations skip the full preloader.
+      try {
+        sessionStorage.setItem(SESSION_FLAG, "1");
+      } catch (e) {
+        /* sessionStorage may be unavailable (private mode) — ignore */
+      }
       window.dispatchEvent(new CustomEvent("preloader-done", { detail: { tier: TIER } }));
       setTimeout(function () {
         if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
@@ -334,23 +340,61 @@
     }, 200);
   }
 
-  // ── Run all phases sequentially ───────────────────────────────────
+  // ── Revisit fast-path ────────────────────────────────────────────
+  // After the first load in a session we never show the full progress-bar
+  // preloader again. We just dispatch "preloader-done" immediately and let
+  // loader.js / main.js proceed, while assets warm the HTTP cache in the
+  // background (non-blocking). This is the biggest UX win for in-site nav.
 
-  updateProgress(0);
+  const SESSION_FLAG = "sac-loader-seen";
+  const SKIP_QUERY = new URLSearchParams(window.location.search).has("skiploader");
+  const REDUCED_MOTION = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    : false;
 
-  phaseDownload()
-    .then(function () {
-      return phaseDecode();
-    })
-    .then(function () {
-      return phaseWarmup();
-    })
-    .then(function () {
-      done();
-    })
-    .catch(function () {
-      done();
+  function alreadyLoadedThisSession() {
+    try {
+      return sessionStorage.getItem(SESSION_FLAG) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function skipPreloader() {
+    // Still warm the HTTP cache quietly so sub-page assets are ready soon,
+    // but don't block first paint or show any progress UI.
+    backgroundWarmCache();
+    if (preloader && preloader.parentNode) preloader.parentNode.removeChild(preloader);
+    window.dispatchEvent(new CustomEvent("preloader-done", { detail: { tier: TIER } }));
+  }
+
+  // Non-blocking cache warm: fire-and-forget fetches, ignore results.
+  function backgroundWarmCache() {
+    ALL_ASSETS.forEach(function (url) {
+      fetch(BASE + url, { cache: "force-cache" }).catch(function () {});
     });
+  }
+
+  // ── Run all phases sequentially (first visit) ────────────────────
+
+  if (SKIP_QUERY || alreadyLoadedThisSession() || REDUCED_MOTION) {
+    skipPreloader();
+  } else {
+    updateProgress(0);
+    phaseDownload()
+      .then(function () {
+        return phaseDecode();
+      })
+      .then(function () {
+        return phaseWarmup();
+      })
+      .then(function () {
+        done();
+      })
+      .catch(function () {
+        done();
+      });
+  }
 
   // ── Safety timeout: if anything takes too long, just proceed ─────
   // Low-tier devices get more time for decode/warmup

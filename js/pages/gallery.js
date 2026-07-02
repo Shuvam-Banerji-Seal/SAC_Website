@@ -6,6 +6,7 @@
  */
 import { $, el } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
+import { initImageReveal } from "../utils/reveal.js";
 import { revealText } from "../utils/calligraphy.js";
 
 export async function initGallery() {
@@ -36,16 +37,25 @@ export async function initGallery() {
                 el(
                   "li",
                   {
-                    class: "thumb",
+                    class: "thumb thumb--reveal",
                     style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                   },
                   el(
                     "a",
-                    { href: i.public_url, "data-viewer": groupName, title: i.title || i.filename },
+                    {
+                      href: i.public_url,
+                      "data-viewer": groupName,
+                      "data-title": i.title || i.filename || "",
+                      "data-desc": i.description || "",
+                      "data-credit": i.credit || "",
+                      "data-context": c.name + " · Gallery",
+                      title: i.title || i.filename,
+                    },
                     el("img", {
                       src: i.public_url,
-                      alt: i.description,
+                      alt: i.description || "",
                       loading: "lazy",
+                      decoding: "async",
                       width: i.width || undefined,
                       height: i.height || undefined,
                     })
@@ -59,25 +69,8 @@ export async function initGallery() {
       )
     );
 
-    // IntersectionObserver for section reveals
-    if (
-      !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches &&
-      "IntersectionObserver" in window
-    ) {
-      const sections = document.querySelectorAll(".reveal-section");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-revealed");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      sections.forEach((s) => observer.observe(s));
-    }
+    // IntersectionObserver for section reveals + per-thumb staggered entrance
+    initImageReveal(document);
   } catch (err) {
     console.error("initGallery failed:", err);
   }

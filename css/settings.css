@@ -235,6 +235,18 @@
 .font-option[data-font="typewriter"] .font-option__preview {
   font-family: "Special Elite", "Courier New", monospace;
 }
+.font-option[data-font="gothic"] .font-option__preview {
+  font-family: "IM Fell English", Georgia, serif;
+}
+.font-option[data-font="classical"] .font-option__preview {
+  font-family: "Cormorant", Georgia, serif;
+}
+.font-option[data-font="mono"] .font-option__preview {
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+}
+.font-option[data-font="oldenglish"] .font-option__preview {
+  font-family: "UnifrakturMaguntia", "Times New Roman", serif;
+}
 
 /* ── Texture picker ───────────────────────────────────────────────── */
 

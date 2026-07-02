@@ -7,6 +7,7 @@
 import { $, el } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { revealText } from "../utils/calligraphy.js";
+import { initImageReveal } from "../utils/reveal.js";
 
 export async function initEvents() {
   const mount = $("#events-list");
@@ -51,16 +52,29 @@ export async function initEvents() {
                       el(
                         "li",
                         {
-                          class: "thumb",
+                          class: "thumb thumb--reveal",
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
-                        el("img", {
-                          src: e.public_url,
-                          alt: e.description,
-                          loading: "lazy",
-                          width: e.width || undefined,
-                          height: e.height || undefined,
-                        }),
+                        el(
+                          "a",
+                          {
+                            href: e.public_url,
+                            "data-viewer": "events-" + y,
+                            "data-title": e.title || e.filename || "",
+                            "data-desc": e.description || "",
+                            "data-credit": e.credit || "",
+                            "data-context": "Events · " + y,
+                            title: e.title || e.filename || "",
+                          },
+                          el("img", {
+                            src: e.public_url,
+                            alt: e.description || "",
+                            loading: "lazy",
+                            decoding: "async",
+                            width: e.width || undefined,
+                            height: e.height || undefined,
+                          })
+                        ),
                         el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
                       )
                     )
@@ -80,25 +94,25 @@ export async function initEvents() {
       });
     }
 
-    // IntersectionObserver for section reveals
-    if (
-      !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches &&
-      "IntersectionObserver" in window
-    ) {
-      const sections = document.querySelectorAll(".reveal-section");
-      const observer = new IntersectionObserver(
+    // Calligraphy reveal on year labels
+    const yearLabels = document.querySelectorAll(".events__year-label");
+    if (yearLabels.length && "IntersectionObserver" in window) {
+      const yearObs = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add("is-revealed");
-              observer.unobserve(entry.target);
+              revealText(entry.target, 800, undefined, { sound: false, trail: false });
+              yearObs.unobserve(entry.target);
             }
           });
         },
-        { threshold: 0.1 }
+        { threshold: 0.3 }
       );
-      sections.forEach((s) => observer.observe(s));
+      yearLabels.forEach((l) => yearObs.observe(l));
     }
+
+    // IntersectionObserver for section reveals + per-thumb staggered entrance
+    initImageReveal(document);
   } catch (err) {
     console.error("initEvents failed:", err);
   }

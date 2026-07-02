@@ -50,3 +50,8 @@
   font-size: var(--fs-xs, 0.75rem);
   color: var(--ink-muted, #5b4f3d);
 }
+
+/* ── Tablet (768–1024px) ──────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .club-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}

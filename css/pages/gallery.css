@@ -78,3 +78,8 @@
   padding: var(--space-2) var(--space-3);
   border-top: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
+
+/* ── Tablet (768–1024px) ──────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .thumb-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}

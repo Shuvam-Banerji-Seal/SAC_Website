@@ -197,18 +197,23 @@ main.home {
   position: relative;
 }
 
+/* Aged corner vignette instead of the stray 120px jpg smudge. The
+   edge-wear texture reads as a subtle darkened, worn corner that
+   belongs on an old newspaper, not a random square of photo. */
 .lead-article::after {
   content: "";
   position: absolute;
-  right: 0;
-  bottom: calc(var(--space-6) + 18px);
-  width: 120px;
-  height: 120px;
-  background: url("../../assets/newspaper-bg.jpg") center/cover no-repeat;
-  opacity: 0.08;
+  right: -10px;
+  bottom: -10px;
+  width: 220px;
+  height: 220px;
+  background-image: var(--paper-edge-wear);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  opacity: 0.5;
   mix-blend-mode: multiply;
   pointer-events: none;
-  border-radius: 2px;
 }
 
 .lead-article__headline {
@@ -342,6 +347,13 @@ main.home {
   line-height: 0.85;
   padding: 0.06em 0.12em 0 0;
   color: var(--accent-red);
+}
+
+/* ── Tablet (768–1024px) ──────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .lead-article__body { column-count: 2; column-gap: 2rem; }
+  .paper-card-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .thumb-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
 
 @media (max-width: 720px) {
@@ -534,25 +546,21 @@ main.home {
 }
 
 /* Two horizontal fold-crease lines give the card a "folded paper"
-   feel — top and bottom. */
-.paper-card::before,
+   feel. The bottom crease uses ::after. The top crease is now drawn as
+   a subtle background line on the card itself (so ::before is free to
+   render the pin head). */
 .paper-card::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
+  bottom: var(--space-3);
   height: 4px;
   background-image: var(--paper-fold-crease);
   background-repeat: repeat-x;
   background-size: 200px 4px;
   pointer-events: none;
   opacity: 0.4;
-}
-.paper-card::before {
-  top: var(--space-3);
-}
-.paper-card::after {
-  bottom: var(--space-3);
 }
 
 .paper-card:hover,
@@ -656,48 +664,65 @@ main.home {
   color: var(--accent-red-deep);
 }
 
-/* ── Notice board: nail/pin at top of each card ─────────────────── */
+/* ── Notice board: realistic pushpin at top of each card ─────────── */
 
-/* A small nail/pin graphic at the top-center of each card, making
-   it look like it's pinned to a notice board. The pin has a subtle
-   shadow and a metallic sheen. */
+/* A brass pushpin: a 3D metallic dome with a bright specular highlight,
+   a darker rim, and a needle that pierces the paper (rendered via the
+   box-shadow "needle stub" below the head plus a soft elliptical drop
+   shadow on the paper beneath the pin). Slightly off-center and tilted
+   per card via --pin-offset / --pin-tilt so the board reads naturally. */
 .paper-card::before {
   content: "";
   position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
+  /* Sit just above the top edge so the dome pokes over the paper. */
+  top: -7px;
+  left: calc(50% + var(--pin-offset, 0px));
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #d4a040, #8b6020 60%, #5a4010);
+  /* Metallic dome: highlight top-left, mid brass, dark underside/rim. */
+  background:
+    radial-gradient(
+      circle at 38% 30%,
+      rgba(255, 245, 210, 0.95) 0%,
+      rgba(232, 188, 110, 0.95) 22%,
+      rgba(196, 148, 56, 0.98) 48%,
+      rgba(120, 84, 28, 1) 78%,
+      rgba(70, 48, 14, 1) 100%
+    );
+  /* Needle stub (a thin dark cylinder beneath the dome) + rim shadow +
+     bright pinpoint specular. The first box-shadow is the needle, the
+     second the under-rim shading, the third the white specular dot. */
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+    0 5px 0 -3px rgba(40, 28, 10, 0.55),
+    0 1px 2px rgba(40, 28, 10, 0.6),
+    inset 1px 1px 1.5px rgba(255, 250, 230, 0.9);
+  /* Tilt the pin slightly per card for a hand-pinned look. */
+  transform: translateX(-50%) rotate(var(--pin-tilt, -4deg));
   z-index: 5;
   pointer-events: none;
-  /* Override the fold-crease ::before from above */
-  background-image: none;
-  height: 12px;
-  width: 12px;
-  left: 50%;
-  top: -6px;
 }
 
-/* The bottom fold-crease stays as a separate element */
-.paper-card::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: var(--space-3);
-  height: 4px;
-  background-image: var(--paper-fold-crease);
-  background-repeat: repeat-x;
-  background-size: 200px 4px;
-  pointer-events: none;
-  opacity: 0.4;
+/* Soft elliptical drop shadow where the pin pierces the paper. We can't
+   add a second pseudo, so we layer it as a background image on the card's
+   own top padding via a background gradient that sits behind the pin. */
+.paper-card {
+  /* Prepend the pin drop-shadow to the existing grain+stains background
+     stack (defined above) so we don't clobber the paper texture. The
+     shadow is a soft ellipse where the pushpin pierces the paper. */
+  background-image:
+    radial-gradient(
+      ellipse 22px 7px at calc(50% + var(--pin-offset, 0px)) 6px,
+      rgba(40, 28, 10, 0.22) 0%,
+      rgba(40, 28, 10, 0.1) 55%,
+      transparent 80%
+    ),
+    var(--paper-grain),
+    var(--paper-stains);
 }
+
+/* The bottom fold-crease stays as a separate element
+   (defined earlier alongside the pin — kept here as a no-op comment) */
 
 /* ── Postmark stamp on body banners ─────────────────────────────── */
 

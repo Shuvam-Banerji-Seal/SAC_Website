@@ -30,6 +30,7 @@
 import { el, pageUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
+import { initImageReveal } from "../utils/reveal.js";
 
 /* -------------------------------------------------------------------------
  * Club slug → individual page URL mapping
@@ -236,6 +237,10 @@ function renderPaperCard(club) {
 
   // Random slight rotation for the notice board look (-2deg to +2deg)
   const rotate = (Math.random() - 0.5) * 4;
+  // Random hand-pinned offset/tilt so the pushpin on each card sits a
+  // little differently (sells the "pinned to a board" feel).
+  const pinOffset = Math.round((Math.random() - 0.5) * 28); // -14px..+14px
+  const pinTilt = (Math.random() - 0.5) * 18; // -9deg..+9deg
 
   // Map club slug to individual page URL
   const pageUrl = getClubPageUrl(club.slug);
@@ -246,7 +251,14 @@ function renderPaperCard(club) {
       class: "paper-card",
       href: pageUrl,
       "aria-label": "Read more about " + club.name,
-      style: "--card-rotate: " + rotate.toFixed(2) + "deg",
+      style:
+        "--card-rotate: " +
+        rotate.toFixed(2) +
+        "deg; --pin-offset: " +
+        pinOffset +
+        "px; --pin-tilt: " +
+        pinTilt.toFixed(2) +
+        "deg",
     },
     el("div", { class: "paper-card__logo" }, logoContent),
     el("h3", { class: "paper-card__name" }, club.name),
@@ -420,6 +432,9 @@ export async function initHome() {
   }
 
   setupFolding();
+
+  // Paper-slide image reveal on the paper-card-grid
+  initImageReveal(document);
 
   // Measure lead-article text and adjust column layout.
   // Also re-measure on font load since canvas metrics depend on it.

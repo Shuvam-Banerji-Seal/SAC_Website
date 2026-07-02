@@ -10,6 +10,7 @@
  *      selected, not on every page load).
  */
 import { $, pageUrl } from "../utils/dom.js";
+import { setAmbientEnabled } from "../utils/music.js";
 
 /* -------------------------------------------------------------------------
  * Constants
@@ -53,6 +54,13 @@ const FONT_PRESETS = {
     families: '"IBM Plex Mono", "Courier New", monospace',
     weights: "400;500;700",
     google: "IBM+Plex+Mono:wght@400;500;700",
+  },
+  oldenglish: {
+    label: "Old English",
+    families: '"UnifrakturMaguntia", "Times New Roman", serif',
+    weights: "400",
+    google: "UnifrakturMaguntia",
+    displayOnly: true, // Only apply to --font-display (headlines), not --font-serif (body)
   },
 };
 
@@ -165,8 +173,14 @@ function applyFont(prefs) {
   const preset = prefs.font || "newspaper";
   const config = FONT_PRESETS[preset];
   if (!config) return;
-  document.documentElement.style.setProperty("--font-display", config.families);
-  document.documentElement.style.setProperty("--font-serif", config.families);
+  // Blackletter (oldenglish) is unreadable at body sizes — only apply to
+  // headlines (--font-display) and leave --font-serif on a readable serif.
+  if (config.displayOnly) {
+    document.documentElement.style.setProperty("--font-display", config.families);
+  } else {
+    document.documentElement.style.setProperty("--font-display", config.families);
+    document.documentElement.style.setProperty("--font-serif", config.families);
+  }
   loadGoogleFont(preset);
 }
 
@@ -175,10 +189,15 @@ function applyTexture(prefs) {
   document.documentElement.setAttribute("data-texture", texture);
 }
 
+function applyAmbient(prefs) {
+  setAmbientEnabled(prefs.ambient !== false);
+}
+
 function applyAll(prefs) {
   applyTheme(prefs);
   applyFont(prefs);
   applyTexture(prefs);
+  applyAmbient(prefs);
 }
 
 /* -------------------------------------------------------------------------
@@ -230,6 +249,7 @@ function renderPanel() {
   const currentFont = prefs.font || "newspaper";
   const currentTexture = prefs.texture || "fresh";
   const isDark = prefs.dark === true || prefs.dark === "auto";
+  const isAmbient = prefs.ambient !== false;
 
   panelEl.innerHTML = `
     <div class="settings-header">
@@ -247,6 +267,16 @@ function renderPanel() {
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="settings-dark" ${isDark ? "checked" : ""} />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row__label">Ambient music</div>
+          <div class="toggle-row__desc">Background newspaper atmosphere</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-ambient" ${isAmbient ? "checked" : ""} />
           <span class="toggle-track"></span>
         </label>
       </div>
@@ -319,6 +349,14 @@ function wireEvents() {
       prefs.dark = darkToggle.checked;
       savePrefs(prefs);
       applyTheme(prefs);
+      return;
+    }
+    // Ambient music toggle
+    const ambientToggle = e.target.closest("#settings-ambient");
+    if (ambientToggle) {
+      prefs.ambient = ambientToggle.checked;
+      savePrefs(prefs);
+      applyAmbient(prefs);
       return;
     }
     // Font option

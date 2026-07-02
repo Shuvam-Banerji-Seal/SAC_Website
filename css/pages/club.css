@@ -1,5 +1,12 @@
 /* club.css — newspaper-themed individual club page with animations, 3D, negative space */
 
+/* Tighter vertical rhythm between sections. The old per-section
+   margin-bottom: var(--space-8) (4rem) left large empty gaps,
+   especially between empty/collapsed image sections. */
+:root {
+  --section-gap: var(--space-6);
+}
+
 /* ── Page wrapper ──────────────────────────────────────────────── */
 main {
   perspective: 1200px;
@@ -120,7 +127,7 @@ main {
 /* ── Body text sections ────────────────────────────────────────── */
 
 .club-detail__body {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--section-gap);
   max-width: 72ch;
   font-family: var(--font-serif, Georgia, serif);
   color: var(--ink-base, #181410);
@@ -208,7 +215,7 @@ main {
 /* ── Counts section ────────────────────────────────────────────── */
 
 .club-detail__counts {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--section-gap);
   padding: var(--space-5);
   border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
   background: var(--paper-base, #f4f0e6);
@@ -265,7 +272,7 @@ main {
 /* ── Section containers ────────────────────────────────────────── */
 
 .club-detail__section {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--section-gap);
 }
 .club-detail__section h2 {
   font-family: var(--font-display, Georgia, serif);
@@ -282,6 +289,22 @@ main {
   margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+}
+
+/* Wrapper that keeps a section title attached to its grid (club-images.js).
+   Also tightens the vertical rhythm so we no longer see big gaps. */
+.club-detail__image-block {
+  /* section-gap replaces the old per-section space-8 (4rem) rhythm. */
+  margin-bottom: var(--section-gap, var(--space-6));
+}
+.club-detail__image-block:last-child {
+  margin-bottom: 0;
+}
+/* Keep the image grid aligned to the body text column width, eliminating
+   the mismatched column widths (body 72ch, grid full-width) that left
+   awkward horizontal gaps. */
+.club-detail__image-block .thumb-grid {
+  max-width: 100%;
 }
 
 /* ── OB Table ──────────────────────────────────────────────────── */
@@ -425,5 +448,19 @@ main {
   .ob-table th,
   .ob-table td {
     padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* ── Tablet (768–1024px) adjustments ──────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .club-detail__header {
+    gap: var(--space-4);
+  }
+  .club-detail__logo {
+    width: 72px;
+    height: 72px;
+  }
+  .thumb-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
