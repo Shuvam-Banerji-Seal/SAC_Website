@@ -22,6 +22,23 @@ function getClubPageUrl(slug) {
     "PIXEL-Photography_Club": "pages/pixel.html",
     SAC_Academics: "pages/academics.html",
     SAC_Hostel: "pages/hostel.html",
+    SAC_Sports_Athletics: "pages/athletics.html",
+    SAC_Sports_Badminton: "pages/badminton.html",
+    SAC_Sports_Basketball: "pages/basketball.html",
+    SAC_Sports_Carrom: "pages/carrom.html",
+    SAC_Sports_Chess: "pages/chess.html",
+    SAC_Sports_Cricket: "pages/cricket.html",
+    SAC_Sports_Football: "pages/football.html",
+    SAC_Sports_Gaming: "pages/gaming.html",
+    SAC_Sports_GYM: "pages/gym.html",
+    SAC_Sports_Kabaddi: "pages/kabaddi.html",
+    SAC_Sports_Kho_Kho: "pages/kho-kho.html",
+    SAC_Sports_Lawn_Tennis: "pages/lawn-tennis.html",
+    SAC_Sports_Rubik: "pages/rubik.html",
+    SAC_Sports_SYDC: "pages/sydc.html",
+    SAC_Sports_Table_Tennis: "pages/table-tennis.html",
+    SAC_Sports_Volleyball: "pages/volleyball.html",
+    Singularity_Astro_Club: "pages/singularity.html",
   };
   return urlMap[slug] || "pages/clubs.html";
 }

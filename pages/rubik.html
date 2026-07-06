@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rubik's Cube Club · SAC IISER Kolkata</title>
+    <meta
+      name="description"
+      content="Rubik's Cube Club of IISER Kolkata — algorithms, speedcubing, and puzzle-solving mastery."
+    />
+    <link rel="stylesheet" href="../css/preloader.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/loader.css" />
+    <link rel="stylesheet" href="../css/settings.css" />
+    <link rel="stylesheet" href="../css/viewer.css" />
+    <link rel="stylesheet" href="../css/print.css" media="print" />
+    <link rel="stylesheet" href="../css/pages/club.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23f4f0e6'/><text x='50' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='52' fill='%237e0909'>SAC</text></svg>"
+    />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js" } }
+    </script>
+  </head>
+  <body data-page="club" data-club-slug="SAC_Sports_Rubik">
+    <div id="preloader" class="preloader">
+      <div class="preloader__ink"></div>
+      <div class="preloader__kicker">The SAC Chronicle</div>
+      <div class="preloader__bar"><div class="preloader__fill"></div></div>
+      <div class="preloader__percent"><span class="preloader__percent-num">0</span>% loaded</div>
+    </div>
+    <script src="../js/preloader.js"></script>
+
+    <header>
+      <nav id="navbar" aria-label="Primary"></nav>
+      <button
+        class="navbar-corner"
+        id="navbarCorner"
+        type="button"
+        aria-label="Open navigation"
+        aria-expanded="false"
+        aria-controls="navbar"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M5 8h14M5 13h14M5 18h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <article class="club-detail">
+        <header class="club-detail__header">
+          <a href="clubs.html" class="back-link">&larr; All clubs</a>
+          <h1 class="club-detail__title" id="clubTitle">Rubik's Cube Club</h1>
+        </header>
+
+        <section class="club-detail__body reveal-section">
+          <p>
+            The Rubik's Cube Club of IISER Kolkata is a community of puzzle enthusiasts and
+            speedcubers who are fascinated by the art of solving twisty puzzles. From the classic
+            3x3 to complex multi-layered cubes, the club explores the world of algorithms and
+            pattern recognition.
+          </p>
+          <p>
+            Whether you are learning your first F2L algorithm or competing to break personal
+            records, the club offers a welcoming space to share tips, learn new techniques, and
+            enjoy the satisfaction of a clean solve.
+          </p>
+        </section>
+
+        <section class="club-detail__section reveal-section">
+          <h2>Office Bearers &mdash; 2026-27</h2>
+          <table class="ob-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TBA</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td><span class="ob-role">Secretary</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="SAC_Sports_Rubik"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
+          ></div>
+        </section>
+
+        <section class="club-detail__body reveal-section">
+          <h2>Events &amp; Activities</h2>
+          <p>
+            The Rubik's Cube Club hosts regular solve sessions, speedcubing competitions, and
+            workshops for beginners, as well as selections for representing IISER Kolkata at IICM
+            and other puzzle competitions.
+          </p>
+        </section>
+
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="SAC_Sports_Rubik"
+            data-role="event"
+            data-title="Event Photos"
+          ></div>
+        </section>
+
+        <section class="club-detail__body reveal-section">
+          <h2>Achievements</h2>
+          <p>
+            The club regularly participates in Inter-IISER Cultural Meet (IICM) events and other
+            inter-collegiate speedcubing competitions, bringing laurels to IISER Kolkata.
+          </p>
+        </section>
+
+        <section class="club-detail__section reveal-section">
+          <div
+            data-club-images="SAC_Sports_Rubik"
+            data-role="iicm"
+            data-title="IICM Achievements"
+          ></div>
+        </section>
+
+        <section class="club-detail__body reveal-section">
+          <h2>Get in Touch</h2>
+          <ul class="contact-list">
+            <li>Email: <a href="mailto:sac.sports@iiserkol.ac.in">sac.sports@iiserkol.ac.in</a></li>
+          </ul>
+        </section>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/loader.js"></script>
+    <script>
+      (function () {
+        var el = document.getElementById("mastheadDate");
+        if (el)
+          el.textContent = new Date().toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+      })();
+    </script>
+    <div class="settings-overlay" id="settings-overlay"></div>
+    <div class="settings-panel" id="settings-panel"></div>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      &#9881;
+    </button>
+  </body>
+</html>

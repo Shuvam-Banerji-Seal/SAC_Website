@@ -61,7 +61,6 @@ const FONT_PRESETS = {
     google: "UnifrakturMaguntia",
     displayOnly: true,
   },
-
 };
 
 const TEXTURES = {
@@ -190,13 +189,15 @@ function applyTexture(prefs) {
 function applyAmbient(prefs) {
   const enabled = prefs.ambient !== false;
   // Dynamic import so settings.js works even if music.js is not loaded
-  import("../utils/music.js").then(({ setAmbientEnabled }) => {
-    setAmbientEnabled(enabled);
-  }).catch(() => {
-    // music.js may be unavailable in test env
-  });
+  import("../utils/music.js")
+    .then(({ initAmbientMusic, setAmbientEnabled }) => {
+      initAmbientMusic();
+      setAmbientEnabled(enabled);
+    })
+    .catch(() => {
+      // music.js may be unavailable in test env
+    });
 }
-
 
 function applyAll(prefs) {
   applyTheme(prefs);
@@ -469,7 +470,7 @@ function wireEvents() {
       prefs.sound = soundToggle.checked;
       savePrefs(prefs);
       applySound(prefs);
-  applyAmbient(prefs);
+      applyAmbient(prefs);
       return;
     }
   });

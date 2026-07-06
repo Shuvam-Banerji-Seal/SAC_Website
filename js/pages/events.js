@@ -48,8 +48,9 @@ export async function initEvents() {
                   el(
                     "ul",
                     { class: "thumb-grid pinned-thumbs" },
-                    ...byYear.get(y).map((e) =>
-                      el(
+                    ...byYear.get(y).map((e) => {
+                      const groupName = "events-" + y;
+                      return el(
                         "li",
                         {
                           class: "thumb",
@@ -66,17 +67,29 @@ export async function initEvents() {
                           ).toLowerCase(),
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
-                        el("img", {
-                          src: assetUrl(e.public_url),
-                          alt: e.description,
-                          loading: "lazy",
-                          decoding: "async",
-                          width: e.width || undefined,
-                          height: e.height || undefined,
-                        }),
+                        el(
+                          "a",
+                          {
+                            href: assetUrl(e.public_url),
+                            "data-viewer": groupName,
+                            "data-title": e.title || e.filename || "",
+                            "data-desc": e.description || e.club_name || "",
+                            "data-credit": e.credit || "",
+                            "data-context": "Events \u00b7 " + y,
+                            title: e.title || e.filename || "",
+                          },
+                          el("img", {
+                            src: assetUrl(e.public_url),
+                            alt: e.description,
+                            loading: "lazy",
+                            decoding: "async",
+                            width: e.width || undefined,
+                            height: e.height || undefined,
+                          })
+                        ),
                         el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
-                      )
-                    )
+                      );
+                    })
                   )
                 )
               )

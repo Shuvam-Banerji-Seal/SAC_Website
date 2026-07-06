@@ -49,6 +49,11 @@ function getClubPageUrl(slug) {
     "PIXEL-Photography_Club": "pages/pixel.html",
     SAC_Academics: "pages/academics.html",
     SAC_Hostel: "pages/hostel.html",
+    SAC_Sports_Athletics: "pages/athletics.html",
+    SAC_Sports_Badminton: "pages/badminton.html",
+    SAC_Sports_Basketball: "pages/basketball.html",
+    SAC_Sports_Carrom: "pages/carrom.html",
+    SAC_Sports_Chess: "pages/chess.html",
   };
   return urlMap[slug] || "pages/clubs.html";
 }
@@ -266,13 +271,13 @@ function renderPaperCard(club) {
   const pinTilt = (Math.random() - 0.5) * 18; // -9deg..+9deg
 
   // Map club slug to individual page URL
-  const pageUrl = getClubPageUrl(club.slug);
+  const clubUrl = getClubPageUrl(club.slug);
 
   const card = el(
     "a",
     {
       class: "paper-card",
-      href: pageUrl,
+      href: clubUrl,
       "aria-label": "Read more about " + club.name,
       style:
         "--card-rotate: " +
