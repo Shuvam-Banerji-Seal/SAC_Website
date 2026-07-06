@@ -8,15 +8,13 @@
  * Usage: add data-viewer="gallery" to images that should open in the viewer.
  * All images with the same data-viewer value form a group for prev/next navigation.
  */
-import { $ } from "../utils/dom.js";
+/* unused: import { $ } from "../utils/dom.js"; */
 
 /* -------------------------------------------------------------------------
  * State
  * ------------------------------------------------------------------------- */
 
 let overlay = null;
-let frameImg = null;
-let frameCaption = null;
 let frameEl = null;
 let currentGroup = [];
 let currentIndex = 0;

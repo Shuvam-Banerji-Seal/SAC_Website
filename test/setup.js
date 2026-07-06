@@ -4,8 +4,6 @@
  * Provides a minimal DOM environment (via jsdom) and common helpers
  * that every test file can use without re-importing.
  */
-import { vi } from "vitest";
-
 // ── Mock localStorage (not in jsdom) ──────────────────────────────
 const localStorageMock = (() => {
   let store = {};
@@ -34,7 +32,6 @@ Object.defineProperty(global, "localStorage", {
   value: localStorageMock,
   writable: true,
 });
-
 // ── Mock IntersectionObserver (not in jsdom) ──────────────────────
 class MockIntersectionObserver {
   constructor(callback) {
@@ -61,7 +58,6 @@ class MockIntersectionObserver {
   }
 }
 global.IntersectionObserver = MockIntersectionObserver;
-
 // ── Mock matchMedia (not fully in jsdom) ──────────────────────────
 if (!window.matchMedia) {
   window.matchMedia = (query) => ({
@@ -75,14 +71,12 @@ if (!window.matchMedia) {
     dispatchEvent: () => false,
   });
 }
-
 // ── Mock ResizeObserver ───────────────────────────────────────────
 global.ResizeObserver = class {
   observe() {}
   unobserve() {}
   disconnect() {}
 };
-
 // ── Mock navigator.serviceWorker ──────────────────────────────────
 if (!navigator.serviceWorker) {
   Object.defineProperty(navigator, "serviceWorker", {
@@ -95,7 +89,6 @@ if (!navigator.serviceWorker) {
     configurable: true,
   });
 }
-
 // ── Mock document.fonts ───────────────────────────────────────────
 if (!document.fonts) {
   Object.defineProperty(document, "fonts", {
@@ -109,7 +102,6 @@ if (!document.fonts) {
     configurable: true,
   });
 }
-
 // ── Mock caches API (Service Worker CacheStorage) ─────────────────
 if (!global.caches) {
   global.caches = {
@@ -124,13 +116,11 @@ if (!global.caches) {
     match: () => Promise.resolve(undefined),
   };
 }
-
 // ── Helper: create a minimal document body for page tests ─────────
 global.setupPage = (pageId = "home") => {
   document.body.setAttribute("data-page", pageId);
   document.body.innerHTML = "";
   return document.body;
 };
-
 // ── Helper: wait for async operations ─────────────────────────────
 global.flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));

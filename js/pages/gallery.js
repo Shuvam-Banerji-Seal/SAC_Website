@@ -7,7 +7,6 @@
  */
 import { $, el, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
-import { revealText } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 
 export async function initGallery() {

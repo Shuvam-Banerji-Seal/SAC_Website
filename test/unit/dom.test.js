@@ -4,7 +4,7 @@
  * The dom module provides the core helpers used across the site:
  *   $, el(), onReady(), isInPagesDir(), pageUrl()
  */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 
 // We need to mock the module before importing it because it uses
 // onReady which attaches to document.addEventListener.

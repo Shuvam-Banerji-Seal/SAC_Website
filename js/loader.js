@@ -599,14 +599,14 @@ const SESSION_FLAG = "sac-loader-seen";
 function alreadyLoadedThisSession() {
   try {
     return sessionStorage.getItem(SESSION_FLAG) === "1";
-  } catch (e) {
+  } catch {
     return false;
   }
 }
 function markSessionLoaded() {
   try {
     sessionStorage.setItem(SESSION_FLAG, "1");
-  } catch (e) {
+  } catch {
     /* ignore */
   }
 }

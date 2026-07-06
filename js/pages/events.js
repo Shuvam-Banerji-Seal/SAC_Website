@@ -112,7 +112,7 @@ export async function initEvents() {
           section.style.display = visibleItems.length === 0 ? "none" : "";
         });
         // Show/hide no-results message
-        let noResults = $(".events-no-results");
+        const noResults = $(".events-no-results");
         if (!q || visibleCount > 0) {
           if (noResults) noResults.remove();
         } else if (!noResults) {

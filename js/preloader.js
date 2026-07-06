@@ -330,7 +330,7 @@
       // Mark this session so subsequent navigations skip the full preloader.
       try {
         sessionStorage.setItem(SESSION_FLAG, "1");
-      } catch (e) {
+      } catch {
         /* sessionStorage may be unavailable (private mode) — ignore */
       }
       window.dispatchEvent(new CustomEvent("preloader-done", { detail: { tier: TIER } }));
@@ -355,7 +355,7 @@
   function alreadyLoadedThisSession() {
     try {
       return sessionStorage.getItem(SESSION_FLAG) === "1";
-    } catch (e) {
+    } catch {
       return false;
     }
   }

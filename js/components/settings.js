@@ -9,7 +9,7 @@
  *   4. Google Fonts are loaded lazily (only when a font preset is first
  *      selected, not on every page load).
  */
-import { $, pageUrl } from "../utils/dom.js";
+import { pageUrl } from "../utils/dom.js";
 
 /* -------------------------------------------------------------------------
  * Constants
@@ -130,7 +130,7 @@ const TEXTURES = {
 let panelEl = null;
 let overlayEl = null;
 let fabEl = null;
-let loadedFonts = { newspaper: true }; // newspaper is already loaded via <link>
+const loadedFonts = { newspaper: true }; // newspaper is already loaded via <link>
 
 /* -------------------------------------------------------------------------
  * Persistence
