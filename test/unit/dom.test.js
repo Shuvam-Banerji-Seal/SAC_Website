@@ -86,4 +86,33 @@ describe("dom utilities", () => {
     const mod = await import("../../js/utils/dom.js");
     expect(mod.$("#nonexistent")).toBe(null);
   });
+
+  it("pageLink adds pages/ prefix from root", async () => {
+    delete window.location;
+    window.location = new URL("https://example.com/SAC_Website/");
+    const mod = await import("../../js/utils/dom.js");
+    expect(mod.pageLink("clubs.html")).toBe("pages/clubs.html");
+    expect(mod.pageLink("events.html")).toBe("pages/events.html");
+  });
+
+  it("pageLink adds ../pages/ prefix from pages dir", async () => {
+    delete window.location;
+    window.location = new URL("https://example.com/SAC_Website/pages/club.html");
+    const mod = await import("../../js/utils/dom.js");
+    expect(mod.pageLink("clubs.html")).toBe("../pages/clubs.html");
+    expect(mod.pageLink("athletics.html")).toBe("../pages/athletics.html");
+  });
+
+  it("pageLink leaves absolute URLs unchanged", async () => {
+    const mod = await import("../../js/utils/dom.js");
+    expect(mod.pageLink("https://example.com/page.html")).toBe("https://example.com/page.html");
+    expect(mod.pageLink("/SAC_Website/pages/clubs.html")).toBe("/SAC_Website/pages/clubs.html");
+  });
+
+  it("pageLink strips existing pages/ prefix", async () => {
+    delete window.location;
+    window.location = new URL("https://example.com/SAC_Website/");
+    const mod = await import("../../js/utils/dom.js");
+    expect(mod.pageLink("../pages/clubs.html")).toBe("pages/clubs.html");
+  });
 });

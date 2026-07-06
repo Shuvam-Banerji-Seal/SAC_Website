@@ -57,6 +57,19 @@ export function pageUrl(path) {
 }
 
 /**
+ * Resolve a page link (something in the pages/ subdirectory).
+ * Works from both the site root and from pages/ subdirectories.
+ * Example: pageLink("athletics.html") → "pages/athletics.html" (from root)
+ *                                    → "../pages/athletics.html" (from pages/)
+ */
+export function pageLink(path) {
+  if (/^([a-z]+:|\/)/i.test(path)) return path;
+  // Strip "pages/" prefix if already present
+  const clean = path.replace(/^(\.\.\/)*pages\//, "");
+  return isInPagesDir() ? `../pages/${clean}` : `pages/${clean}`;
+}
+
+/**
  * Resolve an asset path correctly whether the current page is at the
  * site root or inside the `pages/` subdirectory.
  *

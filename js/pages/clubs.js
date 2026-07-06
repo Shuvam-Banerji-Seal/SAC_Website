@@ -5,7 +5,7 @@
  * Each card links to the single template at club.html?id=<slug>.
  * Includes a client-side search input that filters cards by name.
  */
-import { $, el, pageUrl, assetUrl, showError } from "../utils/dom.js";
+import { $, el, pageLink, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 
 function getClubPageUrl(slug) {
@@ -62,7 +62,7 @@ export async function initClubs() {
               { class: "club-card", "data-club-name": c.name.toLowerCase() },
               el(
                 "a",
-                { href: pageUrl(getClubPageUrl(c.slug)) },
+                { href: pageLink(getClubPageUrl(c.slug)) },
                 el(
                   "div",
                   { class: "club-card__logo" },

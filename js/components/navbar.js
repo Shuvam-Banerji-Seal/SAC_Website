@@ -6,9 +6,8 @@
  * Paths are computed via pageUrl() so they resolve correctly from
  * any page depth.
  */
-import { $, el } from "../utils/dom.js";
+import { $, el, pageUrl, pageLink } from "../utils/dom.js";
 import { NAV_ITEMS, SITE_TITLE } from "../config.js";
-import { pageUrl } from "../utils/dom.js";
 
 export function renderNavbar(activePage) {
   const mount = $("#navbar");
@@ -19,7 +18,7 @@ export function renderNavbar(activePage) {
     return el(
       "a",
       {
-        href: pageUrl(item.href),
+        href: pageLink(item.href),
         class: isActive ? "nav-link nav-link--active" : "nav-link",
         "aria-current": isActive ? "page" : null,
       },

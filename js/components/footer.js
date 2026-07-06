@@ -2,7 +2,7 @@
  * components/footer.js — renders the footer with IISER location,
  * quick links, and SAC branding.
  */
-import { $, el, pageUrl } from "../utils/dom.js";
+import { $, el, pageLink } from "../utils/dom.js";
 import { SITE_TITLE } from "../config.js";
 
 const QUICK_LINKS = [
@@ -58,7 +58,7 @@ export function renderFooter() {
           el("h4", { class: "site-footer__heading" }, "Explore"),
           el("ul", { class: "site-footer__links" },
             ...QUICK_LINKS.map((link) =>
-              el("li", {}, el("a", { href: pageUrl(link.href) }, link.label))
+              el("li", {}, el("a", { href: pageLink(link.href) }, link.label))
             )
           )
         ),
@@ -70,7 +70,7 @@ export function renderFooter() {
           el("h4", { class: "site-footer__heading" }, "Sports"),
           el("ul", { class: "site-footer__links" },
             ...SPORTS_LINKS.map((link) =>
-              el("li", {}, el("a", { href: pageUrl(link.href) }, link.label))
+              el("li", {}, el("a", { href: pageLink(link.href) }, link.label))
             )
           )
         ),
