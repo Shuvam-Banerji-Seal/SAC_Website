@@ -126,13 +126,15 @@ function assignBody(clubName) {
   ) {
     return "council";
   }
-  // SAC Academics (also covers Singularity, Astronomy, Placement)
+  // SAC Academics (also covers Singularity, Astronomy, Placement, Slashdot, Programming)
   if (
     clubName === "SAC Academics" ||
     name.includes("academics") ||
     name.includes("placement") ||
     name.includes("singularity") ||
-    name.includes("astronomy")
+    name.includes("astronomy") ||
+    name.includes("slashdot") ||
+    name.includes("programming")
   ) {
     return "academics";
   }
@@ -154,7 +156,19 @@ function assignBody(clubName) {
     name.includes("kabaddi") ||
     name.includes("gym") ||
     name.includes("self defence") ||
-    name.includes("sydc")
+    name.includes("sydc") ||
+    name.includes("athletics") ||
+    name.includes("carrom") ||
+    name.includes("cricket") ||
+    name.includes("football") ||
+    name.includes("gaming") ||
+    name.includes("kho-kho") ||
+    name.includes("kho kho") ||
+    name.includes("lawn tennis") ||
+    name.includes("table tennis") ||
+    name.includes("rubik") ||
+    name.includes("volleyball") ||
+    name.includes("volik")
   ) {
     return "sports";
   }
