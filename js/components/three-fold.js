@@ -74,7 +74,11 @@ function onVisibilityChange() {
 /* ── Public API ────────────────────────────────────────────────────── */
 
 export async function initPaperFold() {
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+  if (
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
+    document.documentElement.getAttribute("data-reduce-motion") === "on"
+  )
+    return;
   const masthead = document.querySelector(".masthead");
   if (!masthead) return;
 

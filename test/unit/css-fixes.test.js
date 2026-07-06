@@ -71,10 +71,15 @@ describe("BUG 10: --paper-edge-wear defined in :root", () => {
   const variablesCss = readCss("/css/variables.css");
 
   it("--paper-edge-wear is defined in :root (light theme)", () => {
-    // Find the :root block and check it contains --paper-edge-wear
-    const rootMatch = variablesCss.match(/:root\s*\{([^}]*)\}/);
-    expect(rootMatch).toBeTruthy();
-    expect(rootMatch[1]).toContain("--paper-edge-wear");
+    // The :root block contains SVG data URIs with nested }, so simple
+    // /:root\{([^}]*)\}/ fails. Instead, search the entire file for
+    // the property after :root but before [data-theme="dark"].
+    const rootStart = variablesCss.indexOf(":root");
+    const darkStart = variablesCss.indexOf('[data-theme="dark"]');
+    expect(rootStart).toBeGreaterThan(-1);
+    expect(darkStart).toBeGreaterThan(rootStart);
+    const rootBlock = variablesCss.slice(rootStart, darkStart);
+    expect(rootBlock).toContain("--paper-edge-wear");
   });
 
   it("--paper-edge-wear is also defined in dark theme", () => {

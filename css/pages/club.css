@@ -1,12 +1,5 @@
 /* club.css — newspaper-themed individual club page with animations, 3D, negative space */
 
-/* Tighter vertical rhythm between sections. The old per-section
-   margin-bottom: var(--space-8) (4rem) left large empty gaps,
-   especially between empty/collapsed image sections. */
-:root {
-  --section-gap: var(--space-6);
-}
-
 /* ── Page wrapper ──────────────────────────────────────────────── */
 main {
   perspective: 1200px;
@@ -127,7 +120,7 @@ main {
 /* ── Body text sections ────────────────────────────────────────── */
 
 .club-detail__body {
-  margin-bottom: var(--section-gap);
+  margin-bottom: var(--space-8);
   max-width: 72ch;
   font-family: var(--font-serif, Georgia, serif);
   color: var(--ink-base, #181410);
@@ -215,7 +208,7 @@ main {
 /* ── Counts section ────────────────────────────────────────────── */
 
 .club-detail__counts {
-  margin-bottom: var(--section-gap);
+  margin-bottom: var(--space-8);
   padding: var(--space-5);
   border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
   background: var(--paper-base, #f4f0e6);
@@ -272,7 +265,7 @@ main {
 /* ── Section containers ────────────────────────────────────────── */
 
 .club-detail__section {
-  margin-bottom: var(--section-gap);
+  margin-bottom: var(--space-8);
 }
 .club-detail__section h2 {
   font-family: var(--font-display, Georgia, serif);
@@ -289,22 +282,6 @@ main {
   margin-bottom: var(--space-4);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
-}
-
-/* Wrapper that keeps a section title attached to its grid (club-images.js).
-   Also tightens the vertical rhythm so we no longer see big gaps. */
-.club-detail__image-block {
-  /* section-gap replaces the old per-section space-8 (4rem) rhythm. */
-  margin-bottom: var(--section-gap, var(--space-6));
-}
-.club-detail__image-block:last-child {
-  margin-bottom: 0;
-}
-/* Keep the image grid aligned to the body text column width, eliminating
-   the mismatched column widths (body 72ch, grid full-width) that left
-   awkward horizontal gaps. */
-.club-detail__image-block .thumb-grid {
-  max-width: 100%;
 }
 
 /* ── OB Table ──────────────────────────────────────────────────── */
@@ -451,16 +428,50 @@ main {
   }
 }
 
-/* ── Tablet (768–1024px) adjustments ──────────────────────────────── */
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .club-detail__header {
-    gap: var(--space-4);
+/* ── OB table: card layout on very small screens ───────────────────
+   On screens < 480px the traditional table layout is too cramped.
+   Convert to a stacked card layout where each row becomes a card
+   and each cell is labelled by its column header via CSS. */
+@media (max-width: 480px) {
+  .ob-table,
+  .ob-table thead,
+  .ob-table tbody,
+  .ob-table tr,
+  .ob-table th,
+  .ob-table td {
+    display: block;
   }
-  .club-detail__logo {
-    width: 72px;
-    height: 72px;
+  .ob-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
-  .thumb-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  .ob-table tbody tr {
+    border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+    border-radius: var(--radius, 8px);
+    margin-bottom: var(--space-3, 0.75rem);
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+    background: var(--paper-soft, #ece5d3);
+  }
+  .ob-table td {
+    padding: var(--space-1, 0.25rem) 0;
+    border-bottom: none;
+    position: relative;
+    padding-left: 40%;
+  }
+  .ob-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: var(--space-1, 0.25rem);
+    width: 38%;
+    font-weight: 700;
+    font-size: var(--fs-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted, #5b4f3d);
   }
 }

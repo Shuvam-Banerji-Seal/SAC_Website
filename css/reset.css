@@ -1,7 +1,14 @@
 /* reset.css — minimal modern reset */
 
-*, *::before, *::after { box-sizing: border-box; }
-* { margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -14,17 +21,30 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-img, picture, video, canvas, svg {
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
   max-width: 100%;
 }
 
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
   color: inherit;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   overflow-wrap: break-word;
 }
 
@@ -33,7 +53,8 @@ a {
   text-decoration: none;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -45,4 +66,23 @@ button {
 
 img[width][height] {
   height: auto;
+}
+
+/* ── Global focus-visible ───────────────────────────────
+   Provides a consistent keyboard navigation indicator on all
+   interactive elements. The :focus-visible pseudo-class only
+   shows the outline when the user is navigating via keyboard
+   (Tab/arrow keys), not on mouse click. */
+:focus-visible {
+  outline: 2px solid var(--accent-red, #7e0909);
+  outline-offset: 2px;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-red, #7e0909);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 2px);
 }

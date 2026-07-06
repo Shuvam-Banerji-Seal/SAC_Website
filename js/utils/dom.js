@@ -55,3 +55,34 @@ export function pageUrl(path) {
   if (/^([a-z]+:|\/)/i.test(path)) return path;
   return isInPagesDir() ? `../${path}` : path;
 }
+
+/**
+ * Replace a mount element with a styled error state.
+ * @param {HTMLElement} mount - the element to replace
+ * @param {string} title - short error title
+ * @param {string} detail - longer explanation
+ */
+export function showError(mount, title, detail) {
+  if (!mount) return;
+  mount.replaceWith(
+    el(
+      "div",
+      { class: "error-state", role: "alert" },
+      el("p", { class: "error-state__title" }, title),
+      el("p", { class: "error-state__detail" }, detail),
+      el(
+        "p",
+        { class: "error-state__retry" },
+        el(
+          "button",
+          {
+            type: "button",
+            class: "error-state__btn",
+            onClick: () => location.reload(),
+          },
+          "Try again"
+        )
+      )
+    )
+  );
+}

@@ -2,9 +2,9 @@
  * pages/events.js — events page initialiser.
  *
  * Pulls all is_iicm / is_event entries from the assets map, groups them
- * by year (newest first), and renders a timeline.
+ * by year (newest first), and renders a timeline with client-side search.
  */
-import { $, el } from "../utils/dom.js";
+import { $, el, showError } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { revealText } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
@@ -52,29 +52,28 @@ export async function initEvents() {
                       el(
                         "li",
                         {
-                          class: "thumb thumb--reveal",
+                          class: "thumb",
+                          "data-event-search": (
+                            (e.title || "") +
+                            " " +
+                            (e.description || "") +
+                            " " +
+                            (e.club_name || "") +
+                            " " +
+                            (e.venue || "") +
+                            " " +
+                            (e.competition || "")
+                          ).toLowerCase(),
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
-                        el(
-                          "a",
-                          {
-                            href: e.public_url,
-                            "data-viewer": "events-" + y,
-                            "data-title": e.title || e.filename || "",
-                            "data-desc": e.description || "",
-                            "data-credit": e.credit || "",
-                            "data-context": "Events · " + y,
-                            title: e.title || e.filename || "",
-                          },
-                          el("img", {
-                            src: e.public_url,
-                            alt: e.description || "",
-                            loading: "lazy",
-                            decoding: "async",
-                            width: e.width || undefined,
-                            height: e.height || undefined,
-                          })
-                        ),
+                        el("img", {
+                          src: e.public_url,
+                          alt: e.description,
+                          loading: "lazy",
+                          decoding: "async",
+                          width: e.width || undefined,
+                          height: e.height || undefined,
+                        }),
                         el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
                       )
                     )
@@ -94,26 +93,49 @@ export async function initEvents() {
       });
     }
 
-    // Calligraphy reveal on year labels
-    const yearLabels = document.querySelectorAll(".events__year-label");
-    if (yearLabels.length && "IntersectionObserver" in window) {
-      const yearObs = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              revealText(entry.target, 800, undefined, { sound: false, trail: false });
-              yearObs.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.3 }
-      );
-      yearLabels.forEach((l) => yearObs.observe(l));
+    // Client-side search
+    const searchInput = $("#events-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.toLowerCase().trim();
+        const items = document.querySelectorAll(".thumb[data-event-search]");
+        let visibleCount = 0;
+        items.forEach((item) => {
+          const haystack = item.dataset.eventSearch || "";
+          const match = !q || haystack.includes(q);
+          item.style.display = match ? "" : "none";
+          if (match) visibleCount++;
+        });
+        // Hide year sections with no visible items
+        document.querySelectorAll(".events__year").forEach((section) => {
+          const visibleItems = section.querySelectorAll(".thumb:not([style*='display: none'])");
+          section.style.display = visibleItems.length === 0 ? "none" : "";
+        });
+        // Show/hide no-results message
+        let noResults = $(".events-no-results");
+        if (!q || visibleCount > 0) {
+          if (noResults) noResults.remove();
+        } else if (!noResults) {
+          mount.appendChild(
+            el(
+              "p",
+              { class: "clubs-no-results events-no-results", role: "status" },
+              "No events match that search."
+            )
+          );
+        }
+      });
     }
 
-    // IntersectionObserver for section reveals + per-thumb staggered entrance
+    // IntersectionObserver for section reveals + staggered image entrance.
+    // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
+    // is handled inside initImageReveal so we don't duplicate checks here.
     initImageReveal(document);
-  } catch (err) {
-    console.error("initEvents failed:", err);
+  } catch {
+    showError(
+      mount,
+      "Could not load events",
+      "The events timeline failed to load. Check your connection and try again."
+    );
   }
 }

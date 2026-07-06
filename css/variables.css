@@ -50,6 +50,12 @@
   --radius-lg: 12px;
   --transition: 200ms ease;
 
+  /* ── Font-size scale (accessibility) ─────────────────────
+     Users can pick S / M / L from settings. Applied as a
+     multiplier on the base font size via data-font-size on <html>. */
+  --fs-scale: 1;
+}
+
   /* ===== Newspaper theme (homepage) ============================
      Old-paper parchment, ink accents, serif/mono typography.
      Namespaced under --paper- / --ink- so they don't clash with the
@@ -336,4 +342,34 @@
   --ink-base: #c4b8a4;
   --ink-rule: rgba(196, 184, 164, 0.22);
   --ink-rule-strong: rgba(196, 184, 164, 0.45);
+}
+
+/* ── Global reduced-motion safety net ───────────────────
+   Disables all CSS animations and transitions for users who
+   have enabled the OS-level "reduce motion" setting. This is
+   a catch-all; individual files may apply more granular
+   overrides (e.g. setting animation: none on specific elements).
+   Keeps transforms for layout (position, size) but removes
+   decorative motion (fades, slides, rotations, pulses). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Manual reduce-motion override ───────────────────────
+   When the user explicitly enables "Reduce motion" in settings,
+   this attribute is set on <html> regardless of the OS preference. */
+[data-reduce-motion="on"] *,
+[data-reduce-motion="on"] *::before,
+[data-reduce-motion="on"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }

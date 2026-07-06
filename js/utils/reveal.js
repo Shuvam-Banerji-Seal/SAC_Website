@@ -23,7 +23,10 @@ export function initImageReveal(root = document, opts = {}) {
   const { staggerMs = 70, threshold = 0.1 } = opts;
 
   // No-op for reduced motion: CSS already handles .thumb--reveal → clip-path: none
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+  const reducedMotion =
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
+    document.documentElement.getAttribute("data-reduce-motion") === "on";
+  if (reducedMotion) {
     root.querySelectorAll(".thumb--reveal").forEach((el) => {
       el.classList.add("is-revealed");
     });

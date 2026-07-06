@@ -15,17 +15,9 @@ export function renderFooter() {
       el(
         "div",
         { class: "site-footer__inner" },
-        el(
-          "p",
-          { class: "site-footer__credit" },
-          `© ${year} ${SITE_TITLE}. All rights reserved.`,
-        ),
-        el(
-          "p",
-          { class: "site-footer__meta" },
-          "Built with pure HTML, CSS, and JavaScript.",
-        ),
-      ),
-    ),
+        el("p", { class: "site-footer__credit" }, `© ${year} ${SITE_TITLE}. All rights reserved.`),
+        el("p", { class: "site-footer__meta" }, "Built with pure HTML, CSS, and JavaScript.")
+      )
+    )
   );
 }

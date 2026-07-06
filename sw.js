@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v9";
+const CACHE_NAME = "sac-v10";
 
 const STATIC_ASSETS = [
   // Core
@@ -49,10 +49,9 @@ const STATIC_ASSETS = [
   "js/components/footer.js",
   "js/components/settings.js",
   "js/components/viewer.js",
-  "js/components/three-fold.js",
   "js/pages/home.js",
   "js/pages/clubs.js",
-  "js/pages/club-images.js",
+  "js/pages/club.js",
   "js/pages/events.js",
   "js/pages/gallery.js",
   // Textures
@@ -70,7 +69,6 @@ const STATIC_ASSETS = [
   "pages/clubs.html",
   "pages/events.html",
   "pages/gallery.html",
-  // Individual club pages (were missing — offline nav to these broke)
   "pages/aarshi.html",
   "pages/arts.html",
   "pages/radio.html",

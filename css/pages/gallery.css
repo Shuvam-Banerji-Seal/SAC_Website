@@ -50,7 +50,9 @@
   border: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .thumb:hover {
   transform: translateY(-3px);
@@ -79,7 +81,38 @@
   border-top: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
 
-/* ── Tablet (768–1024px) ──────────────────────────────────────── */
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .thumb-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+/* ── Gallery filter tabs ─────────────────────────────────────────── */
+
+.gallery-filter-wrap {
+  margin-bottom: var(--space-5);
+}
+.gallery-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+}
+.gallery-filter-tab {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--ink-muted, #5b4f3d);
+  background: transparent;
+  border: 1.5px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
+}
+.gallery-filter-tab:hover {
+  background: var(--paper-deep, #ddd2b6);
+  color: var(--ink-base, #181410);
+}
+.gallery-filter-tab.is-selected {
+  border-color: var(--ink-base, #181410);
+  background: var(--paper-soft, #ece5d3);
+  color: var(--ink-base, #181410);
+  font-weight: 600;
 }

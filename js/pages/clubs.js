@@ -3,8 +3,9 @@
  *
  * Renders a full grid of all 10 clubs with logos, names, and quick stats.
  * Each card links to the single template at club.html?id=<slug>.
+ * Includes a client-side search input that filters cards by name.
  */
-import { $, el, pageUrl } from "../utils/dom.js";
+import { $, el, pageUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 
 function getClubPageUrl(slug) {
@@ -41,7 +42,7 @@ export async function initClubs() {
           ...clubs.map((c) =>
             el(
               "li",
-              { class: "club-card" },
+              { class: "club-card", "data-club-name": c.name.toLowerCase() },
               el(
                 "a",
                 { href: pageUrl(getClubPageUrl(c.slug)) },
@@ -53,6 +54,7 @@ export async function initClubs() {
                         src: c.logo.public_url,
                         alt: `${c.name} logo`,
                         loading: "lazy",
+                        decoding: "async",
                         width: c.logo.width || 96,
                         height: c.logo.height || 96,
                       })
@@ -70,7 +72,40 @@ export async function initClubs() {
         )
       )
     );
-  } catch (err) {
-    console.error("initClubs failed:", err);
+
+    // Wire up client-side search
+    const searchInput = $("#clubs-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.toLowerCase().trim();
+        const cards = document.querySelectorAll(".club-card");
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const name = card.dataset.clubName || "";
+          const match = !q || name.includes(q);
+          card.style.display = match ? "" : "none";
+          if (match) visibleCount++;
+        });
+        // Show "no results" message if nothing matches
+        const noResults = $(".clubs-no-results");
+        if (!q || visibleCount > 0) {
+          if (noResults) noResults.remove();
+        } else if (!noResults) {
+          mount.appendChild(
+            el(
+              "p",
+              { class: "clubs-no-results muted", role: "status" },
+              "No clubs match that search."
+            )
+          );
+        }
+      });
+    }
+  } catch {
+    showError(
+      mount,
+      "Could not load clubs",
+      "The clubs directory failed to load. Check your connection and try again."
+    );
   }
 }

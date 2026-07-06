@@ -16,8 +16,40 @@
   font-style: italic;
   color: var(--ink-muted, #5b4f3d);
   font-size: var(--fs-lg, 1.125rem);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   max-width: 60ch;
+}
+
+/* ── Search ───────────────────────────────────────────── */
+
+.clubs-search-wrap {
+  margin-bottom: var(--space-5);
+}
+.clubs-search {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: var(--fs-base, 1rem);
+  color: var(--ink-base, #181410);
+  background: var(--paper-soft, #ece5d3);
+  border: 1.5px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
+  border-radius: var(--radius, 8px);
+  transition: border-color 0.15s ease;
+}
+.clubs-search:focus {
+  border-color: var(--ink-base, #181410);
+  outline: none;
+}
+.clubs-search::placeholder {
+  color: var(--ink-muted, #5b4f3d);
+  opacity: 0.7;
+}
+.clubs-no-results {
+  text-align: center;
+  padding: var(--space-6) 0;
+  font-style: italic;
+  color: var(--ink-muted, #5b4f3d);
 }
 
 .clubs-grid-wrap {

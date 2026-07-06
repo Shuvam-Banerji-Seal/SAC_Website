@@ -2,7 +2,7 @@
 
 body {
   font-family: var(--font-serif);
-  font-size: var(--fs-base);
+  font-size: calc(var(--fs-base) * var(--fs-scale));
   background-color: var(--paper-base);
   color: var(--ink-base);
   min-height: 100vh;
@@ -249,30 +249,44 @@ body[data-page="home"] {
   font-family: var(--font-serif);
   color: var(--ink-base);
   background-color: var(--paper-base);
-  /* Home body: paper + grain only (was four background-attachment:fixed
-     layers, which caused scroll jank on tablets/laptops). The vignette
-     moves to a composited ::before so we drop to two scroll layers. */
+  /* Layered newspaper textures:
+       1. Single page-covering vignette (NOT tiled — eliminates the
+          320×320 dark-bordered square grid)
+       2. Real paper texture from Pexels photo (tiled, gives authentic
+          rough-paper feel with visible fibres)
+       3. Subtle radial stains (positioned once, not tiled)
+       4. Fine paper grain (feTurbulence SVG, tiled — adds micro-detail)
+     All background-attachment: fixed so they stay locked as the user
+     scrolls — a parallax-free, print-like surface. */
+  /* image-set() lets us swap in @2x assets later without touching
+     this rule. Today the only DPI is 1x; when @2x variants are
+     generated, append `, url("../assets/natural-paper@2x.png") 2x`.
+     Plain url() fallback is declared first for browsers without
+     image-set() support; the -webkit- prefix covers Safari < 16.4. */
   background-image:
-    url("../assets/natural-paper.png"), var(--paper-grain);
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    url("../assets/natural-paper.png"), var(--paper-stains), var(--paper-grain);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    -webkit-image-set(url("../assets/natural-paper.png") 1x),
+    var(--paper-stains),
+    var(--paper-grain);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
+    image-set(url("../assets/natural-paper.png") 1x), var(--paper-stains), var(--paper-grain);
   background-size:
+    100vw 100vh,
     400px auto,
+    100% 100%,
     320px 320px;
   background-position:
+    center top,
+    0 0,
     0 0,
     0 0;
-  background-repeat: repeat, repeat;
-  background-blend-mode: multiply, multiply;
-  background-attachment: scroll, scroll;
-}
-
-/* Composited vignette overlay — GPU-friendly, no scroll listener work. */
-body[data-page="home"]::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(24, 20, 16, 0.12) 100%);
+  background-repeat: no-repeat, repeat, no-repeat, repeat;
+  background-blend-mode: multiply, multiply, normal, multiply;
+  background-attachment: fixed, fixed, fixed, fixed;
 }
 
 body[data-page="home"] h1,
@@ -435,4 +449,50 @@ body:not([data-page="home"]) .settings-close:hover {
   body[data-page="home"] {
     background-attachment: scroll;
   }
+  /* Reduce compositor layers on touch devices: the 4-layer fixed
+     background stack (vignette + natural-paper + stains + grain)
+     causes scroll jank on mobile GPUs. On touch devices we keep
+     only the grain overlay (vector, tile-friendly) and the base
+     colour — the visual impact is minimal at phone scale. */
+  body[data-page="home"] {
+    background-image: var(--paper-grain);
+    background-size: 320px 320px;
+  }
+}
+
+/* ── Error state ───────────────────────────────────────────────────
+   Displayed when data loading fails (JSONL fetch, network, etc.).
+   Styled to match the newspaper theme — muted tones, serif fonts. */
+.error-state {
+  text-align: center;
+  padding: var(--space-7, 3rem) var(--space-4, 1rem);
+  max-width: 480px;
+  margin: 0 auto;
+}
+.error-state__title {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: var(--fs-xl, 1.25rem);
+  font-weight: 700;
+  color: var(--ink-base, #181410);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+.error-state__detail {
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--ink-muted, #5b4f3d);
+  margin-bottom: var(--space-5, 1.5rem);
+  line-height: 1.6;
+}
+.error-state__btn {
+  padding: 0.5rem 1.2rem;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: var(--fs-sm, 0.875rem);
+  color: var(--paper-base, #f4f0e6);
+  background: var(--ink-base, #181410);
+  border: none;
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.error-state__btn:hover {
+  opacity: 0.85;
 }
