@@ -126,8 +126,14 @@ function assignBody(clubName) {
   ) {
     return "council";
   }
-  // SAC Academics
-  if (clubName === "SAC Academics" || name.includes("academics") || name.includes("placement")) {
+  // SAC Academics (also covers Singularity, Astronomy, Placement)
+  if (
+    clubName === "SAC Academics" ||
+    name.includes("academics") ||
+    name.includes("placement") ||
+    name.includes("singularity") ||
+    name.includes("astronomy")
+  ) {
     return "academics";
   }
   // SAC Hostel Committee
@@ -144,7 +150,11 @@ function assignBody(clubName) {
     name.includes("table tennis") ||
     name.includes("basketball") ||
     name.includes("volleyball") ||
-    name.includes("chess")
+    name.includes("chess") ||
+    name.includes("kabaddi") ||
+    name.includes("gym") ||
+    name.includes("self defence") ||
+    name.includes("sydc")
   ) {
     return "sports";
   }
