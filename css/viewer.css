@@ -106,7 +106,7 @@
 
 .viewer-info {
   position: absolute;
-  bottom: 0;
+  bottom: 100px;
   left: 0;
   right: 0;
   text-align: center;
