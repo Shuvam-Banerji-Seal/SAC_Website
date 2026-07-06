@@ -121,12 +121,13 @@ export async function initClubImages() {
 
     // If none of the role-specific placeholders matched any entries, create a
     // fallback "Club Photos" section that shows ALL images for this club.
+    // The placeholders are siblings of .club-detail__body, not children.
     if (!anyPlaceholderHadContent) {
       const allImages = entries.filter((e) => e.file_type === "image");
       if (allImages.length) {
-        const mounts = document.querySelectorAll(".club-detail__body .reveal-section");
-        const last = mounts[mounts.length - 1];
-        if (last) {
+        const lastPlaceholder = placeholders[placeholders.length - 1];
+        if (lastPlaceholder) {
+          const parentSection = lastPlaceholder.closest(".reveal-section") || lastPlaceholder.closest("section");
           const group = `club-${slug}`;
           const wrap = el("div", { class: "club-detail__image-block" });
           wrap.appendChild(el("h2", { class: "club-detail__section-title" }, "Club Photos"));
@@ -140,7 +141,7 @@ export async function initClubImages() {
             ));
           });
           wrap.appendChild(grid);
-          last.after(wrap);
+          parentSection.after(wrap);
         }
       }
     }
