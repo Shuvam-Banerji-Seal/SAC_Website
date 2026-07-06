@@ -20,6 +20,7 @@ export async function initClubImages() {
     const assets = await loadAssetsMap();
     const entries = getClubEntries(assets, slug);
     const placeholders = document.querySelectorAll("[data-club-images]");
+    let anyPlaceholderHadContent = false;
 
     placeholders.forEach((ph) => {
       const role = ph.dataset.role; // filter by role, or null for all images
@@ -62,6 +63,7 @@ export async function initClubImages() {
         }
         return;
       }
+      anyPlaceholderHadContent = true;
 
       // Wrap the section title + grid in a single <div> so the title stays
       // attached to its grid (the old code inserted the <h2> as a sibling
@@ -116,6 +118,32 @@ export async function initClubImages() {
       wrap.appendChild(grid);
       ph.appendChild(wrap);
     });
+
+    // If none of the role-specific placeholders matched any entries, create a
+    // fallback "Club Photos" section that shows ALL images for this club.
+    if (!anyPlaceholderHadContent) {
+      const allImages = entries.filter((e) => e.file_type === "image");
+      if (allImages.length) {
+        const mounts = document.querySelectorAll(".club-detail__body .reveal-section");
+        const last = mounts[mounts.length - 1];
+        if (last) {
+          const group = `club-${slug}`;
+          const wrap = el("div", { class: "club-detail__image-block" });
+          wrap.appendChild(el("h2", { class: "club-detail__section-title" }, "Club Photos"));
+          const grid = el("ul", { class: "thumb-grid pinned-thumbs" });
+          allImages.forEach((asset) => {
+            grid.appendChild(el("li", { class: "thumb thumb--reveal", style: "--pin-rotate: " + ((Math.random() - 0.5) * 3).toFixed(1) + "deg" },
+              el("a", { href: assetUrl(asset.public_url), "data-viewer": group, "data-title": asset.title || asset.filename || "", "data-desc": asset.description || asset.person || asset.filename || "", "data-context": "Club Photos", title: asset.title || asset.filename || "" },
+                el("img", { src: assetUrl(asset.public_url), alt: asset.description || asset.filename || "", loading: "lazy", decoding: "async", width: asset.width || undefined, height: asset.height || undefined })
+              ),
+              el("figcaption", { class: "thumb__cap" }, asset.person || asset.title || asset.filename || "")
+            ));
+          });
+          wrap.appendChild(grid);
+          last.after(wrap);
+        }
+      }
+    }
   } catch (err) {
     console.error("[club-images] Failed to load images:", err);
   }
