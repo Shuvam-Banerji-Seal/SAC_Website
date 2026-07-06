@@ -33,6 +33,9 @@ const STATIC_ASSETS = [
   "js/preloader.js",
   "js/utils/dom.js",
   "js/utils/text-measure.js",
+  "js/utils/calligraphy.js",
+  "js/utils/music.js",
+  "js/utils/reveal.js",
   "js/pretext/analysis.js",
   "js/pretext/bidi.js",
   "js/pretext/layout.js",
@@ -59,6 +62,8 @@ const STATIC_ASSETS = [
   "assets/rice-paper.png",
   "assets/stressed-linen.png",
   "assets/old-wall.png",
+  // Audio
+  "assets/audio/ambient.mp3",
   // Sub-pages
   "pages/about.html",
   "pages/clubs.html",

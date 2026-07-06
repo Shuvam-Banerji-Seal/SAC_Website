@@ -6,6 +6,35 @@
  */
 import { vi } from "vitest";
 
+// ── Mock localStorage (not in jsdom) ──────────────────────────────
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = String(value);
+    },
+    removeItem: (key) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: (i) => Object.keys(store)[i] || null,
+  };
+})();
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
+  writable: true,
+});
+Object.defineProperty(global, "localStorage", {
+  value: localStorageMock,
+  writable: true,
+});
+
 // ── Mock IntersectionObserver (not in jsdom) ──────────────────────
 class MockIntersectionObserver {
   constructor(callback) {

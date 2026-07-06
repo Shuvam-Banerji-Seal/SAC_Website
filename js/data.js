@@ -30,6 +30,21 @@ let cachePromise = null;
 
 function fetchJsonl() {
   if (!cachePromise) {
+    // Check sessionStorage cache first (valid for 10 minutes)
+    try {
+      const cached = sessionStorage.getItem("sac-map-cache");
+      const cachedTime = sessionStorage.getItem("sac-map-cache-time");
+      if (cached && cachedTime) {
+        const age = Date.now() - Number(cachedTime);
+        if (age < 600_000) {
+          cachePromise = Promise.resolve(JSON.parse(cached));
+          return cachePromise;
+        }
+      }
+    } catch {
+      // sessionStorage unavailable or corrupted — ignore
+    }
+
     cachePromise = fetch(JSONL_URL, { cache: "no-cache" })
       .then((res) => {
         if (!res.ok) {
@@ -39,13 +54,21 @@ function fetchJsonl() {
         }
         return res.text();
       })
-      .then((text) =>
-        text
+      .then((text) => {
+        const entries = text
           .trim()
           .split("\n")
           .filter(Boolean)
-          .map((line) => JSON.parse(line)),
-      )
+          .map((line) => JSON.parse(line));
+        // Store in sessionStorage for subsequent loads within 10 minutes
+        try {
+          sessionStorage.setItem("sac-map-cache", JSON.stringify(entries));
+          sessionStorage.setItem("sac-map-cache-time", String(Date.now()));
+        } catch {
+          /* quota exceeded, ignore */
+        }
+        return entries;
+      })
       .catch((err) => {
         // Reset so a later retry (after a network blip) can succeed.
         cachePromise = null;

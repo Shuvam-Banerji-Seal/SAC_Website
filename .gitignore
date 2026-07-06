@@ -42,9 +42,11 @@ test-results/
 SAC Academics-*.zip
 SAC Food and Hygine-*.zip
 SAC Hostel-*.zip
+SAC Website details-*.zip
 SAC Academics/
 SAC Food and Hygine/
 SAC Hostel/
+SAC Website details/
 
 # Raw extracted assets staged for the processing pipeline
 # (the processed output is committed, not the raw staging dir)

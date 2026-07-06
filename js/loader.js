@@ -592,6 +592,25 @@ function unwireEvents() {
  * Init
  * ------------------------------------------------------------------------- */
 
+/* Session flag shared with preloader.js — once a user has seen the loader
+   this session, we never block them with it again on subsequent navigations.
+   The preloader sets this flag after the first run. */
+const SESSION_FLAG = "sac-loader-seen";
+function alreadyLoadedThisSession() {
+  try {
+    return sessionStorage.getItem(SESSION_FLAG) === "1";
+  } catch (e) {
+    return false;
+  }
+}
+function markSessionLoaded() {
+  try {
+    sessionStorage.setItem(SESSION_FLAG, "1");
+  } catch (e) {
+    /* ignore */
+  }
+}
+
 async function init() {
   // Cache DOM references
   els.loader = $("loader");
@@ -604,6 +623,35 @@ async function init() {
     document.body.classList.remove("loader-active");
     return;
   }
+
+  // Revisit fast-path: if the user already saw the loader this session,
+  // dismiss it instantly and let the page render. Assets warm the HTTP
+  // cache in the background via preloader.js's backgroundWarmCache().
+  if (alreadyLoadedThisSession()) {
+    document.body.classList.remove("loader-active");
+    els.loader.classList.add("hidden");
+    setTimeout(() => {
+      if (els.loader.parentNode) els.loader.parentNode.removeChild(els.loader);
+    }, 100);
+    return;
+  }
+
+  // Reduced-motion fast-path: skip the full newspaper entrance animation
+  // on first visit for users who prefer reduced motion. The preloader
+  // already skips its own phases, but loader.js has a separate animation.
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    markSessionLoaded();
+    document.body.classList.remove("loader-active");
+    els.loader.classList.add("hidden");
+    setTimeout(() => {
+      if (els.loader.parentNode) els.loader.parentNode.removeChild(els.loader);
+    }, 100);
+    return;
+  }
+
+  // First visit — record the flag now so any sub-page navigation during the
+  // loader (or a reload) won't replay it.
+  markSessionLoaded();
 
   // Lock body scroll while the loader is up
   document.body.classList.add("loader-active");

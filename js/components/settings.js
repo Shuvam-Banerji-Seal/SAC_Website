@@ -54,6 +54,14 @@ const FONT_PRESETS = {
     weights: "400;500;700",
     google: "IBM+Plex+Mono:wght@400;500;700",
   },
+  oldenglish: {
+    label: "Old English",
+    families: '"UnifrakturMaguntia", "Times New Roman", serif',
+    weights: "400",
+    google: "UnifrakturMaguntia",
+    displayOnly: true,
+  },
+
 };
 
 const TEXTURES = {
@@ -165,8 +173,12 @@ function applyFont(prefs) {
   const preset = prefs.font || "newspaper";
   const config = FONT_PRESETS[preset];
   if (!config) return;
-  document.documentElement.style.setProperty("--font-display", config.families);
-  document.documentElement.style.setProperty("--font-serif", config.families);
+  if (config.displayOnly) {
+    document.documentElement.style.setProperty("--font-display", config.families);
+  } else {
+    document.documentElement.style.setProperty("--font-display", config.families);
+    document.documentElement.style.setProperty("--font-serif", config.families);
+  }
   loadGoogleFont(preset);
 }
 
@@ -175,6 +187,17 @@ function applyTexture(prefs) {
   document.documentElement.setAttribute("data-texture", texture);
 }
 
+function applyAmbient(prefs) {
+  const enabled = prefs.ambient !== false;
+  // Dynamic import so settings.js works even if music.js is not loaded
+  import("../utils/music.js").then(({ setAmbientEnabled }) => {
+    setAmbientEnabled(enabled);
+  }).catch(() => {
+    // music.js may be unavailable in test env
+  });
+}
+
+
 function applyAll(prefs) {
   applyTheme(prefs);
   applyFont(prefs);
@@ -182,6 +205,7 @@ function applyAll(prefs) {
   applyFontSize(prefs);
   applyReduceMotion(prefs);
   applySound(prefs);
+  applyAmbient(prefs);
 }
 
 /* ── Font size ────────────────────────────────────────── */
@@ -432,11 +456,20 @@ function wireEvents() {
       return;
     }
     // Sound toggle
+    const ambientToggle = e.target.closest("#settings-ambient");
+    if (ambientToggle) {
+      prefs.ambient = ambientToggle.checked;
+      savePrefs(prefs);
+      applyAll(prefs);
+      return;
+    }
+
     const soundToggle = e.target.closest("#settings-sound");
     if (soundToggle) {
       prefs.sound = soundToggle.checked;
       savePrefs(prefs);
       applySound(prefs);
+  applyAmbient(prefs);
       return;
     }
   });

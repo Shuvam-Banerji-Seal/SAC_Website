@@ -83,7 +83,19 @@ export async function initPaperFold() {
   if (!masthead) return;
 
   try {
-    const THREE = await import("three");
+    const loadThree = () =>
+      new Promise((resolve) => {
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(
+            () => import("three").then(resolve).catch(resolve),
+            { timeout: 3000 },
+          );
+        } else {
+          setTimeout(() => import("three").then(resolve).catch(resolve), 0);
+        }
+      });
+    const THREE = await loadThree();
+    if (!THREE) return;
     setupThree(THREE);
     lastMoveTime = Date.now();
     animate();

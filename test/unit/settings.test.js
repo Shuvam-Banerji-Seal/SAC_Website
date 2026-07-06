@@ -12,6 +12,11 @@ vi.mock("../../js/utils/dom.js", () => ({
   pageUrl: (p) => p,
 }));
 
+// Mock music.js
+vi.mock("../../js/utils/music.js", () => ({
+  setAmbientEnabled: vi.fn(),
+}));
+
 describe("settings module", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -35,8 +40,8 @@ describe("settings module", () => {
     expect(panel.innerHTML).toContain("Settings");
     expect(panel.innerHTML).toContain("Typography");
     expect(panel.innerHTML).toContain("Paper texture");
-    // Should have 6 font options
-    expect(panel.querySelectorAll(".font-option").length).toBe(6);
+    // Should have 7 font options
+    expect(panel.querySelectorAll(".font-option").length).toBe(7);
     // Should have 8 texture options (fresh, aged, rustic, notice, dark, kraft, parchment, slate)
     expect(panel.querySelectorAll(".texture-option").length).toBe(8);
   });

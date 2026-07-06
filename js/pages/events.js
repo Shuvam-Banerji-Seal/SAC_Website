@@ -7,6 +7,7 @@
 import { $, el, showError } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { revealText } from "../utils/calligraphy.js";
+import { initImageReveal } from "../utils/reveal.js";
 
 export async function initEvents() {
   const mount = $("#events-list");
@@ -126,28 +127,10 @@ export async function initEvents() {
       });
     }
 
-    // IntersectionObserver for section reveals
-    if (
-      !(
-        window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
-        document.documentElement.getAttribute("data-reduce-motion") === "on"
-      ) &&
-      "IntersectionObserver" in window
-    ) {
-      const sections = document.querySelectorAll(".reveal-section");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-revealed");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      sections.forEach((s) => observer.observe(s));
-    }
+    // IntersectionObserver for section reveals + staggered image entrance.
+    // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
+    // is handled inside initImageReveal so we don't duplicate checks here.
+    initImageReveal(document);
   } catch {
     showError(
       mount,

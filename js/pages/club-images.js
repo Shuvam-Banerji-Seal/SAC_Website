@@ -10,6 +10,7 @@
 import { el } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
+import { initImageReveal } from "../utils/reveal.js";
 
 export async function initClubImages() {
   const slug = document.body.dataset.clubSlug;
@@ -47,15 +48,28 @@ export async function initClubImages() {
         filtered = entries.filter((e) => e.file_type === "image" && !e.is_ob_portrait);
 
       if (!filtered.length) {
+        // Hide the placeholder AND its parent <section> so we don't leave
+        // a 4rem empty gap from the section's margin-bottom.
         ph.style.display = "none";
+        const section = ph.closest(".reveal-section") || ph.closest("section");
+        if (section && !section.querySelector("[data-club-images]:not([style*='display: none'])")) {
+          // Only collapse the section if no sibling image blocks remain.
+          let anyOtherVisible = false;
+          section.querySelectorAll("[data-club-images]").forEach((sib) => {
+            if (sib !== ph && sib.style.display !== "none") anyOtherVisible = true;
+          });
+          if (!anyOtherVisible) section.style.display = "none";
+        }
         return;
       }
 
-      // Section header
+      // Wrap the section title + grid in a single <div> so the title stays
+      // attached to its grid (the old code inserted the <h2> as a sibling
+      // of the placeholder, which mis-positioned it relative to the grid).
+      const wrap = el("div", { class: "club-detail__image-block" });
       if (title) {
-        ph.parentElement?.insertBefore(
-          el("h2", { class: "club-detail__section-title" }, title),
-          ph
+        wrap.appendChild(
+          el("h2", { class: "club-detail__section-title" }, title)
         );
       }
 
@@ -66,7 +80,7 @@ export async function initClubImages() {
         const li = el(
           "li",
           {
-            class: "thumb",
+            class: "thumb thumb--reveal",
             style: "--pin-rotate: " + ((Math.random() - 0.5) * 3).toFixed(1) + "deg",
           },
           el(
@@ -74,6 +88,11 @@ export async function initClubImages() {
             {
               href: asset.public_url,
               "data-viewer": group,
+              "data-title": asset.title || asset.filename || "",
+              "data-desc":
+                asset.description || asset.person || asset.filename || "",
+              "data-credit": asset.credit || "",
+              "data-context": title || "",
               title: asset.title || asset.filename || "",
             },
             el("img", {
@@ -94,7 +113,8 @@ export async function initClubImages() {
         grid.appendChild(li);
       });
 
-      ph.appendChild(grid);
+      wrap.appendChild(grid);
+      ph.appendChild(wrap);
     });
   } catch (err) {
     console.error("[club-images] Failed to load images:", err);
@@ -120,28 +140,7 @@ export async function initClubImages() {
 }
 
 function setupSectionReveal() {
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
-    // Immediately reveal all sections for reduced motion
-    document.querySelectorAll(".reveal-section").forEach((s) => s.classList.add("is-revealed"));
-    return;
-  }
-  if (!("IntersectionObserver" in window)) {
-    document.querySelectorAll(".reveal-section").forEach((s) => s.classList.add("is-revealed"));
-    return;
-  }
-  const sections = document.querySelectorAll(".reveal-section");
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-revealed");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1 }
-  );
-  sections.forEach((s) => observer.observe(s));
+  initImageReveal(document);
 }
 
 /**
