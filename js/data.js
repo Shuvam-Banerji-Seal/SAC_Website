@@ -27,14 +27,17 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
  * ------------------------------------------------------------------------- */
 
 let cachePromise = null;
+// Bump this when assets change to invalidate stale sessionStorage cache
+const CACHE_VERSION = "sac-v12";
 
 function fetchJsonl() {
   if (!cachePromise) {
-    // Check sessionStorage cache first (valid for 10 minutes)
+    // Check sessionStorage cache (valid for 10 minutes, invalidated on deploy)
     try {
       const cached = sessionStorage.getItem("sac-map-cache");
       const cachedTime = sessionStorage.getItem("sac-map-cache-time");
-      if (cached && cachedTime) {
+      const cachedVersion = sessionStorage.getItem("sac-map-version");
+      if (cached && cachedTime && cachedVersion === CACHE_VERSION) {
         const age = Date.now() - Number(cachedTime);
         if (age < 600_000) {
           cachePromise = Promise.resolve(JSON.parse(cached));
@@ -64,6 +67,7 @@ function fetchJsonl() {
         try {
           sessionStorage.setItem("sac-map-cache", JSON.stringify(entries));
           sessionStorage.setItem("sac-map-cache-time", String(Date.now()));
+          sessionStorage.setItem("sac-map-version", CACHE_VERSION);
         } catch {
           /* quota exceeded, ignore */
         }

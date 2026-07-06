@@ -267,6 +267,18 @@ main {
 .club-detail__section {
   margin-bottom: var(--space-8);
 }
+
+/* Collapse sections that are hidden by club-images.js */
+.club-detail__section:has([data-club-images][style*="display: none"]) {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Also collapse the parent body section if all its sibling image blocks are hidden */
+.club-detail__body:has(~ .club-detail__section:has([data-club-images][style*="display: none"])) {
+  margin-bottom: var(--space-4);
+}
 .club-detail__section h2 {
   font-family: var(--font-display, Georgia, serif);
   font-weight: 900;
