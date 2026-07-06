@@ -142,6 +142,11 @@ export async function initClubImages() {
           });
           wrap.appendChild(grid);
           parentSection.after(wrap);
+          // Immediately reveal all fallback images — they bypass the
+          // IntersectionObserver because they're not inside .reveal-section
+          grid.querySelectorAll(".thumb--reveal").forEach((thumb) => {
+            thumb.classList.add("is-revealed");
+          });
         }
       }
     }
