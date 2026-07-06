@@ -57,6 +57,23 @@ export function pageUrl(path) {
 }
 
 /**
+ * Resolve an asset path correctly whether the current page is at the
+ * site root or inside the `pages/` subdirectory.
+ *
+ * Assets in the JSONL use paths relative to the site root (e.g.
+ * `public/assets/processed/foo.webp`). From a page at the root this
+ * resolves correctly, but from `pages/club.html` the browser would
+ * look in `pages/public/…` — so we prepend `../`.
+ *
+ * @param {string} path — asset path (relative to site root)
+ * @returns {string} path that works from the current page location
+ */
+export function assetUrl(path) {
+  if (/^([a-z]+:|\/)/i.test(path)) return path;
+  return isInPagesDir() ? `../${path}` : path;
+}
+
+/**
  * Replace a mount element with a styled error state.
  * @param {HTMLElement} mount - the element to replace
  * @param {string} title - short error title

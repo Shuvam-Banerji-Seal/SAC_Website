@@ -5,7 +5,7 @@
  * Each image opens in the viewer lightbox with old album framing.
  * Includes club filter tabs for quick navigation.
  */
-import { $, el, showError } from "../utils/dom.js";
+import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 
@@ -40,9 +40,9 @@ export async function initGallery() {
                 },
                 el(
                   "a",
-                  { href: i.public_url, "data-viewer": groupName, title: i.title || i.filename },
+                  { href: assetUrl(i.public_url), "data-viewer": groupName, title: i.title || i.filename },
                   el("img", {
-                    src: i.public_url,
+                    src: assetUrl(i.public_url),
                     alt: i.description,
                     loading: "lazy",
                     decoding: "async",

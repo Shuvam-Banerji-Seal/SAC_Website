@@ -4,7 +4,7 @@
  * Pulls all is_iicm / is_event entries from the assets map, groups them
  * by year (newest first), and renders a timeline with client-side search.
  */
-import { $, el, showError } from "../utils/dom.js";
+import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { revealText } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
@@ -67,7 +67,7 @@ export async function initEvents() {
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
                         el("img", {
-                          src: e.public_url,
+                          src: assetUrl(e.public_url),
                           alt: e.description,
                           loading: "lazy",
                           decoding: "async",

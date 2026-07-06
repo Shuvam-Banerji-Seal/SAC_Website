@@ -27,7 +27,7 @@
  *      body section as it scrolls into view — that's the
  *      "paper-folding" reveal (CSS in pages/home.css).
  */
-import { el, pageUrl, showError } from "../utils/dom.js";
+import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 
@@ -222,7 +222,7 @@ async function fetchExcerpt(markdownEntry) {
 function renderPaperCard(club) {
   const logoContent = club.logo
     ? el("img", {
-        src: club.logo.public_url,
+        src: assetUrl(club.logo.public_url),
         alt: club.name + " logo",
         loading: "lazy",
         decoding: "async",

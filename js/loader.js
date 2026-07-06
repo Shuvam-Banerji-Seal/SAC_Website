@@ -20,6 +20,7 @@
  *     stamps itself, then we hide the loader.
  */
 import { loadAssetsMap, indexByClub } from "./data.js";
+import { assetUrl } from "./utils/dom.js";
 
 /* -------------------------------------------------------------------------
  * Static content (the JSONL doesn't carry taglines or article copy)
@@ -195,7 +196,7 @@ function buildClubData(clubs) {
     const article = ARTICLES[i % ARTICLES.length];
     return {
       name: club.name,
-      img: club.logo ? club.logo.public_url : null,
+      img: club.logo ? assetUrl(club.logo.public_url) : null,
       tagline: TAGLINES[club.name] || "Official SAC club",
       h1: fillTemplate(article.h1, club.name),
       h2: article.h2,

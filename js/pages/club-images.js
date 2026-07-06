@@ -7,7 +7,7 @@
  *   data-role="<role>" (optional: ob_portrait, event, iicm, equipment, portfolio, etc.)
  *   data-title="<section-title>" (optional: displayed above the grid)
  */
-import { el } from "../utils/dom.js";
+import { el, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
@@ -86,7 +86,7 @@ export async function initClubImages() {
           el(
             "a",
             {
-              href: asset.public_url,
+              href: assetUrl(asset.public_url),
               "data-viewer": group,
               "data-title": asset.title || asset.filename || "",
               "data-desc":
@@ -96,7 +96,7 @@ export async function initClubImages() {
               title: asset.title || asset.filename || "",
             },
             el("img", {
-              src: asset.public_url,
+              src: assetUrl(asset.public_url),
               alt: asset.description || asset.filename || "",
               loading: "lazy",
               decoding: "async",

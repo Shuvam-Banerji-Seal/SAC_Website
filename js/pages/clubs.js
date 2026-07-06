@@ -5,7 +5,7 @@
  * Each card links to the single template at club.html?id=<slug>.
  * Includes a client-side search input that filters cards by name.
  */
-import { $, el, pageUrl, showError } from "../utils/dom.js";
+import { $, el, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 
 function getClubPageUrl(slug) {
@@ -51,7 +51,7 @@ export async function initClubs() {
                   { class: "club-card__logo" },
                   c.logo
                     ? el("img", {
-                        src: c.logo.public_url,
+                        src: assetUrl(c.logo.public_url),
                         alt: `${c.name} logo`,
                         loading: "lazy",
                         decoding: "async",
