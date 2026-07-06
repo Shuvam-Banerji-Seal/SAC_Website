@@ -15,13 +15,11 @@ export function renderNavbar(activePage) {
 
   const links = NAV_ITEMS.map((item) => {
     const isActive = item.id === activePage;
+    // Items already prefixed with pages/ use pageLink; root items use pageUrl
+    const href = item.href.startsWith("pages/") ? pageLink(item.href) : pageUrl(item.href);
     return el(
       "a",
-      {
-        href: pageLink(item.href),
-        class: isActive ? "nav-link nav-link--active" : "nav-link",
-        "aria-current": isActive ? "page" : null,
-      },
+      { href, class: isActive ? "nav-link nav-link--active" : "nav-link", "aria-current": isActive ? "page" : null },
       item.label
     );
   });
