@@ -640,12 +640,18 @@
   border-radius: var(--radius);
   overflow: hidden;
   margin: 0;
+  position: relative;
 }
 .thumb img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   background: var(--ink-rule);
+  display: block;
+  transition: transform 0.3s ease;
+}
+.thumb:hover img {
+  transform: scale(1.03);
 }
 .thumb__cap {
   padding: var(--space-2) var(--space-3);

@@ -410,12 +410,19 @@ function wireEvents() {
       closePanel();
       return;
     }
-    // Dark mode toggle
+    // Dark mode toggle — also auto-switches texture to suit the theme
     const darkToggle = e.target.closest("#settings-dark");
     if (darkToggle) {
       prefs.dark = darkToggle.checked;
+      // Auto-switch texture: dark mode → "dark" texture, light → "fresh"
+      prefs.texture = prefs.dark ? "dark" : "fresh";
       savePrefs(prefs);
       applyTheme(prefs);
+      applyTexture(prefs);
+      // Update the texture grid UI to reflect the auto-switch
+      document.querySelectorAll(".texture-option").forEach((opt) => {
+        opt.classList.toggle("is-active", opt.dataset.texture === prefs.texture);
+      });
       return;
     }
     // Font option
