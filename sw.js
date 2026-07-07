@@ -51,7 +51,7 @@ const STATIC_ASSETS = [
   "js/components/viewer.js",
   "js/pages/home.js",
   "js/pages/clubs.js",
-  "js/pages/club.js",
+  "js/pages/club-images.js",
   "js/pages/events.js",
   "js/pages/gallery.js",
   // Textures
