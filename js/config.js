@@ -17,7 +17,7 @@
  */
 export const SITE_TITLE = "Student Activity Council — IISER Kolkata";
 export const SITE_DESCRIPTION =
-  "Official website of the Student Activity Council (SAC) at IISER Kolkata. Showcase of 10 cultural clubs, their members, events, and achievements.";
+  "Official website of the Student Activity Council (SAC) at IISER Kolkata. Showcase of 29 clubs — cultural, sports, academic, and hostel — their members, events, and achievements.";
 
 /** Navigation entries. `href` is a path relative to the site ROOT
  *  (e.g. "pages/clubs.html"). The navbar renderer uses pageUrl() to
