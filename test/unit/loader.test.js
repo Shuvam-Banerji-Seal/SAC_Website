@@ -58,10 +58,10 @@ describe("loader TIMING configuration", () => {
     expect(loaderSrc).toContain("desktop:");
   });
 
-  it("phone shows 5 papers, tablet 8, desktop all", () => {
+  it("phone shows 5 papers, tablet 8, desktop 7", () => {
     expect(loaderSrc).toMatch(/phone:\s*\{[^}]*clubLimit:\s*5/);
     expect(loaderSrc).toMatch(/tablet:\s*\{[^}]*clubLimit:\s*8/);
-    expect(loaderSrc).toMatch(/desktop:\s*\{[^}]*clubLimit:\s*0/);
+    expect(loaderSrc).toMatch(/desktop:\s*\{[^}]*clubLimit:\s*7/);
   });
 
   it("stagger decreases from phone to desktop", () => {

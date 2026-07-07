@@ -141,7 +141,7 @@ const TIMING = {
     splashArcRange: 60,
   },
   desktop: {
-    clubLimit: 0,
+    clubLimit: 7,
     stagger: 270,
     gatherDelay: 1050,
     holdAfterLogo: 1800,
