@@ -19,6 +19,26 @@ export const SITE_TITLE = "Student Activity Council — IISER Kolkata";
 export const SITE_DESCRIPTION =
   "Official website of the Student Activity Council (SAC) at IISER Kolkata. Showcase of 29 clubs — cultural, sports, academic, and hostel — their members, events, and achievements.";
 
+/** YouTube Data API v3 — set your API key and channel ID here.
+ *  Create a key at https://console.cloud.google.com/apis/credentials
+ *  and restrict it by HTTP referrer to your domain.
+ *  Leave as empty strings to hide the YouTube section. */
+export const YOUTUBE = {
+  API_KEY: "",
+  CHANNEL_ID: "",
+  MAX_RESULTS: 4,
+};
+
+/** Google Calendar API v3 — set your API key and a public calendar ID.
+ *  Create a key at https://console.cloud.google.com/apis/credentials
+ *  restrict by referrer, and make sure the calendar visibility is "public".
+ *  Leave as empty strings to hide the Calendar section. */
+export const CALENDAR = {
+  API_KEY: "",
+  CALENDAR_ID: "",
+  MAX_RESULTS: 6,
+};
+
 /** Navigation entries. `href` is a path relative to the site ROOT
  *  (e.g. "pages/clubs.html"). The navbar renderer uses pageUrl() to
  *  adapt it for the current page's depth. */

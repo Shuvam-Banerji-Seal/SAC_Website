@@ -30,6 +30,8 @@
 import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
+import { fetchLatestVideos } from "../utils/youtube.js";
+import { fetchUpcomingEvents } from "../utils/calendar.js";
 
 /* -------------------------------------------------------------------------
  * Club slug → individual page URL mapping
@@ -513,6 +515,66 @@ export async function initHome() {
     }
   }
 
+  // Load YouTube and Calendar sections in the background
+  loadYouTubeSection();
+  loadCalendarSection();
+
   // Initialize scroll-based paper scratch sounds
   initScrollSounds();
+}
+
+/* -------------------------------------------------------------------------
+ * YouTube pinned-note section
+ * ------------------------------------------------------------------------- */
+async function loadYouTubeSection() {
+  const section = document.getElementById("youtube-section");
+  const grid = document.getElementById("youtube-grid");
+  if (!section || !grid) return;
+
+  const videos = await fetchLatestVideos();
+  if (!videos.length) return;
+
+  // Show the section and populate the grid
+  section.style.display = "";
+  videos.forEach((v) => {
+    const rot = ((Math.random() - 0.5) * 2).toFixed(1); // -1° to 1°
+    const card = el("li", { class: "pinned-card", style: `transform: rotate(${rot}deg);` },
+      el("a", { href: v.url, target: "_blank", rel: "noopener", "aria-label": `Watch: ${v.title}` },
+        el("img", { class: "pinned-card__media", src: v.thumbnail, alt: "", loading: "lazy", width: 320, height: 180 }),
+        el("div", { class: "pinned-card__body" },
+          el("p", { class: "pinned-card__title" }, v.title),
+          el("p", { class: "pinned-card__meta" },
+            new Date(v.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+          )
+        )
+      )
+    );
+    grid.appendChild(card);
+  });
+}
+
+/* -------------------------------------------------------------------------
+ * Google Calendar pinned-note section
+ * ------------------------------------------------------------------------- */
+async function loadCalendarSection() {
+  const section = document.getElementById("calendar-section");
+  const grid = document.getElementById("calendar-grid");
+  if (!section || !grid) return;
+
+  const events = await fetchUpcomingEvents();
+  if (!events.length) return;
+
+  section.style.display = "";
+  events.forEach((ev) => {
+    const rot = ((Math.random() - 0.5) * 2).toFixed(1);
+    const card = el("li", { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
+      el("div", { class: "pinned-card__body" },
+        el("span", { class: "pinned-card__date" }, ev.dateLabel),
+        el("p", { class: "pinned-card__title" }, ev.title),
+        ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
+        ev.description ? el("p", { class: "pinned-card__meta", style: "margin-top:var(--space-1)" }, ev.description.slice(0, 120)) : null,
+      )
+    );
+    grid.appendChild(card);
+  });
 }

@@ -612,6 +612,18 @@
          placeholders are pre-rendered so the layout is visible even before
          the JSONL arrives.
     ========================================================================= -->
+      <!-- ── YouTube section (pinned note cards) ─────────────────────── -->
+      <div id="youtube-section" class="pinned-section" style="display:none">
+        <h2 class="pinned-section__heading">Latest from SAC</h2>
+        <div id="youtube-grid" class="pinned-grid"></div>
+      </div>
+
+      <!-- ── Calendar section (pinned note cards) ────────────────────── -->
+      <div id="calendar-section" class="pinned-section" style="display:none">
+        <h2 class="pinned-section__heading">Upcoming Events</h2>
+        <div id="calendar-grid" class="pinned-grid"></div>
+      </div>
+
       <section class="bodies" id="bodies" aria-label="Bodies of the SAC">
         <!-- Mount points for the body sections, populated in order -->
         <div data-body-mount="council"></div>
