@@ -286,6 +286,7 @@ function renderPanel() {
   const fontSize = prefs.fontSize || "m";
   const reduceMotion = prefs.reduceMotion || "auto";
   const soundEnabled = prefs.sound !== false;
+  const isAmbient = prefs.ambient !== false;
 
   panelEl.innerHTML = `
     <div class="settings-header">
@@ -378,6 +379,16 @@ function renderPanel() {
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="settings-sound" ${soundEnabled ? "checked" : ""} />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row__label">Ambient music</div>
+          <div class="toggle-row__desc">Background newspaper atmosphere</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-ambient" ${isAmbient ? "checked" : ""} />
           <span class="toggle-track"></span>
         </label>
       </div>
