@@ -534,19 +534,46 @@ async function loadYouTubeSection() {
   const videos = await fetchLatestVideos();
   if (!videos.length) return;
 
-  // Show the section and populate the grid
+  // Show the section and populate the grid with notebook-style cards
   section.style.display = "";
+  grid.classList.add("notebook-grid");
+
   videos.forEach((v) => {
-    const rot = ((Math.random() - 0.5) * 2).toFixed(1); // -1° to 1°
-    const card = el("li", { class: "pinned-card", style: `transform: rotate(${rot}deg);` },
-      el("a", { href: v.url, target: "_blank", rel: "noopener", "aria-label": `Watch: ${v.title}` },
-        el("img", { class: "pinned-card__media", src: v.thumbnail, alt: "", loading: "lazy", width: 320, height: 180 }),
-        el("div", { class: "pinned-card__body" },
-          el("p", { class: "pinned-card__title" }, v.title),
-          el("p", { class: "pinned-card__meta" },
-            new Date(v.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-          )
-        )
+    const rot = ((Math.random() - 0.5) * 2.5).toFixed(1); // -1.25° to 1.25°
+    const handNotes = [
+      "pressed play while the campus hummed outside",
+      "the reel jumped to life — grainy, alive",
+      `noted: this one stays with you`,
+    ];
+    const noteIdx = videos.indexOf(v) % handNotes.length;
+
+    const card = el("li", { class: "notebook-card", style: `transform: rotate(${rot}deg);` },
+      // Washi tape
+      el("div", { class: "notebook-card__tape notebook-card__tape--tl" }),
+      el("div", { class: "notebook-card__tape notebook-card__tape--tr" }),
+      el("div", { class: "notebook-card__tape notebook-card__tape--bl" }),
+      // Video iframe
+      el("div", { class: "notebook-card__frame" },
+        el("iframe", {
+          src: `https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1`,
+          title: v.title,
+          allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+          allowfullscreen: "",
+          loading: "lazy",
+        })
+      ),
+      // Handwritten caption
+      el("p", { class: "notebook-card__caption" }, `" ${v.title} "`),
+      // Handwritten note
+      el("p", { class: "notebook-card__notes" },
+        handNotes[noteIdx]
+          .replace("noted:", '<em>noted:</em>')
+      ),
+      // Date + watch link
+      el("p", { class: "notebook-card__meta" },
+        new Date(v.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        " · ",
+        el("a", { href: v.url, target: "_blank", rel: "noopener" }, "watch on YouTube →")
       )
     );
     grid.appendChild(card);

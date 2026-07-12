@@ -1081,3 +1081,225 @@ body.loader-active .lead-article__body p {
 [data-theme="dark"] .pinned-card::before {
   background: radial-gradient(circle at 35% 30%, #5a5a5a, #3a3a3a 50%, #2a2a2a 80%, #1a1a1a);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Notebook pasted-frame — YouTube video cards
+   Mimics a photograph pasted into a field notebook with washi tape
+   and handwritten annotations.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.notebook-section {
+  max-width: var(--max-w-content);
+  margin: var(--space-7) auto 0;
+  padding: 0 var(--space-4);
+}
+
+.notebook-section__heading {
+  font-family: "Kalam", "Caveat", var(--font-display), cursive;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: var(--space-5);
+  color: var(--ink-base);
+  transform: rotate(-0.5deg);
+}
+.notebook-section__heading::after {
+  content: "";
+  display: block;
+  width: 200px;
+  height: 2px;
+  background: var(--accent-red, #c9941a);
+  margin: 6px auto 0;
+  opacity: 0.4;
+  border-radius: 1px;
+}
+
+.notebook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Pasted photograph card */
+.notebook-card {
+  background: var(--paper-base);
+  background-image: var(--paper-grain);
+  padding: 18px 18px 50px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 20px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s ease;
+}
+.notebook-card::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  left: 8%;
+  width: 84%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.notebook-card:hover {
+  transform: translateY(-4px) rotate(0.3deg) scale(1.008);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(0, 0, 0, 0.2),
+    0 32px 64px rgba(0, 0, 0, 0.25);
+}
+
+/* Washi tape at corners */
+.notebook-card__tape {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.notebook-card__tape--tl {
+  top: -14px;
+  left: -14px;
+  width: 90px;
+  height: 30px;
+  transform: rotate(-12deg);
+  background: linear-gradient(
+    180deg,
+    rgba(230, 210, 140, 0.5) 0%,
+    rgba(210, 190, 110, 0.4) 50%,
+    rgba(230, 210, 140, 0.5) 100%
+  );
+}
+.notebook-card__tape--tr {
+  top: -14px;
+  right: -14px;
+  width: 90px;
+  height: 30px;
+  transform: rotate(14deg);
+  background: linear-gradient(
+    180deg,
+    rgba(190, 135, 155, 0.45) 0%,
+    rgba(170, 115, 140, 0.38) 50%,
+    rgba(190, 135, 155, 0.45) 100%
+  );
+}
+.notebook-card__tape--bl {
+  bottom: 30px;
+  left: -12px;
+  width: 70px;
+  height: 26px;
+  transform: rotate(6deg);
+  background: linear-gradient(
+    180deg,
+    rgba(140, 170, 180, 0.45) 0%,
+    rgba(120, 150, 160, 0.38) 50%,
+    rgba(140, 170, 180, 0.45) 100%
+  );
+}
+
+/* Video frame */
+.notebook-card__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+}
+.notebook-card__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Handwritten caption */
+.notebook-card__caption {
+  font-family: "Kalam", "Caveat", cursive;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--ink-base);
+  text-align: center;
+  margin: 14px 8px 0;
+  transform: rotate(-0.5deg);
+}
+
+/* Handwritten notes */
+.notebook-card__notes {
+  font-family: "Kalam", "Caveat", cursive;
+  font-size: 16px;
+  color: var(--ink-faded);
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-top: 1px dashed rgba(90, 58, 31, 0.25);
+}
+.notebook-card__notes::before {
+  content: "\21b3";
+  margin-right: 6px;
+  color: var(--accent-red, #8b3a3a);
+  font-size: 18px;
+}
+.notebook-card__notes em {
+  font-style: italic;
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(255, 220, 100, 0.35) 55%,
+    rgba(255, 220, 100, 0.35) 95%,
+    transparent 95%
+  );
+  padding: 0 3px;
+}
+
+/* Meta line */
+.notebook-card__meta {
+  font-family: "Caveat", "Kalam", cursive;
+  font-size: 15px;
+  color: var(--ink-muted);
+  margin: 8px 12px 0;
+  text-align: right;
+}
+.notebook-card__meta a {
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
+}
+
+/* Dark theme washi fade */
+[data-theme="dark"] .notebook-card__tape--tl {
+  background: linear-gradient(
+    180deg,
+    rgba(180, 160, 100, 0.35) 0%,
+    rgba(160, 140, 80, 0.28) 50%,
+    rgba(180, 160, 100, 0.35) 100%
+  );
+}
+[data-theme="dark"] .notebook-card__tape--tr {
+  background: linear-gradient(
+    180deg,
+    rgba(150, 95, 115, 0.35) 0%,
+    rgba(130, 75, 100, 0.28) 50%,
+    rgba(150, 95, 115, 0.35) 100%
+  );
+}
+[data-theme="dark"] .notebook-card__tape--bl {
+  background: linear-gradient(
+    180deg,
+    rgba(100, 130, 140, 0.35) 0%,
+    rgba(80, 110, 120, 0.28) 50%,
+    rgba(100, 130, 140, 0.35) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notebook-card:hover {
+    transform: none;
+  }
+}
