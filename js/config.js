@@ -24,8 +24,8 @@ export const SITE_DESCRIPTION =
  *  and restrict it by HTTP referrer to your domain.
  *  Leave as empty strings to hide the YouTube section. */
 export const YOUTUBE = {
-  API_KEY: "",
-  CHANNEL_ID: "",
+  API_KEY: "AIzaSyD7QG2qJeomHIT0d1_7JAztF_QDqS6_x5c",
+  CHANNEL_ID: "UCG4CBJCFakSLL9fHcJbye6A",
   MAX_RESULTS: 4,
 };
 
@@ -34,8 +34,8 @@ export const YOUTUBE = {
  *  restrict by referrer, and make sure the calendar visibility is "public".
  *  Leave as empty strings to hide the Calendar section. */
 export const CALENDAR = {
-  API_KEY: "",
-  CALENDAR_ID: "",
+  API_KEY: "AIzaSyDix1gYEkzR-s2qYg_K2o0HZ67Cw5aQZwQ",
+  CALENDAR_ID: "sbs22ms076@iiserkol.ac.in",
   MAX_RESULTS: 6,
 };
 
