@@ -122,6 +122,13 @@ const BODY_INFO = {
 /* The order bodies are rendered on the page. */
 const BODY_ORDER = ["council", "academics", "hostel", "sports", "cultural"];
 
+/* Club slugs that should not be rendered as paper cards on the home page.
+ * SAC_Academics is a committee (its own page is pages/academics.html) — the
+ * actual academic clubs (Singularity, Slashdot) are already shown as their
+ * own cards, and the SAC_Academics data has no logo and a stray
+ * placement-committee markdown, so rendering it here produced wrong content. */
+const HOMEPAGE_HIDDEN_SLUGS = new Set(["SAC_Academics"]);
+
 /* -------------------------------------------------------------------------
  * Body assignment
  *
@@ -463,7 +470,7 @@ export async function initHome() {
     return;
   }
 
-  const clubs = indexByClub(assets);
+  const clubs = indexByClub(assets).filter((c) => !HOMEPAGE_HIDDEN_SLUGS.has(c.slug));
 
   // Fetch all club markdown excerpts in parallel. This is the
   // "newspaper excerpt" copy on each card. Failures degrade to a
