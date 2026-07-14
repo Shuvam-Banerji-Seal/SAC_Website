@@ -318,18 +318,6 @@ function renderPaperCard(club) {
     el("span", { class: "paper-card__cta" }, "Read More \u2192")
   );
 
-  // Override Slashdot's logo with the proper branded mark from the
-  // Email-HTML repo. The assets_map pipeline didn't ship a logo for
-  // Slashdot, so pickLogo() falls through to the first OB portrait.
-  if (club.name === "Slashdot — Coding & Design Club") {
-    const logoImg = card.querySelector(".paper-card__logo img");
-    if (logoImg) {
-      logoImg.src =
-        "https://github.com/Shuvam-Banerji-Seal/Email-HTML/blob/main/assets/SlashDot%20Main%20logo%20noBG%20B-01.png?raw=true";
-      logoImg.alt = "Slashdot — Coding & Design Club logo";
-    }
-  }
-
   // Override the Placement Cell logo with the local SVG. The Placement
   // Cell has no images in the assets pipeline (it's a committee, not a
   // cultural club), so pickLogo() returns null and the card would
