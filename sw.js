@@ -100,6 +100,7 @@ const STATIC_ASSETS = [
   "pages/volleyball.html",
   // Academic clubs
   "pages/singularity.html",
+  "pages/slashdot.html",
 ];
 
 const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];

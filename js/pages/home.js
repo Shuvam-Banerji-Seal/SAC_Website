@@ -68,6 +68,7 @@ function getClubPageUrl(slug) {
     SAC_Sports_Table_Tennis: "pages/table-tennis.html",
     SAC_Sports_Volleyball: "pages/volleyball.html",
     Singularity_Astro_Club: "pages/singularity.html",
+    Slashdot_Programming_Club: "pages/slashdot.html",
   };
   return urlMap[slug] || "pages/clubs.html";
 }
