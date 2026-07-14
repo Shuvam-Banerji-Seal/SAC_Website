@@ -27,7 +27,7 @@
  *      body section as it scrolls into view — that's the
  *      "paper-folding" reveal (CSS in pages/home.css).
  */
-import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
+import { el, clear, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
@@ -49,6 +49,7 @@ function getClubPageUrl(slug) {
     Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
     "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
     "PIXEL-Photography_Club": "pages/pixel.html",
+    Placement_Cell: "pages/placement.html",
     SAC_Academics: "pages/academics.html",
     SAC_Hostel: "pages/hostel.html",
     SAC_Sports_Athletics: "pages/athletics.html",
@@ -316,6 +317,40 @@ function renderPaperCard(club) {
     el("p", { class: "paper-card__excerpt" }, excerpt),
     el("span", { class: "paper-card__cta" }, "Read More \u2192")
   );
+
+  // Override Slashdot's logo with the proper branded mark from the
+  // Email-HTML repo. The assets_map pipeline didn't ship a logo for
+  // Slashdot, so pickLogo() falls through to the first OB portrait.
+  if (club.name === "Slashdot — Coding & Design Club") {
+    const logoImg = card.querySelector(".paper-card__logo img");
+    if (logoImg) {
+      logoImg.src =
+        "https://github.com/Shuvam-Banerji-Seal/Email-HTML/blob/main/assets/SlashDot%20Main%20logo%20noBG%20B-01.png?raw=true";
+      logoImg.alt = "Slashdot — Coding & Design Club logo";
+    }
+  }
+
+  // Override the Placement Cell logo with the local SVG. The Placement
+  // Cell has no images in the assets pipeline (it's a committee, not a
+  // cultural club), so pickLogo() returns null and the card would
+  // otherwise fall back to a letter placeholder. The branded mark
+  // lives at assets/logos/placement.svg in the main repo.
+  if (club.slug === "Placement_Cell") {
+    const logoWrap = card.querySelector(".paper-card__logo");
+    if (logoWrap) {
+      clear(logoWrap);
+      logoWrap.appendChild(
+        el("img", {
+          src: assetUrl("assets/logos/placement.svg"),
+          alt: "SAC Placement Cell logo",
+          loading: "lazy",
+          decoding: "async",
+          width: 88,
+          height: 88,
+        })
+      );
+    }
+  }
 
   // Navigation is handled by the native <a href> — no custom click handler.
   // The fold animation was removed because it caused transform interpolation
@@ -597,19 +632,27 @@ async function loadCalendarSection() {
   if (!section || !grid) return;
 
   const events = await fetchUpcomingEvents();
-  if (!events.length) return;
-
   section.style.display = "";
-  events.forEach((ev) => {
-    const rot = ((Math.random() - 0.5) * 2).toFixed(1);
-    const card = el("li", { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
+  if (events.length) {
+    events.forEach((ev) => {
+      const rot = ((Math.random() - 0.5) * 2).toFixed(1);
+      const card = el("li", { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
+        el("div", { class: "pinned-card__body" },
+          el("span", { class: "pinned-card__date" }, ev.dateLabel),
+          el("p", { class: "pinned-card__title" }, ev.title),
+          ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
+          ev.description ? el("p", { class: "pinned-card__meta", style: "margin-top:var(--space-1)" }, ev.description.slice(0, 120)) : null,
+        )
+      );
+      grid.appendChild(card);
+    });
+  } else {
+    const placeholder = el("li", { class: "pinned-card pinned-card--event", style: "transform: rotate(0deg);" },
       el("div", { class: "pinned-card__body" },
-        el("span", { class: "pinned-card__date" }, ev.dateLabel),
-        el("p", { class: "pinned-card__title" }, ev.title),
-        ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
-        ev.description ? el("p", { class: "pinned-card__meta", style: "margin-top:var(--space-1)" }, ev.description.slice(0, 120)) : null,
+        el("p", { class: "pinned-card__title" }, "No upcoming events"),
+        el("p", { class: "pinned-card__meta" }, "Check back soon for updates.")
       )
     );
-    grid.appendChild(card);
-  });
+    grid.appendChild(placeholder);
+  }
 }

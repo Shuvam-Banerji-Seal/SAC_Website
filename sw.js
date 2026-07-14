@@ -101,6 +101,7 @@ const STATIC_ASSETS = [
   // Academic clubs
   "pages/singularity.html",
   "pages/slashdot.html",
+  "pages/placement.html",
 ];
 
 const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];

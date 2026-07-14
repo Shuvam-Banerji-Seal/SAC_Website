@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="20" fill="#0b2545"/>
+  <text x="50" y="135" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="100" fill="#c9941a">P</text>
+  <text x="100" y="105" text-anchor="middle" font-family="Courier,monospace" font-weight="700" font-size="40" fill="#c9941a">-&gt;</text>
+  <text x="150" y="135" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="100" fill="#c9941a">C</text>
+</svg>
