@@ -1,0 +1,741 @@
+/* =========================================================================
+   css/enhancements.css — Visual enhancements: 3D page flips, ink stamps,
+   coffee rings, margin notes, paper clips, news ticker, typewriter FX.
+   Loaded after all other stylesheets so it can override selectively.
+   ========================================================================= */
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. ENHANCED PAGE-FLIP ANIMATION
+   Realistic 3D newspaper fold with dynamic shadow + paper curl.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Paper fold shadow — a gradient overlay that simulates the crease
+   shadow when a newspaper page is being turned. Placed as a
+   pseudo-element on the body-section so it doesn't need extra DOM. */
+.body-section {
+  position: relative;
+}
+
+.body-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.12) 8%,
+    transparent 20%
+  );
+  opacity: 1;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 1s ease 0.3s;
+  border-radius: inherit;
+}
+
+.body-section.is-visible::before {
+  opacity: 0;
+}
+
+/* Paper curl at the fold edge — a subtle highlight that appears as
+   the page settles flat, simulating the paper's micro-curl at the
+   crease line. */
+.body-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.15) 70%,
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+  transition: opacity 0.6s ease 0.8s;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.body-section.is-visible::after {
+  opacity: 0.8;
+}
+
+/* Enhanced fold transition — multi-stage with lighting */
+.body-section {
+  transform: perspective(1200px) rotateX(-88deg) translateZ(-200px)
+    translateY(-10px);
+  transition:
+    transform 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.9s ease,
+    box-shadow 1.3s ease,
+    filter 1s ease;
+  filter: brightness(0.6) saturate(0.7);
+}
+
+.body-section.is-visible {
+  transform: perspective(1200px) rotateX(0deg) translateZ(0) translateY(0);
+  filter: brightness(1) saturate(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. INK STAMP / SEAL COMPONENT
+   A rotated, semi-transparent stamp that looks pressed onto paper.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.ink-stamp {
+  display: inline-block;
+  border: 2.5px solid var(--accent-red, #7e0909);
+  color: var(--accent-red, #7e0909);
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  border-radius: 3px;
+  position: relative;
+  background: rgba(126, 9, 9, 0.03);
+  opacity: 0.72;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ink-stamp::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid rgba(126, 9, 9, 0.25);
+  border-radius: 5px;
+}
+
+/* Stamp texture — rough edges like a real ink stamp */
+.ink-stamp {
+  filter: url("#ink-roughen");
+  text-shadow: 0.5px 0.5px 0 rgba(126, 9, 9, 0.15);
+}
+
+/* Variants */
+.ink-stamp--approved { color: #2d6a2d; border-color: #2d6a2d; }
+.ink-stamp--draft { color: #6b6b6b; border-color: #6b6b6b; }
+.ink-stamp--urgent {
+  color: #c41e1e;
+  border-color: #c41e1e;
+  animation: stamp-pulse 2s ease-in-out infinite;
+}
+
+@keyframes stamp-pulse {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 0.9; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. COFFEE RING STAIN
+   A decorative SVG-free coffee cup ring stain on the paper.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.coffee-ring {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 8px solid rgba(120, 70, 30, 0.12);
+  background: radial-gradient(
+    circle,
+    transparent 50%,
+    rgba(120, 70, 30, 0.06) 70%,
+    transparent 82%
+  );
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.coffee-ring--sm {
+  width: 70px;
+  height: 70px;
+  border-width: 5px;
+}
+
+.coffee-ring--top-right {
+  top: 30px;
+  right: 20px;
+}
+
+.coffee-ring--bottom-left {
+  bottom: 40px;
+  left: 15px;
+  transform: rotate(12deg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. MARGIN NOTES (handwritten annotations in red pencil)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.margin-note {
+  position: absolute;
+  font-family: "Caveat", "Kalam", cursive;
+  font-size: 1.1rem;
+  color: var(--accent-red, #7e0909);
+  opacity: 0.75;
+  pointer-events: none;
+  user-select: none;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.margin-note--left {
+  left: 8px;
+  transform: rotate(-90deg);
+  transform-origin: left top;
+}
+
+.margin-note--right {
+  right: 8px;
+  transform: rotate(90deg);
+  transform-origin: right top;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. PAPER CLIP COMPONENT
+   A realistic metal paper clip that holds a note to the page.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.paper-clip {
+  position: absolute;
+  top: -16px;
+  left: 30px;
+  width: 30px;
+  height: 60px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.paper-clip svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. NEWS TICKER (rolling headlines marquee)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.news-ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--ink-base, #181410);
+  color: var(--paper-base, #f4f0e6);
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
+  border-bottom: 1px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.55));
+  position: relative;
+}
+
+.news-ticker__label {
+  display: inline-block;
+  background: var(--accent-red, #7e0909);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.15em;
+  vertical-align: middle;
+}
+
+.news-ticker__track {
+  display: inline-block;
+  animation: ticker-scroll 40s linear infinite;
+  vertical-align: middle;
+}
+
+.news-ticker__item {
+  display: inline-block;
+  padding: 0 2rem;
+}
+
+.news-ticker__item::after {
+  content: "◆";
+  margin-left: 2rem;
+  color: var(--accent-gold, #c9a84c);
+  opacity: 0.6;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.news-ticker:hover .news-ticker__track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-ticker__track {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. TYPEWRITER TEXT EFFECT
+   Text that types out character by character with a blinking cursor.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.typewriter {
+  font-family: var(--font-mono-serif, "Courier New", monospace);
+  overflow: hidden;
+  border-right: 2px solid var(--ink-base, #181410);
+  white-space: nowrap;
+  animation:
+    typewriter-blink 0.75s step-end infinite;
+}
+
+.typewriter--done {
+  border-right: none;
+  animation: none;
+}
+
+@keyframes typewriter-blink {
+  0%, 50% { border-color: transparent; }
+  51%, 100% { border-color: var(--ink-base, #181410); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. INK SPLATTER DECORATION
+   SVG-based ink splatter that sits on the paper as a decorative
+   element — adds organic, hand-made character to the layout.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.ink-splatter {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: 2;
+  mix-blend-mode: multiply;
+}
+
+.ink-splatter svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ink-splatter--blue {
+  filter: hue-rotate(180deg) saturate(0.5);
+}
+
+.ink-splatter--red { opacity: 0.25; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. WASHI TAPE STRIP (reusable across the site)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.washi-tape {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.washi-tape--gold {
+  background: linear-gradient(
+    180deg,
+    rgba(230, 210, 140, 0.55) 0%,
+    rgba(210, 190, 110, 0.42) 50%,
+    rgba(230, 210, 140, 0.55) 100%
+  );
+}
+
+.washi-tape--pink {
+  background: linear-gradient(
+    180deg,
+    rgba(190, 135, 155, 0.5) 0%,
+    rgba(170, 115, 140, 0.38) 50%,
+    rgba(190, 135, 155, 0.5) 100%
+  );
+}
+
+.washi-tape--teal {
+  background: linear-gradient(
+    180deg,
+    rgba(140, 170, 180, 0.5) 0%,
+    rgba(120, 150, 160, 0.4) 50%,
+    rgba(140, 170, 180, 0.5) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. ENHANCED LOADER — ink-spreading masthead
+   Adds an ink-drop effect to the loader that spreads like wet ink
+   on newsprint before the masthead letters appear.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Ink drop animation for the loader title */
+.loader__ink-drop {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--paper-base, #f4f0e6);
+  opacity: 0;
+  animation: ink-drop-grow 1.5s ease-out forwards;
+}
+
+@keyframes ink-drop-grow {
+  0% {
+    opacity: 0;
+    width: 8px;
+    height: 8px;
+    filter: blur(0px);
+  }
+  20% {
+    opacity: 0.6;
+  }
+  60% {
+    opacity: 0.3;
+    width: 200px;
+    height: 200px;
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    width: 400px;
+    height: 400px;
+    filter: blur(20px);
+  }
+}
+
+/* Printing press effect — subtle horizontal scanlines that move
+   downward simulating paper coming off a press roller. */
+#loader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.015) 3px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  animation: press-scan 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes press-scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(4px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. SECTION DIVIDER — ornamental newspaper break
+   A decorative divider with ornamental fleurons between sections.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: var(--space-7) 0;
+  padding: 0 var(--space-4);
+  opacity: 0.5;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--ink-rule-strong, rgba(24, 20, 16, 0.55))
+  );
+}
+
+.section-divider::after {
+  background: linear-gradient(
+    to left,
+    transparent,
+    var(--ink-rule-strong, rgba(24, 20, 16, 0.55))
+  );
+}
+
+.section-divider__ornament {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.2rem;
+  color: var(--ink-muted, #5b4f3d);
+  letter-spacing: 0.3em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   12. POLAROID PHOTO CARD (for pinned images)
+   A white-bordered photo card with a slight tilt and shadow.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.polaroid {
+  background: #fff;
+  padding: 12px 12px 40px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 20px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s ease;
+}
+
+.polaroid:hover {
+  transform: translateY(-4px) rotate(0deg) scale(1.01);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(0, 0, 0, 0.2);
+}
+
+.polaroid img {
+  width: 100%;
+  display: block;
+}
+
+.polaroid__caption {
+  font-family: "Caveat", "Kalam", cursive;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 8px;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   13. LETTER / ENVELOPE COMPONENT
+   A folded letter with a wax seal.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.letter {
+  background: var(--paper-soft, #ece5d3);
+  padding: var(--space-5);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  border-radius: 2px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.letter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink-rule, rgba(24, 20, 16, 0.22)) 0,
+    var(--ink-rule, rgba(24, 20, 16, 0.22)) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+/* Wax seal */
+.wax-seal {
+  position: absolute;
+  bottom: -20px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #a02020 0%,
+    #7e0909 50%,
+    #5a0606 100%
+  );
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   14. ENHANCED PAPER TEXTURE OVERLAY
+   Adds film grain + paper fiber texture as a fixed overlay.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.paper-grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain-shift 0.5s steps(4) infinite;
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(1px, -2px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-grain-overlay {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   15. HIGHLIGHT MARKER (text background like a yellow highlighter)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.highlight-marker {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(255, 220, 100, 0.45) 55%,
+    rgba(255, 220, 100, 0.45) 95%,
+    transparent 95%
+  );
+  padding: 0 3px;
+  border-radius: 1px;
+}
+
+.highlight-marker--blue {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(100, 150, 220, 0.3) 55%,
+    rgba(100, 150, 220, 0.3) 95%,
+    transparent 95%
+  );
+}
+
+.highlight-marker--pink {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(255, 182, 193, 0.4) 55%,
+    rgba(255, 182, 193, 0.4) 95%,
+    transparent 95%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   16. DOG-EAR CORNER (folded page corner)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.dog-ear {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    var(--paper-edge, #c7b993) 50%,
+    var(--paper-deep, #ddd2b6) 100%
+  );
+  box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 0 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.dog-ear::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 1px;
+  background: var(--ink-rule, rgba(24, 20, 16, 0.22));
+  transform: rotate(-45deg);
+  transform-origin: bottom right;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   17. DARK THEME ADAPTATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .coffee-ring {
+  border-color: rgba(160, 100, 50, 0.15);
+  background: radial-gradient(
+    circle,
+    transparent 50%,
+    rgba(160, 100, 50, 0.08) 70%,
+    transparent 82%
+  );
+}
+
+[data-theme="dark"] .ink-splatter {
+  opacity: 0.2;
+}
+
+[data-theme="dark"] .polaroid {
+  background: #2a2620;
+}
+
+[data-theme="dark"] .polaroid__caption {
+  color: #d4c9b8;
+}
+
+[data-theme="dark"] .letter {
+  background: #2a2620;
+}
+
+[data-theme="dark"] .news-ticker {
+  background: #0d0a06;
+  color: #d4c9b8;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   18. REDUCED MOTION OVERRIDES
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .body-section {
+    transform: none !important;
+    filter: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+
+  .body-section::before,
+  .body-section::after {
+    transition: none !important;
+  }
+
+  .polaroid:hover,
+  .notebook-card:hover {
+    transform: none !important;
+  }
+
+  .paper-grain-overlay {
+    animation: none !important;
+  }
+}

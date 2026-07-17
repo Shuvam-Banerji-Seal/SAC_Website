@@ -825,3 +825,33 @@ export function initScrollSounds() {
     { passive: true }
   );
 }
+
+/* -------------------------------------------------------------------------
+ * Page-turn sound — plays when a body section reveals (folds open).
+ * Uses a low-frequency rustle + soft thud to simulate newspaper fold.
+ * ------------------------------------------------------------------------- */
+export function playPageTurn() {
+  if (!audioUnlocked) return;
+  const vol = 0.05;
+  const dur = 0.3;
+
+  // Paper rustle
+  playPaperScratch(dur, vol * 0.6);
+
+  // Soft thud (low-frequency sine)
+  setTimeout(() => {
+    const ctx = audioCtx;
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(80, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + dur);
+    gain.gain.setValueAtTime(vol * 0.5, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(masterGain || ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + dur);
+  }, 100);
+}

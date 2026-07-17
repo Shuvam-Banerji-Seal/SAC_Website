@@ -62,7 +62,8 @@
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/components.css" />
-    <link rel="stylesheet" href="css/pages/home.css" />
+    <link rel="stylesheet" href="../css/pages/home.css" />
+    <link rel="stylesheet" href="../css/enhancements.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/settings.css" />
     <link rel="stylesheet" href="css/viewer.css" />
@@ -321,6 +322,7 @@
          a drop cap; "byline" sets the editorial tone.
     ========================================================================= -->
       <section class="lead-article" aria-labelledby="lead-headline">
+        <div class="ink-stamp" style="position:absolute;top:10px;right:20px;">Archived</div>
         <h2 id="lead-headline" class="lead-article__headline">
           A Campus In Print: The Work And Life Of Its Societies
         </h2>
@@ -611,6 +613,11 @@
         </div>
       </section>
 
+      <!-- Section divider -->
+      <div class="section-divider" aria-hidden="true">
+        <span class="section-divider__ornament">✦ ✦ ✦</span>
+      </div>
+
       <!-- =========================================================================
          4 paper-folding body sections (SAC Academics, SAC Hostel, Sports,
          Cultural). Filled in by js/pages/home.js; the four <section>
@@ -628,6 +635,22 @@
         <h2 class="notebook-section__heading">Upcoming Events</h2>
         <div id="calendar-grid" class="pinned-grid"></div>
       </div>
+
+      <!-- News ticker -->
+      <div class="news-ticker" aria-hidden="true">
+        <span class="news-ticker__label">Bulletin</span>
+        <div class="news-ticker__track">
+          <span class="news-ticker__item">Inter-IISER Cultural Meet 2026 — registrations open</span>
+          <span class="news-ticker__item">SAC Elections — results declared</span>
+          <span class="news-ticker__item">Photography Club — new equipment available for borrowing</span>
+          <span class="news-ticker__item">Campus Radio — live every Friday at 6 PM</span>
+          <span class="news-ticker__item">Chess Club — weekly practice sessions on Saturdays</span>
+          <span class="news-ticker__item">Cricket Club — IPL auction registration closes soon</span>
+        </div>
+      </div>
+
+      <!-- Paper grain overlay -->
+      <div class="paper-grain-overlay" aria-hidden="true"></div>
 
       <section class="bodies" id="bodies" aria-label="Bodies of the SAC">
         <!-- Mount points for the body sections, populated in order -->

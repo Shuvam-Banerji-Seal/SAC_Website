@@ -29,7 +29,7 @@
  */
 import { el, clear, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
-import { revealText, initScrollSounds } from "../utils/calligraphy.js";
+import { revealText, initScrollSounds, playPageTurn } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
 
@@ -414,6 +414,9 @@ function setupFolding() {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
+
+          // Play page-turn sound
+          playPageTurn();
 
           // Stagger-reveal paper cards inside this section
           const cards = entry.target.querySelectorAll(".paper-card-wrap");
