@@ -251,7 +251,13 @@ function loadGoogleFont(preset) {
 
 /* Preload all font presets so switching is instant. */
 function preloadFonts() {
-  Object.keys(FONT_PRESETS).forEach(loadGoogleFont);
+  // Skip displayOnly presets (e.g. Old English/UnifrakturMaguntia): they
+  // are decorative and eagerly fetching them logs a stream of benign
+  // "Glyph bbox was incorrect" warnings for that font's dirty glyph table.
+  // They still load lazily the moment the user selects them.
+  Object.keys(FONT_PRESETS)
+    .filter((key) => !FONT_PRESETS[key].displayOnly)
+    .forEach(loadGoogleFont);
 }
 
 /* -------------------------------------------------------------------------

@@ -20,7 +20,7 @@ SAC_Website/
 ├── eslint.config.js            # ESLint flat config (2024+)
 ├── package.json                # Dev tooling: vitest, eslint, prettier, http-server
 ├── vitest.config.js            # Vitest config with jsdom environment
-├── sw.js                       # Service Worker (sac-v14) — caches static assets + all sub-pages
+├── sw.js                       # Service Worker (sac-v15) — caches static assets + all sub-pages
 ├── AGENTS.md                   # ← This file
 ├── README.md                   # Project overview and setup instructions
 │
@@ -441,7 +441,7 @@ sound source → filter → gain → dryGain ──┐
 
 ## 10. Service Worker (`sw.js`)
 
-- **Cache name**: `sac-v14` (bumped on significant CSS/JS changes)
+- **Cache name**: `sac-v15` (bumped on significant CSS/JS changes)
 - **Install**: `skipWaiting()`, caches ~90 static assets (CSS, JS, textures, audio, ALL sub-pages incl. sports & academic clubs)
 - **Activate**: `clients.claim()`, deletes old cache versions
 - **Fetch strategy**:
@@ -658,7 +658,7 @@ git push origin main
 - **URL**: `https://shuvam-banerji-seal.github.io/SAC_Website/`
 - **Trigger**: Push to `main` branch → GitHub Actions → Deploy
 - **CDN propagation**: ~60-90s after deploy completes
-- **Cache**: Service Worker caches at `sac-v14`; clients need hard refresh to pick up new SW
+- **Cache**: Service Worker caches at `sac-v15`; clients need hard refresh to pick up new SW
 - **No build step**: The site is pure static — what you see in the repo is what's served
 
 ---

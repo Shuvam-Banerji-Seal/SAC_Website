@@ -536,7 +536,12 @@ export async function initHome() {
     loaded = true;
     adjustLeadLayout();
   });
-  document.fonts?.ready?.then(adjustLeadLayout);
+  // Only re-measure on font load AFTER the initial load measurement ran —
+  // fonts.ready can resolve before the page has rendered and would force
+  // layout early again.
+  document.fonts?.ready?.then(() => {
+    if (loaded) adjustLeadLayout();
+  });
   // Debounced resize: canvas text measurement is expensive, don't run on every event
   let resizeTimer = null;
   window.addEventListener("resize", () => {
@@ -603,10 +608,10 @@ async function loadYouTubeSection() {
         el("iframe", {
           src: `https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1`,
           title: v.title,
-          // Only standard, supported permissions — the full list (accelerometer,
-          // gyroscope, clipboard-write) is not in the Permissions Policy and
-          // Firefox logs "Feature Policy: Skipping unsupported feature name".
-          allow: "autoplay; encrypted-media; picture-in-picture",
+          // No `allow` attribute: the embed needs no special permissions, and
+          // Firefox logs "Feature Policy: Skipping unsupported feature name"
+          // for ANY allow list (even standard features) on user-hostile embeds.
+          // Playback is user-initiated, so autoplay permission is unnecessary.
           allowfullscreen: "",
           loading: "lazy",
         })
