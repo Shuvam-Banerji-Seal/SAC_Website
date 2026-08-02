@@ -526,8 +526,16 @@ export async function initHome() {
   setupFolding();
 
   // Measure lead-article text and adjust column layout.
-  // Also re-measure on font load since canvas metrics depend on it.
-  adjustLeadLayout();
+  // Defer to window.load: the hero sits behind the loader during
+  // DOMContentLoaded, so reading offsetWidth/computed styles that early
+  // forces layout before the page has fully rendered (FOUC risk + layout
+  // thrash warning). Re-measure on font load + debounced resize.
+  let loaded = false;
+  window.addEventListener("load", () => {
+    if (loaded) return;
+    loaded = true;
+    adjustLeadLayout();
+  });
   document.fonts?.ready?.then(adjustLeadLayout);
   // Debounced resize: canvas text measurement is expensive, don't run on every event
   let resizeTimer = null;
@@ -581,17 +589,24 @@ async function loadYouTubeSection() {
     ];
     const noteIdx = videos.indexOf(v) % handNotes.length;
 
-    const card = el("li", { class: "notebook-card", style: `transform: rotate(${rot}deg);` },
+    const card = el(
+      "li",
+      { class: "notebook-card", style: `transform: rotate(${rot}deg);` },
       // Washi tape
       el("div", { class: "notebook-card__tape notebook-card__tape--tl" }),
       el("div", { class: "notebook-card__tape notebook-card__tape--tr" }),
       el("div", { class: "notebook-card__tape notebook-card__tape--bl" }),
       // Video iframe
-      el("div", { class: "notebook-card__frame" },
+      el(
+        "div",
+        { class: "notebook-card__frame" },
         el("iframe", {
           src: `https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1`,
           title: v.title,
-          allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+          // Only standard, supported permissions — the full list (accelerometer,
+          // gyroscope, clipboard-write) is not in the Permissions Policy and
+          // Firefox logs "Feature Policy: Skipping unsupported feature name".
+          allow: "autoplay; encrypted-media; picture-in-picture",
           allowfullscreen: "",
           loading: "lazy",
         })
@@ -599,13 +614,20 @@ async function loadYouTubeSection() {
       // Handwritten caption
       el("p", { class: "notebook-card__caption" }, `" ${v.title} "`),
       // Handwritten note
-      el("p", { class: "notebook-card__notes" },
-        handNotes[noteIdx]
-          .replace("noted:", '<em>noted:</em>')
+      el(
+        "p",
+        { class: "notebook-card__notes" },
+        handNotes[noteIdx].replace("noted:", "<em>noted:</em>")
       ),
       // Date + watch link
-      el("p", { class: "notebook-card__meta" },
-        new Date(v.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+      el(
+        "p",
+        { class: "notebook-card__meta" },
+        new Date(v.publishedAt).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }),
         " · ",
         el("a", { href: v.url, target: "_blank", rel: "noopener" }, "watch on YouTube →")
       )
@@ -627,19 +649,33 @@ async function loadCalendarSection() {
   if (events.length) {
     events.forEach((ev) => {
       const rot = ((Math.random() - 0.5) * 2).toFixed(1);
-      const card = el("li", { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
-        el("div", { class: "pinned-card__body" },
+      const card = el(
+        "li",
+        { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
+        el(
+          "div",
+          { class: "pinned-card__body" },
           el("span", { class: "pinned-card__date" }, ev.dateLabel),
           el("p", { class: "pinned-card__title" }, ev.title),
           ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
-          ev.description ? el("p", { class: "pinned-card__meta", style: "margin-top:var(--space-1)" }, ev.description.slice(0, 120)) : null,
+          ev.description
+            ? el(
+                "p",
+                { class: "pinned-card__meta", style: "margin-top:var(--space-1)" },
+                ev.description.slice(0, 120)
+              )
+            : null
         )
       );
       grid.appendChild(card);
     });
   } else {
-    const placeholder = el("li", { class: "pinned-card pinned-card--event", style: "transform: rotate(0deg);" },
-      el("div", { class: "pinned-card__body" },
+    const placeholder = el(
+      "li",
+      { class: "pinned-card pinned-card--event", style: "transform: rotate(0deg);" },
+      el(
+        "div",
+        { class: "pinned-card__body" },
         el("p", { class: "pinned-card__title" }, "No upcoming events"),
         el("p", { class: "pinned-card__meta" }, "Check back soon for updates.")
       )
