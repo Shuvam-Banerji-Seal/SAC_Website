@@ -432,7 +432,7 @@ function wireEvents() {
       applyTexture(prefs);
       // Update the texture grid UI to reflect the auto-switch
       document.querySelectorAll(".texture-option").forEach((opt) => {
-        opt.classList.toggle("is-active", opt.dataset.texture === prefs.texture);
+        opt.classList.toggle("is-selected", opt.dataset.texture === prefs.texture);
       });
       return;
     }

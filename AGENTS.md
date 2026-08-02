@@ -11,7 +11,7 @@
 
 ```
 SAC_Website/
-├── index.html                  # Home page (masthead, lead article, 5 body sections)
+├── index.html                  # Home page (masthead, lead article, YouTube/Calendar, 5 body sections)
 ├── .github/workflows/deploy.yml # CI/CD: lint → test → verify → deploy to Pages
 ├── .gitmodules                 # Two submodules: public/assets (images) + utils/pretext
 ├── .nojekyll                   # Instructs GitHub Pages not to run Jekyll
@@ -20,22 +20,22 @@ SAC_Website/
 ├── eslint.config.js            # ESLint flat config (2024+)
 ├── package.json                # Dev tooling: vitest, eslint, prettier, http-server
 ├── vitest.config.js            # Vitest config with jsdom environment
-├── sw.js                       # Service Worker (sac-v8) — caches static assets
+├── sw.js                       # Service Worker (sac-v13) — caches static assets + all sub-pages
 ├── AGENTS.md                   # ← This file
 ├── README.md                   # Project overview and setup instructions
 │
-├── css/                        # 10 CSS files + 6 page-specific stylesheets
-├── js/                         # 5 components + 5 page initializers + 3 utilities + loader + preloader
-├── pages/                      # 16 static HTML pages (12 clubs + clubs, events, gallery, about)
-├── assets/                     # 9 texture images (PNG/JPG) for paper backgrounds
+├── css/                        # 11 CSS files + 6 page-specific stylesheets (incl. enhancements, print)
+├── js/                         # 5 components + 5 page initializers + 7 utilities + loader + preloader
+├── pages/                      # 35 static HTML pages (31 clubs/committees + clubs, events, gallery, about)
+├── assets/                     # 9 texture images (PNG/JPG) + audio + SVG logos
 ├── docs/                       # 20 research documents on paper textures, animations, typography
 ├── diagrams/                   # Mermaid/architecture diagrams
-├── test/                       # 11 test files (unit) + setup + e2e/integration/fixtures
-├── public/                     # Git submodule → SAC_website_assets (429 JSONL entries)
+├── test/                       # 13 test files (160 tests) + setup + e2e/integration/fixtures
+├── public/                     # Git submodule → SAC_website_assets (1471 JSONL entries)
 │   └── assets/processed/       # assets_map.jsonl + WebP images + markdown docs
 ├── utils/                      # Git submodule → chenglou/pretext (text measurement library)
 │   └── pretext/                # TypeScript source for @chenglou/pretext (v0.0.8)
-└── .playwright-mcp/            # Playwright MCP session logs (console captures + page snapshots)
+└── .playwright-mcp/            # Playwright MCP session logs (console captures + page snapshots, gitignored)
 ```
 
 ---
@@ -45,7 +45,7 @@ SAC_Website/
 ### `public/assets` (SSH: `git@github.com:slashdot-iiserk/SAC_website_assets.git`)
 
 - **Purpose**: Houses all processed media — images and markdown documents.
-- **Key file**: `public/assets/processed/assets_map.jsonl` — the canonical 429-entry metadata file.
+- **Key file**: `public/assets/processed/assets_map.jsonl` — the canonical **1471-entry** metadata file (31 clubs, 1301 images, 170 markdown docs).
 - **CI requirement**: Deploy fails if this submodule isn't checked out (`public/assets/processed/` must exist).
 
 ### `utils/pretext` (SSH: `git@github.com:chenglou/pretext.git`)
@@ -65,7 +65,7 @@ The home page is a single 615-line HTML file that acts as the site's landing pag
 index.html
 ├── <head>
 │   ├── Meta (charset, viewport, description, SVG favicon)
-│   ├── Stylesheets (10 CSS files in dependency order)
+│   ├── Stylesheets (11 CSS files in dependency order, incl. enhancements.css + print.css)
 │   │   ├── css/preloader.css  (0-100% progress bar)
 │   │   ├── css/reset.css      (minimal reset)
 │   │   ├── css/variables.css  (design tokens, paper textures)
@@ -99,11 +99,16 @@ index.html
 │   │   │   ├── .lead-article__byline
 │   │   │   └── .lead-article__body (3 paragraphs, column layout measured by pretext)
 │   │   ├── .sac-diagram-section (inline SVG organisational chart)
+│   │   ├── #youtube-section    (notebook pinned video cards, hidden until data loads)
+│   │   ├── #calendar-section   (pinned Google Calendar cards, hidden until data loads)
+│   │   ├── .news-ticker        (marquee bulletin strip)
 │   │   └── #bodies             (5 mount points: council, academics, hostel, sports, cultural)
 │   │
 │   └── #footer                 (populated by js/components/footer.js)
 │
-└── <script type="module" src="js/main.js">  (entry point — dispatches to page init)
+├── <script type="module" src="js/main.js">   (entry point — dispatches to page init)
+├── <script type="module" src="js/loader.js"> (also imported by main.js — module guards re-init)
+└── Settings overlay/panel + FAB (⚙)
 ```
 
 ### Key text content (hardcoded in index.html):
@@ -137,16 +142,18 @@ js/main.js
 main.js
 ├── utils/dom.js          — $, $$, el(), clear(), onReady(), pageUrl(), isInPagesDir()
 │
-├── config.js             — SITE_TITLE, SITE_DESCRIPTION, NAV_ITEMS (5 entries)
+├── config.js             — SITE_TITLE, SITE_DESCRIPTION, NAV_ITEMS (5),
+│                           YOUTUBE + CALENDAR API keys (referrer-restricted)
 │
 ├── data.js               — loadAssetsMap(), indexByClub(), getClub(), getClubEntries()
-│   └── Fetches: public/assets/processed/assets_map.jsonl (429 lines, cached Promise)
+│   └── Fetches: public/assets/processed/assets_map.jsonl (1471 lines, cached Promise + sessionStorage cache, 10-min TTL)
 │
 ├── components/
 │   ├── navbar.js         — renderNavbar(activePage): builds <nav class="navbar"> from NAV_ITEMS
 │   ├── navbar-fold.js    — setupNavbarFold(): mobile curtain pull-down (<1024px) / desktop corner drawer (>=1024px)
 │   ├── footer.js         — renderFooter(): © year + SITE_TITLE
-│   ├── settings.js       — initSettings(): dark mode, 6 font presets, 8 paper textures, localStorage
+│   ├── settings.js       — initSettings(): dark mode, 7 font presets, 8 paper textures,
+│   │                       font size (S/M/L), reduce motion, sound, ambient music, localStorage
 │   ├── viewer.js         — initViewer(): lightbox for [data-viewer] images, prev/next/keyboard
 │   └── three-fold.js     — initPaperFold(): Three.js (dynamic import), 3D paper mesh with idle/visibility pausing
 │       └── Dep: three (CDN import map, not npm)
@@ -158,7 +165,7 @@ main.js
 │   ├── events.js         — initEvents(): event cards with lightbox wiring
 │   └── gallery.js        — initGallery(): full image gallery with category grouping
 │
-├── loader.js             — self-initialising: newspaper animation (12→8→5 papers by device class)
+├── loader.js             — self-initialising: newspaper animation (5→8→all papers by device class)
 │   └── Dep: data.js, sounds via calligraphy.js (playPrintSound)
 │
 ├── preloader.js          — plain script (not ES module): 3-phase asset warm-up
@@ -172,7 +179,7 @@ main.js
 ### Core Data Flow
 
 ```
-assets_map.jsonl (429 entries)
+assets_map.jsonl (1471 entries)
     │
     ▼
 loadAssetsMap() ── fetch + parse JSONL → Array<AssetEntry>
@@ -204,7 +211,7 @@ Array<ClubRecord>                          Filtered entries
 | `js/components/navbar.js`      | 49    | dom, config                                                                                               | `renderNavbar(activePage)`                                                                                                                    | Renders primary nav                                                           |
 | `js/components/navbar-fold.js` | 202   | dom                                                                                                       | `setupNavbarFold()`                                                                                                                           | Mobile curtain + desktop corner drawer                                        |
 | `js/components/footer.js`      | 31    | dom, config                                                                                               | `renderFooter()`                                                                                                                              | Renders site footer                                                           |
-| `js/components/settings.js`    | 380   | dom                                                                                                       | `initSettings()`                                                                                                                              | Dark mode, 6 fonts, 8 textures, persistence                                   |
+| `js/components/settings.js`    | 530   | dom                                                                                                       | `initSettings()`                                                                                                                              | Dark mode, 7 fonts, 8 textures, a11y prefs, persistence                       |
 | `js/components/viewer.js`      | 191   | dom                                                                                                       | `initViewer()`                                                                                                                                | Image lightbox with navigation                                                |
 | `js/components/three-fold.js`  | 168   | three (dynamic import)                                                                                    | `initPaperFold()`, `destroy()`                                                                                                                | Three.js 3D paper parallax                                                    |
 | `js/pages/home.js`             | 449   | dom, data, calligraphy                                                                                    | `initHome()`, `adjustLeadLayout()`, `extractExcerpt()`                                                                                        | Home page initialiser                                                         |
@@ -253,15 +260,15 @@ All paper textures are defined as SVG data URIs in `css/variables.css`:
 
 ---
 
-## 6. HTML Pages (16 static + 1 entry)
+## 6. HTML Pages (35 total)
 
 ### Home
 
 | File         | Content                                                                                 |
 | ------------ | --------------------------------------------------------------------------------------- |
-| `index.html` | Masthead, lead article, SAC diagram SVG, 5 body section mount points, loader, preloader |
+| `index.html` | Masthead, lead article, SAC diagram SVG, YouTube/Calendar, news ticker, 5 body sections |
 
-### Club Pages (12 individual)
+### Club Pages (15)
 
 | File                   | Club                                 |
 | ---------------------- | ------------------------------------ |
@@ -277,8 +284,32 @@ All paper textures are defined as SVG data URIs in `css/variables.css`:
 | `pages/pixel.html`     | PIXEL — Photography Club             |
 | `pages/academics.html` | SAC Academics                        |
 | `pages/hostel.html`    | SAC Hostel Committee                 |
+| `pages/singularity.html` | Singularity — Astronomy Club           |
+| `pages/slashdot.html`  | Slashdot — Programming Club          |
+| `pages/placement.html` | SAC Placement Cell                   |
 
 Each club page includes: static HTML content, office-bearer tables, event lists, achievements, contact info, social links, and `[data-club-images]` placeholder divs populated dynamically by `club-images.js`.
+
+### Sports Pages (16)
+
+| File                     | Sport                        |
+| ------------------------ | ---------------------------- |
+| `pages/athletics.html`   | Athletics                    |
+| `pages/badminton.html`   | Badminton                    |
+| `pages/basketball.html`  | Basketball                   |
+| `pages/carrom.html`      | Carrom                       |
+| `pages/chess.html`       | Chess                        |
+| `pages/cricket.html`     | Cricket                      |
+| `pages/football.html`    | Football                     |
+| `pages/gaming.html`      | Gaming                       |
+| `pages/gym.html`         | Gym / Fitness                |
+| `pages/kabaddi.html`     | Kabaddi                      |
+| `pages/kho-kho.html`     | Kho-Kho                      |
+| `pages/lawn-tennis.html` | Lawn Tennis                  |
+| `pages/rubik.html`       | Rubik's Cube                 |
+| `pages/sydc.html`        | SYDC — Self-Defence          |
+| `pages/table-tennis.html`| Table Tennis                 |
+| `pages/volleyball.html`  | Volleyball                   |
 
 ### Other Pages
 
@@ -410,13 +441,13 @@ sound source → filter → gain → dryGain ──┐
 
 ## 10. Service Worker (`sw.js`)
 
-- **Cache name**: `sac-v8` (bumped on significant CSS/JS changes)
-- **Install**: `skipWaiting()`, caches 34 static assets (CSS, JS, textures, sub-pages)
+- **Cache name**: `sac-v13` (bumped on significant CSS/JS changes)
+- **Install**: `skipWaiting()`, caches ~90 static assets (CSS, JS, textures, audio, ALL sub-pages incl. sports & academic clubs)
 - **Activate**: `clients.claim()`, deletes old cache versions
 - **Fetch strategy**:
   - Dynamic assets (JSONL): network-first, cache fallback
   - Static assets: stale-while-revalidate (serve from cache, update in background)
-- **Note**: Individual club pages (aarshi.html, arts.html, etc.) are NOT in the static cache list — they must be added if offline support is needed for those pages.
+- **Note**: All club, sports, academic, and placement pages ARE now in the static cache list.
 
 ---
 
@@ -425,8 +456,10 @@ sound source → filter → gain → dryGain ──┐
 ### Features
 
 - **Dark mode**: light / dark / auto (follows OS)
-- **Font presets** (6): Newspaper (Playfair Display), Modern (EB Garamond), Typewriter (Special Elite), Gothic (IM Fell English), Classical (Cormorant), Monospace (IBM Plex Mono)
+- **Font presets** (7): Newspaper (Playfair Display), Modern (EB Garamond), Typewriter (Special Elite), Gothic (IM Fell English), Classical (Cormorant), Monospace (IBM Plex Mono), Old English (display-only)
 - **Paper textures** (8): Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
+- **Text size**: S / M / L (`--fs-scale` 0.85 / 1 / 1.2)
+- **Accessibility**: Reduce motion, Sound effects, Ambient music toggles
 - **Persistence**: localStorage key `sac-site-prefs` (JSON)
 - **FOUC prevention**: `main.js` reads localStorage before rendering
 
@@ -481,15 +514,17 @@ checkout → verify critical paths (index.html, css/, js/, pages/, public/assets
 
 ---
 
-## 15. Test Suite (11 files, 96 tests)
+## 15. Test Suite (13 files, 160 tests)
 
 | Test File                               | Tests | What It Tests                                                                                                         |
 | --------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
 | `test/unit/calligraphy.test.js`         | 6     | `revealText()`, `extractExcerpt()`, `initScrollSounds()` guard                                                        |
 | `test/unit/config.test.js`              | 3     | `NAV_ITEMS` structure, URL formatting                                                                                 |
+| `test/unit/improvements.test.js`        | 56    | Comprehensive regression suite for recent fixes                                                                       |
+| `test/unit/footer.test.js`              | 4     | Footer 4-column render, sports links                                                                                  |
 | `test/unit/css-fixes.test.js`           | 10    | `background-attachment` override, aspect ratio, `backdrop-filter` prefix, `--paper-edge-wear`, `build:pretext` script |
 | `test/unit/data.test.js`                | 6     | `loadAssetsMap()`, `indexByClub()`, `getClub()`, `getClubEntries()`, logo fallbacks                                   |
-| `test/unit/dom.test.js`                 | 9     | `el()`, `clear()`, `pageUrl()`, `isInPagesDir()`, `onReady()`                                                         |
+| `test/unit/dom.test.js`                 | 13    | `el()`, `clear()`, `pageUrl()`, `pageLink()`, `assetUrl()`, `isInPagesDir()`, `onReady()`, `showError()`                                           |
 | `test/unit/home-excerpt.test.js`        | 8     | `extractExcerpt()` with markdown, tables, headings, ALL-CAPS labels                                                   |
 | `test/unit/loader.test.js`              | 25    | `classifyDevice()`, TIMING config, safety timeout, gather unification, splash params                                  |
 | `test/unit/preloader.test.js`           | 6     | Preloader DOM structure, `is-done` class, `preloader-done` event                                                      |
@@ -509,11 +544,11 @@ checkout → verify critical paths (index.html, css/, js/, pages/, public/assets
 
 ## 16. Assets (`public/assets/` Submodule + `assets/` Directory)
 
-### `public/assets/processed/` (Git submodule — 429 entries)
+### `public/assets/processed/` (Git submodule — 1471 entries)
 
-The `assets_map.jsonl` is a newline-delimited JSON file with 429 records:
+The `assets_map.jsonl` is a newline-delimited JSON file with 1471 records:
 
-- 345 WebP images + 84 markdown documents
+- **1471 records** — 1301 images + 170 markdown documents across **31 clubs**
 - 32 fields per record: path, public_url, filename, width, height, orientation, club, club_name, is_logo, is_markdown_content, is_ob_portrait, is_extracted_from_doc, is_event, is_iicm, role, file_type, mime, tenure, year, person, ob_role, tags, title, description, taken_at, venue, competition, alt_text, copyright, credit, parent_path, original_filename
 
 ### Image Roles
@@ -559,18 +594,22 @@ The `assets_map.jsonl` is a newline-delimited JSON file with 429 records:
 | 8   | `--paper-edge-wear` dead — defined only in dark theme                    | Added to `:root` with light colors                                        | `css/variables.css`                      |
 | 9   | Audio system — no reverb, mono, basic envelopes                          | Added ConvolverNode reverb, compressor, ADSR, char-type-aware pen scratch | `js/utils/calligraphy.js`                |
 | 10  | Poster click-fold animation glitch                                       | Removed `.is-folding` click handler; hover-only                           | `js/pages/home.js`, `css/pages/home.css` |
+| 11  | Newspaper theme CSS invalid — stray `}` closed first `:root`, leaving ~40 vars as top-level declarations | Wrapped newspaper tokens in second `:root {}` block                        | `css/variables.css`                      |
+| 12  | Clubs/events search "no results" appended to detached mount (post-`replaceWith`) — never visible | Query live node `getElementById(...)` before `appendChild`                 | `js/pages/clubs.js`, `js/pages/events.js` |
+| 13  | Dark-mode auto-switch highlighted texture with `.is-active` but CSS uses `.is-selected` | Unified on `.is-selected`                                                  | `js/components/settings.js`              |
 
 ---
 
 ## 18. Known Limitations
 
 1. **No DPR handling for raster textures**: `natural-paper.png`, `newspaper-bg.jpg`, `old-paper.jpg` lack @2x variants — blurry on retina displays. Fix requires generating @2x images and using `image-set()` in CSS.
-2. **Individual club pages not in SW cache**: The Service Worker cache list (`sw.js:12-68`) doesn't include the 12 individual club pages (aarshi.html through hostel.html). Offline navigation to club pages won't work.
-3. **Submodule SSH URLs**: Both submodules use SSH URLs which fail in CI environments without SSH keys. CI works because checkout uses `GITHUB_TOKEN` credentials. Local clone requires SSH setup.
-4. **Pretext tests mock the library**: `text-measure.test.js` mocks `prepare`/`layout`. The real integration test (`pretext-integration.test.js`) provides coverage but requires jsdom canvas mock.
-5. **No E2E test suite**: `test/e2e/` directory exists but is empty. Playwright MCP is used for manual verification.
-6. **Pretext bundle is oversized**: Only `prepare()` and `layout()` are used, but the entire library (7 files, 4k+ lines) is shipped including unused rich-inline, bidi, and line-text machinery.
-
+2. **Submodule SSH URLs**: Both submodules use SSH URLs which fail in CI environments without SSH keys. CI works because checkout uses `GITHUB_TOKEN` credentials. Local clone requires SSH setup.
+3. **Pretext tests mock the library**: `text-measure.test.js` mocks `prepare`/`layout`. The real integration test (`pretext-integration.test.js`) provides coverage but requires jsdom canvas mock.
+4. **No E2E test suite**: `test/e2e/` directory exists but is empty. Playwright MCP is used for manual verification (MCP server configured in Cline via `cline_mcp_settings.json` — `--headless --browser chromium` on Arch where bundled Playwright Chromium is used).
+5. **Pretext bundle is oversized**: Only `prepare()` and `layout()` are used, but the entire library (7 files, 4k+ lines) is shipped including unused rich-inline, bidi, and line-text machinery.
+6. **Home page loads `js/loader.js` twice**: via `<script type="module">` tag and via `main.js` import. A module-scope guard prevents re-init, but the duplicate tag is redundant.
+7. **API keys committed**: YouTube/Calendar API keys live in `js/config.js` (referrer-restricted at Google Cloud). They are visible in source but useless off-domain — acceptable for a static site.
+8. **Stray drive-download zips at repo root**: `drive-download-*.zip` files are untracked and gitignored; safe to delete.
 ---
 
 ## 19. Local Development
@@ -619,10 +658,10 @@ git push origin main
 - **URL**: `https://shuvam-banerji-seal.github.io/SAC_Website/`
 - **Trigger**: Push to `main` branch → GitHub Actions → Deploy
 - **CDN propagation**: ~60-90s after deploy completes
-- **Cache**: Service Worker caches at `sac-v8`; clients need hard refresh to pick up new SW
+- **Cache**: Service Worker caches at `sac-v13`; clients need hard refresh to pick up new SW
 - **No build step**: The site is pure static — what you see in the repo is what's served
 
 ---
 
-_Generated by deep audit of the repository. Last updated: June 2026._
+_Generated by deep audit of the repository. Last updated: 2 August 2026._
 _Repository: https://github.com/Shuvam-Banerji-Seal/SAC_Website_

@@ -109,13 +109,16 @@ export async function initClubs() {
         if (!q || visibleCount > 0) {
           if (noResults) noResults.remove();
         } else if (!noResults) {
-          mount.appendChild(
-            el(
-              "p",
-              { class: "clubs-no-results muted", role: "status" },
-              "No clubs match that search."
-            )
-          );
+          // mount was replaced via replaceWith() earlier — query the live node
+          document
+            .getElementById("clubs-grid")
+            ?.appendChild(
+              el(
+                "p",
+                { class: "clubs-no-results muted", role: "status" },
+                "No clubs match that search."
+              )
+            );
         }
       });
     }

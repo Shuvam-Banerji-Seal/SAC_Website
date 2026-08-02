@@ -129,13 +129,16 @@ export async function initEvents() {
         if (!q || visibleCount > 0) {
           if (noResults) noResults.remove();
         } else if (!noResults) {
-          mount.appendChild(
-            el(
-              "p",
-              { class: "clubs-no-results events-no-results", role: "status" },
-              "No events match that search."
-            )
-          );
+          // mount was replaced via replaceWith() earlier — query the live node
+          document
+            .getElementById("events-list")
+            ?.appendChild(
+              el(
+                "p",
+                { class: "clubs-no-results events-no-results", role: "status" },
+                "No events match that search."
+              )
+            );
         }
       });
     }
