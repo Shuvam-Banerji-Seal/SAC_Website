@@ -114,6 +114,23 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+          # The site is 100% static — only ship what Pages actually serves.
+          # Excluding these keeps the artifact well under the 1 GB limit
+          # (the repo's .git + node_modules + assets submodule history alone
+          # are ~6.5 GB). public/assets/ (the submodule working tree) IS
+          # required — it holds the processed images + assets_map.jsonl.
+          exclude: |
+            .git
+            **/.git
+            node_modules
+            utils
+            test
+            docs
+            diagrams
+            .playwright-mcp
+            drive-download-*.zip
+            AGENTS.md
+            package-lock.json
 
       - name: Deploy to GitHub Pages
         id: deployment

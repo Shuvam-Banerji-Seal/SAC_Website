@@ -29,6 +29,12 @@ let pendingPlay = false;
 
 function onFirstGesture() {
   gestureUnlocked = true;
+  // Wire the audio element into the AudioContext ONLY on the first user
+  // gesture. Browsers block AudioContext creation before a gesture and
+  // log "An AudioContext was prevented from starting automatically"
+  // otherwise. The <audio> element itself is created eagerly (it's not
+  // restricted), but the context + MediaElementSource routing must wait.
+  ensureContextWired();
   if (pendingPlay && enabled && audioEl) {
     audioEl.play().catch(noop);
   }
@@ -103,37 +109,53 @@ export function initAmbientMusic() {
   const prefs = readPrefs();
   enabled = prefs.ambient !== false;
 
-  // Route through AudioContext → gain → destination for volume ducking
+  // AudioContext routing is deferred to the first user gesture —
+  // see ensureContextWired(). Creating the context here (page load)
+  // triggers a browser autoplay-policy warning.
+  if (gestureUnlocked) ensureContextWired();
+
+  // Handle load errors gracefully
+  audioEl.addEventListener(
+    "error",
+    function () {
+      audioEl = null;
+      mediaSource = null;
+      gainNode = null;
+    },
+    { once: true }
+  );
+}
+
+/**
+ * Create the shared AudioContext and wire the <audio> element into it
+ * via MediaElementSource → gain → destination for volume ducking.
+ * Must only run after a user gesture (browser autoplay policy).
+ */
+function ensureContextWired() {
+  if (!audioEl || mediaSource) return;
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) {
-      // Reuse the existing context from calligraphy.js if available,
-      // otherwise create a minimal standalone one.
-      // Note: we can't directly access calligraphy's audioCtx (module-scoped),
-      // so we access it via the global if set, or create our own.
-      const ctx = window.__sacAudioCtx || new AC();
+    if (!AC) return;
+    // Reuse the existing context from calligraphy.js if available,
+    // otherwise create a minimal standalone one.
+    // Note: we can't directly access calligraphy's audioCtx (module-scoped),
+    // so we access it via the global if set, or create our own.
+    const ctx = window.__sacAudioCtx || new AC();
+    if (ctx.state === "suspended") ctx.resume().catch(noop);
 
-      gainNode = ctx.createGain();
-      gainNode.gain.value = DEFAULT_VOLUME;
+    gainNode = ctx.createGain();
+    gainNode.gain.value = DEFAULT_VOLUME;
 
-      mediaSource = ctx.createMediaElementSource(audioEl);
-      mediaSource.connect(gainNode);
-      gainNode.connect(ctx.destination);
+    mediaSource = ctx.createMediaElementSource(audioEl);
+    mediaSource.connect(gainNode);
+    gainNode.connect(ctx.destination);
 
-      // Expose the context so calligraphy.js can reuse it if needed
-      if (!window.__sacAudioCtx) {
-        window.__sacAudioCtx = ctx;
-      }
+    // Expose the context so calligraphy.js can reuse it if needed
+    if (!window.__sacAudioCtx) {
+      window.__sacAudioCtx = ctx;
     }
   } catch {
     // If AudioContext routing fails, the audio element still works
     // standalone (just without gain control through the chain).
   }
-
-  // Handle load errors gracefully
-  audioEl.addEventListener("error", function () {
-    audioEl = null;
-    mediaSource = null;
-    gainNode = null;
-  }, { once: true });
 }
