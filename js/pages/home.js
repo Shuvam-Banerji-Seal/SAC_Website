@@ -27,11 +27,12 @@
  *      body section as it scrolls into view — that's the
  *      "paper-folding" reveal (CSS in pages/home.css).
  */
-import { el, clear, pageUrl, assetUrl, showError } from "../utils/dom.js";
+import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { revealText, initScrollSounds, playPageTurn } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
+import { measureText } from "../utils/text-measure.js";
 
 /* -------------------------------------------------------------------------
  * Club slug → individual page URL mapping
@@ -135,7 +136,7 @@ const HOMEPAGE_HIDDEN_SLUGS = new Set(["SAC_Academics"]);
  *
  * The JSONL carries clubs grouped by their SAC body. Today we have:
  *   - SAC Academics, SAC Hostel Committee → academics, hostel
- *   - 10 cultural clubs → cultural
+ *   - cultural clubs → cultural
  *   - Sports clubs → sports (empty today, ready for when data arrives)
  *   - SAC Council (General Secretary, etc.) → council
  *
@@ -318,28 +319,6 @@ function renderPaperCard(club) {
     el("span", { class: "paper-card__cta" }, "Read More \u2192")
   );
 
-  // Override the Placement Cell logo with the local SVG. The Placement
-  // Cell has no images in the assets pipeline (it's a committee, not a
-  // cultural club), so pickLogo() returns null and the card would
-  // otherwise fall back to a letter placeholder. The branded mark
-  // lives at assets/logos/placement.svg in the main repo.
-  if (club.slug === "Placement_Cell") {
-    const logoWrap = card.querySelector(".paper-card__logo");
-    if (logoWrap) {
-      clear(logoWrap);
-      logoWrap.appendChild(
-        el("img", {
-          src: assetUrl("assets/logos/placement.svg"),
-          alt: "SAC Placement Cell logo",
-          loading: "lazy",
-          decoding: "async",
-          width: 88,
-          height: 88,
-        })
-      );
-    }
-  }
-
   // Navigation is handled by the native <a href> — no custom click handler.
   // The fold animation was removed because it caused transform interpolation
   // glitches between the hover and folding states.
@@ -455,9 +434,16 @@ export async function adjustLeadLayout() {
   const text = body.innerText;
   if (!text) return;
 
-  // Lightweight heuristic (no canvas/pretext): short lead copy reads
-  // better as a single column. ~3 lines of 2-column text ≈ 600 chars.
-  if (text.length < 600) {
+  const computed = getComputedStyle(body);
+  const lineHeight = Number.parseFloat(computed.lineHeight) || 24;
+  const fontSize = Number.parseFloat(computed.fontSize) || 16;
+  const maxWidth = Math.max(280, body.clientWidth / 2 - 16);
+  const metrics = measureText(text, `${fontSize}px ${computed.fontFamily}`, maxWidth, lineHeight);
+
+  // Pretext gives us a stable estimate before changing the column count. A
+  // short record stays single-column; longer copy earns a real broadsheet
+  // spread without leaving a nearly empty second column.
+  if (metrics.lineCount < 8 || metrics.height < lineHeight * 7) {
     body.style.columnCount = "1";
   } else {
     body.style.columnCount = "";
@@ -575,6 +561,16 @@ async function loadYouTubeSection() {
 
   videos.forEach((v) => {
     const rot = ((Math.random() - 0.5) * 2.5).toFixed(1); // -1.25° to 1.25°
+    const title = v.title?.trim() || "SAC video archive";
+    const published = v.publishedAt ? new Date(v.publishedAt) : null;
+    const publishedLabel =
+      published && !Number.isNaN(published.getTime())
+        ? published.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "SAC archive";
     const handNotes = [
       "pressed play while the campus hummed outside",
       "the reel jumped to life — grainy, alive",
@@ -592,10 +588,10 @@ async function loadYouTubeSection() {
       // Video iframe
       el(
         "div",
-        { class: "notebook-card__frame" },
+        { class: "notebook-card__media" },
         el("iframe", {
           src: `https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1`,
-          title: v.title,
+          title,
           // No `allow` attribute: the embed needs no special permissions, and
           // Firefox logs "Feature Policy: Skipping unsupported feature name"
           // for ANY allow list (even standard features) on user-hostile embeds.
@@ -605,7 +601,7 @@ async function loadYouTubeSection() {
         })
       ),
       // Handwritten caption
-      el("p", { class: "notebook-card__caption" }, `" ${v.title} "`),
+      el("p", { class: "notebook-card__caption", title }, `“ ${title} ”`),
       // Handwritten note
       el(
         "p",
@@ -616,11 +612,7 @@ async function loadYouTubeSection() {
       el(
         "p",
         { class: "notebook-card__meta" },
-        new Date(v.publishedAt).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }),
+        publishedLabel,
         " · ",
         el("a", { href: v.url, target: "_blank", rel: "noopener" }, "watch on YouTube →")
       )
@@ -649,13 +641,20 @@ async function loadCalendarSection() {
           "div",
           { class: "pinned-card__body" },
           el("span", { class: "pinned-card__date" }, ev.dateLabel),
-          el("p", { class: "pinned-card__title" }, ev.title),
+          el("p", { class: "pinned-card__title", title: ev.title }, ev.title),
           ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
           ev.description
             ? el(
                 "p",
                 { class: "pinned-card__meta", style: "margin-top:var(--space-1)" },
-                ev.description.slice(0, 120)
+                ev.description.slice(0, 180) + (ev.description.length > 180 ? "…" : "")
+              )
+            : null,
+          ev.link
+            ? el(
+                "a",
+                { class: "pinned-card__link", href: ev.link, target: "_blank", rel: "noopener" },
+                "Open event →"
               )
             : null
         )

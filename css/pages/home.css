@@ -271,7 +271,21 @@
   font-family: var(--font-display);
   font-size: var(--fs-md);
   line-height: 1;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
+}
+.pinned-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.notebook-card__caption {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin-bottom: 0.55rem;
+  overflow: hidden;
 }
 .pinned-card__meta,
 .pinned-card__date,
@@ -288,10 +302,28 @@
   font-size: var(--fs-sm);
 }
 .pinned-card iframe,
-.notebook-card__frame iframe {
+.notebook-card__media {
   aspect-ratio: 16 / 9;
-  border: 1px solid var(--rule);
+  min-width: 0;
+  overflow: hidden;
   width: 100%;
+}
+.pinned-card iframe,
+.notebook-card__media iframe {
+  border: 1px solid var(--rule);
+  height: 100%;
+  width: 100%;
+}
+.notebook-card__media {
+  background: var(--paper-deep);
+  margin-bottom: 0.8rem;
+}
+.pinned-card__link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  margin-top: 0.6rem;
+  text-transform: uppercase;
 }
 .notebook-card__tape {
   background: rgba(183, 141, 47, 0.45);
@@ -324,6 +356,10 @@
   }
   .body-banner__ornament {
     margin-top: 0.4rem;
+  }
+  .pinned-grid,
+  .notebook-grid {
+    grid-template-columns: 1fr;
   }
 }
 

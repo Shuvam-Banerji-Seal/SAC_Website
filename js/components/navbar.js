@@ -39,8 +39,9 @@ export function renderNavbar(activePage) {
       {
         class: "sidebar__link" + (item.id === activePage ? " is-active" : ""),
         href: pageUrl(item.href),
+        "aria-label": item.label,
       },
-      item.label
+      el("span", { class: "sidebar__link-label" }, item.label)
     );
     if (item.id === activePage) link.setAttribute("aria-current", "page");
     nav.appendChild(link);
@@ -54,6 +55,12 @@ export function renderNavbar(activePage) {
   );
 
   mount.append(brand, nav, foot);
+
+  const toggle = document.getElementById("navbarCorner");
+  if (toggle) {
+    toggle.setAttribute("aria-label", "Collapse navigation");
+    toggle.setAttribute("title", "Collapse navigation");
+  }
 
   // Scrim for mobile (added once)
   if (!document.querySelector(".sidebar-scrim")) {

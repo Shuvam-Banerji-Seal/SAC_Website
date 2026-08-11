@@ -129,6 +129,37 @@
   padding: 0.4rem;
   text-align: left;
 }
+.texture-option {
+  align-items: center;
+  display: flex;
+  gap: 0.45rem;
+}
+.texture-option::before {
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
+  content: "";
+  display: block;
+  flex: 0 0 1.3rem;
+  height: 1.3rem;
+}
+.texture-option[data-texture="natural"]::before {
+  background: #eee7d9;
+}
+.texture-option[data-texture="fibers"]::before {
+  background: repeating-linear-gradient(135deg, #eee8dc 0 2px, #d7cdbd 2px 3px);
+}
+.texture-option[data-texture="rice"]::before {
+  background: #f4ecd7;
+}
+.texture-option[data-texture="linen"]::before {
+  background: repeating-linear-gradient(0deg, #ded5c8 0 2px, #c8beb1 2px 3px);
+}
+.texture-option[data-texture="groove"]::before {
+  background: repeating-linear-gradient(90deg, #e2d5ba 0 3px, #c3ae88 3px 4px);
+}
+.texture-option[data-texture="wall"]::before {
+  background: #cfc4ae;
+}
 .font-option.is-selected,
 .texture-option.is-selected {
   border-color: var(--accent);

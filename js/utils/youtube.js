@@ -27,16 +27,20 @@ export async function fetchLatestVideos() {
     if (!playlistRes.ok) throw new Error(`YouTube playlist API: ${playlistRes.status}`);
     const playlistData = await playlistRes.json();
 
-    return (playlistData?.items || []).map((item) => {
-      const s = item.snippet;
-      return {
-        title: s.title,
-        url: `https://www.youtube.com/watch?v=${s.resourceId.videoId}`,
-        videoId: s.resourceId.videoId,
-        thumbnail: s.thumbnails?.medium?.url || s.thumbnails?.default?.url || "",
-        publishedAt: s.publishedAt,
-      };
-    });
+    return (playlistData?.items || [])
+      .map((item) => {
+        const s = item.snippet;
+        const videoId = s?.resourceId?.videoId;
+        if (!videoId) return null;
+        return {
+          title: String(s.title || "SAC video archive").trim(),
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          videoId,
+          thumbnail: s.thumbnails?.medium?.url || s.thumbnails?.default?.url || "",
+          publishedAt: s.publishedAt,
+        };
+      })
+      .filter(Boolean);
   } catch (err) {
     console.warn("[youtube] Failed to fetch videos:", err);
     return [];

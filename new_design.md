@@ -12,7 +12,7 @@ This redesign adapts the editorial structure of [The Daily Prophet CSS Grid exam
 
 ## Page composition
 
-The shared shell is a fixed 218px index rail on desktop and an off-canvas rail below 1024px. The home page is the main edition:
+The shared shell is a fixed 218px index rail on desktop and an off-canvas rail below 1024px. The rail can collapse to a compact index on desktop and remembers that choice. The home page is the main edition:
 
 1. Masthead between double horizontal rules — volume, edition date, title, and tagline.
 2. Lead article — a large condensed headline, italic deck, byline, drop cap, and justified two-column copy.
@@ -33,11 +33,11 @@ Individual club pages retain their detailed content but are now set as editorial
 - Body: local serif stack (`Georgia`, `Times New Roman`, `Charter`)
 - Utility: local monospace stack for labels, dates, and metadata
 
-Theme, text size, reduced motion, sound, and the existing seven local font presets/eight texture labels are persisted under `sac-site-prefs`. The presets are CSS-only; none loads a remote font. The settings panel is a right side-sheet so it does not compete with the newspaper column system.
+Theme, text size, reduced motion, paper-ruffle sounds, calm ambient reading audio, seven local font presets, and fourteen texture choices are persisted under `sac-site-prefs`. The presets are CSS-only; none loads a remote font. The settings panel is a right side-sheet so it does not compete with the newspaper column system.
 
 ## Navigation
 
-`js/components/navbar.js` renders the five primary links into the existing `#navbar` mount on every page. The current page gets an accent-red rule and `aria-current="page"`. Desktop keeps the rail visible. Mobile uses `#navbarCorner`, a transform-only drawer, a scrim, and Escape-to-close behavior.
+`js/components/navbar.js` renders the five primary links into the existing `#navbar` mount on every page. The current page gets an accent-red rule and `aria-current="page"`. Desktop keeps the rail visible while allowing a compact collapsed mode. Mobile uses `#navbarCorner`, a transform-only drawer, a scrim, and Escape-to-close behavior.
 
 ## Paper entrance
 
@@ -52,11 +52,14 @@ The loader uses only `transform`, `opacity`, a small `clip-path`, and CSS timing
 
 ## Performance decisions
 
-- No Three.js, WebGL, CDN import map, Google Fonts, canvas text measurement, or SVG turbulence in the critical path.
+- No Three.js, WebGL, CDN import map, Google Fonts, or SVG turbulence in the critical path. The vendored `pretext` library is used only where a real text-flow measurement is useful for image captions and editorial columns.
 - Images remain lazy and are still loaded from the canonical processed asset map.
+- Individual club identity, logos, dimensions, roles, captions, and media groups are hydrated from the 1,471-entry `assets_map.jsonl`; the intrinsic dimensions are preserved instead of forcing a crop.
+- `pretext` supplies stable text-flow estimates for editorial columns and media captions before layout changes.
 - YouTube and Calendar remain opt-in asynchronous sections.
+- Paper ruffles are synthesized with a few short filtered noise layers; calm reading ambience is a separately gated local audio track.
 - Paper grain is a repeating gradient; touch devices switch fixed backgrounds to scroll to avoid mobile compositor work.
-- The service-worker cache is bumped to `sac-v16` so deployed clients receive the new shell.
+- The service-worker cache is bumped to `sac-v17` so deployed clients receive the new shell.
 
 ## Accessibility and fallback
 

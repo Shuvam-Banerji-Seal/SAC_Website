@@ -1,8 +1,8 @@
 /**
  * data.js — loads and indexes the canonical assets_map.jsonl.
  *
- * The map is the single source of truth for the website: 429 entries
- * (345 WebP images + 84 markdown docs) with website-grade metadata
+ * The map is the single source of truth for the website: 1471 entries
+ * (1301 WebP images + 170 markdown docs) with website-grade metadata
  * (paths, dimensions, orientation, role, tenure, year, person, ob_role,
  * MIME, tags, public URL).
  *
@@ -28,7 +28,7 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
 
 let cachePromise = null;
 // Bump this when assets change to invalidate stale sessionStorage cache
-const CACHE_VERSION = "sac-v15";
+const CACHE_VERSION = "sac-v17";
 
 function fetchJsonl() {
   if (!cachePromise) {
@@ -51,9 +51,7 @@ function fetchJsonl() {
     cachePromise = fetch(JSONL_URL, { cache: "no-cache" })
       .then((res) => {
         if (!res.ok) {
-          throw new Error(
-            `assets_map.jsonl: HTTP ${res.status} ${res.statusText}`,
-          );
+          throw new Error(`assets_map.jsonl: HTTP ${res.status} ${res.statusText}`);
         }
         return res.text();
       })
@@ -95,6 +93,7 @@ export function loadAssetsMap() {
  * ------------------------------------------------------------------------- */
 
 const LOGO_PATH_RE = /(logo|crest|seal|brand|mark)/i;
+const LOGO_CONTEXT_RE = /(club[_ -]?details?|about|identity|emblem)/i;
 
 function pickLogo(images) {
   // 1. Canonical: the JSONL explicitly marks this entry as a logo
@@ -103,11 +102,24 @@ function pickLogo(images) {
   }
   // 2. Image extracted from a document with "logo" in its filename
   for (const e of images) {
-    if (e.is_extracted_from_doc && LOGO_PATH_RE.test(e.filename)) return e;
+    const context = [e.filename, e.path, e.title, e.category_label, e.description]
+      .filter(Boolean)
+      .join(" ");
+    if (e.is_extracted_from_doc && LOGO_PATH_RE.test(context)) return e;
   }
   // 3. Any image with logo/crest/seal/brand/mark anywhere in its path
   for (const e of images) {
-    if (LOGO_PATH_RE.test(e.path)) return e;
+    const context = [e.filename, e.path, e.title, e.category_label, e.description]
+      .filter(Boolean)
+      .join(" ");
+    if (LOGO_PATH_RE.test(context)) return e;
+  }
+  // 4. Several sports maps contain a club mark under Club_Details but the
+  // asset extractor cannot know it is a logo. Prefer that explicit folder
+  // over a random event photograph.
+  for (const e of images) {
+    const context = [e.path, e.category, e.category_label, e.role].filter(Boolean).join(" ");
+    if (LOGO_CONTEXT_RE.test(context) && !e.is_ob_portrait) return e;
   }
   return null;
 }
@@ -140,9 +152,7 @@ export function indexByClub(assets) {
   }
   // One pass over each club's images to pick the best logo candidate
   for (const c of byClub.values()) {
-    const clubImages = assets.filter(
-      (a) => a.club === c.slug && a.file_type === "image",
-    );
+    const clubImages = assets.filter((a) => a.club === c.slug && a.file_type === "image");
     c.logo = pickLogo(clubImages);
   }
   return Array.from(byClub.values()).sort((a, b) => a.name.localeCompare(b.name));

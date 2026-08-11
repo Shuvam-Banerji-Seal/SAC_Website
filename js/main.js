@@ -19,9 +19,11 @@ import { initViewer } from "./components/viewer.js";
 import { initHome } from "./pages/home.js";
 import { initClubs } from "./pages/clubs.js";
 import { initClubImages } from "./pages/club-images.js";
+import { initClubPage } from "./pages/club-page.js";
 import { initEvents } from "./pages/events.js";
 import { initGallery } from "./pages/gallery.js";
 import { initLoader } from "./loader.js";
+import { initAmbientMusic } from "./utils/music.js";
 
 const initializers = {
   home: initHome,
@@ -30,7 +32,7 @@ const initializers = {
   gallery: initGallery,
 };
 
-onReady(() => {
+onReady(async () => {
   const page = document.body.dataset.page || "home";
 
   // Every page gets the same small letterpress entrance, not only the home
@@ -49,6 +51,7 @@ onReady(() => {
   renderFooter();
   setupNavbarFold();
   initSettings();
+  initAmbientMusic();
   initViewer();
   initializers[page]?.();
 
@@ -66,7 +69,7 @@ onReady(() => {
 
   // Individual club pages (data-club-slug) — load images from JSONL
   if (document.body.dataset.clubSlug) {
-    initClubImages();
+    await Promise.all([initClubPage(), initClubImages()]);
   }
 
   // Register Service Worker for asset caching (production only).

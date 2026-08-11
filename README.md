@@ -21,9 +21,9 @@ runtime to render club pages, event timelines, and the gallery.
 - **CSS paper loader** — club sheets stack, settle, and tear apart without WebGL or canvas
 - **Notice board effects** — nail/pin decorations, crooked cards, postmark stamps
 - **Calligraphy text reveal** — headline appears as if being written, letter by letter
-- **Sound effects** — paper scratching on scroll, printing press sounds (Web Audio API)
-- **8 paper presets** — Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
-- **6 font presets** — Newspaper, Modern, Typewriter, Gothic, Classical, Monospace
+- **Sound modes** — layered paper ruffles plus an optional local calm-reading ambience
+- **14 paper presets** — eight colour treatments plus Natural, Fibers, Rice, Linen, Groove, and Old Wall scans
+- **7 font presets** — Newspaper, Modern, Typewriter, Gothic, Classical, Monospace, Old English
 - **Dark mode** — consistent across all pages, respects `prefers-color-scheme`
 - **System typography** — no Google Fonts or runtime font downloads
 - **Service Worker** — stale-while-revalidate caching for fast subsequent loads
@@ -43,7 +43,7 @@ SAC_Website/
 ├── css/
 │   ├── preloader.css       ← pre-loader progress bar
 │   ├── reset.css           ← minimal modern reset
-│   ├── variables.css       ← theme tokens + 8 texture presets + dark mode
+│   ├── variables.css       ← theme tokens + 14 texture presets + dark mode
 │   ├── main.css            ← base layout, typography, entrance animations
 │   ├── components.css      ← navbar, club-card, thumb, footer, stat-grid
 │   ├── settings.css        ← settings panel (dark mode, font, texture)
@@ -51,7 +51,7 @@ SAC_Website/
 │   ├── loader.css          ← newspaper ink loader animation
 │   └── pages/              ← per-page stylesheets
 ├── js/
-│   ├── preloader.js        ← asset pre-fetcher (plain script, no ES module)
+│   ├── preloader.js        ← first-paint guard (plain script, no ES module)
 │   ├── main.js             ← entry: renders nav + footer, dispatches by page
 │   ├── config.js           ← site title, NAV_ITEMS
 │   ├── data.js             ← loads + indexes assets_map.jsonl
@@ -61,10 +61,12 @@ SAC_Website/
 │   │   ├── navbar.js
 │   │   ├── navbar-fold.js
 │   │   ├── footer.js
-│   │   ├── settings.js     ← dark mode, font, texture picker
+│   │   ├── settings.js     ← theme, font, texture, sound controls
 │   │   └── viewer.js       ← image lightbox
 │   ├── pages/
 │   │   ├── home.js         ← landing page with calligraphy + paper fold
+│   │   ├── club-page.js    ← map-backed club identity, logo, and title
+│   │   ├── club-images.js  ← map-backed responsive media grids
 │   │   ├── clubs.js
 │   │   ├── club.js         ← individual club template
 │   │   ├── events.js
@@ -189,7 +191,7 @@ The website organizes clubs into 5 SAC bodies:
 | Academics | Section I   | Academic initiatives, placement cell, talks            |
 | Hostel    | Section II  | Hostel committee, residence life, welfare              |
 | Sports    | Section III | Sports clubs (cricket, football, etc.) — data arriving |
-| Cultural  | Section IV  | 10 cultural clubs (drama, music, dance, film, etc.)    |
+| Cultural  | Section IV  | Cultural clubs (drama, music, dance, film, etc.)          |
 
 ## Texture Presets
 

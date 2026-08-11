@@ -81,8 +81,12 @@ export function setAmbientEnabled(value) {
   if (!audioEl) return;
 
   if (enabled && gestureUnlocked) {
+    audioEl.load();
     audioEl.play().catch(noop);
+  } else if (enabled) {
+    pendingPlay = true;
   } else {
+    pendingPlay = false;
     audioEl.pause();
   }
 }
@@ -98,7 +102,7 @@ export function initAmbientMusic() {
   try {
     audioEl = new Audio();
     audioEl.loop = true;
-    audioEl.preload = "auto";
+    audioEl.preload = "none";
     audioEl.src = AUDIO_SRC;
   } catch {
     /* audio element creation failed — fail silently */
@@ -108,6 +112,7 @@ export function initAmbientMusic() {
   // Load saved preference (default: enabled)
   const prefs = readPrefs();
   enabled = prefs.ambient !== false;
+  pendingPlay = enabled && !gestureUnlocked;
 
   // AudioContext routing is deferred to the first user gesture —
   // see ensureContextWired(). Creating the context here (page load)

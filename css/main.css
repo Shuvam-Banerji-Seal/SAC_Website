@@ -12,13 +12,15 @@ body {
   font-family: var(--font-body);
   font-size: calc(var(--fs-base) * var(--fs-scale));
   line-height: 1.55;
-  background-image: var(--paper-edge-wear), var(--paper-stains), var(--paper-grain);
+  background-image:
+    var(--paper-edge-wear), var(--paper-stains), var(--paper-texture-image), var(--paper-grain);
   background-size:
     100% 100%,
     100% 100%,
+    100% 100%,
     320px 320px;
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-attachment: fixed, fixed, fixed;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  background-attachment: fixed, fixed, fixed, fixed;
 }
 
 main {
@@ -33,6 +35,10 @@ main {
     width: min(calc(100% - var(--sidebar-w) - 4rem), var(--max-w));
     margin-left: calc(var(--sidebar-w) + 2rem);
     margin-right: 2rem;
+  }
+  body.sidebar-collapsed main {
+    width: min(calc(100% - var(--sidebar-collapsed-w) - 4rem), var(--max-w));
+    margin-left: calc(var(--sidebar-collapsed-w) + 2rem);
   }
 }
 
@@ -192,8 +198,11 @@ body:not([data-page="home"]) main > * {
     background-attachment: scroll;
   }
   body[data-page="home"] {
-    background-image: var(--paper-grain);
-    background-size: 320px auto;
+    background-image: var(--paper-texture-image), var(--paper-grain);
+    background-size:
+      cover,
+      320px auto;
+    background-repeat: no-repeat, repeat;
   }
 }
 

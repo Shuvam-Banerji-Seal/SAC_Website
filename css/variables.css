@@ -15,6 +15,7 @@
   --paper-stains:
     radial-gradient(circle at 12% 18%, rgba(126, 9, 9, 0.04), transparent 28%),
     radial-gradient(circle at 84% 76%, rgba(77, 50, 20, 0.05), transparent 30%);
+  --paper-texture-image: none;
 
   --ink: #181410;
   --ink-soft: #42392e;
@@ -50,6 +51,7 @@
   --fs-4xl: calc(4.8rem * var(--fs-scale));
 
   --sidebar-w: 218px;
+  --sidebar-collapsed-w: 68px;
   --max-w: 1240px;
   --max-w-content: var(--max-w);
   --space-1: 0.25rem;
@@ -121,6 +123,27 @@
   --paper: #d6d7d0;
   --paper-soft: #e8e9e2;
   --paper-deep: #bec1b8;
+}
+
+/* Optional local paper scans. They are selected lazily by the settings
+   panel, so the default page still starts with gradients only. */
+[data-texture="natural"] {
+  --paper-texture-image: url("../assets/natural-paper.png");
+}
+[data-texture="fibers"] {
+  --paper-texture-image: url("../assets/paper-fibers.png");
+}
+[data-texture="rice"] {
+  --paper-texture-image: url("../assets/rice-paper.png");
+}
+[data-texture="linen"] {
+  --paper-texture-image: url("../assets/stressed-linen.png");
+}
+[data-texture="groove"] {
+  --paper-texture-image: url("../assets/groovepaper.png");
+}
+[data-texture="wall"] {
+  --paper-texture-image: url("../assets/old-wall.png");
 }
 
 [data-reduce-motion] *,

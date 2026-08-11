@@ -2,6 +2,7 @@
    choices are local system stacks; choosing one never downloads a font. */
 import { $ } from "../utils/dom.js";
 import { setSoundEnabled } from "../utils/calligraphy.js";
+import { setAmbientEnabled } from "../utils/music.js";
 
 function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
@@ -65,6 +66,12 @@ export const TEXTURES = {
   kraft: { label: "Kraft" },
   parchment: { label: "Parchment" },
   slate: { label: "Slate" },
+  natural: { label: "Natural paper" },
+  fibers: { label: "Paper fibers" },
+  rice: { label: "Rice paper" },
+  linen: { label: "Stressed linen" },
+  groove: { label: "Groove paper" },
+  wall: { label: "Old wall" },
 };
 
 export function loadPrefs() {
@@ -119,6 +126,10 @@ export function applySound(prefs) {
   setSoundEnabled(prefs.sound === true);
 }
 
+export function applyAmbient(prefs) {
+  setAmbientEnabled(prefs.ambient === true);
+}
+
 export function applyPrefs(prefs) {
   applyTheme(prefs);
   applyFont(prefs);
@@ -126,6 +137,7 @@ export function applyPrefs(prefs) {
   applyTexture(prefs);
   applyReduceMotion(prefs);
   applySound(prefs);
+  applyAmbient(prefs);
 }
 
 function optionButton(className, value, label, selected) {
@@ -306,8 +318,12 @@ export function initSettings() {
         prefs.reduceMotion = value;
         persist();
       }),
-      toggle("settings-sound", "Sound effects", !!prefs.sound, (value) => {
+      toggle("settings-sound", "Paper ruffling sounds", !!prefs.sound, (value) => {
         prefs.sound = value;
+        persist();
+      }),
+      toggle("settings-ambient", "Calm reading ambience", !!prefs.ambient, (value) => {
+        prefs.ambient = value;
         persist();
       })
     )

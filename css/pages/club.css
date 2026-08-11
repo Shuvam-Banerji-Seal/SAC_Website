@@ -1,15 +1,118 @@
 .club-detail {
-  max-width: 980px;
+  max-width: 1060px;
 }
+
 .club-detail__header {
   border-bottom: var(--rule-double);
   margin-bottom: 1.5rem;
   padding-bottom: 0.8rem;
 }
-.club-detail__title {
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
-  max-width: 14ch;
+
+.club-detail__identity {
+  align-items: center;
+  display: grid;
+  gap: clamp(1rem, 4vw, 2.5rem);
+  grid-template-columns: minmax(112px, 180px) minmax(0, 1fr);
 }
+
+.club-detail__logo {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  display: flex;
+  justify-content: center;
+  min-height: 140px;
+  padding: 0.65rem;
+  position: relative;
+}
+
+.club-detail__logo::after {
+  border: 1px solid var(--accent);
+  content: "";
+  inset: 0.35rem;
+  pointer-events: none;
+  position: absolute;
+}
+
+.club-detail__logo img {
+  height: auto;
+  max-height: 150px;
+  max-width: 100%;
+  object-fit: contain;
+  position: relative;
+  width: auto;
+  z-index: 1;
+}
+
+.club-detail__logo-fallback {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7vw, 4rem);
+  line-height: 0.9;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.club-detail__logo-fallback small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  margin-top: 0.45rem;
+}
+
+.club-detail__identity-copy {
+  min-width: 0;
+}
+
+.club-detail__eyebrow {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+}
+
+.club-detail__title {
+  font-size: clamp(2.2rem, 7vw, 5.5rem);
+  max-width: 18ch;
+  overflow-wrap: anywhere;
+}
+
+.club-detail__stats {
+  align-items: center;
+  border-top: 1px solid var(--ink-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+  margin-top: 1rem;
+  padding-top: 0.55rem;
+}
+
+.club-detail__stats span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+}
+
+.club-detail__stats span::before {
+  color: var(--accent);
+  content: "·";
+  margin-right: 0.4rem;
+}
+
+.club-detail__stats span:first-child::before {
+  content: "";
+  margin: 0;
+}
+
+.club-detail__stats .club-detail__source {
+  color: var(--accent);
+}
+
 .club-detail__body {
   column-count: 2;
   column-gap: 2rem;
@@ -18,6 +121,7 @@
   margin-bottom: 1.5rem;
   text-align: justify;
 }
+
 .club-detail__body p:first-child::first-letter {
   color: var(--accent);
   float: left;
@@ -26,11 +130,13 @@
   line-height: 0.75;
   padding-right: 0.1em;
 }
+
 .club-detail__section {
   border-top: 1px solid var(--ink-rule);
   margin: 2rem 0;
   padding-top: 0.8rem;
 }
+
 .club-detail__section h2,
 .club-detail__section-title,
 .club-detail__image-block h2 {
@@ -38,16 +144,77 @@
   font-size: var(--fs-xl);
   padding-bottom: 0.35rem;
 }
+
 .club-detail__image-block {
   margin: 2rem 0;
 }
+
+.club-detail__table-scroll {
+  border: 1px solid var(--ink-rule);
+  break-inside: avoid;
+  margin: 1rem 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.club-detail__table-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.club-detail__table-scroll .ob-table {
+  margin: 0;
+  min-width: 640px;
+}
+
 @media (max-width: 720px) {
   .club-detail__body {
     column-count: 1;
     text-align: left;
   }
+
+  .club-detail__identity {
+    align-items: start;
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .club-detail__logo {
+    min-height: 88px;
+    padding: 0.4rem;
+  }
+
+  .club-detail__logo img {
+    max-height: 76px;
+  }
+
+  .club-detail__logo-fallback {
+    font-size: 1.6rem;
+  }
+
+  .club-detail__title {
+    font-size: clamp(1.8rem, 9vw, 3.4rem);
+  }
 }
+
 @media (max-width: 480px) {
+  .club-detail__identity {
+    grid-template-columns: 1fr;
+  }
+
+  .club-detail__logo {
+    justify-self: start;
+    width: 108px;
+  }
+
+  .club-detail__table-scroll {
+    border: 0;
+    overflow: visible;
+  }
+
+  .club-detail__table-scroll .ob-table {
+    min-width: 0;
+  }
+
   .ob-table td::before {
     content: attr(data-label);
   }

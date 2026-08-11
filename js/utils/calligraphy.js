@@ -377,6 +377,43 @@ export function playPaperScratch(duration, volume) {
   // noticeable improvement at these volumes.
 }
 
+/**
+ * Play a short layered paper ruffle. Unlike the thin scroll scratch, this is
+ * a handful of soft fibre swishes with staggered attacks, so opening a club
+ * section feels like lifting a real sheet from a stack.
+ */
+export function playPaperRuffle(intensity) {
+  if (!soundEnabled || !audioUnlocked) return;
+  const ctx = getAudioCtx();
+  if (!ctx || !compressor) return;
+
+  const now = ctx.currentTime;
+  const peak = Math.min(0.08, Math.max(0.02, intensity || 0.055));
+  const duration = 0.32;
+  const swishes = [
+    { delay: 0, frequency: 1700, q: 0.7, gain: 0.8 },
+    { delay: 0.055, frequency: 2800, q: 1.1, gain: 0.55 },
+    { delay: 0.12, frequency: 1050, q: 0.55, gain: 0.7 },
+  ];
+
+  swishes.forEach(({ delay, frequency, q, gain: layerGain }) => {
+    const source = ctx.createBufferSource();
+    source.buffer = createNoiseBuffer(ctx, duration, "pink");
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(frequency, now + delay);
+    filter.frequency.exponentialRampToValueAtTime(frequency * 0.55, now + delay + duration * 0.8);
+    filter.Q.value = q;
+    const gain = ctx.createGain();
+    applyEnvelope(gain.gain, now + delay, 0.018, 0.025, duration * 0.72, peak * layerGain);
+    source.connect(filter);
+    filter.connect(gain);
+    connectToMaster(gain);
+    source.start(now + delay);
+    source.stop(now + delay + duration + 0.02);
+  });
+}
+
 /* -------------------------------------------------------------------------
  * Sound: Printing press (loader) — rich mechanical synthesis
  *
@@ -836,7 +873,8 @@ export function playPageTurn() {
   const dur = 0.3;
 
   // Paper rustle
-  playPaperScratch(dur, vol * 0.6);
+  playPaperRuffle(vol);
+  playPaperScratch(dur, vol * 0.35);
 
   // Soft thud (low-frequency sine)
   setTimeout(() => {
