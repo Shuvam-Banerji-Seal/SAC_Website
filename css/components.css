@@ -1,951 +1,393 @@
-/* components.css — reusable UI components. */
+/* Shared newspaper furniture: sidebar, footer, cards, tables, and media. */
 
-/* ── Skip-to-content link ───────────────────────────────
-   Visually hidden until focused via Tab, then slides into view
-   at the top of the page. Standard WCAG 2.1 accessibility
-   pattern (SC 2.4.1 Bypass Blocks). */
 .skip-link {
+  background: var(--ink);
+  color: var(--paper);
+  left: 0.75rem;
+  padding: 0.5rem 0.8rem;
   position: fixed;
-  top: -100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  padding: 0.75rem 1.5rem;
-  background: var(--ink-base, #181410);
-  color: var(--paper-base, #f4f0e6);
-  font-family: var(--font-display, var(--font-sans));
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  text-decoration: none;
-  border-radius: 0 0 var(--radius) var(--radius);
-  box-shadow: var(--shadow-hover);
-  transition: top 0.15s ease-out;
-  white-space: nowrap;
+  top: 0.75rem;
+  transform: translateY(-180%);
+  z-index: 1500;
 }
 .skip-link:focus {
-  top: 0;
-  outline: 2px solid var(--accent-red, #7e0909);
-  outline-offset: 2px;
+  transform: translateY(0);
 }
 
-/* ── Navbar ──────────────────────────────────────────── */
-
-/* Shared base — applies at every breakpoint. The element starts in
-   normal flow so the masthead sits below it. On mobile it stays in
-   flow (pull-down animation); on desktop the breakpoint overrides
-   below move it into a fixed side drawer. */
-.navbar {
-  background: var(--paper-base);
-  border-bottom: var(--rule-heavy);
-  z-index: 100;
-}
-
-/* ── Mobile / tablet (< 1024px): "curtain pull-down" ──────── */
-
-@media (max-width: 1023.98px) {
-  .navbar {
-    position: sticky;
-    top: 0;
-    /* Initially tucked above the viewport — the curtain hangs off
-       the top of the screen. navbar-fold.js adds .is-revealed once
-       the loader (or DOMContentLoaded on non-home pages) is done. */
-    transform: translateY(-100%);
-    transition:
-      transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1),
-      box-shadow 0.4s ease;
-    will-change: transform;
-    box-shadow: 0 1px 0 rgba(24, 20, 16, 0.06);
-  }
-  .navbar.is-revealed {
-    transform: translateY(0);
-  }
-  /* Hide the corner indicator — it's a desktop-only element. */
-  .navbar-corner {
-    display: none;
-  }
-}
-
-/* ── Desktop (>= 1024px): "peel-back corner" + side drawer ─ */
-
-/* The corner button itself: a 64×64 triangular "page corner" fixed
-   in the top-right of the viewport. The triangle is shaped with
-   clip-path; the gradient + texture sells the paper feel. The
-   rotate/translate on hover + .is-open hints at a fold-back.
-   The whole rule lives inside @media (min-width: 1024px) so the
-   corner stays hidden on mobile / tablet — only the .navbar
-   (no corner) is visible there, with the curtain pull-down. */
-@media (min-width: 1024px) {
-  /* Two layered triangles make the corner feel like a peeled-back page:
-     the top triangle is the visible paper; the underside sits behind,
-     offset down-left, and is revealed as the top rotates / translates. */
-  .navbar-corner {
-    display: block;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 64px;
-    height: 64px;
-    padding: 0;
-    margin: 0;
-    border: none;
-    cursor: pointer;
-    z-index: 95;
-    color: var(--ink-base);
-    background: transparent;
-    clip-path: none;
-    transform-origin: top right;
-    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-  }
-  /* The underside: a darker triangle behind the top, offset so it
-     pokes out as the top peels back. Hidden until the corner is
-     hovered or opened. */
-  .navbar-corner::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--paper-edge);
-    background-image: var(--paper-grain);
-    clip-path: polygon(100% 0, 100% 100%, 0 0);
-    transform: translate(8px, 8px);
-    opacity: 0;
-    transition:
-      opacity 0.3s ease,
-      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.14);
-  }
-  /* The top triangle: the actual paper surface, peels back on hover/open. */
-  .navbar-corner::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
-    background-image:
-      var(--paper-grain), linear-gradient(225deg, var(--paper-base) 0%, var(--paper-deep) 100%);
-    clip-path: polygon(100% 0, 100% 100%, 0 0);
-    transition:
-      transform 0.45s cubic-bezier(0.65, 0, 0.35, 1),
-      box-shadow 0.4s ease;
-    box-shadow:
-      -2px 2px 8px rgba(0, 0, 0, 0.18),
-      inset 0 0 0 1px rgba(24, 20, 16, 0.12);
-  }
-  /* SVG icon — sits above the top triangle, anchors at top-right. */
-  .navbar-corner svg {
-    position: relative;
-    z-index: 2;
-    transform: translate(18px, -18px);
-    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-    display: block;
-  }
-
-  /* Hover — slight peel. Underside becomes visible. */
-  .navbar-corner:hover::before {
-    opacity: 1;
-    transform: translate(10px, 10px);
-  }
-  .navbar-corner:hover::after {
-    transform: translate(-2px, -2px) rotate(-2deg);
-  }
-  .navbar-corner:hover svg {
-    transform: translate(18px, -18px) rotate(2deg);
-  }
-
-  /* Open — full peel, corner folded back to ~-22deg around its top-right
-     hinge. The underside triangle is fully revealed. */
-  .navbar-corner.is-open {
-    transform: rotate(-3deg);
-  }
-  .navbar-corner.is-open::before {
-    opacity: 1;
-    transform: translate(14px, 14px);
-  }
-  .navbar-corner.is-open::after {
-    transform: translate(-6px, -6px) rotate(-8deg);
-    box-shadow:
-      -5px 5px 16px rgba(0, 0, 0, 0.26),
-      inset 0 0 0 1px rgba(24, 20, 16, 0.22);
-  }
-  .navbar-corner.is-open svg {
-    transform: translate(18px, -18px) rotate(8deg);
-  }
-
-  .navbar-corner:focus-visible {
-    outline: 2px solid var(--accent-red);
-    outline-offset: -3px;
-  }
-}
-
-/* The drawer: full-height side panel, slides in from the right.
-   Pulled out of flow (position: fixed) so the masthead can fill
-   the full viewport width on desktop. */
-@media (min-width: 1024px) {
-  .navbar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(360px, 90vw);
-    border-bottom: none;
-    border-left: 1px solid var(--ink-rule-strong);
-    /* Paper-fold entrance: slide + rotateY for a tearing-paper feel */
-    transform: translateX(100%) rotateY(15deg);
-    transform-origin: right center;
-    transition:
-      transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
-      box-shadow 0.45s ease;
-    box-shadow: -10px 0 28px rgba(0, 0, 0, 0.18);
-    overflow-y: auto;
-    /* Paper texture background */
-    background-color: var(--paper-base);
-    background-image: var(--paper-grain), var(--paper-stains), var(--paper-fold-crease);
-    background-size:
-      320px 320px,
-      100% 100%,
-      200px 4px;
-    background-repeat: repeat, no-repeat, repeat-x;
-    background-position:
-      0 0,
-      0 0,
-      0 20%;
-    z-index: 90;
-  }
-  .navbar.is-open {
-    transform: translateX(0) rotateY(0deg);
-    box-shadow:
-      -10px 0 28px rgba(0, 0, 0, 0.22),
-      -2px 0 0 var(--ink-rule-strong);
-  }
-
-  /* Nav links drop in one by one, like being pinned to a notice board */
-  .navbar.is-open .nav-link {
-    animation: navLinkPinDrop 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
-  }
-  .navbar.is-open .nav-link:nth-child(1) {
-    animation-delay: 0.1s;
-  }
-  .navbar.is-open .nav-link:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  .navbar.is-open .nav-link:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-  .navbar.is-open .nav-link:nth-child(4) {
-    animation-delay: 0.4s;
-  }
-  .navbar.is-open .nav-link:nth-child(5) {
-    animation-delay: 0.5s;
-  }
-
-  @keyframes navLinkPinDrop {
-    0% {
-      opacity: 0;
-      transform: translateY(-30px) rotate(-5deg);
-    }
-    60% {
-      transform: translateY(4px) rotate(1deg);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) rotate(0);
-    }
-  }
-
-  /* Pin/nail decoration on each nav link (notice board look) */
-  .navbar.is-open .nav-link::before {
-    content: "";
-    position: absolute;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #d4a040, #8b6020 60%, #5a4010);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    pointer-events: none;
-  }
-  .navbar.is-open .nav-link {
-    position: relative;
-  }
-}
-
-@media (min-width: 1440px) {
-  .navbar {
-    width: min(400px, 30vw);
-  }
-}
-
-.navbar__inner {
-  max-width: var(--max-w-content);
-  margin: 0 auto;
-  padding: var(--space-3) var(--space-4);
+#navbar {
+  background: var(--paper-soft);
+  border-right: 1px solid var(--rule);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  flex-wrap: wrap;
+  flex-direction: column;
+  inset: 0 auto 0 0;
+  padding: 1.15rem 1rem;
+  position: fixed;
+  transform: translateX(-105%);
+  transition: transform var(--transition);
+  width: var(--sidebar-w);
+  z-index: 900;
 }
 
-/* On desktop the inner stacks vertically inside the drawer, with
-   the brand up top and the link list below. */
+body.sidebar-open #navbar {
+  transform: none;
+}
+
 @media (min-width: 1024px) {
-  .navbar__inner {
-    flex-direction: column;
-    align-items: stretch;
-    padding: var(--space-7) var(--space-5) var(--space-5);
-    gap: var(--space-4);
+  #navbar {
+    transform: none;
   }
 }
 
-.navbar__brand {
-  font-weight: 600;
-  font-size: var(--fs-base);
-  color: var(--ink-base);
+.sidebar__brand {
+  border-bottom: var(--rule-double);
   font-family: var(--font-display);
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  white-space: nowrap;
-}
-.navbar__brand:hover {
-  text-decoration: none;
+  font-size: var(--fs-lg);
+  line-height: 0.92;
+  padding: 0.35rem 0.25rem 0.8rem;
+  text-transform: uppercase;
 }
 
-/* Brand variants — the long text is hidden on small viewports so the
-   mobile navbar fits in ~56px instead of stretching to 163px. */
-.navbar__brand-full {
-  display: inline;
+.sidebar__brand em {
+  color: var(--accent);
+  font-style: normal;
 }
-.navbar__brand-short {
-  display: none;
+.sidebar__tagline {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  margin: 0.55rem 0 0;
+  text-transform: uppercase;
 }
-
-@media (max-width: 640px) {
-  .navbar__brand-full {
-    display: none;
-  }
-  .navbar__brand-short {
-    display: inline;
-  }
-  .navbar__brand {
-    font-family: var(--font-display, Georgia, serif);
-    font-weight: 900;
-    font-size: 1.25rem;
-    letter-spacing: 0.06em;
-  }
+.sidebar__nav {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 1rem;
 }
-
-.navbar__list {
-  display: flex;
-  gap: var(--space-1);
-  flex-wrap: wrap;
-}
-
-@media (min-width: 1024px) {
-  .navbar__list {
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-}
-
-.navbar__item {
-  display: flex;
-}
-
-.nav-link {
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius);
-  color: var(--ink-base);
+.sidebar__link {
+  border-left: 3px solid transparent;
+  color: var(--ink);
   font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  transition:
-    background var(--transition),
-    color var(--transition);
+  font-size: var(--fs-md);
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.6rem;
+  text-transform: uppercase;
 }
-.nav-link:hover {
+.sidebar__link:hover,
+.sidebar__link.is-active {
   background: var(--paper-deep);
+  color: var(--accent);
   text-decoration: none;
 }
-.nav-link--active {
-  background: var(--ink-base);
-  color: var(--paper-base);
+.sidebar__link.is-active {
+  border-left-color: var(--accent);
 }
-.nav-link--active:hover {
-  background: var(--ink-base);
+.sidebar__foot {
+  border-top: 1px solid var(--ink-rule);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  text-transform: uppercase;
+}
+
+.sidebar-scrim {
+  background: rgba(24, 20, 16, 0.5);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity var(--transition);
+  z-index: 890;
+}
+body.sidebar-open .sidebar-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navbar-corner {
+  align-items: center;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  color: var(--paper);
+  display: grid;
+  height: 42px;
+  justify-content: center;
+  left: 0.75rem;
+  position: fixed;
+  top: 0.75rem;
+  width: 42px;
+  z-index: 950;
+}
+
+.navbar-corner:hover {
+  background: var(--accent);
 }
 
 @media (min-width: 1024px) {
-  .nav-link {
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--fs-base);
-  }
-}
-
-/* Tighter link padding on small phones so all 5 links fit on one row. */
-@media (max-width: 640px) {
-  .nav-link {
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--fs-xs);
-    letter-spacing: 0.02em;
-  }
-}
-
-/* ── Reduced motion ──────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .navbar,
   .navbar-corner,
-  .navbar-corner::before,
-  .navbar-corner::after,
-  .navbar-corner svg {
-    transition-duration: 0.001ms !important;
-  }
-  /* Disable the corner-fold reveal entirely. */
-  .navbar-corner {
+  .sidebar-scrim {
     display: none;
-  }
-  .navbar-corner::before {
-    display: none;
-  }
-  .navbar {
-    transform: none !important;
-    position: sticky;
-    top: 0;
   }
 }
-
-/* ── Footer ─────────────────────────────────────────── */
-/* ── Site footer ──────────────────────────────────────────────── */
 
 .site-footer {
-  background-color: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size: 320px 320px, 100% 100%;
-  border-top: var(--rule-heavy);
-  padding: var(--space-7) 0 var(--space-6);
-  margin-top: var(--space-8);
-  font-size: var(--fs-sm);
+  border-top: var(--rule-double);
+  margin-left: 0;
+  padding: 1.75rem 1rem 1rem;
 }
 
+@media (min-width: 1024px) {
+  .site-footer {
+    margin-left: var(--sidebar-w);
+  }
+}
 .site-footer__inner {
-  max-width: var(--max-w-content);
-  margin: 0 auto;
-  padding: 0 var(--space-4);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: var(--space-5);
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin: 0 auto;
+  max-width: var(--max-w);
 }
-
-.site-footer__col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
 .site-footer__brand {
-  display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-1);
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
 }
-
 .site-footer__brand-icon {
-  font-family: var(--font-serif);
-  font-size: var(--fs-lg);
-  font-weight: 800;
-  color: var(--ink-soft);
-  background: var(--paper-base);
-  border: 2px solid var(--ink-muted);
-  border-radius: 6px;
-  padding: 2px 6px;
-  line-height: 1;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  padding: 0.45rem;
 }
-
-.site-footer__brand-name {
-  font-family: var(--font-serif);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--ink-base);
-}
-
-.site-footer__desc {
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  line-height: 1.6;
-  max-width: 36ch;
-}
-
+.site-footer__brand-name,
 .site-footer__heading {
-  font-family: var(--font-serif);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--ink-base);
-  margin: 0 0 var(--space-1);
-  letter-spacing: 0.02em;
+  font-family: var(--font-display);
+  text-transform: uppercase;
 }
-
+.site-footer__heading {
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.08em;
+  padding-bottom: 0.35rem;
+}
+.site-footer__desc,
+.site-footer__address,
+.site-footer__credit,
+.site-footer__meta {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+}
 .site-footer__links {
   list-style: none;
+  margin: 0.5rem 0 0;
   padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
 }
-
+.site-footer__links li {
+  margin: 0.2rem 0;
+}
 .site-footer__links a {
-  color: var(--ink-muted);
-  text-decoration: none;
-  font-size: var(--fs-xs);
-  transition: color 0.2s ease;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
 }
-.site-footer__links a:hover {
-  color: var(--ink-base);
-  text-decoration: underline;
+.site-footer__map iframe {
+  border: 1px solid var(--rule) !important;
+  height: 120px;
+  margin: 0.5rem 0;
+  width: 100%;
 }
-
-.site-footer__map {
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--paper-shade);
-  line-height: 0;
-}
-
-.site-footer__address {
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  font-style: normal;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.site-footer__credit {
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  margin: var(--space-2) 0 0;
-}
-
 .site-footer__meta {
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  opacity: 0.7;
-  text-align: center;
-  margin-top: var(--space-4);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--color-line);
-  max-width: var(--max-w-content);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-4);
-  padding-right: var(--space-4);
+  border-top: 1px solid var(--ink-rule);
+  margin: 1.5rem auto 0;
+  max-width: var(--max-w);
+  padding-top: 0.7rem;
 }
 
-/* Tablet: 2 columns */
-@media (max-width: 820px) {
-  .site-footer__inner {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Mobile: stacked */
-@media (max-width: 540px) {
-  .site-footer__inner {
-    grid-template-columns: 1fr;
-  }
-  .site-footer__desc {
-    max-width: none;
-  }
-}
-
-/* ── Club card (used in home + clubs pages) ─────────── */
-.club-grid {
+.club-grid,
+.paper-card-grid,
+.thumb-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-4);
-  padding: 0;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.club-card a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border: 1px solid var(--ink-rule-strong);
-  border-radius: var(--radius);
-  padding: var(--space-5) var(--space-3);
-  color: var(--ink-base);
-  text-align: center;
+.paper-card,
+.club-card {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  display: block;
   height: 100%;
+  padding: 0.9rem;
+  position: relative;
   transition:
     transform var(--transition),
     box-shadow var(--transition);
 }
-.club-card a:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-fold-lift);
+.paper-card:hover,
+.club-card:hover {
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
   text-decoration: none;
+  transform: translateY(-3px) rotate(var(--card-rotate, -0.5deg));
 }
+.paper-card__logo,
 .club-card__logo {
-  width: 96px;
-  height: 96px;
-  margin-bottom: var(--space-3);
-  display: flex;
   align-items: center;
+  background: var(--paper-deep);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  height: 128px;
   justify-content: center;
+  margin: -0.9rem -0.9rem 0.8rem;
+  padding: 0.7rem;
 }
+.paper-card__logo img,
 .club-card__logo img {
-  max-width: 100%;
-  max-height: 100%;
+  height: 100%;
   object-fit: contain;
+  width: 100%;
 }
+.paper-card__logo-fallback,
 .club-card__logo-fallback {
-  width: 96px;
-  height: 96px;
-  background: var(--accent-red);
-  color: var(--paper-base);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.25rem;
-  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
 }
+.paper-card__name,
 .club-card__name {
-  font-size: var(--fs-base);
-  margin-bottom: var(--space-1);
+  font-size: var(--fs-md);
+  line-height: 1.05;
+  margin-bottom: 0.45rem;
+}
+.paper-card__rule {
+  border-top: 2px solid var(--accent);
+  display: block;
+  margin-bottom: 0.55rem;
+  width: 38%;
+}
+.paper-card__excerpt,
+.club-card__count {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.paper-card__cta {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .club-card__count {
-  font-size: var(--fs-xs);
   color: var(--ink-muted);
   margin: 0;
 }
 
-/* ── Thumb (image card) ─────────────────────────────── */
-.thumb-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--space-3);
-  margin-top: var(--space-3);
-  padding: 0;
-  list-style: none;
-}
 .thumb {
-  background: var(--paper-base);
-  border: 1px solid var(--ink-rule-strong);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin: 0;
+  break-inside: avoid;
   position: relative;
+  transform: rotate(var(--pin-rotate, 0deg));
+}
+.thumb a {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  display: block;
+  padding: 0.35rem;
 }
 .thumb img {
-  width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: var(--ink-rule);
-  display: block;
-  transition: transform 0.3s ease;
-}
-.thumb:hover img {
-  transform: scale(1.03);
+  width: 100%;
 }
 .thumb__cap {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-xs);
   color: var(--ink-muted);
-  line-height: 1.4;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  margin-top: 0.35rem;
 }
-
-/* ── Pinned thumbs (pushpin board look) ───────────────────────────────
-   The JS in events.js / gallery.js / club-images.js already sets
-   --pin-rotate on each thumb and adds class="thumb-grid pinned-thumbs",
-   but no CSS consumed it before, so the rotate + pin were dead. These
-   rules resurrect them: each thumb sits at a hand-pinned angle with a
-   realistic brass pushpin head and a soft drop shadow on the paper. */
-
-.pinned-thumbs {
-  /* A little breathing room so rotated thumbs don't clip neighbours. */
-  gap: var(--space-5);
-  padding-top: var(--space-4);
-}
-.pinned-thumbs .thumb {
-  position: relative;
-  padding-top: var(--space-4);
-  transform: rotate(var(--pin-rotate, 0deg));
-  transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease;
-  box-shadow:
-    0 1px 0 rgba(24, 20, 16, 0.08),
-    0 6px 14px -8px rgba(24, 20, 16, 0.35);
-}
-.pinned-thumbs .thumb:hover,
-.pinned-thumbs .thumb:focus-within {
-  transform: rotate(0deg) translateY(-4px);
-  box-shadow:
-    0 2px 0 rgba(24, 20, 16, 0.1),
-    0 14px 24px -10px rgba(24, 20, 16, 0.45);
-  z-index: 2;
-}
-
-/* Pushpin head (top-center of each thumb) — same metallic dome language
-   as the home page paper-cards. */
-.pinned-thumbs .thumb::before {
-  content: "";
-  position: absolute;
-  top: -7px;
-  left: 50%;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 38% 30%,
-    rgba(255, 245, 210, 0.95) 0%,
-    rgba(232, 188, 110, 0.95) 22%,
-    rgba(196, 148, 56, 0.98) 48%,
-    rgba(120, 84, 28, 1) 78%,
-    rgba(70, 48, 14, 1) 100%
-  );
-  box-shadow:
-    0 4px 0 -3px rgba(40, 28, 10, 0.55),
-    0 1px 2px rgba(40, 28, 10, 0.6),
-    inset 1px 1px 1.5px rgba(255, 250, 230, 0.9);
-  transform: translateX(-50%) rotate(var(--pin-tilt, -3deg));
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* Soft elliptical drop shadow where the pin pierces the paper. */
-.pinned-thumbs .thumb::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 50%;
-  width: 24px;
-  height: 7px;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse 50% 50% at 50% 50%,
-    rgba(40, 28, 10, 0.22) 0%,
-    rgba(40, 28, 10, 0.08) 60%,
-    transparent 80%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ── Paper-slide reveal animation for thumbs ─────────────────────
-   Each thumb starts clipped from the right (hidden behind a paper
-   cover) and slides into view when .is-revealed is added. Used by
-   events.js, gallery.js, club-images.js, and the home card grid. */
-
-@keyframes paperSlideReveal {
-  from {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0;
-    transform: translateX(-12px) rotate(var(--pin-rotate, 0deg));
-  }
-  to {
-    clip-path: inset(0 0% 0 0);
-    opacity: 1;
-    transform: translateX(0) rotate(var(--pin-rotate, 0deg));
-  }
-}
-
 .thumb--reveal {
-  clip-path: inset(0 100% 0 0);
   opacity: 0;
+  transform: translateY(12px) rotate(var(--pin-rotate, 0deg));
   transition:
-    clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.5s ease 0.15s,
-    transform 0.5s ease 0.15s;
+    opacity 350ms ease,
+    transform 350ms ease;
 }
 .thumb--reveal.is-revealed {
-  clip-path: inset(0 0% 0 0);
   opacity: 1;
-}
-/* Reduced-motion: show immediately, no clip animation. */
-@media (prefers-reduced-motion: reduce) {
-  .thumb--reveal {
-    clip-path: none;
-    opacity: 1;
-    transition: none;
-  }
-  .paper-card-wrap {
-    clip-path: none;
-    opacity: 1;
-    transition: none;
-  }
+  transform: rotate(var(--pin-rotate, 0deg));
 }
 
-/* ── Paper card stagger reveal (home page) ────────────────────────
-   When a .body-section becomes visible, each .paper-card-wrap slides
-   in from the right with a clip-path reveal. The JS staggers the
-   transition-delay per card. */
-
-.paper-card-wrap {
-  clip-path: inset(0 100% 0 0);
-  opacity: 0;
-  transition:
-    clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.4s ease 0.1s;
-  transition-delay: inherit; /* Set by JS stagger */
-}
-.paper-card-wrap.is-revealed {
-  clip-path: inset(0 0% 0 0);
-  opacity: 1;
-}
-
-/* ── Stat grid (used in club-detail) ─────────────────── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-3);
-  padding: 0;
-  list-style: none;
-  margin-top: var(--space-3);
-}
-.stat-grid li {
-  background: var(--paper-base);
-  background-image: var(--paper-grain);
-  background-size: 320px 320px;
-  border: 1px solid var(--ink-rule-strong);
-  border-radius: var(--radius);
-  padding: var(--space-3);
+.ob-table {
   font-size: var(--fs-sm);
-  text-align: center;
+  margin: 1rem 0;
 }
-.stat-grid strong {
-  display: block;
-  font-size: var(--fs-2xl);
-  color: var(--accent-red);
-  margin-bottom: var(--space-1);
+.ob-table th,
+.ob-table td {
+  border: 1px solid var(--ink-rule);
+  padding: 0.5rem;
+  text-align: left;
+  vertical-align: top;
 }
-
-/* ── Error block (used when a page fails to render) ── */
-.error-block {
-  background: var(--paper-base);
-  border: 1px solid var(--ink-rule-strong);
-  border-left: 4px solid #dc2626;
-  border-radius: var(--radius);
-  padding: var(--space-4);
-  color: var(--ink-muted);
+.ob-table th {
+  background: var(--paper-deep);
+  font-family: var(--font-display);
+  text-transform: uppercase;
 }
-.error-block p {
-  margin: 0;
+.ob-role {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
 }
-
-/* =========================================================================
-   Calligraphy text reveal animation
-   — used on home page headline AND club page titles.
-   — Moved here from home.css so it's available on all pages.
-   — Each character is wrapped in .calligraphy-char with:
-     .calligraphy-char__ink  — the visible text (clip-path reveals left→right)
-     .calligraphy-char__bleed — a blurred shadow that fades in after the char
-   — CSS custom properties per char:
-     --char-delay  — cumulative delay before this char starts (ms)
-     --char-wobble — rotation offset for hand-pressure variance (deg)
-     --char-speed  — duration multiplier (0.25=fast, 1.4=slow)
-   ========================================================================= */
-
-.calligraphy-active {
-  overflow: hidden;
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+.contact-list li {
+  margin-bottom: 0.5rem;
 }
 
-.calligraphy-char {
-  display: inline-block;
-  position: relative;
-  opacity: 0;
-  transform: rotate(var(--char-wobble, 0deg));
-  animation: calligraphyCharIn 0.4s ease forwards;
-  animation-delay: var(--char-delay, 0ms);
-  will-change: opacity, transform, clip-path;
+.reveal-section {
+  contain: layout paint;
 }
 
-/* The ink layer: the actual visible character.
-   Clip-path reveals it left-to-right, simulating pen movement. */
-.calligraphy-char__ink {
-  display: inline-block;
-  clip-path: inset(0 100% 0 0);
-  animation: calligraphyInkReveal calc(0.35s * var(--char-speed, 1)) ease-out forwards;
-  animation-delay: var(--char-delay, 0ms);
-}
-
-/* The bleed layer: a blurred, slightly offset copy that fades in
-   after the ink, simulating ink soaking into paper. */
-.calligraphy-char__bleed {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: inline-block;
-  opacity: 0;
-  filter: blur(1.5px);
-  transform: translate(0.5px, 0.5px) scale(1.02);
-  color: inherit;
-  animation: calligraphyBleedIn 0.5s ease forwards;
-  animation-delay: calc(var(--char-delay, 0ms) + calc(0.2s * var(--char-speed, 1)));
-  pointer-events: none;
-  user-select: none;
-}
-
-@keyframes calligraphyCharIn {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--char-wobble, 0deg)) translateY(3px);
+@media (max-width: 520px) {
+  .ob-table,
+  .ob-table thead,
+  .ob-table tbody,
+  .ob-table tr,
+  .ob-table th,
+  .ob-table td {
+    display: block;
   }
-  100% {
-    opacity: 1;
-    transform: rotate(var(--char-wobble, 0deg)) translateY(0);
+  .ob-table thead {
+    position: absolute;
+    clip: rect(0 0 0 0);
   }
-}
-
-@keyframes calligraphyInkReveal {
-  0% {
-    clip-path: inset(0 100% 0 0);
+  .ob-table tr {
+    border: 1px solid var(--ink-rule);
+    margin-bottom: 0.75rem;
   }
-  60% {
-    clip-path: inset(0 40% 0 0);
+  .ob-table td {
+    border: 0;
+    border-bottom: 1px solid var(--paper-edge);
+    padding-left: 7rem;
+    position: relative;
   }
-  100% {
-    clip-path: inset(0 0 0 0);
+  .ob-table td::before {
+    color: var(--ink-muted);
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    left: 0.5rem;
+    position: absolute;
+    text-transform: uppercase;
+    top: 0.55rem;
   }
-}
-
-@keyframes calligraphyBleedIn {
-  0% {
-    opacity: 0;
-    filter: blur(3px);
-    transform: translate(1px, 1px) scale(1.05);
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.15;
-    filter: blur(1.5px);
-    transform: translate(0.5px, 0.5px) scale(1.02);
-  }
-}
-
-/* ── Reduced motion: skip all calligraphy animation ──────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .calligraphy-char,
-  .calligraphy-char__ink,
-  .calligraphy-char__bleed {
-    animation: none !important;
-    opacity: 1 !important;
-    clip-path: none !important;
-    transform: none !important;
-    filter: none !important;
-  }
-}
-
-/* ── Tablet (768–1024px) ──────────────────────────────────────── */
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .thumb-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }

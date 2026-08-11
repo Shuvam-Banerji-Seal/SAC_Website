@@ -1,309 +1,99 @@
-/* =========================================================================
-   css/viewer.css — image viewer / lightbox with old album framing.
-   ========================================================================= */
-
-/* ── Overlay ─────────────────────────────────────────────────────── */
-
 .viewer-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
   align-items: center;
+  background: rgba(20, 16, 13, 0.9);
+  display: none;
+  inset: 0;
   justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.4s ease,
-    visibility 0.4s ease;
+  padding: 1rem;
+  position: fixed;
+  z-index: 1200;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  perspective: 1200px;
 }
 .viewer-overlay.is-open {
-  opacity: 1;
-  visibility: visible;
+  display: flex;
 }
-
-/* ── Frame (the "old album" mount) ─────────────────────────────── */
-
 .viewer-frame {
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  box-shadow: 6px 7px 0 rgba(0, 0, 0, 0.35);
+  max-width: min(920px, 94vw);
+  padding: 0.5rem;
   position: relative;
-  max-width: 90vw;
-  max-height: 85vh;
-  transform: scale(0.92) rotateY(-4deg);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.viewer-overlay.is-open .viewer-frame {
-  transform: scale(1) rotateY(0deg);
-}
-
-/* Paper backing */
-.viewer-frame__backing {
-  position: absolute;
-  inset: -18px;
-  background: var(--paper-base, #f4f0e6);
-  background-image: var(--paper-grain, none), var(--paper-stains, none);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border: 1.5px solid var(--ink-rule-strong, rgba(24, 20, 16, 0.35));
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(0, 0, 0, 0.1),
-    inset 0 0 30px rgba(0, 0, 0, 0.04);
-  transform: rotate(-0.5deg);
-  z-index: -1;
-}
-
-/* Corner decorations — small triangular folds */
-.viewer-frame__corner {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  z-index: 2;
-}
-.viewer-frame__corner--tl {
-  top: -18px;
-  left: -18px;
-  background: linear-gradient(225deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
-}
-.viewer-frame__corner--tr {
-  top: -18px;
-  right: -18px;
-  background: linear-gradient(135deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
-  box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.12);
-}
-.viewer-frame__corner--bl {
-  bottom: -18px;
-  left: -18px;
-  background: linear-gradient(45deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
-  box-shadow: 1px -1px 3px rgba(0, 0, 0, 0.12);
-}
-.viewer-frame__corner--br {
-  bottom: -18px;
-  right: -18px;
-  background: linear-gradient(315deg, var(--paper-soft, #ece5d3) 50%, transparent 50%);
-  box-shadow: -1px -1px 3px rgba(0, 0, 0, 0.12);
-}
-
-/* The image itself */
+.viewer-frame img,
 .viewer-img {
-  display: block;
+  background: var(--paper-deep);
+  max-height: 74vh;
   max-width: 100%;
-  max-height: 80vh;
   object-fit: contain;
-  background: var(--paper-base, #f4f0e6);
-  border: 1px solid var(--ink-rule, rgba(24, 20, 16, 0.22));
 }
-
-/* ── Info panel (title, context, description, credit) ───────────────
-   Sits inside the paper-frame backing (not off-screen at -72px).
-   The backing uses inset: -18px, so we position relative to the frame
-   and anchor the info block at the bottom of the visible area. */
-
 .viewer-info {
-  position: absolute;
-  bottom: 100px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  padding: var(--space-6, 1.5rem) var(--space-4, 1rem) var(--space-3, 0.75rem);
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
-  pointer-events: none;
-  z-index: 2;
-}
-.viewer-info__context {
-  font-family: var(--font-mono-serif, "Courier New", monospace);
-  font-size: 0.65rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: var(--space-1);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 0.55rem 0.2rem 0.2rem;
 }
 .viewer-info__title {
-  font-family: var(--font-display, Georgia, serif);
-  font-size: 1rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
-  margin-bottom: var(--space-1);
-  line-height: 1.3;
-}
-.viewer-info__desc {
-  font-family: var(--font-serif, "Times New Roman", serif);
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.4;
-  margin-bottom: var(--space-1);
-}
-.viewer-info__credit {
-  font-family: var(--font-mono-serif, "Courier New", monospace);
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  font-style: italic;
 }
-
-/* ── Navigation arrows ────────────────────────────────────────────── */
-
-.viewer-nav {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3001;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
+.viewer-nav,
+.viewer-close {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  color: var(--ink);
   display: grid;
-  place-items: center;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  height: 40px;
+  justify-content: center;
+  position: fixed;
+  width: 40px;
+  z-index: 1210;
 }
-.viewer-nav:hover {
-  background: rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 255, 255, 0.5);
+.viewer-close {
+  right: 1rem;
+  top: 1rem;
 }
 .viewer-nav--prev {
-  left: 16px;
+  left: 1rem;
+  top: 50%;
 }
 .viewer-nav--next {
-  right: 16px;
+  right: 1rem;
+  top: 50%;
 }
-
-/* ── Close button ─────────────────────────────────────────────────── */
-
-.viewer-close {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 3002;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.2s ease;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-.viewer-close:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-
-/* ── Thumbnail strip ────────────────────────────────────────────── */
-
-.viewer-strip {
-  position: fixed;
-  bottom: 52px;
+.viewer-counter {
+  bottom: 1rem;
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
   left: 50%;
+  position: fixed;
   transform: translateX(-50%);
-  z-index: 3001;
+}
+.viewer-strip {
+  bottom: 2.5rem;
   display: flex;
-  gap: 6px;
-  padding: 6px 10px;
-  max-width: 80vw;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  scrollbar-width: none;
+  gap: 0.35rem;
+  left: 50%;
+  max-width: 90vw;
+  overflow: auto;
+  padding: 0.25rem;
+  position: fixed;
+  transform: translateX(-50%);
 }
-.viewer-strip::-webkit-scrollbar { display: none; }
-
 .viewer-strip__thumb {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border: 2px solid transparent;
-  border-radius: 4px;
-  overflow: hidden;
+  border: 1px solid var(--paper);
   cursor: pointer;
-  padding: 0;
-  background: none;
-  opacity: 0.5;
-  transition: opacity 0.2s ease, border-color 0.2s ease;
-}
-.viewer-strip__thumb:hover {
-  opacity: 0.85;
+  height: 36px;
+  object-fit: cover;
+  opacity: 0.6;
+  width: 48px;
 }
 .viewer-strip__thumb.is-active {
   opacity: 1;
-  border-color: rgba(240, 185, 74, 0.8);
-}
-.viewer-strip__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ── Counter ──────────────────────────────────────────────────────── */
-
-.viewer-counter {
-  position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3001;
-  font-family: var(--font-mono-serif, "Courier New", monospace);
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px 14px;
-  border-radius: 12px;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-
-/* ── Tablet / small viewport ─────────────────────────────────────── */
-
-@media (max-width: 1023.98px) {
-  .viewer-frame {
-    max-width: 95vw;
-    max-height: 70vh;
-  }
-  .viewer-info__title {
-    font-size: 0.9rem;
-  }
-  .viewer-info__desc {
-    font-size: 0.75rem;
-  }
-  .viewer-nav {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
-  }
-  .viewer-counter {
-    font-size: 0.75rem;
-    bottom: 12px;
-  }
-}
-
-/* ── Reduced motion ──────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .viewer-frame,
-  .viewer-nav,
-  .viewer-close {
-    transition: none;
-  }
+  outline: 2px solid var(--accent);
 }

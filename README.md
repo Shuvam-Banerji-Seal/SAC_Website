@@ -1,8 +1,8 @@
 # Student Activity Council — IISER Kolkata
 
 Official website of the **Student Activity Council (SAC)** at IISER Kolkata.
-A newspaper-themed static site with 3D paper-fold animations, calligraphy text
-reveal, pretext-based text measurement, and dynamic textures.
+A lightweight CSS-Grid broadsheet with a responsive sidebar, editorial club
+pages, and a CSS-only stack of printed club papers on entry.
 
 ---
 
@@ -17,15 +17,15 @@ runtime to render club pages, event timelines, and the gallery.
 ## Features
 
 - **Newspaper theme** — paper textures, ink colors, serif fonts, fold creases
-- **Pre-loader** — 0-100% progress bar that pre-caches assets before the main loader
-- **3D paper-fold animations** — masthead page-turn, body section fold reveal, card hover lift
+- **Sidebar newspaper shell** — fixed desktop index rail and mobile off-canvas navigation
+- **CSS paper loader** — club sheets stack, settle, and tear apart without WebGL or canvas
 - **Notice board effects** — nail/pin decorations, crooked cards, postmark stamps
 - **Calligraphy text reveal** — headline appears as if being written, letter by letter
 - **Sound effects** — paper scratching on scroll, printing press sounds (Web Audio API)
-- **8 texture presets** — Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
+- **8 paper presets** — Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
 - **6 font presets** — Newspaper, Modern, Typewriter, Gothic, Classical, Monospace
 - **Dark mode** — consistent across all pages, respects `prefers-color-scheme`
-- **Pretext integration** — canvas-based text measurement for dynamic column layout
+- **System typography** — no Google Fonts or runtime font downloads
 - **Service Worker** — stale-while-revalidate caching for fast subsequent loads
 - **Responsive** — works on desktop, tablet, and mobile
 

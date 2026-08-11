@@ -1,7 +1,7 @@
 {
   "name": "sac-website",
   "version": "1.0.0",
-  "description": "Official website of the Student Activity Council (SAC) at IISER Kolkata — newspaper-themed static site with 3D paper-fold animations, pretext text measurement, and dynamic textures.",
+  "description": "Official website of the Student Activity Council (SAC) at IISER Kolkata — lightweight CSS-Grid newspaper directory with responsive sidebar and CSS paper loader.",
   "type": "module",
   "scripts": {
     "test": "vitest run",
@@ -11,8 +11,8 @@
     "test:e2e": "vitest run --config vitest.e2e.config.js",
     "lint": "eslint js/ test/ --ext .js,.mjs",
     "lint:fix": "eslint js/ test/ --ext .js,.mjs --fix",
-    "format": "prettier --write \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \"*.yml\"",
-    "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \"*.yml\"",
+    "format": "prettier --write \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
     "audit": "npm audit --audit-level=moderate",
     "serve": "npx http-server . -p 8000 -c-1 --cors",
     "build:pretext": "cd utils/pretext && npm install --legacy-peer-deps && npx tsc -p tsconfig.build.json && cp -r dist/generated dist/ && cp dist/*.js ../../js/pretext/ && cp -r dist/generated ../../js/pretext/ && echo 'Pretext built and copied to js/pretext/'"
@@ -39,9 +39,6 @@
     "jsdom": "^25.0.1",
     "prettier": "^3.4.2",
     "vitest": "^4.1.9"
-  },
-  "dependencies": {
-    "three": "^0.171.0"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -447,8 +447,6 @@ function setupFolding() {
  * wide viewports, avoiding sparse-looking columns.
  * ------------------------------------------------------------------------- */
 
-const LEAD_MIN_2COL_HEIGHT = 350; // px — below this, collapse to 1 column
-
 export async function adjustLeadLayout() {
   const body = document.querySelector(".lead-article__body");
   if (!body) return;
@@ -457,22 +455,12 @@ export async function adjustLeadLayout() {
   const text = body.innerText;
   if (!text) return;
 
-  const style = window.getComputedStyle(body);
-  const font = style.font;
-  const lineHeight = parseFloat(style.lineHeight) || 26.4;
-  const gap = parseFloat(style.columnGap) || 24;
-  const fullWidth = body.offsetWidth;
-  const colWidth = Math.max((fullWidth - gap) / 2, 100);
-
-  try {
-    // Dynamic import so a pretext failure doesn't kill the whole page
-    const { measureText } = await import("../utils/text-measure.js");
-    const { height } = measureText(text, font, colWidth, lineHeight);
-    if (height > 0 && height < LEAD_MIN_2COL_HEIGHT) {
-      body.style.columnCount = "1";
-    }
-  } catch {
-    // fallback: keep CSS default (2 columns)
+  // Lightweight heuristic (no canvas/pretext): short lead copy reads
+  // better as a single column. ~3 lines of 2-column text ≈ 600 chars.
+  if (text.length < 600) {
+    body.style.columnCount = "1";
+  } else {
+    body.style.columnCount = "";
   }
 }
 

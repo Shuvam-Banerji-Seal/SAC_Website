@@ -1,357 +1,139 @@
-/* variables.css — theme tokens. Tweak here to retheme the whole site. */
-
+/* SAC Chronicle design tokens. Keep this file deliberately small: the paper
+   effect is made from gradients, not a texture image or SVG filter. */
 :root {
-  /* Color (light) */
-  --color-bg: #fafafa;
-  --color-fg: #18181b;
-  --color-muted: #6b7280;
-  --color-accent: #2563eb;
-  --color-accent-fg: #ffffff;
-  --color-border: #e5e7eb;
-  --color-card-bg: #ffffff;
-  --color-warning-bg: #fff3cd;
-  --color-warning-fg: #856404;
-  --color-warning-border: #ffeeba;
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --paper: #f7f2e7;
+  --paper-soft: #fffaf0;
+  --paper-deep: #eee5d2;
+  --paper-edge: #cfc3ad;
+  --paper-edge-wear: radial-gradient(ellipse at center, transparent 58%, rgba(24, 20, 16, 0.1));
+  --paper-base: var(--paper);
+  --paper-grain: repeating-linear-gradient(
+    115deg,
+    rgba(24, 20, 16, 0.022) 0 1px,
+    transparent 1px 4px
+  );
+  --paper-stains:
+    radial-gradient(circle at 12% 18%, rgba(126, 9, 9, 0.04), transparent 28%),
+    radial-gradient(circle at 84% 76%, rgba(77, 50, 20, 0.05), transparent 30%);
 
-  /* Spacing scale (rem) */
+  --ink: #181410;
+  --ink-soft: #42392e;
+  --ink-muted: #706454;
+  --ink-base: var(--ink);
+  --ink-rule: #8f806c;
+  --ink-rule-strong: var(--ink);
+  --rule: var(--ink);
+  --rule-heavy: 3px double var(--rule);
+  --rule-double: 4px double var(--rule);
+
+  --accent: #830d0d;
+  --accent-red: var(--accent);
+  --accent-deep: #5f0808;
+  --accent-gold: #b78d2f;
+
+  --font-display:
+    Impact, "Arial Narrow Bold", "Franklin Gothic Medium", Haettenschweiler, sans-serif;
+  --font-body: Georgia, "Times New Roman", Charter, serif;
+  --font-serif: var(--font-body);
+  --font-mono: "Courier New", Courier, monospace;
+  --font-mono-serif: var(--font-mono);
+
+  --fs-scale: 1;
+  --fs-xs: calc(0.72rem * var(--fs-scale));
+  --fs-sm: calc(0.86rem * var(--fs-scale));
+  --fs-base: 1rem;
+  --fs-md: calc(1.15rem * var(--fs-scale));
+  --fs-lg: calc(1.5rem * var(--fs-scale));
+  --fs-xl: calc(2.05rem * var(--fs-scale));
+  --fs-2xl: calc(3rem * var(--fs-scale));
+  --fs-3xl: calc(4.2rem * var(--fs-scale));
+  --fs-4xl: calc(4.8rem * var(--fs-scale));
+
+  --sidebar-w: 218px;
+  --max-w: 1240px;
+  --max-w-content: var(--max-w);
   --space-1: 0.25rem;
   --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
-  --space-8: 4rem;
-
-  /* Typography */
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--font-sans);
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
-    monospace;
-
-  --fs-xs: 0.75rem;
-  --fs-sm: 0.875rem;
-  --fs-base: 1rem;
-  --fs-lg: 1.125rem;
-  --fs-xl: 1.25rem;
-  --fs-2xl: 1.5rem;
-  --fs-3xl: 2rem;
-  --fs-4xl: 2.5rem;
-
-  /* Layout */
-  --max-w-content: 1200px;
-  --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --transition: 200ms ease;
-
-  /* ── Font-size scale (accessibility) ─────────────────────
-     Users can pick S / M / L from settings. Applied as a
-     multiplier on the base font size via data-font-size on <html>. */
-  --fs-scale: 1;
+  --space-3: 0.85rem;
+  --space-4: 1.25rem;
+  --space-5: 1.75rem;
+  --space-6: 2.75rem;
+  --space-7: 3.5rem;
+  --radius: 0;
+  --radius-sm: 0;
+  --transition: 180ms ease;
 }
 
-:root {
-  /* ===== Newspaper theme (homepage) ============================
-     Old-paper parchment, ink accents, serif/mono typography.
-     Namespaced under --paper- / --ink- so they don't clash with the
-     base UI tokens above. */
-  --paper-base: #f4f0e6;
-  --paper-soft: #ece5d3;
-  --paper-deep: #ddd2b6;
-  --paper-edge: #c7b993;
-  --paper-stain: #b59c66;
-  --ink-base: #181410;
-  --ink-soft: #2b231b;
-  --ink-muted: #5b4f3d;
-  --ink-rule: rgba(24, 20, 16, 0.22);
-  --ink-rule-strong: rgba(24, 20, 16, 0.55);
-  --accent-red: #7e0909;
-  --accent-red-deep: #5a0606;
-  --accent-gold: #c9a84c;
-  --accent-gold-soft: #ecd36b;
-
-  --font-serif: Georgia, "Iowan Old Style", "Apple Garamond", "Times New Roman", Times, serif;
-  --font-display: "Playfair Display", Georgia, "Iowan Old Style", "Times New Roman", serif;
-  --font-mono-serif: "Courier Prime", "Courier New", Courier, ui-monospace, monospace;
-
-  /* Newspaper texture: layered noise + warm radial stains. */
-  --paper-texture:
-    /* Single diagonal stripe — laid-paper feel, no crossing grid */ repeating-linear-gradient(
-    135deg,
-    transparent 0px,
-    transparent 3px,
-    rgba(24, 20, 16, 0.018) 3px,
-    rgba(24, 20, 16, 0.018) 4px
-  );
-
-  --paper-stains:
-    radial-gradient(circle at 18% 78%, rgba(130, 88, 36, 0.13), transparent 32%),
-    radial-gradient(circle at 90% 10%, rgba(130, 88, 36, 0.09), transparent 28%);
-
-  /* ===== SVG newspaper textures ============================================
-     Inline data URIs — no external assets, so they work identically on
-     local dev and GitHub Pages. Each is a tileable SVG.
-
-       --paper-grain       feTurbulence noise (the fine fibre look of
-                           real newsprint). Tile size: 320x320.
-                           The larger tile makes seams far less visible.
-       --paper-halftone    Staggered dot pattern (hex-like), not a strict
-                           grid. Tile size: 6x10. Opacity reduced to 0.3.
-       --paper-fold-crease Horizontal fold shadow — fades at the ends.
-                           Tile size: 200x4, drawn edge-to-edge.
-       --paper-coffee-stain  Irregular brown stain with feDisplacement
-                           distortion. Tile size: 160x160. */
-  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  --paper-halftone: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/><circle cx='4' cy='6' r='0.5' fill='rgb(24, 20, 16)' opacity='0.3'/></svg>");
-  --paper-fold-crease: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(24, 20, 16)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(24, 20, 16)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(24, 20, 16)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
-  --paper-coffee-stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='5'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(139, 90, 43)' opacity='0.32'/><circle cx='66' cy='74' r='34' fill='rgb(101, 67, 33)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(165, 110, 50)' opacity='0.22'/></g></svg>");
-  --paper-edge-wear: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><radialGradient id='e' cx='50%' cy='50%' r='68%'><stop offset='60%' stop-color='rgb(24, 20, 16)' stop-opacity='0'/><stop offset='100%' stop-color='rgb(24, 20, 16)' stop-opacity='0.12'/></radialGradient><rect width='100%' height='100%' fill='url(%23e)'/></svg>");
-
-  /* Newspaper "X-fold" divider — two thin ink rules separated by a thin
-     gap, used as section breaks. */
-  --rule-double: 6px double var(--ink-base);
-  --rule-heavy: 3px solid var(--ink-base);
-  --rule-thin: 1px solid var(--ink-rule-strong);
-
-  /* Drop-shadow tokens used by the fold animations. */
-  --shadow-fold-rest: 0 1px 0 rgba(24, 20, 16, 0.04);
-  --shadow-fold-open:
-    0 1px 0 rgba(24, 20, 16, 0.06), 0 14px 28px -16px rgba(24, 20, 16, 0.32),
-    0 4px 8px -4px rgba(24, 20, 16, 0.14);
-  --shadow-fold-lift:
-    0 2px 0 rgba(24, 20, 16, 0.08), 0 24px 48px -16px rgba(24, 20, 16, 0.36),
-    0 8px 16px -4px rgba(24, 20, 16, 0.16);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0a0a0a;
-    --color-fg: #fafafa;
-    --color-muted: #9ca3af;
-    --color-accent: #60a5fa;
-    --color-accent-fg: #0a0a0a;
-    --color-border: #27272a;
-    --color-card-bg: #18181b;
-    --color-warning-bg: #3a2e0a;
-    --color-warning-fg: #fbbf24;
-    --color-warning-border: #4a3a0a;
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-}
-
-/* =========================================================================
-   Theme overrides — data-theme on <html> set by js/components/settings.js
-   ========================================================================= */
-
-/* ── Dark theme (dark coffee-stain newspaper / old map) ─────────── */
 [data-theme="dark"] {
-  --color-bg: #1e1a16;
-  --color-fg: #d4c9b8;
-  --color-muted: #8a7d6e;
-  --color-accent: #d43636;
-  --color-accent-fg: #f4f0e6;
-  --color-border: #3a3328;
-  --color-card-bg: #2a2520;
-  --color-warning-bg: #3a2e0a;
-  --color-warning-fg: #fbbf24;
-  --color-warning-border: #4a3a0a;
-
-  /* Dark newspaper palette */
-  --paper-base: #2a2520;
-  --paper-soft: #332d27;
-  --paper-deep: #1e1a16;
-  --paper-edge: #3a3328;
-  --paper-stain: #4a3e2e;
-  --ink-base: #d4c9b8;
-  --ink-soft: #b8aa98;
-  --ink-muted: #8a7d6e;
-  --ink-rule: rgba(212, 201, 184, 0.22);
-  --ink-rule-strong: rgba(212, 201, 184, 0.45);
-  --accent-red: #d43636;
-  --accent-red-deep: #b02c2c;
-  --accent-gold: #e8c55a;
-  --accent-gold-soft: #f0dc8a;
-
-  /* Dark-mode stain overrides (darker, cooler tones) */
-  --paper-stains:
-    radial-gradient(circle at 18% 78%, rgba(60, 50, 35, 0.15), transparent 32%),
-    radial-gradient(circle at 90% 10%, rgba(55, 45, 30, 0.12), transparent 28%);
-  /* Dark-mode texture override (light-on-dark diagonal stripe) */
-  --paper-texture: repeating-linear-gradient(
-    135deg,
-    transparent 0px,
-    transparent 3px,
-    rgba(212, 201, 184, 0.015) 3px,
-    rgba(212, 201, 184, 0.015) 4px
-  );
-
-  /* Dark paper textures (SVG data URIs with lighter grain) */
-  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.83  0 0 0 0 0.79  0 0 0 0 0.73  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  --paper-halftone: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='10'><circle cx='1' cy='1' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/><circle cx='4' cy='6' r='0.5' fill='rgb(212, 201, 184)' opacity='0.25'/></svg>");
-  --paper-fold-crease: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='4' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='0.5' stop-color='rgb(212, 201, 184)' stop-opacity='0.4'/><stop offset='1' stop-color='rgb(212, 201, 184)' stop-opacity='0'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/></svg>");
-  --paper-coffee-stain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='2' seed='9'/><feDisplacementMap in='SourceGraphic' scale='9'/></filter></defs><g filter='url(%23r)'><circle cx='80' cy='80' r='52' fill='rgb(90, 70, 40)' opacity='0.3'/><circle cx='66' cy='74' r='34' fill='rgb(75, 55, 30)' opacity='0.28'/><circle cx='90' cy='92' r='28' fill='rgb(100, 80, 50)' opacity='0.22'/></g></svg>");
-  --paper-edge-wear: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><radialGradient id='e' cx='50%' cy='50%' r='68%'><stop offset='60%' stop-color='rgb(212, 201, 184)' stop-opacity='0'/><stop offset='100%' stop-color='rgb(212, 201, 184)' stop-opacity='0.15'/></radialGradient><rect width='100%' height='100%' fill='url(%23e)'/></svg>");
-
-  --shadow-fold-rest: 0 1px 0 rgba(0, 0, 0, 0.12);
-  --shadow-fold-open:
-    0 1px 0 rgba(0, 0, 0, 0.1), 0 14px 28px -16px rgba(0, 0, 0, 0.5),
-    0 4px 8px -4px rgba(0, 0, 0, 0.2);
-  --shadow-fold-lift:
-    0 2px 0 rgba(0, 0, 0, 0.14), 0 24px 48px -16px rgba(0, 0, 0, 0.55),
-    0 8px 16px -4px rgba(0, 0, 0, 0.25);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --paper: #1b1713;
+  --paper-soft: #241e18;
+  --paper-deep: #30271e;
+  --paper-edge: #504335;
+  --paper-edge-wear: radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.35));
+  --ink: #f1e8d8;
+  --ink-soft: #d7cbb8;
+  --ink-muted: #ab9c87;
+  --ink-rule: #8e806d;
+  --ink-rule-strong: var(--ink);
+  --accent: #d46b5f;
+  --accent-red: var(--accent);
+  --accent-deep: #f08c7d;
+  --accent-gold: #d6b25b;
 }
 
-/* ── Aged texture preset ────────────────────────────────────────── */
-[data-texture="aged"] {
-  --paper-base: #e8dcbb;
-  --paper-soft: #ddd0a8;
-  --paper-deep: #cfc098;
-  --paper-edge: #c4b488;
-  --ink-base: #2b2016;
-  --ink-muted: #6b5a44;
-  --accent-red: #8b3a3a;
-  --accent-gold: #b8962e;
+/* The settings texture choices are color/gradient swaps only. */
+[data-theme="light"][data-texture="aged"] {
+  --paper: #eee2cb;
+  --paper-soft: #f8eedc;
+  --paper-deep: #e2d2b4;
+}
+[data-theme="light"][data-texture="rustic"] {
+  --paper: #e8d8bd;
+  --paper-soft: #f3e5cf;
+  --paper-deep: #d7c09b;
+}
+[data-theme="light"][data-texture="notice"] {
+  --paper: #e8e5d5;
+  --paper-soft: #f5f2e5;
+  --paper-deep: #d6d1bb;
+}
+[data-theme="light"][data-texture="dark"] {
+  --paper: #27221c;
+  --paper-soft: #332b23;
+  --paper-deep: #17130f;
+  --ink: #f1e8d8;
+  --ink-soft: #d7cbb8;
+  --ink-muted: #ab9c87;
+  --rule: #f1e8d8;
+  --accent: #d46b5f;
+}
+[data-theme="light"][data-texture="kraft"] {
+  --paper: #cdb58c;
+  --paper-soft: #e0c99e;
+  --paper-deep: #b99d6d;
+}
+[data-theme="light"][data-texture="parchment"] {
+  --paper: #f3e8c8;
+  --paper-soft: #fff4d8;
+  --paper-deep: #e1d0a7;
+}
+[data-theme="light"][data-texture="slate"] {
+  --paper: #d6d7d0;
+  --paper-soft: #e8e9e2;
+  --paper-deep: #bec1b8;
 }
 
-/* ── Dark texture preset ────────────────────────────────────────── */
-[data-texture="dark"] {
-  --paper-base: #2a2520;
-  --paper-soft: #332d27;
-  --paper-deep: #1e1a16;
-  --ink-base: #d4c9b8;
-  --ink-muted: #8a7d6e;
-  --accent-red: #d43636;
-  --accent-gold: #e8c55a;
+[data-reduce-motion] *,
+[data-reduce-motion="on"] *,
+[data-reduce-motion] *::before,
+[data-reduce-motion="on"] *::before,
+[data-reduce-motion] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
-/* ── Kraft paper preset ────────────────────────────────────────── */
-[data-texture="kraft"] {
-  --paper-base: #c4a26c;
-  --paper-soft: #b89658;
-  --paper-deep: #a88548;
-  --paper-edge: #9a7838;
-  --ink-base: #2e1e0a;
-  --ink-soft: #3d2e18;
-  --ink-muted: #6b5540;
-  --ink-rule: rgba(46, 30, 10, 0.22);
-  --ink-rule-strong: rgba(46, 30, 10, 0.45);
-  --accent-red: #7a1e1e;
-  --accent-gold: #b89638;
-}
-
-/* ── Parchment preset ─────────────────────────────────────────── */
-[data-texture="parchment"] {
-  --paper-base: #f0e6cc;
-  --paper-soft: #e8dcc0;
-  --paper-deep: #ddd0b4;
-  --ink-base: #3a2a14;
-  --ink-soft: #4a3a24;
-  --ink-muted: #7a6a54;
-  --ink-rule: rgba(58, 42, 20, 0.22);
-  --ink-rule-strong: rgba(58, 42, 20, 0.45);
-  --accent-red: #6b1e1e;
-  --accent-gold: #a88538;
-}
-
-/* ── Slate preset ──────────────────────────────────────────────── */
-[data-texture="slate"] {
-  --paper-base: #2d3748;
-  --paper-soft: #354254;
-  --paper-deep: #1f2937;
-  --ink-base: #e2e8f0;
-  --ink-soft: #cbd5e1;
-  --ink-muted: #94a3b8;
-  --ink-rule: rgba(226, 232, 240, 0.22);
-  --ink-rule-strong: rgba(226, 232, 240, 0.45);
-  --accent-red: #fc8181;
-  --accent-gold: #f6e05e;
-}
-
-/* ── Rustic preset — coffee-stained, aged, warm ─────────────────── */
-[data-texture="rustic"] {
-  --paper-base: #e0d4b8;
-  --paper-soft: #d4c4a0;
-  --paper-deep: #c4b088;
-  --paper-edge: #b09868;
-  --paper-stain: #8b6b3a;
-  --ink-base: #2a1e0e;
-  --ink-soft: #3d2e18;
-  --ink-muted: #6b5540;
-  --ink-rule: rgba(42, 30, 14, 0.22);
-  --ink-rule-strong: rgba(42, 30, 14, 0.5);
-  --accent-red: #8b2828;
-  --accent-gold: #a07820;
-  /* Heavier stains for the rustic look */
-  --paper-stains:
-    radial-gradient(circle at 15% 75%, rgba(139, 107, 58, 0.25), transparent 35%),
-    radial-gradient(circle at 85% 20%, rgba(139, 90, 43, 0.2), transparent 30%),
-    radial-gradient(circle at 50% 50%, rgba(101, 67, 33, 0.08), transparent 45%);
-}
-
-/* ── Fresh preset — clean, bright, modern ───────────────────────── */
-[data-texture="fresh"] {
-  --paper-base: #f8f5ef;
-  --paper-soft: #f0ece2;
-  --paper-deep: #e4ddd0;
-  --paper-edge: #d0c8b8;
-  --paper-stain: #b8a878;
-  --ink-base: #1a1612;
-  --ink-soft: #2b2520;
-  --ink-muted: #6b655c;
-  --ink-rule: rgba(26, 22, 18, 0.15);
-  --ink-rule-strong: rgba(26, 22, 18, 0.35);
-  --accent-red: #9e1818;
-  --accent-gold: #c9a84c;
-  /* Minimal stains for the fresh look */
-  --paper-stains: radial-gradient(circle at 90% 10%, rgba(184, 168, 120, 0.06), transparent 25%);
-}
-
-/* ── Notice Board preset — corkboard with pinned cards ──────────── */
-[data-texture="notice"] {
-  --paper-base: #c9a87c;
-  --paper-soft: #b89868;
-  --paper-deep: #a08850;
-  --paper-edge: #8a7040;
-  --paper-stain: #7a5c30;
-  --ink-base: #2a1e0a;
-  --ink-soft: #3d2e18;
-  --ink-muted: #6b5535;
-  --ink-rule: rgba(42, 30, 10, 0.25);
-  --ink-rule-strong: rgba(42, 30, 10, 0.5);
-  --accent-red: #8b2020;
-  --accent-gold: #a08020;
-  /* Corkboard texture stains */
-  --paper-stains:
-    radial-gradient(circle at 20% 30%, rgba(122, 92, 48, 0.15), transparent 30%),
-    radial-gradient(circle at 70% 60%, rgba(100, 75, 40, 0.12), transparent 28%),
-    radial-gradient(circle at 45% 85%, rgba(90, 68, 35, 0.1), transparent 25%);
-}
-
-/* Dark texture + dark theme — reinforce the dark palette */
-[data-theme="dark"][data-texture="dark"] {
-  --paper-base: #201c18;
-  --paper-soft: #2a2520;
-  --ink-base: #c4b8a4;
-  --ink-rule: rgba(196, 184, 164, 0.22);
-  --ink-rule-strong: rgba(196, 184, 164, 0.45);
-}
-
-/* ── Global reduced-motion safety net ───────────────────
-   Disables all CSS animations and transitions for users who
-   have enabled the OS-level "reduce motion" setting. This is
-   a catch-all; individual files may apply more granular
-   overrides (e.g. setting animation: none on specific elements).
-   Keeps transforms for layout (position, size) but removes
-   decorative motion (fades, slides, rotations, pulses). */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -361,16 +143,4 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ── Manual reduce-motion override ───────────────────────
-   When the user explicitly enables "Reduce motion" in settings,
-   this attribute is set on <html> regardless of the OS preference. */
-[data-reduce-motion="on"] *,
-[data-reduce-motion="on"] *::before,
-[data-reduce-motion="on"] *::after {
-  animation-duration: 0.001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.001ms !important;
-  scroll-behavior: auto !important;
 }

@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v15";
+const CACHE_NAME = "sac-v16";
 
 const STATIC_ASSETS = [
   // Core
@@ -24,6 +24,8 @@ const STATIC_ASSETS = [
   "css/pages/club.css",
   "css/pages/events.css",
   "css/pages/gallery.css",
+  "css/enhancements.css",
+  "css/print.css",
   "css/loader.css",
   "css/preloader.css",
   "js/main.js",
@@ -49,6 +51,7 @@ const STATIC_ASSETS = [
   "js/components/footer.js",
   "js/components/settings.js",
   "js/components/viewer.js",
+  "js/components/three-fold.js",
   "js/pages/home.js",
   "js/pages/clubs.js",
   "js/pages/club-images.js",

@@ -1,33 +1,39 @@
-/* main.css — base layout & typography. Components live in components.css. */
+/* Shared broadsheet shell. The reference layout is editorial first: every
+   page is a paper sheet, and the sidebar is its margin/index. */
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
 
 body {
-  font-family: var(--font-serif);
-  font-size: calc(var(--fs-base) * var(--fs-scale));
-  background-color: var(--paper-base);
-  color: var(--ink-base);
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  /* Shared paper texture: grain + stains on every page, so theme
-     and texture settings apply consistently. */
-  background-image: var(--paper-grain), var(--paper-stains);
+  font-family: var(--font-body);
+  font-size: calc(var(--fs-base) * var(--fs-scale));
+  line-height: 1.55;
+  background-image: var(--paper-edge-wear), var(--paper-stains), var(--paper-grain);
   background-size:
-    320px 320px,
-    100% 100%;
-  background-repeat: repeat, no-repeat;
-  background-attachment: fixed, fixed;
+    100% 100%,
+    100% 100%,
+    320px 320px;
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-attachment: fixed, fixed, fixed;
 }
 
 main {
   flex: 1;
-  width: 100%;
-  max-width: var(--max-w-content);
+  width: min(100% - 2rem, var(--max-w));
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4);
+  padding: 2.5rem 0 4rem;
 }
 
-header {
-  display: contents;
+@media (min-width: 1024px) {
+  main {
+    width: min(calc(100% - var(--sidebar-w) - 4rem), var(--max-w));
+    margin-left: calc(var(--sidebar-w) + 2rem);
+    margin-right: 2rem;
+  }
 }
 
 h1,
@@ -36,10 +42,11 @@ h3,
 h4,
 h5,
 h6 {
+  color: var(--ink);
   font-family: var(--font-display);
-  line-height: 1.2;
-  font-weight: 600;
-  color: var(--ink-base);
+  font-weight: 700;
+  line-height: 0.98;
+  text-transform: uppercase;
 }
 
 h1 {
@@ -47,24 +54,28 @@ h1 {
 }
 h2 {
   font-size: var(--fs-2xl);
-  margin-bottom: var(--space-3);
 }
 h3 {
   font-size: var(--fs-xl);
-  margin-bottom: var(--space-2);
 }
 h4 {
   font-size: var(--fs-lg);
-  margin-bottom: var(--space-2);
 }
 
 a {
-  color: var(--accent-red);
-  text-decoration: none;
-  transition: color var(--transition);
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
-a:hover {
-  text-decoration: underline;
+
+a:hover,
+a:focus-visible {
+  color: var(--accent-deep);
+}
+
+p,
+li {
+  max-width: 72ch;
 }
 
 p {
@@ -73,426 +84,128 @@ p {
 
 ul,
 ol {
-  margin-bottom: var(--space-3);
-  padding-left: var(--space-5);
+  padding-left: 1.25rem;
+  margin-bottom: var(--space-4);
 }
-ul li,
-ol li {
-  margin-bottom: var(--space-1);
+
+li {
+  margin-bottom: 0.35rem;
+}
+
+blockquote {
+  border-block: 2px solid var(--rule);
+  font-size: var(--fs-md);
+  font-style: italic;
+  margin: 1.5rem 0;
+  padding: 0.9rem 1rem;
 }
 
 code {
+  background: var(--paper-deep);
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  background: var(--color-border);
-  padding: 0.1em 0.3em;
-  border-radius: var(--radius-sm);
+  padding: 0.1em 0.25em;
 }
 
-img {
-  height: auto;
-}
-
-/* Utility classes */
-.muted {
+.muted,
+.page-sub,
+.section-sub {
   color: var(--ink-muted);
+}
+
+.page-title,
+.section-title {
+  border-block: var(--rule-heavy);
+  margin-bottom: 0.6rem;
+  padding: 0.65rem 0;
+}
+
+.page-title {
+  font-size: clamp(2.5rem, 7vw, 5rem);
+}
+.page-sub {
+  font-size: var(--fs-md);
+  margin-bottom: 2rem;
 }
 .section-title {
   font-size: var(--fs-2xl);
-  margin-bottom: var(--space-1);
-}
-.section-sub {
-  color: var(--ink-muted);
-  margin-bottom: var(--space-4);
-}
-.page-title {
-  font-size: var(--fs-4xl);
-  margin-bottom: var(--space-2);
-}
-.page-sub {
-  color: var(--ink-muted);
-  font-size: var(--fs-lg);
-  margin-bottom: var(--space-6);
 }
 .back-link {
   display: inline-block;
-  margin-bottom: var(--space-3);
-  font-size: var(--fs-sm);
-}
-
-.noscript-warning {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-fg);
-  padding: var(--space-3);
-  text-align: center;
-  border-top: 1px solid var(--color-warning-border);
-  font-size: var(--fs-sm);
-}
-
-/* Small-screen tweaks */
-@media (max-width: 640px) {
-  main {
-    padding: var(--space-4) var(--space-3);
-  }
-  h1 {
-    font-size: var(--fs-3xl);
-  }
-  .page-title {
-    font-size: var(--fs-3xl);
-  }
-}
-
-/* =========================================================================
-   Entrance animations — shared across all pages.
-
-   Headings drop in with a slight rotateX, paragraphs fade up, and
-   the whole content block has a subtle perspective shift. These fire
-   immediately (small delays) so the user sees motion right away.
-   Paused while the loader is active on the home page.
-   ========================================================================= */
-
-main h1,
-main h2,
-main h3 {
-  animation: subPageHeadingDrop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transform-origin: top center;
-}
-main h1 {
-  animation-delay: 0.1s;
-}
-main h2 {
-  animation-delay: 0.2s;
-}
-main h3 {
-  animation-delay: 0.3s;
-}
-
-main p,
-main li,
-main blockquote {
-  animation: subPageContentFade 0.6s ease both;
-}
-main p:nth-child(1) {
-  animation-delay: 0.15s;
-}
-main p:nth-child(2) {
-  animation-delay: 0.25s;
-}
-main p:nth-child(3) {
-  animation-delay: 0.35s;
-}
-main p:nth-child(4) {
-  animation-delay: 0.45s;
-}
-main p:nth-child(5) {
-  animation-delay: 0.55s;
-}
-main li {
-  animation-delay: 0.3s;
-}
-main blockquote {
-  animation-delay: 0.2s;
-}
-
-@keyframes subPageHeadingDrop {
-  0% {
-    opacity: 0;
-    transform: translateY(-16px) rotateX(-20deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) rotateX(0);
-  }
-}
-
-@keyframes subPageContentFade {
-  0% {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Pause sub-page animations while the home page loader is active */
-body.loader-active main h1,
-body.loader-active main h2,
-body.loader-active main h3,
-body.loader-active main p,
-body.loader-active main li,
-body.loader-active main blockquote {
-  animation-play-state: paused !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  main h1,
-  main h2,
-  main h3,
-  main p,
-  main li,
-  main blockquote {
-    animation: none !important;
-  }
-}
-
-/* =========================================================================
-   Newspaper theme — scoped to the home page only.
-
-   Switching the global body / nav / footer tokens here (instead of in
-   pages/home.css) keeps the change isolated: other pages still get the
-   modern light theme.
-   ========================================================================= */
-
-body[data-page="home"] {
-  font-family: var(--font-serif);
-  color: var(--ink-base);
-  background-color: var(--paper-base);
-  /* Layered newspaper textures:
-       1. Single page-covering vignette (NOT tiled — eliminates the
-          320×320 dark-bordered square grid)
-       2. Real paper texture from Pexels photo (tiled, gives authentic
-          rough-paper feel with visible fibres)
-       3. Subtle radial stains (positioned once, not tiled)
-       4. Fine paper grain (feTurbulence SVG, tiled — adds micro-detail)
-     All background-attachment: fixed so they stay locked as the user
-     scrolls — a parallax-free, print-like surface. */
-  /* image-set() lets us swap in @2x assets later without touching
-     this rule. Today the only DPI is 1x; when @2x variants are
-     generated, append `, url("../assets/natural-paper@2x.png") 2x`.
-     Plain url() fallback is declared first for browsers without
-     image-set() support; the -webkit- prefix covers Safari < 16.4. */
-  background-image:
-    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
-    url("../assets/natural-paper.png"), var(--paper-stains), var(--paper-grain);
-  background-image:
-    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
-    -webkit-image-set(url("../assets/natural-paper.png") 1x),
-    var(--paper-stains),
-    var(--paper-grain);
-  background-image:
-    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(24, 20, 16, 0.1) 100%),
-    image-set(url("../assets/natural-paper.png") 1x), var(--paper-stains), var(--paper-grain);
-  background-size:
-    100vw 100vh,
-    400px auto,
-    100% 100%,
-    320px 320px;
-  background-position:
-    center top,
-    0 0,
-    0 0,
-    0 0;
-  background-repeat: no-repeat, repeat, no-repeat, repeat;
-  background-blend-mode: multiply, multiply, normal, multiply;
-  background-attachment: fixed, fixed, fixed, fixed;
-}
-
-body[data-page="home"] h1,
-body[data-page="home"] h2,
-body[data-page="home"] h3,
-body[data-page="home"] h4,
-body[data-page="home"] h5,
-body[data-page="home"] h6 {
-  font-family: var(--font-display);
-}
-
-body[data-page="home"] a {
-  color: var(--accent-red);
-}
-
-body[data-page="home"] .navbar {
-  background-color: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border-bottom: var(--rule-heavy);
-  /* Remove the modern blur — the masthead already handles separation. */
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-body[data-page="home"] .navbar__brand,
-body[data-page="home"] .nav-link {
-  color: var(--ink-base);
-  font-family: var(--font-display);
-  letter-spacing: 0.02em;
-}
-
-body[data-page="home"] .nav-link:hover {
-  background: var(--paper-deep);
-}
-
-body[data-page="home"] .nav-link--active {
-  background: var(--ink-base);
-  color: var(--paper-base);
-}
-
-body[data-page="home"] .navbar-corner {
-  /* The corner sits on top of the masthead's first paper layer, so
-     it inherits the same paper palette + accent ink. */
-  color: var(--ink-base);
-}
-
-body[data-page="home"] .site-footer {
-  background-color: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border-top: var(--rule-heavy);
-  border-bottom: var(--rule-double);
-  color: var(--ink-muted);
-  font-family: var(--font-mono-serif);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  padding-top: var(--space-6);
-  padding-bottom: var(--space-6);
-}
-
-/* =========================================================================
-   Non-home pages — use the same newspaper tokens as the home page.
-   The paper texture and ink colors now cascade from :root, so non-home
-   pages get the same visual treatment. Only the extra newspaper-specific
-   overlays (vignette, natural-paper.png) are home-only.
-   ========================================================================= */
-
-/* Navbar on non-home pages: newspaper tokens */
-body:not([data-page="home"]) .navbar {
-  background-color: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border-bottom: var(--rule-heavy);
-}
-body:not([data-page="home"]) .navbar .nav-link {
-  color: var(--ink-base);
-  font-family: var(--font-display);
-}
-body:not([data-page="home"]) .navbar .nav-link:hover {
-  background: var(--paper-deep);
-}
-body:not([data-page="home"]) .navbar .nav-link--active {
-  background: var(--ink-base);
-  color: var(--paper-base);
-}
-
-/* Footer on non-home pages: newspaper tokens */
-body:not([data-page="home"]) .site-footer {
-  background-color: var(--paper-base);
-  background-image: var(--paper-grain), var(--paper-stains);
-  background-size:
-    320px 320px,
-    100% 100%;
-  border-top: var(--rule-heavy);
-  color: var(--ink-muted);
-  font-family: var(--font-mono-serif);
-  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
   text-transform: uppercase;
-  font-size: var(--fs-xs);
 }
 
-/* Corner button */
-body:not([data-page="home"]) .navbar-corner {
-  color: var(--ink-base);
-}
-body:not([data-page="home"]) .navbar-corner::before {
-  background: var(--paper-base);
-}
-body:not([data-page="home"]) .navbar-corner::after {
-  background: var(--paper-base);
-  box-shadow:
-    -2px 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px var(--ink-rule-strong);
-}
-body:not([data-page="home"]) .navbar-corner:hover::after {
-  box-shadow:
-    -3px 3px 12px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px var(--ink-rule-strong);
-}
-body:not([data-page="home"]) .navbar-corner.is-open::after {
-  box-shadow:
-    -4px 4px 14px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px var(--ink-rule-strong);
+.skip-link {
+  background: var(--ink);
+  color: var(--paper);
+  left: 0.75rem;
+  padding: 0.5rem 0.8rem;
+  position: fixed;
+  top: 0.75rem;
+  transform: translateY(-180%);
+  z-index: 1500;
 }
 
-/* Settings panel uses newspaper tokens on all pages now */
-body:not([data-page="home"]) .settings-fab {
-  background: var(--paper-base);
-  border-color: var(--ink-rule-strong);
-  color: var(--ink-base);
-}
-body:not([data-page="home"]) .settings-panel {
-  background: var(--paper-base);
-  border-left-color: var(--ink-rule-strong);
-}
-body:not([data-page="home"]) .settings-close {
-  color: var(--ink-base);
-  border-color: var(--ink-rule-strong);
-}
-body:not([data-page="home"]) .settings-close:hover {
-  background: var(--ink-rule);
+.skip-link:focus {
+  transform: translateY(0);
 }
 
-/* ── Touch device override ───────────────────────────────────────────
-   iOS Safari silently treats background-attachment: fixed as scroll on
-   non-root elements, and the 4-fixed-layer stack on body causes scroll
-   jank on mobile browsers that do attempt to honour it. Switch to scroll
-   on all touch/coarse-pointer devices to match actual rendering behaviour
-   and eliminate the jank. */
+.noscript-warning,
+.error-state {
+  border: 1px solid var(--ink-rule);
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+.error-state__title {
+  margin-bottom: 0.5rem;
+}
+.error-state__detail {
+  color: var(--ink-muted);
+}
+.error-state__btn {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.55rem 0.9rem;
+}
+
+body:not([data-page="home"]) main > * {
+  animation: paper-in 420ms ease both;
+}
+
+@keyframes paper-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (hover: none) and (pointer: coarse) {
   body,
   body[data-page="home"] {
     background-attachment: scroll;
   }
-  /* Reduce compositor layers on touch devices: the 4-layer fixed
-     background stack (vignette + natural-paper + stains + grain)
-     causes scroll jank on mobile GPUs. On touch devices we keep
-     only the grain overlay (vector, tile-friendly) and the base
-     colour — the visual impact is minimal at phone scale. */
   body[data-page="home"] {
     background-image: var(--paper-grain);
-    background-size: 320px 320px;
+    background-size: 320px auto;
   }
 }
 
-/* ── Error state ───────────────────────────────────────────────────
-   Displayed when data loading fails (JSONL fetch, network, etc.).
-   Styled to match the newspaper theme — muted tones, serif fonts. */
-.error-state {
-  text-align: center;
-  padding: var(--space-7, 3rem) var(--space-4, 1rem);
-  max-width: 480px;
-  margin: 0 auto;
-}
-.error-state__title {
-  font-family: var(--font-display, Georgia, serif);
-  font-size: var(--fs-xl, 1.25rem);
-  font-weight: 700;
-  color: var(--ink-base, #181410);
-  margin-bottom: var(--space-3, 0.75rem);
-}
-.error-state__detail {
-  font-size: var(--fs-sm, 0.875rem);
-  color: var(--ink-muted, #5b4f3d);
-  margin-bottom: var(--space-5, 1.5rem);
-  line-height: 1.6;
-}
-.error-state__btn {
-  padding: 0.5rem 1.2rem;
-  font-family: var(--font-display, Georgia, serif);
-  font-size: var(--fs-sm, 0.875rem);
-  color: var(--paper-base, #f4f0e6);
-  background: var(--ink-base, #181410);
-  border: none;
-  border-radius: var(--radius, 8px);
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-.error-state__btn:hover {
-  opacity: 0.85;
+/* Optional DPI-safe hooks for older deployments that still ship a raster
+   paper file. The active surface above remains gradient-only. */
+/* image-set(url("../assets/natural-paper.png") 1x); background-size: 400px auto; */
+
+@media (max-width: 640px) {
+  main {
+    padding-top: 4.5rem;
+  }
+  h1 {
+    font-size: var(--fs-3xl);
+  }
 }
