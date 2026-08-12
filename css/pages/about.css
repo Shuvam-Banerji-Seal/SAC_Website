@@ -4,14 +4,20 @@
   padding-top: 1rem;
 }
 .prose h1 {
+  font-family: var(--font-body);
   font-size: clamp(2.8rem, 8vw, 5rem);
+  letter-spacing: -0.04em;
   margin-bottom: 1rem;
+  text-transform: none;
 }
 .prose h2 {
   border-bottom: 1px solid var(--rule);
+  font-family: var(--font-body);
   font-size: var(--fs-xl);
+  letter-spacing: -0.025em;
   margin: 2rem 0 0.75rem;
   padding-bottom: 0.35rem;
+  text-transform: none;
 }
 .prose .lede {
   font-size: var(--fs-md);

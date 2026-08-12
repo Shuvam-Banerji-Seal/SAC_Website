@@ -29,7 +29,7 @@
  */
 import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
-import { revealText, initScrollSounds, playPageTurn } from "../utils/calligraphy.js";
+import { initScrollSounds, playPageTurn } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
 import { measureText } from "../utils/text-measure.js";
@@ -522,19 +522,6 @@ export async function initHome() {
     if (resizeTimer) cancelAnimationFrame(resizeTimer);
     resizeTimer = requestAnimationFrame(adjustLeadLayout);
   });
-
-  // Calligraphy text reveal: headline appears as if being written.
-  // Only on first visit (not on resize or re-init).
-  if (!window.__sacCalligraphyDone) {
-    window.__sacCalligraphyDone = true;
-    const headline = document.querySelector(".lead-article__headline");
-    if (headline) {
-      // Wait for fonts to load before revealing
-      document.fonts?.ready?.then(() => {
-        revealText(headline, 2000, undefined, { sound: true, trail: true });
-      });
-    }
-  }
 
   // Load YouTube and Calendar sections in the background
   loadYouTubeSection();

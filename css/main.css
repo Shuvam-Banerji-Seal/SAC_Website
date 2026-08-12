@@ -52,7 +52,7 @@ h6 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 0.98;
-  text-transform: uppercase;
+  text-wrap: balance;
 }
 
 h1 {
@@ -121,8 +121,11 @@ code {
 .page-title,
 .section-title {
   border-block: var(--rule-heavy);
+  font-family: var(--font-body);
+  letter-spacing: -0.025em;
   margin-bottom: 0.6rem;
   padding: 0.65rem 0;
+  text-transform: none;
 }
 
 .page-title {

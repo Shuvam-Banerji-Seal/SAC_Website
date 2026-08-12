@@ -76,9 +76,21 @@
 }
 
 .club-detail__title {
+  font-family: var(--font-body);
   font-size: clamp(2.2rem, 7vw, 5.5rem);
+  letter-spacing: -0.045em;
+  line-height: 0.92;
   max-width: 18ch;
   overflow-wrap: anywhere;
+  text-transform: none;
+}
+
+.club-detail__title::after {
+  border-bottom: var(--rule-double);
+  content: "";
+  display: block;
+  margin-top: 0.7rem;
+  width: min(100%, 13rem);
 }
 
 .club-detail__stats {
@@ -140,9 +152,12 @@
 .club-detail__section h2,
 .club-detail__section-title,
 .club-detail__image-block h2 {
+  font-family: var(--font-body);
   border-bottom: 2px solid var(--rule);
   font-size: var(--fs-xl);
+  letter-spacing: -0.025em;
   padding-bottom: 0.35rem;
+  text-transform: none;
 }
 
 .club-detail__image-block {

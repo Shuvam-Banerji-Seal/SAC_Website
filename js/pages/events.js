@@ -6,7 +6,6 @@
  */
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
-import { revealText } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 
 export async function initEvents() {
@@ -96,15 +95,6 @@ export async function initEvents() {
             )
       )
     );
-
-    // Calligraphy text reveal for the events title
-    const title = document.getElementById("eventsTitle");
-    if (title) {
-      document.fonts?.ready?.then(() => {
-        if (title.offsetParent !== null)
-          revealText(title, 1500, undefined, { sound: true, trail: true });
-      });
-    }
 
     // Client-side search
     const searchInput = $("#events-search");

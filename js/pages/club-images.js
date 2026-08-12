@@ -7,7 +7,7 @@
  */
 import { el, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries } from "../data.js";
-import { revealText, initScrollSounds } from "../utils/calligraphy.js";
+import { initScrollSounds } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { measureText } from "../utils/text-measure.js";
 
@@ -196,12 +196,5 @@ export async function initClubImages() {
   addTableDataLabels();
   wrapTables();
 
-  const title = document.getElementById("clubTitle");
-  if (title && !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
-    document.fonts?.ready?.then(() => {
-      if (title.offsetParent !== null)
-        revealText(title, 1400, undefined, { sound: true, trail: true });
-    });
-  }
   initScrollSounds();
 }

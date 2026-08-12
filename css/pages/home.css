@@ -28,9 +28,12 @@
   text-transform: uppercase;
 }
 .masthead__title {
+  font-family: var(--font-display);
   font-size: clamp(3rem, 9vw, 7rem);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.035em;
   line-height: 0.82;
+  text-transform: uppercase;
+  text-wrap: balance;
 }
 .masthead__title em,
 .masthead__title .masthead__accent {
@@ -57,10 +60,34 @@
   padding-bottom: 2rem;
 }
 .lead-article__headline {
-  font-size: clamp(2rem, 6vw, 4.5rem);
-  line-height: 0.9;
+  font-family: var(--font-body);
+  font-size: clamp(2.35rem, 6vw, 5.1rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
   margin-bottom: 0.8rem;
   max-width: 16ch;
+  position: relative;
+  text-transform: none;
+}
+.lead-article__headline::before {
+  color: var(--accent);
+  content: "Front page · Lead story";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+.lead-article__headline::after {
+  border-bottom: var(--rule-double);
+  content: "";
+  display: block;
+  margin-top: 0.75rem;
+  width: min(100%, 15rem);
 }
 .lead-article__deck {
   border-left: 3px solid var(--accent);
@@ -146,7 +173,10 @@
   text-transform: uppercase;
 }
 .body-banner__title {
+  font-family: var(--font-body);
   font-size: clamp(1.75rem, 4vw, 3rem);
+  letter-spacing: -0.025em;
+  text-transform: none;
 }
 .body-banner__tagline {
   color: var(--ink-muted);
@@ -268,11 +298,13 @@
 }
 .pinned-card__title,
 .notebook-card__caption {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--fs-md);
-  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
   overflow-wrap: anywhere;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .pinned-card__title {
   display: -webkit-box;

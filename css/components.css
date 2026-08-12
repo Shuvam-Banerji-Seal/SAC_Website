@@ -318,9 +318,14 @@ body.sidebar-open .sidebar-scrim {
 }
 .paper-card__name,
 .club-card__name {
+  font-family: var(--font-body);
   font-size: var(--fs-md);
-  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   margin-bottom: 0.45rem;
+  text-transform: none;
+  text-wrap: balance;
 }
 .paper-card__rule {
   border-top: 2px solid var(--accent);

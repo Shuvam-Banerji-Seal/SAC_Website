@@ -27,8 +27,11 @@
   padding-top: 1rem;
 }
 .gallery__section-title {
+  font-family: var(--font-body);
   font-size: var(--fs-2xl);
+  letter-spacing: -0.025em;
   margin-bottom: 1.5rem;
+  text-transform: none;
 }
 .gallery__club {
   border-top: 1px solid var(--ink-rule);
@@ -36,7 +39,10 @@
   padding-top: 0.8rem;
 }
 .gallery__club-name {
+  font-family: var(--font-body);
   font-size: var(--fs-xl);
+  letter-spacing: -0.025em;
+  text-transform: none;
 }
 .gallery__club-name::before {
   color: var(--accent);
