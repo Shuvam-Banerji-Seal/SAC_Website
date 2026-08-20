@@ -31,8 +31,8 @@ SAC_Website/
 ├── docs/                       # 20 research documents on paper textures, animations, typography
 ├── diagrams/                   # Mermaid/architecture diagrams
 ├── test/                       # 13 test files (160 tests) + setup + e2e/integration/fixtures
-├── public/                     # Git submodule → SAC_website_assets (1471 JSONL entries)
-│   └── assets/processed/       # assets_map.jsonl + WebP images + markdown docs
+├── public/                     # Git submodule → SAC_website_assets (1393 processed entries)
+│   └── assets/processed/       # assets_map.jsonl + source ledger + website-ready media/docs
 ├── utils/                      # Git submodule → chenglou/pretext (text measurement library)
 │   └── pretext/                # TypeScript source for @chenglou/pretext (v0.0.8)
 └── .playwright-mcp/            # Playwright MCP session logs (console captures + page snapshots, gitignored)
@@ -45,7 +45,8 @@ SAC_Website/
 ### `public/assets` (SSH: `git@github.com:slashdot-iiserk/SAC_website_assets.git`)
 
 - **Purpose**: Houses all processed media — images and markdown documents.
-- **Key file**: `public/assets/processed/assets_map.jsonl` — the canonical **1471-entry** metadata file (31 clubs, 1301 images, 170 markdown docs).
+- **Key file**: `public/assets/processed/assets_map.jsonl` — the canonical **1393-entry** metadata file (32 indexed clubs, 1099 WebP images, 185 Markdown docs, 101 videos, 7 audio files, and 1 JSON record).
+- **Source accounting**: `public/assets/processed/source_manifest.jsonl` records all **1033** source files and their processed outputs.
 - **CI requirement**: Deploy fails if this submodule isn't checked out (`public/assets/processed/` must exist).
 
 ### `utils/pretext` (SSH: `git@github.com:chenglou/pretext.git`)
@@ -146,7 +147,7 @@ main.js
 │                           YOUTUBE + CALENDAR API keys (referrer-restricted)
 │
 ├── data.js               — loadAssetsMap(), indexByClub(), getClub(), getClubEntries()
-│   └── Fetches: public/assets/processed/assets_map.jsonl (1471 lines, cached Promise + sessionStorage cache, 10-min TTL)
+│   └── Fetches: public/assets/processed/assets_map.jsonl (1393 lines, cached Promise + sessionStorage cache, 10-min TTL)
 │
 ├── components/
 │   ├── navbar.js         — renderNavbar(activePage): builds <nav class="navbar"> from NAV_ITEMS
@@ -179,7 +180,7 @@ main.js
 ### Core Data Flow
 
 ```
-assets_map.jsonl (1471 entries)
+assets_map.jsonl (1393 entries)
     │
     ▼
 loadAssetsMap() ── fetch + parse JSONL → Array<AssetEntry>
@@ -544,11 +545,11 @@ checkout → verify critical paths (index.html, css/, js/, pages/, public/assets
 
 ## 16. Assets (`public/assets/` Submodule + `assets/` Directory)
 
-### `public/assets/processed/` (Git submodule — 1471 entries)
+### `public/assets/processed/` (Git submodule — 1393 map entries)
 
-The `assets_map.jsonl` is a newline-delimited JSON file with 1471 records:
+The `assets_map.jsonl` is a newline-delimited JSON file with 1393 records:
 
-- **1471 records** — 1301 images + 170 markdown documents across **31 clubs**
+- **1393 records** — 1099 WebP images + 185 Markdown documents + 101 MP4 videos + 7 audio files + 1 JSON record across **32 indexed clubs**
 - 32 fields per record: path, public_url, filename, width, height, orientation, club, club_name, is_logo, is_markdown_content, is_ob_portrait, is_extracted_from_doc, is_event, is_iicm, role, file_type, mime, tenure, year, person, ob_role, tags, title, description, taken_at, venue, competition, alt_text, copyright, credit, parent_path, original_filename
 
 ### Image Roles

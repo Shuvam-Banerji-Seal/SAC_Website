@@ -72,6 +72,9 @@ export const TEXTURES = {
   linen: { label: "Stressed linen" },
   groove: { label: "Groove paper" },
   wall: { label: "Old wall" },
+  newsprint: { label: "Newsprint" },
+  ledger: { label: "Ledger" },
+  blueprint: { label: "Blueprint" },
 };
 
 export function loadPrefs() {

@@ -384,7 +384,8 @@ describe("Phase 6.5: Error states for failed JSONL", () => {
   it("home.js uses showError on fetch failure", () => {
     const home = read("/js/pages/home.js");
     expect(home).toContain("showError");
-    expect(home).toContain("Could not load club data");
+    // Editorial cover uses "Could not load the front page" (clubs were moved to Clubs page per new_design.md)
+    expect(home).toContain("Could not load the front page");
   });
 
   it("clubs.js uses showError on fetch failure", () => {

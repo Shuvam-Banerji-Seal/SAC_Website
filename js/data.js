@@ -1,8 +1,8 @@
 /**
  * data.js — loads and indexes the canonical assets_map.jsonl.
  *
- * The map is the single source of truth for the website: 1471 entries
- * (1301 WebP images + 170 markdown docs) with website-grade metadata
+ * The map is the single source of truth for the website: processed image,
+ * document, video, audio, and auxiliary data entries with website-grade metadata
  * (paths, dimensions, orientation, role, tenure, year, person, ob_role,
  * MIME, tags, public URL).
  *
@@ -28,7 +28,7 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
 
 let cachePromise = null;
 // Bump this when assets change to invalidate stale sessionStorage cache
-const CACHE_VERSION = "sac-v17";
+const CACHE_VERSION = "sac-v18";
 
 function fetchJsonl() {
   if (!cachePromise) {

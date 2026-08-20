@@ -46,7 +46,10 @@ function isPrivatePlaceholder(title) {
 
 /**
  * Fetch upcoming events from a public Google Calendar.
- * @returns {Promise<Array<{title, date, dateTime, dateLabel, location, description}>>}
+ * The endpoint returns attendees, start/end, location, summary, description
+ * but only if the calendar is public and the API key referrer allows the
+ * current domain. We request explicit fields to avoid partial responses.
+ * @returns {Promise<Array<{title,date,dateTime,dateLabel,dateEndLabel,location,description,people,attendees,htmlLink}>>}
  */
 export async function fetchUpcomingEvents() {
   const { API_KEY, CALENDAR_ID, MAX_RESULTS } = CALENDAR;
@@ -60,38 +63,82 @@ export async function fetchUpcomingEvents() {
       `&orderBy=startTime` +
       `&singleEvents=true` +
       `&timeMin=${now}` +
-      `&maxResults=${MAX_RESULTS}`;
+      `&maxResults=${MAX_RESULTS}` +
+      `&fields=items(id,summary,description,location,start,end,htmlLink,status,attendees(displayName,email),creator(displayName,email),organizer(displayName,email))`;
 
     const res = await fetch(url);
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
-      const reason = detail.match(/"message"\s*:\s*"([^"]+)/)?.[1];
+      const reason = detail.match(/"message"\s*:\s*"([^"]+)/)?.[1] || detail.slice(0, 180);
+      // Common failure: referrer not whitelisted or calendar not public — surface a helpful warning
+      if (res.status === 403) {
+        console.warn(
+          "[calendar] 403 — check Google Cloud referrer restriction and calendar visibility (must be public).",
+          reason
+        );
+      }
       throw new Error(`Calendar API: ${res.status}${reason ? ` — ${reason}` : ""}`);
     }
     const data = await res.json();
 
     return (data?.items || [])
       .map((item) => {
-        const start = item.start?.dateTime || item.start?.date || "";
+        const startRaw = item.start?.dateTime || item.start?.date || "";
+        const endRaw = item.end?.dateTime || item.end?.date || "";
         const isAllDay = !item.start?.dateTime;
-        const d = start ? new Date(start) : null;
-        const validDate = d && !Number.isNaN(d.getTime());
+        const startDate = startRaw ? new Date(startRaw) : null;
+        const endDate = endRaw ? new Date(endRaw) : null;
+        const validStart = startDate && !Number.isNaN(startDate.getTime());
+        const validEnd = endDate && !Number.isNaN(endDate.getTime());
+        const fmtDate = (d) =>
+          d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+        const fmtTime = (d) =>
+          d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
         const dateLabel = isAllDay
-          ? validDate
-            ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+          ? validStart
+            ? fmtDate(startDate)
             : "Date to be announced"
-          : validDate
-            ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) +
-              " · " +
-              d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })
+          : validStart
+            ? fmtDate(startDate) + " · " + fmtTime(startDate)
             : "Time to be announced";
+        const dateEndLabel = isAllDay
+          ? validEnd
+            ? fmtDate(endDate)
+            : ""
+          : validEnd
+            ? fmtTime(endDate)
+            : "";
+        const attendees = (item.attendees || [])
+          .map((a) => stripMarkup(a.displayName || a.email || ""))
+          .filter(Boolean);
+        // Fallback: try to extract people from description lines like "Speakers: X, Y" when no attendees array
+        const descText = stripMarkup(item.description);
+        const descPeople = (() => {
+          const m = descText.match(
+            /(?:speakers?|guests?|attendees?|participants?|organised by|organized by|by)\s*[:–—]\s*([^.\n]+)/i
+          );
+          return m
+            ? m[1]
+                .split(/[,;]/)
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [];
+        })();
+        const people = attendees.length ? attendees : descPeople;
         const title = eventTitle(item);
         return {
           title,
-          dateTime: start,
+          date: startRaw,
+          dateTime: startRaw,
           dateLabel,
-          location: item.location || "",
-          description: stripMarkup(item.description),
+          dateEndLabel,
+          dateEnd: endRaw,
+          location: stripMarkup(item.location || ""),
+          description: descText,
+          attendees,
+          people,
+          organizer: stripMarkup(item.organizer?.displayName || item.organizer?.email || ""),
+          creator: stripMarkup(item.creator?.displayName || item.creator?.email || ""),
           link: item.htmlLink || "",
           status: item.status || "confirmed",
           calendarId: item.id || "",

@@ -8,13 +8,40 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 
+function renderEventMedia(asset, groupName) {
+  if (asset.file_type === "video") {
+    return el(
+      "video",
+      {
+        controls: true,
+        preload: "metadata",
+        playsinline: true,
+        "aria-label": asset.title || asset.filename || "Event video",
+      },
+      el("source", {
+        src: assetUrl(asset.public_url),
+        type: asset.mime_type || "video/mp4",
+      })
+    );
+  }
+  return el("img", {
+    src: assetUrl(asset.public_url),
+    alt: asset.description,
+    loading: "lazy",
+    decoding: "async",
+    width: asset.width || undefined,
+    height: asset.height || undefined,
+    "data-viewer": groupName,
+  });
+}
+
 export async function initEvents() {
   const mount = $("#events-list");
   if (!mount) return;
   try {
     const assets = await loadAssetsMap();
     const events = assets
-      .filter((a) => a.is_iicm || a.is_event)
+      .filter((a) => a.is_iicm || a.is_event || a.file_type === "video")
       .sort((a, b) => (b.year || 0) - (a.year || 0));
 
     const byYear = new Map();
@@ -66,26 +93,28 @@ export async function initEvents() {
                           ).toLowerCase(),
                           style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
                         },
-                        el(
-                          "a",
-                          {
-                            href: assetUrl(e.public_url),
-                            "data-viewer": groupName,
-                            "data-title": e.title || e.filename || "",
-                            "data-desc": e.description || e.club_name || "",
-                            "data-credit": e.credit || "",
-                            "data-context": "Events \u00b7 " + y,
-                            title: e.title || e.filename || "",
-                          },
-                          el("img", {
-                            src: assetUrl(e.public_url),
-                            alt: e.description,
-                            loading: "lazy",
-                            decoding: "async",
-                            width: e.width || undefined,
-                            height: e.height || undefined,
-                          })
-                        ),
+                        e.file_type === "video"
+                          ? renderEventMedia(e, groupName)
+                          : el(
+                              "a",
+                              {
+                                href: assetUrl(e.public_url),
+                                "data-viewer": groupName,
+                                "data-title": e.title || e.filename || "",
+                                "data-desc": e.description || e.club_name || "",
+                                "data-credit": e.credit || "",
+                                "data-context": "Events \u00b7 " + y,
+                                title: e.title || e.filename || "",
+                              },
+                              el("img", {
+                                src: assetUrl(e.public_url),
+                                alt: e.description,
+                                loading: "lazy",
+                                decoding: "async",
+                                width: e.width || undefined,
+                                height: e.height || undefined,
+                              })
+                            ),
                         el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
                       );
                     })

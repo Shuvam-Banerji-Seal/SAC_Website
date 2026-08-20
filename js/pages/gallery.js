@@ -9,12 +9,41 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 
+function renderMediaCard(asset, index) {
+  const title = asset.title || asset.filename || "SAC media";
+  const source = el("source", {
+    src: assetUrl(asset.public_url),
+    type: asset.mime_type || undefined,
+  });
+  const media =
+    asset.file_type === "audio"
+      ? el("audio", { controls: true, preload: "metadata" }, source)
+      : el(
+          "video",
+          {
+            controls: true,
+            preload: "metadata",
+            playsinline: true,
+            "aria-label": title,
+          },
+          source
+        );
+  return el(
+    "li",
+    { class: "media-card", style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg` },
+    el("div", { class: "media-card__player" }, media),
+    el("p", { class: "media-card__title" }, title),
+    el("p", { class: "media-card__meta" }, asset.club_name || "SAC archive")
+  );
+}
+
 export async function initGallery() {
   const mount = $("#gallery-grid");
   if (!mount) return;
   try {
     const assets = await loadAssetsMap();
     const clubs = indexByClub(assets);
+    const media = assets.filter((a) => a.file_type === "video" || a.file_type === "audio");
 
     // Build club sections with data attributes for filtering
     const clubSections = clubs
@@ -40,7 +69,11 @@ export async function initGallery() {
                 },
                 el(
                   "a",
-                  { href: assetUrl(i.public_url), "data-viewer": groupName, title: i.title || i.filename },
+                  {
+                    href: assetUrl(i.public_url),
+                    "data-viewer": groupName,
+                    title: i.title || i.filename,
+                  },
                   el("img", {
                     src: assetUrl(i.public_url),
                     alt: i.description,
@@ -63,7 +96,15 @@ export async function initGallery() {
         "section",
         { class: "gallery", id: "gallery-grid" },
         el("h3", { class: "gallery__section-title reveal-section" }, "Photo Album"),
-        ...clubSections
+        ...clubSections,
+        media.length
+          ? el(
+              "section",
+              { class: "gallery__media reveal-section" },
+              el("h3", { class: "gallery__section-title" }, "Audio & video archive"),
+              el("ul", { class: "media-grid" }, ...media.map(renderMediaCard))
+            )
+          : null
       )
     );
 

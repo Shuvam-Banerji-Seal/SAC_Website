@@ -42,8 +42,8 @@ describe("settings module", () => {
     expect(panel.innerHTML).toContain("Paper texture");
     // Should have 7 font options
     expect(panel.querySelectorAll(".font-option").length).toBe(7);
-    // Eight named presets plus six local paper scans.
-    expect(panel.querySelectorAll(".texture-option").length).toBe(14);
+    // Eight named presets plus six local paper scans + three new CSS-only textures (newsprint/ledger/blueprint) = 17.
+    expect(panel.querySelectorAll(".texture-option").length).toBe(17);
   });
 
   it("applies dark mode from localStorage on init", async () => {

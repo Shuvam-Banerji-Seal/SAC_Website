@@ -55,6 +55,9 @@ function buildIdentity(club, entries) {
   const documentCount = entries.filter((entry) => entry.file_type === "markdown").length;
   const portraitCount = entries.filter((entry) => entry.is_ob_portrait).length;
   const eventCount = entries.filter((entry) => entry.is_event || entry.is_iicm).length;
+  const mediaCount = entries.filter(
+    (entry) => entry.file_type === "video" || entry.file_type === "audio"
+  ).length;
   const logoSource = club.logo ? "Map logo" : "Map mark";
 
   return el(
@@ -72,6 +75,7 @@ function buildIdentity(club, entries) {
         el("span", {}, formatCount(imageCount, "image")),
         el("span", {}, formatCount(portraitCount, "portrait")),
         el("span", {}, formatCount(eventCount, "event")),
+        el("span", {}, formatCount(mediaCount, "media")),
         el("span", {}, formatCount(documentCount, "document")),
         el("span", { class: "club-detail__source" }, logoSource)
       )

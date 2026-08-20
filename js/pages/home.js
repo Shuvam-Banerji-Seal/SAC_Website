@@ -1,232 +1,28 @@
 /**
- * pages/home.js — newspaper-themed landing-page initialiser.
+ * Home page editorial composition.
  *
- * Layout produced by this module
- * ------------------------------
- *   <section class="body-section" id="body-{id}">
- *     <div class="body-banner">…kicker, title, tagline, ornament…</div>
- *     <ul class="paper-card-grid">
- *       <li><a class="paper-card">…logo, name, excerpt, cta…</a></li>
- *       …
- *     </ul>
- *   </section>
- *
- * Data flow
- * ---------
- *   1. Load the canonical assets_map.jsonl via loadAssetsMap().
- *   2. Index by club (indexByClub). Each club record carries its logo
- *      and the canonical `is_markdown_content` markdown file (club
- *      introduction document, parsed from DOCX/PDF by the assets
- *      pipeline).
- *   3. For every club, fetch the markdown and pull the first
- *      descriptive paragraph as the card excerpt. Falls back to a
- *      graceful placeholder if the fetch fails.
- *   4. Bucket clubs into the 4 SAC bodies (academics / hostel /
- *      sports / cultural) and render each into its mount point.
- *   5. Wire an IntersectionObserver to add `.is-visible` to each
- *      body section as it scrolls into view — that's the
- *      "paper-folding" reveal (CSS in pages/home.css).
+ * The front page is intentionally a magazine cover, not a second directory:
+ * the complete SAC index lives on Clubs, while this page carries the lead
+ * story, a living picture desk, campus statistics, and current notices.
  */
-import { el, pageUrl, assetUrl, showError } from "../utils/dom.js";
-import { loadAssetsMap, indexByClub } from "../data.js";
-import { initScrollSounds, playPageTurn } from "../utils/calligraphy.js";
+import { el, assetUrl, showError } from "../utils/dom.js";
+import { loadAssetsMap } from "../data.js";
+import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
 import { measureText } from "../utils/text-measure.js";
-
-/* -------------------------------------------------------------------------
- * Club slug → individual page URL mapping
- * ------------------------------------------------------------------------- */
-
-function getClubPageUrl(slug) {
-  const urlMap = {
-    "AARSHI_-_Drama_Club": "pages/aarshi.html",
-    Arts_Club_of_IISER_Kolkata: "pages/arts.html",
-    Campus_Radio_IISER_KOLKATA: "pages/radio.html",
-    "IKQC_-_Quiz_Club_of_IISER_Kolkata": "pages/ikqc.html",
-    Literary_Club_of_IISER_Kolkata: "pages/literary.html",
-    Movie_Club_of_IISER_K: "pages/movie.html",
-    Music_Club_of_IISER_K: "pages/music.html",
-    Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
-    "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
-    "PIXEL-Photography_Club": "pages/pixel.html",
-    Placement_Cell: "pages/placement.html",
-    SAC_Academics: "pages/academics.html",
-    SAC_Hostel: "pages/hostel.html",
-    SAC_Sports_Athletics: "pages/athletics.html",
-    SAC_Sports_Badminton: "pages/badminton.html",
-    SAC_Sports_Basketball: "pages/basketball.html",
-    SAC_Sports_Carrom: "pages/carrom.html",
-    SAC_Sports_Chess: "pages/chess.html",
-    SAC_Sports_Cricket: "pages/cricket.html",
-    SAC_Sports_Football: "pages/football.html",
-    SAC_Sports_GYM: "pages/gym.html",
-    SAC_Sports_Gaming: "pages/gaming.html",
-    SAC_Sports_Kabaddi: "pages/kabaddi.html",
-    SAC_Sports_Kho_Kho: "pages/kho-kho.html",
-    SAC_Sports_Lawn_Tennis: "pages/lawn-tennis.html",
-    SAC_Sports_Rubik: "pages/rubik.html",
-    SAC_Sports_SYDC: "pages/sydc.html",
-    SAC_Sports_Table_Tennis: "pages/table-tennis.html",
-    SAC_Sports_Volleyball: "pages/volleyball.html",
-    Singularity_Astro_Club: "pages/singularity.html",
-    Slashdot_Programming_Club: "pages/slashdot.html",
-  };
-  return urlMap[slug] || "pages/clubs.html";
-}
-
-/* -------------------------------------------------------------------------
- * Bodies — the 4 sections of the SAC, in page order.
- *
- * BODY_INFO carries the editorial copy for each section banner.
- * The bodyId is the same as the [data-body-mount] attribute on the
- * placeholder div in index.html, so render is a single .replaceWith().
- * ------------------------------------------------------------------------- */
-
-const BODY_INFO = {
-  council: {
-    kicker: "Preface",
-    title: "SAC Council",
-    tagline:
-      "The elected student body — General Secretary, Joint Secretary, and the officers who coordinate the year's calendar across every club and committee.",
-    ornament: "— ✦ ✦ ✦ —",
-  },
-  academics: {
-    kicker: "Section I",
-    title: "SAC Academics",
-    tagline:
-      "Where scholarly life meets the wider campus — academic initiatives, guest lectures, industry bridges, and the pursuit of ideas beyond the classroom.",
-    ornament: "— ✦ ✦ ✦ —",
-  },
-  hostel: {
-    kicker: "Section II",
-    title: "SAC Hostel Committee",
-    tagline:
-      "The standing committee for residence life — community events, student welfare, and the everyday essentials that make campus a home.",
-    ornament: "— ✦ ✦ ✦ —",
-  },
-  sports: {
-    kicker: "Section III",
-    title: "Sports",
-    tagline:
-      "The playing fields have their place in the Chronicle too — this section is reserved for the games societies and will carry their records as soon as they arrive.",
-    ornament: "— ✦ ✦ ✦ —",
-  },
-  cultural: {
-    kicker: "Section IV",
-    title: "Cultural Clubs",
-    tagline:
-      "Ten societies spanning drama, music, dance, film, literature, visual art, radio, and the quizzing circuit — the creative pulse of the institute, gathered in one section.",
-    ornament: "— ✦ ✦ ✦ —",
-  },
-};
-
-/* The order bodies are rendered on the page. */
-const BODY_ORDER = ["council", "academics", "hostel", "sports", "cultural"];
-
-/* Club slugs that should not be rendered as paper cards on the home page.
- * SAC_Academics is a committee (its own page is pages/academics.html) — the
- * actual academic clubs (Singularity, Slashdot) are already shown as their
- * own cards, and the SAC_Academics data has no logo and a stray
- * placement-committee markdown, so rendering it here produced wrong content. */
-const HOMEPAGE_HIDDEN_SLUGS = new Set(["SAC_Academics"]);
-
-/* -------------------------------------------------------------------------
- * Body assignment
- *
- * The JSONL carries clubs grouped by their SAC body. Today we have:
- *   - SAC Academics, SAC Hostel Committee → academics, hostel
- *   - cultural clubs → cultural
- *   - Sports clubs → sports (empty today, ready for when data arrives)
- *   - SAC Council (General Secretary, etc.) → council
- *
- * The detection is flexible: it checks for known club names AND
- * pattern-matches on club names that contain "sports", "council",
- * "secretary", etc. so new clubs are automatically bucketed correctly.
- * ------------------------------------------------------------------------- */
-
-function assignBody(clubName) {
-  const name = clubName.toLowerCase();
-  // SAC Council (general secretary, joint secretary, etc.)
-  if (
-    name === "sac council" ||
-    name.includes("general secretary") ||
-    name.includes("sac council")
-  ) {
-    return "council";
-  }
-  // SAC Academics (also covers Singularity, Astronomy, Placement, Slashdot, Programming)
-  if (
-    clubName === "SAC Academics" ||
-    name.includes("academics") ||
-    name.includes("placement") ||
-    name.includes("singularity") ||
-    name.includes("astronomy") ||
-    name.includes("slashdot") ||
-    name.includes("programming")
-  ) {
-    return "academics";
-  }
-  // SAC Hostel Committee
-  if (clubName === "SAC Hostel Committee" || name.includes("hostel") || name.includes("shc")) {
-    return "hostel";
-  }
-  // Sports clubs
-  if (
-    name.includes("sports") ||
-    name.includes("cricket") ||
-    name.includes("football") ||
-    name.includes("badminton") ||
-    name.includes("athletics") ||
-    name.includes("table tennis") ||
-    name.includes("basketball") ||
-    name.includes("volleyball") ||
-    name.includes("chess") ||
-    name.includes("kabaddi") ||
-    name.includes("gym") ||
-    name.includes("self defence") ||
-    name.includes("sydc") ||
-    name.includes("athletics") ||
-    name.includes("carrom") ||
-    name.includes("cricket") ||
-    name.includes("football") ||
-    name.includes("gaming") ||
-    name.includes("kho-kho") ||
-    name.includes("kho kho") ||
-    name.includes("lawn tennis") ||
-    name.includes("table tennis") ||
-    name.includes("rubik") ||
-    name.includes("volleyball") ||
-    name.includes("volik")
-  ) {
-    return "sports";
-  }
-  // Default: cultural clubs
-  return "cultural";
-}
-
-/* -------------------------------------------------------------------------
- * Excerpt extraction
- *
- * The processed markdown files are messy: H1/H2 headings, image refs,
- * table rows, mixed whitespace, ALL-CAPS section labels like
- * "INTRODUCTION :". We want the first decent prose paragraph (30–240
- * chars), trimmed to a sentence boundary when possible.
- * ------------------------------------------------------------------------- */
 
 const EXCERPT_MAX = 240;
 const EXCERPT_MIN = 30;
 
 function isHeadingLike(line) {
   if (!line) return true;
-  if (line.startsWith("#")) return true; // md heading
-  if (line.startsWith("!")) return true; // md image
-  if (line.startsWith("|")) return true; // md table
-  if (line.startsWith("---")) return true; // md hr
-  if (line.startsWith("```")) return true; // md code fence
-  // ALL-CAPS section labels common to club docs (e.g. "INTRODUCTION :")
+  if (line.startsWith("#")) return true;
+  if (line.startsWith("!")) return true;
+  if (line.startsWith("|")) return true;
+  if (line.startsWith("---")) return true;
+  if (line.startsWith("```")) return true;
   if (line.length < 40 && /^[A-Z0-9 ,.&'()\-:]+$/.test(line)) return true;
-  // Bare numeric lists / phone numbers
   if (/^[\d\W]+$/.test(line)) return true;
   return false;
 }
@@ -236,201 +32,130 @@ function trimToSentence(text, max) {
   const cut = text.slice(0, max);
   const lastDot = cut.lastIndexOf(". ");
   if (lastDot > EXCERPT_MIN) return cut.slice(0, lastDot + 1).trim();
-  // No sentence boundary — trim at last word and add an ellipsis
   return cut.replace(/\s+\S*$/, "").trim() + "…";
 }
 
+/** Kept as a small public utility for editorial tests and future cards. */
 export function extractExcerpt(markdown) {
   if (!markdown) return "";
-  const lines = String(markdown).split(/\r?\n/);
-  for (const raw of lines) {
+  for (const raw of String(markdown).split(/\r?\n/)) {
     const line = raw.replace(/\s+/g, " ").trim();
-    if (isHeadingLike(line)) continue;
-    if (line.length < EXCERPT_MIN) continue;
+    if (isHeadingLike(line) || line.length < EXCERPT_MIN) continue;
     return trimToSentence(line, EXCERPT_MAX);
   }
   return "";
 }
 
-async function fetchExcerpt(markdownEntry) {
-  if (!markdownEntry || !markdownEntry.path) return "";
-  // entry.path is relative to public/assets/processed/. pageUrl()
-  // adapts the prefix for pages/* subdirs the same way data.js does.
-  const url = pageUrl("public/assets/processed/" + markdownEntry.path);
-  try {
-    const res = await fetch(url, { cache: "force-cache" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const text = await res.text();
-    return extractExcerpt(text);
-  } catch (err) {
-    console.warn("[home] excerpt fetch failed for", markdownEntry.path, err);
-    return "";
-  }
+function editorialScore(asset) {
+  const ratio = Number(asset.aspect_ratio) || 1;
+  let score = 0;
+  if (asset.is_event || asset.is_iicm || asset.role === "event") score += 5;
+  if (ratio >= 1.35) score += 4;
+  if (ratio >= 1.8) score += 2;
+  if (!asset.is_extracted_from_doc) score += 3;
+  if (!asset.is_logo && !asset.is_ob_portrait) score += 2;
+  return score;
 }
 
-/* -------------------------------------------------------------------------
- * Card / section renderers
- * ------------------------------------------------------------------------- */
-
-function renderPaperCard(club) {
-  const logoContent = club.logo
-    ? el("img", {
-        src: assetUrl(club.logo.public_url),
-        alt: club.name + " logo",
-        loading: "lazy",
-        decoding: "async",
-        width: 88,
-        height: 88,
-      })
-    : el("span", { class: "paper-card__logo-fallback" }, club.name.charAt(0));
-
-  const excerpt =
-    club.excerpt || "An active society under the Student Activity Council, IISER Kolkata.";
-
-  // Random slight rotation for the notice board look (-2deg to +2deg)
-  const rotate = (Math.random() - 0.5) * 4;
-  // Random hand-pinned offset/tilt so the pushpin on each card sits a
-  // little differently (sells the "pinned to a board" feel).
-  const pinOffset = Math.round((Math.random() - 0.5) * 28); // -14px..+14px
-  const pinTilt = (Math.random() - 0.5) * 18; // -9deg..+9deg
-
-  // Map club slug to individual page URL
-  const clubUrl = getClubPageUrl(club.slug);
-
-  const card = el(
-    "a",
-    {
-      class: "paper-card",
-      href: clubUrl,
-      "aria-label": "Read more about " + club.name,
-      style:
-        "--card-rotate: " +
-        rotate.toFixed(2) +
-        "deg; --pin-offset: " +
-        pinOffset +
-        "px; --pin-tilt: " +
-        pinTilt.toFixed(2) +
-        "deg",
-    },
-    el("div", { class: "paper-card__logo" }, logoContent),
-    el("h3", { class: "paper-card__name" }, club.name),
-    el("span", { class: "paper-card__rule", "aria-hidden": "true" }),
-    el("p", { class: "paper-card__excerpt" }, excerpt),
-    el("span", { class: "paper-card__cta" }, "Read More \u2192")
-  );
-
-  // Navigation is handled by the native <a href> — no custom click handler.
-  // The fold animation was removed because it caused transform interpolation
-  // glitches between the hover and folding states.
-  // Hover effect (3D lift + shadow) is purely CSS and works correctly.
-
-  return el("li", { class: "paper-card-wrap" }, card);
-}
-
-function renderBodySection(bodyId, info, clubs, mountEl) {
-  const section = el(
-    "section",
-    {
-      class: "body-section",
-      id: "body-" + bodyId,
-      "data-body": bodyId,
-      "aria-labelledby": "body-" + bodyId + "-title",
-    },
-    el(
-      "header",
-      { class: "body-banner" },
-      el("p", { class: "body-banner__kicker" }, info.kicker),
-      el("h2", { class: "body-banner__title", id: "body-" + bodyId + "-title" }, info.title),
-      el("p", { class: "body-banner__tagline" }, info.tagline),
-      el("div", { class: "body-banner__ornament", "aria-hidden": "true" }, info.ornament)
+function selectEditorialImages(assets, limit = 6) {
+  const candidates = assets
+    .filter(
+      (asset) =>
+        asset.file_type === "image" &&
+        !asset.is_logo &&
+        !asset.is_ob_portrait &&
+        !asset.is_extracted_from_doc
     )
-  );
+    .sort((a, b) => editorialScore(b) - editorialScore(a));
+  const chosen = [];
+  const clubs = new Set();
 
-  if (clubs.length === 0) {
-    section.classList.add("body-section--empty");
-    section.appendChild(
+  for (const asset of candidates) {
+    if (clubs.has(asset.club)) continue;
+    chosen.push(asset);
+    clubs.add(asset.club);
+    if (chosen.length === limit) return chosen;
+  }
+
+  for (const asset of candidates) {
+    if (chosen.includes(asset)) continue;
+    chosen.push(asset);
+    if (chosen.length === limit) break;
+  }
+  return chosen;
+}
+
+function renderStats(assets) {
+  const mount = document.getElementById("home-stats");
+  if (!mount) return;
+  const stats = [
+    ["clubs", new Set(assets.map((asset) => asset.club)).size, "indexed groups"],
+    ["images", assets.filter((asset) => asset.file_type === "image").length, "photographs"],
+    ["documents", assets.filter((asset) => asset.file_type === "markdown").length, "records"],
+    [
+      "media",
+      assets.filter((asset) => asset.file_type === "video" || asset.file_type === "audio").length,
+      "audio / video files",
+    ],
+  ];
+  mount.replaceChildren(
+    ...stats.map(([id, value, label]) =>
       el(
         "div",
-        { class: "body-empty", role: "status" },
-        el("strong", {}, info.title + " Desk"),
-        "No clubs are listed under this body yet. The Chronicle will carry their entries as soon as the editorial desk receives them."
+        { class: "home-stat", "data-stat": id },
+        el("strong", {}, value.toLocaleString("en-IN")),
+        el("span", {}, label)
       )
-    );
-  } else {
-    section.appendChild(el("ul", { class: "paper-card-grid" }, ...clubs.map(renderPaperCard)));
-  }
-
-  mountEl.replaceWith(section);
-  return section;
-}
-
-/* -------------------------------------------------------------------------
- * Paper-folding animation
- *
- * Each .body-section starts rotated -90deg on the X axis (folded shut).
- * When 15% enters the viewport we add .is-visible, which animates it
- * flat. The observer fires once per section and then unobserves so the
- * reveal never replays.
- * ------------------------------------------------------------------------- */
-
-function setupFolding() {
-  const sections = Array.from(document.querySelectorAll(".body-section"));
-  if (!sections.length) return;
-
-  // Honour the user's OS-level motion preference.
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    sections.forEach((s) => s.classList.add("is-visible"));
-    return;
-  }
-
-  if (!("IntersectionObserver" in window)) {
-    sections.forEach((s) => s.classList.add("is-visible"));
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-
-          // Play page-turn sound
-          playPageTurn();
-
-          // Stagger-reveal paper cards inside this section
-          const cards = entry.target.querySelectorAll(".paper-card-wrap");
-          cards.forEach((card, i) => {
-            card.style.transitionDelay = i * 0.06 + "s";
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                card.classList.add("is-revealed");
-              });
-            });
-          });
-
-          obs.unobserve(entry.target);
-        }
-      }
-    },
-    { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+    )
   );
-
-  sections.forEach((s) => observer.observe(s));
 }
 
-/* -------------------------------------------------------------------------
- * Lead-article column calculation (pretext)
- *
- * Uses canvas-based text measurement to decide whether the lead article
- * is long enough for a 2-column grid. Short text gets 1 column even on
- * wide viewports, avoiding sparse-looking columns.
- * ------------------------------------------------------------------------- */
+function renderCampusGallery(assets) {
+  const mount = document.getElementById("campus-gallery-grid");
+  if (!mount) return;
+  const images = selectEditorialImages(assets);
+  if (!images.length) {
+    mount.replaceChildren(
+      el("p", { class: "muted" }, "The picture desk is preparing its first edition.")
+    );
+    return;
+  }
+
+  mount.replaceChildren(
+    ...images.map((asset, index) => {
+      const title = asset.title || asset.filename || "Campus life archive";
+      const context = asset.club_name || "SAC archive";
+      return el(
+        "figure",
+        { class: `campus-gallery__item campus-gallery__item--${index + 1}` },
+        el(
+          "a",
+          {
+            href: assetUrl(asset.public_url),
+            "data-viewer": "home-campus",
+            "data-title": title,
+            "data-desc": asset.description || context,
+            "data-context": context,
+            title,
+          },
+          el("img", {
+            src: assetUrl(asset.public_url),
+            alt: asset.description || title,
+            loading: index < 2 ? "eager" : "lazy",
+            decoding: "async",
+            width: asset.width || undefined,
+            height: asset.height || undefined,
+          })
+        ),
+        el("figcaption", {}, el("strong", {}, title), el("span", {}, context))
+      );
+    })
+  );
+}
 
 export async function adjustLeadLayout() {
   const body = document.querySelector(".lead-article__body");
-  if (!body) return;
-  if (window.innerWidth <= 720) return; // CSS already handles this
-
+  if (!body || window.innerWidth <= 720) return;
   const text = body.innerText;
   if (!text) return;
 
@@ -438,102 +163,83 @@ export async function adjustLeadLayout() {
   const lineHeight = Number.parseFloat(computed.lineHeight) || 24;
   const fontSize = Number.parseFloat(computed.fontSize) || 16;
   const maxWidth = Math.max(280, body.clientWidth / 2 - 16);
-  const metrics = measureText(text, `${fontSize}px ${computed.fontFamily}`, maxWidth, lineHeight);
-
-  // Pretext gives us a stable estimate before changing the column count. A
-  // short record stays single-column; longer copy earns a real broadsheet
-  // spread without leaving a nearly empty second column.
-  if (metrics.lineCount < 8 || metrics.height < lineHeight * 7) {
-    body.style.columnCount = "1";
-  } else {
+  try {
+    const metrics = measureText(text, `${fontSize}px ${computed.fontFamily}`, maxWidth, lineHeight);
+    body.style.columnCount = metrics.lineCount < 8 || metrics.height < lineHeight * 7 ? "1" : "";
+  } catch {
     body.style.columnCount = "";
   }
 }
 
-/* -------------------------------------------------------------------------
- * Entry point
- * ------------------------------------------------------------------------- */
+function equalizeGalleryCaptions() {
+  const caps = Array.from(document.querySelectorAll(".campus-gallery__item figcaption span"));
+  if (!caps.length) return;
+  // Use Pretext to measure each caption's height at its rendered width
+  const widths = caps.map((c) => c.clientWidth || 220);
+  const computed = getComputedStyle(caps[0]);
+  const font = `${computed.fontSize} ${computed.fontFamily}`;
+  const lineHeight = Number.parseFloat(computed.lineHeight) || 18;
+  try {
+    const heights = widths.map(
+      (w, i) => measureText(caps[i].textContent || "", font, w, lineHeight).height
+    );
+    const max = Math.max(...heights, 0);
+    caps.forEach((c) => {
+      c.style.minHeight = max ? `${Math.ceil(max)}px` : "";
+    });
+  } catch {}
+}
 
 export async function initHome() {
-  const bodies = document.getElementById("bodies");
-  if (!bodies) return;
-
   let assets;
   try {
     assets = await loadAssetsMap();
   } catch {
     showError(
-      bodies,
-      "Could not load club data",
-      "The club directory failed to load. Check your connection and try again."
+      document.getElementById("campus-gallery") || document.querySelector("main"),
+      "Could not load the front page",
+      "The Chronicle archive failed to load. Check your connection and try again."
     );
     return;
   }
 
-  const clubs = indexByClub(assets).filter((c) => !HOMEPAGE_HIDDEN_SLUGS.has(c.slug));
+  renderStats(assets);
+  renderCampusGallery(assets);
 
-  // Fetch all club markdown excerpts in parallel. This is the
-  // "newspaper excerpt" copy on each card. Failures degrade to a
-  // generic placeholder rather than throwing the whole render.
-  await Promise.all(
-    clubs.map(async (c) => {
-      if (c.markdown) c.excerpt = await fetchExcerpt(c.markdown);
-    })
-  );
-
-  // Bucket clubs into the 4 bodies, alphabetically within each bucket.
-  const buckets = Object.fromEntries(BODY_ORDER.map((id) => [id, []]));
-  for (const c of clubs) {
-    buckets[assignBody(c.name)].push(c);
-  }
-  for (const id of BODY_ORDER) {
-    buckets[id].sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  // Replace each mount point with the rendered section.
-  for (const bodyId of BODY_ORDER) {
-    const mountEl = bodies.querySelector('[data-body-mount="' + bodyId + '"]');
-    if (!mountEl) continue;
-    renderBodySection(bodyId, BODY_INFO[bodyId], buckets[bodyId], mountEl);
-  }
-
-  setupFolding();
-
-  // Measure lead-article text and adjust column layout.
-  // Defer to window.load: the hero sits behind the loader during
-  // DOMContentLoaded, so reading offsetWidth/computed styles that early
-  // forces layout before the page has fully rendered (FOUC risk + layout
-  // thrash warning). Re-measure on font load + debounced resize.
   let loaded = false;
-  window.addEventListener("load", () => {
+  const onReadyForMeasure = () => {
     if (loaded) return;
     loaded = true;
     adjustLeadLayout();
-  });
-  // Only re-measure on font load AFTER the initial load measurement ran —
-  // fonts.ready can resolve before the page has rendered and would force
-  // layout early again.
-  document.fonts?.ready?.then(() => {
-    if (loaded) adjustLeadLayout();
-  });
-  // Debounced resize: canvas text measurement is expensive, don't run on every event
+    equalizeGalleryCaptions();
+  };
+  window.addEventListener("load", onReadyForMeasure);
+  document.fonts?.ready?.then(onReadyForMeasure);
+
   let resizeTimer = null;
   window.addEventListener("resize", () => {
     if (resizeTimer) cancelAnimationFrame(resizeTimer);
-    resizeTimer = requestAnimationFrame(adjustLeadLayout);
+    resizeTimer = requestAnimationFrame(() => {
+      adjustLeadLayout();
+      equalizeGalleryCaptions();
+    });
   });
 
-  // Load YouTube and Calendar sections in the background
+  // Also re-equalize when sidebar collapse changes width
+  const ro = window.ResizeObserver
+    ? new ResizeObserver(() => {
+        adjustLeadLayout();
+        equalizeGalleryCaptions();
+      })
+    : null;
+  const main = document.querySelector("main");
+  if (ro && main) ro.observe(main);
+
   loadYouTubeSection();
   loadCalendarSection();
-
-  // Initialize scroll-based paper scratch sounds
   initScrollSounds();
 }
 
-/* -------------------------------------------------------------------------
- * YouTube pinned-note section
- * ------------------------------------------------------------------------- */
 async function loadYouTubeSection() {
   const section = document.getElementById("youtube-section");
   const grid = document.getElementById("youtube-grid");
@@ -541,76 +247,52 @@ async function loadYouTubeSection() {
 
   const videos = await fetchLatestVideos();
   if (!videos.length) return;
-
-  // Show the section and populate the grid with notebook-style cards
   section.style.display = "";
   grid.classList.add("notebook-grid");
+  grid.classList.toggle("is-sparse", videos.length < 3);
 
-  videos.forEach((v) => {
-    const rot = ((Math.random() - 0.5) * 2.5).toFixed(1); // -1.25° to 1.25°
-    const title = v.title?.trim() || "SAC video archive";
-    const published = v.publishedAt ? new Date(v.publishedAt) : null;
+  videos.forEach((video, index) => {
+    const title = video.title?.trim() || "SAC video archive";
+    const published = video.publishedAt ? new Date(video.publishedAt) : null;
     const publishedLabel =
       published && !Number.isNaN(published.getTime())
-        ? published.toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })
+        ? published.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
         : "SAC archive";
-    const handNotes = [
+    const notes = [
       "pressed play while the campus hummed outside",
       "the reel jumped to life — grainy, alive",
-      `noted: this one stays with you`,
+      "noted: this one stays with you",
     ];
-    const noteIdx = videos.indexOf(v) % handNotes.length;
-
-    const card = el(
-      "li",
-      { class: "notebook-card", style: `transform: rotate(${rot}deg);` },
-      // Washi tape
-      el("div", { class: "notebook-card__tape notebook-card__tape--tl" }),
-      el("div", { class: "notebook-card__tape notebook-card__tape--tr" }),
-      el("div", { class: "notebook-card__tape notebook-card__tape--bl" }),
-      // Video iframe
+    grid.append(
       el(
-        "div",
-        { class: "notebook-card__media" },
-        el("iframe", {
-          src: `https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1`,
-          title,
-          // No `allow` attribute: the embed needs no special permissions, and
-          // Firefox logs "Feature Policy: Skipping unsupported feature name"
-          // for ANY allow list (even standard features) on user-hostile embeds.
-          // Playback is user-initiated, so autoplay permission is unnecessary.
-          allowfullscreen: "",
-          loading: "lazy",
-        })
-      ),
-      // Handwritten caption
-      el("p", { class: "notebook-card__caption", title }, `“ ${title} ”`),
-      // Handwritten note
-      el(
-        "p",
-        { class: "notebook-card__notes" },
-        handNotes[noteIdx].replace("noted:", "<em>noted:</em>")
-      ),
-      // Date + watch link
-      el(
-        "p",
-        { class: "notebook-card__meta" },
-        publishedLabel,
-        " · ",
-        el("a", { href: v.url, target: "_blank", rel: "noopener" }, "watch on YouTube →")
+        "li",
+        { class: "notebook-card", style: `--card-rotate: ${((index % 3) - 1) * 0.7}deg` },
+        el("div", { class: "notebook-card__tape notebook-card__tape--tl" }),
+        el("div", { class: "notebook-card__tape notebook-card__tape--tr" }),
+        el(
+          "div",
+          { class: "notebook-card__media" },
+          el("iframe", {
+            src: `https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`,
+            title,
+            allowfullscreen: "",
+            loading: "lazy",
+          })
+        ),
+        el("p", { class: "notebook-card__caption", title }, `“ ${title} ”`),
+        el("p", { class: "notebook-card__notes" }, notes[index % notes.length]),
+        el(
+          "p",
+          { class: "notebook-card__meta" },
+          publishedLabel,
+          " · ",
+          el("a", { href: video.url, target: "_blank", rel: "noopener" }, "watch on YouTube →")
+        )
       )
     );
-    grid.appendChild(card);
   });
 }
 
-/* -------------------------------------------------------------------------
- * Google Calendar pinned-note section
- * ------------------------------------------------------------------------- */
 async function loadCalendarSection() {
   const section = document.getElementById("calendar-section");
   const grid = document.getElementById("calendar-grid");
@@ -618,47 +300,64 @@ async function loadCalendarSection() {
 
   const events = await fetchUpcomingEvents();
   section.style.display = "";
-  if (events.length) {
-    events.forEach((ev) => {
-      const rot = ((Math.random() - 0.5) * 2).toFixed(1);
-      const card = el(
+  grid.classList.toggle("is-sparse", events.length < 3);
+  if (!events.length) {
+    grid.append(
+      el(
         "li",
-        { class: "pinned-card pinned-card--event", style: `transform: rotate(${rot}deg);` },
+        { class: "pinned-card pinned-card--event" },
         el(
           "div",
           { class: "pinned-card__body" },
-          el("span", { class: "pinned-card__date" }, ev.dateLabel),
-          el("p", { class: "pinned-card__title", title: ev.title }, ev.title),
-          ev.location ? el("p", { class: "pinned-card__location" }, `📍 ${ev.location}`) : null,
-          ev.description
-            ? el(
-                "p",
-                { class: "pinned-card__meta", style: "margin-top:var(--space-1)" },
-                ev.description.slice(0, 180) + (ev.description.length > 180 ? "…" : "")
-              )
+          el("p", { class: "pinned-card__title" }, "No upcoming events"),
+          el("p", { class: "pinned-card__meta" }, "Check back soon for the next campus notice.")
+        )
+      )
+    );
+    return;
+  }
+
+  events.forEach((event, index) => {
+    const peopleLabel = event.people?.length
+      ? `With: ${event.people.slice(0, 3).join(", ")}${event.people.length > 3 ? " +" + (event.people.length - 3) + " more" : ""}`
+      : event.organizer
+        ? `Organiser: ${event.organizer}`
+        : "";
+    const timeLabel = event.dateEndLabel
+      ? `${event.dateLabel} – ${event.dateEndLabel}`
+      : event.dateLabel;
+    const desc = event.description
+      ? event.description.slice(0, 240) + (event.description.length > 240 ? "…" : "")
+      : "";
+
+    grid.append(
+      el(
+        "li",
+        {
+          class: "pinned-card pinned-card--event",
+          style: `--tilt: ${((index % 3) - 1) * 0.7}deg`,
+        },
+        el(
+          "div",
+          { class: "pinned-card__body" },
+          el("span", { class: "pinned-card__date" }, timeLabel),
+          el("p", { class: "pinned-card__title", title: event.title }, event.title),
+          event.location
+            ? el("p", { class: "pinned-card__location" }, `📍 ${event.location}`)
             : null,
-          ev.link
+          peopleLabel
+            ? el("p", { class: "pinned-card__meta pinned-card__people" }, peopleLabel)
+            : null,
+          desc ? el("p", { class: "pinned-card__meta" }, desc) : null,
+          event.link
             ? el(
                 "a",
-                { class: "pinned-card__link", href: ev.link, target: "_blank", rel: "noopener" },
+                { class: "pinned-card__link", href: event.link, target: "_blank", rel: "noopener" },
                 "Open event →"
               )
             : null
         )
-      );
-      grid.appendChild(card);
-    });
-  } else {
-    const placeholder = el(
-      "li",
-      { class: "pinned-card pinned-card--event", style: "transform: rotate(0deg);" },
-      el(
-        "div",
-        { class: "pinned-card__body" },
-        el("p", { class: "pinned-card__title" }, "No upcoming events"),
-        el("p", { class: "pinned-card__meta" }, "Check back soon for updates.")
       )
     );
-    grid.appendChild(placeholder);
-  }
+  });
 }

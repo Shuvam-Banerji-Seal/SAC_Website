@@ -125,25 +125,75 @@
   --paper-deep: #bec1b8;
 }
 
-/* Optional local paper scans. They are selected lazily by the settings
-   panel, so the default page still starts with gradients only. */
+/* Newspaper-grade paper surfaces.
+   - Default page starts with gradients only (fast paint, no raster).
+   - Raster scans are lazy via settings; image-set gives retina readiness even
+     though current assets are 1× — browsers fall back gracefully to 1×.
+   - New textures (newsprint, ledger, blueprint) are pure CSS for instant load. */
 [data-texture="natural"] {
-  --paper-texture-image: url("../assets/natural-paper.png");
+  --paper-texture-image: image-set(
+    url("../assets/natural-paper.png") 1x,
+    url("../assets/natural-paper.png") 2x
+  );
 }
 [data-texture="fibers"] {
-  --paper-texture-image: url("../assets/paper-fibers.png");
+  --paper-texture-image: image-set(
+    url("../assets/paper-fibers.png") 1x,
+    url("../assets/paper-fibers.png") 2x
+  );
 }
 [data-texture="rice"] {
-  --paper-texture-image: url("../assets/rice-paper.png");
+  --paper-texture-image: image-set(
+    url("../assets/rice-paper.png") 1x,
+    url("../assets/rice-paper.png") 2x
+  );
 }
 [data-texture="linen"] {
-  --paper-texture-image: url("../assets/stressed-linen.png");
+  --paper-texture-image: image-set(
+    url("../assets/stressed-linen.png") 1x,
+    url("../assets/stressed-linen.png") 2x
+  );
 }
 [data-texture="groove"] {
-  --paper-texture-image: url("../assets/groovepaper.png");
+  --paper-texture-image: image-set(
+    url("../assets/groovepaper.png") 1x,
+    url("../assets/groovepaper.png") 2x
+  );
 }
 [data-texture="wall"] {
-  --paper-texture-image: url("../assets/old-wall.png");
+  --paper-texture-image: image-set(
+    url("../assets/old-wall.png") 1x,
+    url("../assets/old-wall.png") 2x
+  );
+}
+
+/* Pure-CSS newspaper extras — no network cost, instant paint */
+[data-texture="newsprint"] {
+  --paper-grain:
+    repeating-linear-gradient(0deg, rgba(24, 20, 16, 0.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(24, 20, 16, 0.018) 0 1px, transparent 1px 4px);
+  --paper-stains:
+    radial-gradient(ellipse at 30% 20%, rgba(126, 9, 9, 0.035), transparent 28%),
+    radial-gradient(ellipse at 78% 82%, rgba(24, 20, 16, 0.05), transparent 32%);
+}
+[data-texture="ledger"] {
+  --paper-grain: repeating-linear-gradient(
+    0deg,
+    transparent 0 28px,
+    rgba(131, 13, 13, 0.07) 28px 29px,
+    transparent 29px 30px
+  );
+  --paper-stains: radial-gradient(ellipse at 50% 50%, transparent 62%, rgba(24, 20, 16, 0.04) 100%);
+}
+[data-texture="blueprint"] {
+  --paper: #eef2f7;
+  --paper-soft: #f7f9fc;
+  --paper-deep: #d6dce8;
+  --paper-grain: repeating-linear-gradient(
+    0deg,
+    transparent 0 24px,
+    rgba(31, 62, 122, 0.08) 24px 25px
+  );
 }
 
 [data-reduce-motion] *,

@@ -15,6 +15,24 @@ function assetCaption(asset) {
   return asset.person || asset.title || asset.filename || "SAC image";
 }
 
+function isBogusPerson(name) {
+  if (!name) return false;
+  const n = String(name).trim();
+  if (n.length < 3) return true;
+  if (/^(IMG|DSC|PXL|VID|OBs?|sri|sleeveless|tank\s*top)/i.test(n)) return true;
+  if (/^\d/.test(n)) return true;
+  if (/^(25|26)\s*26/.test(n)) return true;
+  if (n.split(/\s+/).length === 1 && n.length < 6 && /^[a-z]+$/.test(n)) return true; // single lowercase word like "sri"
+  if (n.includes("_") && n.length > 20) return true; // fallback filename still with underscores
+  return false;
+}
+
+function mediaLabel(asset) {
+  return (
+    asset.title || asset.filename || (asset.file_type === "audio" ? "Audio clip" : "Video clip")
+  );
+}
+
 function assetRatio(asset) {
   const ratio =
     Number(asset.aspect_ratio) ||
@@ -55,17 +73,33 @@ function uniqueAssets(assets) {
   });
 }
 
-function renderThumb(asset, group, context, index) {
+function renderThumb(asset, group, context, index, opts = {}) {
   const caption = assetCaption(asset);
   const metrics = measureText(caption, '12px "Courier New", monospace', 220, 17);
   const lines = Math.min(metrics.lineCount || 1, 3);
+  const ratio = assetRatio(asset);
+  const isMissingName = asset.is_ob_portrait && !asset.person;
+  const isBogusName = asset.is_ob_portrait && isBogusPerson(asset.person);
+  const isDuplicatePerson = !!opts.duplicatePersons?.has(asset.person);
+  const needsVerify = isMissingName || isBogusName;
+  const thumbClass = [
+    "thumb",
+    "thumb--reveal",
+    needsVerify ? "thumb--missing-name" : "",
+    isDuplicatePerson ? "thumb--duplicate" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   return el(
     "li",
     {
-      class: "thumb thumb--reveal",
+      class: thumbClass,
       "data-orientation": asset.orientation || "unknown",
       "data-asset-role": asset.role || "image",
-      style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg; --asset-ratio: ${assetRatio(asset)}; --caption-lines: ${lines}`,
+      "data-person": asset.person || "",
+      "data-missing-name": needsVerify ? "true" : "false",
+      "data-bogus-name": isBogusName ? "true" : "false",
+      style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg; --asset-ratio: ${ratio}; --thumb-aspect: ${ratio}; --caption-lines: ${lines}`,
     },
     el(
       "a",
@@ -76,6 +110,8 @@ function renderThumb(asset, group, context, index) {
         "data-desc": asset.description || asset.person || asset.filename || "",
         "data-credit": asset.credit || "",
         "data-context": context || "",
+        "data-width": asset.width || "",
+        "data-height": asset.height || "",
         title: asset.title || asset.filename || "",
       },
       el(
@@ -88,10 +124,92 @@ function renderThumb(asset, group, context, index) {
           decoding: "async",
           width: asset.width || undefined,
           height: asset.height || undefined,
+          style:
+            asset.width && asset.height
+              ? `aspect-ratio: ${asset.width} / ${asset.height}`
+              : undefined,
         })
-      )
+      ),
+      needsVerify
+        ? el(
+            "span",
+            {
+              class: "thumb__badge",
+              title: isBogusName
+                ? `Person name "${asset.person}" looks bogus — needs team follow-up`
+                : "Person name missing — needs team follow-up",
+            },
+            "verify name"
+          )
+        : null,
+      isDuplicatePerson
+        ? el(
+            "span",
+            {
+              class: "thumb__badge thumb__badge--dup",
+              title: `Duplicate portrait for ${asset.person}`,
+            },
+            "duplicate"
+          )
+        : null
     ),
     el("figcaption", { class: "thumb__cap" }, caption)
+  );
+}
+
+function renderMediaCard(asset, context, index) {
+  const caption = mediaLabel(asset);
+  const source = el("source", {
+    src: assetUrl(asset.public_url),
+    type: asset.mime_type || undefined,
+  });
+  const media =
+    asset.file_type === "audio"
+      ? el("audio", { controls: true, preload: "metadata" }, source)
+      : el(
+          "video",
+          {
+            controls: true,
+            preload: "metadata",
+            playsinline: true,
+            "aria-label": caption,
+          },
+          source
+        );
+  return el(
+    "li",
+    {
+      class: "media-card",
+      style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg`,
+    },
+    el("div", { class: "media-card__player" }, media),
+    el("p", { class: "media-card__title" }, caption),
+    el("p", { class: "media-card__meta" }, context || asset.club_name || "SAC archive")
+  );
+}
+
+function renderMediaArchive(entries) {
+  const media = uniqueAssets(
+    entries.filter((asset) => asset.file_type === "video" || asset.file_type === "audio")
+  );
+  if (!media.length) return;
+  const mount = document.querySelector(".club-detail");
+  if (!mount) return;
+  mount.append(
+    el(
+      "section",
+      {
+        class: "club-detail__section club-detail__media-archive reveal-section",
+        "data-media-count": media.length,
+      },
+      el("h2", { class: "club-detail__section-title" }, "Audio & video archive"),
+      el("p", { class: "muted" }, "Playable media supplied with this club record."),
+      el(
+        "ul",
+        { class: "media-grid" },
+        ...media.map((asset, index) => renderMediaCard(asset, "Club archive", index))
+      )
+    )
   );
 }
 
@@ -114,6 +232,37 @@ function renderPlaceholder(placeholder, entries) {
     return false;
   }
 
+  // Flag duplicate OB persons (same name with multiple distinct files) for UI badge + console warn
+  const personCounts = new Map();
+  filtered.forEach((a) => {
+    if (a.person) personCounts.set(a.person, (personCounts.get(a.person) || 0) + 1);
+  });
+  const duplicatePersons = new Set(
+    Array.from(personCounts.entries())
+      .filter(([, c]) => c > 1)
+      .map(([p]) => p)
+  );
+  if (duplicatePersons.size) {
+    console.warn(
+      "[club-images] duplicate person portraits:",
+      Array.from(duplicatePersons).join(", "),
+      "in role",
+      role
+    );
+  }
+  const missingNames = filtered.filter((a) => a.is_ob_portrait && !a.person);
+  const bogusNames = filtered.filter((a) => a.is_ob_portrait && isBogusPerson(a.person));
+  if (missingNames.length || bogusNames.length) {
+    console.warn(
+      `[club-images] ${missingNames.length} missing + ${bogusNames.length} bogus person names in`,
+      role,
+      [
+        ...missingNames.map((a) => a.filename),
+        ...bogusNames.map((a) => `${a.filename}→${a.person}`),
+      ].join(", ")
+    );
+  }
+
   const slug = document.body.dataset.clubSlug;
   const group = `club-${slug}`;
   const block = el(
@@ -123,7 +272,9 @@ function renderPlaceholder(placeholder, entries) {
     el(
       "ul",
       { class: "thumb-grid pinned-thumbs", "data-asset-count": filtered.length },
-      ...filtered.map((asset, index) => renderThumb(asset, group, title, index))
+      ...filtered.map((asset, index) =>
+        renderThumb(asset, group, title, index, { duplicatePersons })
+      )
     )
   );
   placeholder.replaceChildren(block);
@@ -136,6 +287,16 @@ function renderFallback(entries, placeholders) {
   if (!allImages.length || !placeholders.length) return;
   const last = placeholders[placeholders.length - 1];
   const section = last.closest(".reveal-section") || last.closest("section");
+  // Also compute duplicates for fallback
+  const personCounts = new Map();
+  allImages.forEach((a) => {
+    if (a.person) personCounts.set(a.person, (personCounts.get(a.person) || 0) + 1);
+  });
+  const duplicatePersons = new Set(
+    Array.from(personCounts.entries())
+      .filter(([, c]) => c > 1)
+      .map(([p]) => p)
+  );
   const block = el(
     "section",
     {
@@ -147,7 +308,9 @@ function renderFallback(entries, placeholders) {
       "ul",
       { class: "thumb-grid pinned-thumbs", "data-asset-count": allImages.length },
       ...allImages.map((asset, index) =>
-        renderThumb(asset, `club-${document.body.dataset.clubSlug}`, "Club archive", index)
+        renderThumb(asset, `club-${document.body.dataset.clubSlug}`, "Club archive", index, {
+          duplicatePersons,
+        })
       )
     )
   );
@@ -188,6 +351,7 @@ export async function initClubImages() {
     const placeholders = Array.from(document.querySelectorAll("[data-club-images]"));
     const rendered = placeholders.map((placeholder) => renderPlaceholder(placeholder, entries));
     if (!rendered.some(Boolean)) renderFallback(entries, placeholders);
+    renderMediaArchive(entries);
   } catch (error) {
     console.error("[club-images] Failed to load images:", error);
   }

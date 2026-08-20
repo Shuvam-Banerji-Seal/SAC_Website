@@ -378,6 +378,99 @@
   transform: rotate(2deg);
 }
 
+.home-stats {
+  border-block: 1px solid var(--rule);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin: 2rem 0;
+  padding: 1rem 0;
+}
+
+.home-stat {
+  border-left: 3px solid var(--accent);
+  padding: 0.35rem 0 0.35rem 0.9rem;
+}
+
+.home-stat strong {
+  color: var(--accent);
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 0.9;
+}
+
+.home-stat span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.campus-gallery {
+  margin: 2.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 2rem;
+}
+
+.campus-gallery__grid {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  margin-top: 1rem;
+}
+
+.campus-gallery__item {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--paper-edge);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: rotate(var(--pin-rotate, 0.15deg));
+}
+
+.campus-gallery__item a {
+  background: var(--paper-deep);
+  display: block;
+  overflow: hidden;
+  flex: 1;
+}
+
+.campus-gallery__item img {
+  display: block;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  object-position: center;
+  width: 100%;
+}
+
+.campus-gallery__item figcaption {
+  background: var(--paper-soft);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 0.6rem 0.7rem;
+}
+
+.campus-gallery__item figcaption strong {
+  color: var(--ink);
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+  overflow-wrap: anywhere;
+}
+
+.campus-gallery__item figcaption span {
+  color: var(--ink-muted);
+  display: block;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 720px) {
   .lead-article__body {
     column-count: 1;
@@ -390,7 +483,8 @@
     margin-top: 0.4rem;
   }
   .pinned-grid,
-  .notebook-grid {
+  .notebook-grid,
+  .campus-gallery__grid {
     grid-template-columns: 1fr;
   }
 }
