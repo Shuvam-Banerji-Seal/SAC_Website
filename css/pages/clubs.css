@@ -24,7 +24,7 @@
   padding-top: 1rem;
 }
 
-/* Body-grouped sections (Council / Academics / Hostel / Sports / Cultural) */
+/* Body-grouped sections (SAC Academics / Cultural / Food & Hygiene / Hostel / Sports) */
 .clubs-body {
   border-bottom: 1px solid var(--ink-rule);
   margin-bottom: 2rem;
@@ -43,8 +43,31 @@
   color: var(--accent);
   content: "§ ";
 }
+.clubs-body__count {
+  color: var(--ink-muted);
+  float: right;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+.clubs-body__count::before {
+  color: var(--accent);
+  content: "— ";
+}
 .clubs-body__blurb {
   font-size: var(--fs-sm);
   font-style: italic;
   margin-bottom: 1rem;
+}
+
+/* Pending clubs (in the SAC structure, no records submitted yet) */
+.club-card--pending {
+  opacity: 0.72;
+}
+.club-card--pending .club-card__logo {
+  border-bottom-style: dashed;
+}
+.club-card--pending .club-card__count {
+  font-style: italic;
 }

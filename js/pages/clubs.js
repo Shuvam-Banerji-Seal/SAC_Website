@@ -47,39 +47,84 @@ function getClubPageUrl(slug) {
   return urlMap[slug] || null;
 }
 
-/* Body buckets — order defines render order. assignBody is pattern-based so
- * newly indexed clubs land in a sensible section without code changes. */
+/* Body segments — mirror the canonical "SAC Website details" source tree:
+ *   SAC Academics / SAC Cultural / SAC Food and Hygine / SAC Hostel / SAC Sports
+ * Order here defines render order on the page. */
 const BODIES = [
   {
-    id: "council",
-    label: "SAC Council",
-    blurb: "The elected student core that coordinates the year's calendar.",
-  },
-  {
     id: "academics",
-    label: "Academics",
-    blurb: "Placement, astronomy, programming, and the academic committee.",
-  },
-  {
-    id: "hostel",
-    label: "Hostel Committee",
-    blurb: "Residence life, welfare, and the hostel sub-committees.",
-  },
-  {
-    id: "sports",
-    label: "Sports",
-    blurb: "Sixteen clubs across the fields, courts, and mats — plus IISM.",
+    label: "SAC Academics",
+    blurb: "General secretaries, placement, astronomy, and programming — the scholarly societies.",
   },
   {
     id: "cultural",
-    label: "Cultural",
-    blurb: "Drama to photography — the creative pulse of campus, plus IICM.",
+    label: "SAC Cultural",
+    blurb: "Drama, art, radio, quizzing, film, music, nature, dance, photography — plus IICM.",
+  },
+  {
+    id: "food",
+    label: "SAC Food & Hygiene",
+    blurb: "The Students' Monitored Canteen (SMC) — menus, quality checks, and grievances.",
+  },
+  {
+    id: "hostel",
+    label: "SAC Hostel",
+    blurb: "General secretaries, sub-committees, and wardens' representatives across the blocks.",
+  },
+  {
+    id: "sports",
+    label: "SAC Sports",
+    blurb: "Sixteen clubs across the fields, courts, and mats — plus the IISM contingent.",
   },
 ];
 
+/* Slug → body, mirroring the source folders one-to-one. Anything not listed
+ * falls through to the pattern-based fallback so newly indexed clubs still
+ * land somewhere sensible. */
+const SLUG_BODIES = {
+  // SAC Academics/
+  SAC_Academics: "academics",
+  Placement_Cell: "academics",
+  Singularity_Astro_Club: "academics",
+  Slashdot_Programming_Club: "academics",
+  // SAC Cultural/
+  "AARSHI_-_Drama_Club": "cultural",
+  Arts_Club_of_IISER_Kolkata: "cultural",
+  Campus_Radio_IISER_KOLKATA: "cultural",
+  "IKQC_-_Quiz_Club_of_IISER_Kolkata": "cultural",
+  Literary_Club_of_IISER_Kolkata: "cultural",
+  Movie_Club_of_IISER_K: "cultural",
+  Music_Club_of_IISER_K: "cultural",
+  Nature_Club_Of_IISER_Kolkata: "cultural",
+  "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "cultural",
+  "PIXEL-Photography_Club": "cultural",
+  // SAC Food and Hygine/
+  SAC_Food_and_Hygiene: "food",
+  // SAC Hostel/
+  SAC_Hostel: "hostel",
+  // SAC Sports/
+  SAC_Sports_Athletics: "sports",
+  SAC_Sports_Badminton: "sports",
+  SAC_Sports_Basketball: "sports",
+  SAC_Sports_Carrom: "sports",
+  SAC_Sports_Chess: "sports",
+  SAC_Sports_Cricket: "sports",
+  SAC_Sports_Football: "sports",
+  SAC_Sports_Gaming: "sports",
+  SAC_Sports_GYM: "sports",
+  SAC_Sports_Kabaddi: "sports",
+  SAC_Sports_Kho_Kho: "sports",
+  SAC_Sports_Lawn_Tennis: "sports",
+  SAC_Sports_Rubik: "sports",
+  SAC_Sports_SYDC: "sports",
+  SAC_Sports_Table_Tennis: "sports",
+  SAC_Sports_Volleyball: "sports",
+};
+
 function assignBody(club) {
+  if (SLUG_BODIES[club.slug]) return SLUG_BODIES[club.slug];
+  // Pattern fallback for clubs indexed after this table was written.
   const name = `${club.name} ${club.slug}`.toLowerCase();
-  if (name.includes("food") || name.includes("hygiene")) return "hostel";
   if (
     name.includes("sport") ||
     /(athletics|badminton|basketball|carrom|chess|cricket|football|gaming|gym|kabaddi|kho[-_ ]?kho|lawn[-_ ]?tennis|rubik|sydc|table[-_ ]?tennis|volleyball)/.test(
@@ -87,13 +132,6 @@ function assignBody(club) {
     )
   ) {
     return "sports";
-  }
-  if (
-    name.includes("council") ||
-    name.includes("general secretary") ||
-    name.includes("secretaries")
-  ) {
-    return "council";
   }
   if (
     name.includes("academic") ||
@@ -106,15 +144,22 @@ function assignBody(club) {
     return "academics";
   }
   if (
-    name.includes("hostel") ||
-    name.includes("shc") ||
+    name.includes("food") ||
+    name.includes("hygiene") ||
     name.includes("smc") ||
     name.includes("medical")
   ) {
-    return "hostel";
+    return "food";
   }
+  if (name.includes("hostel")) return "hostel";
   return "cultural";
 }
+
+/* Clubs that exist in the SAC structure but have not submitted records yet.
+ * Rendered as placeholder cards so the directory stays complete. */
+const PENDING_CLUBS = [
+  { slug: "SPICMACAY", name: "SPICMACAY", body: "cultural", note: "Records coming soon" },
+];
 
 function clubCountsLine(c) {
   const parts = [`${c.counts.images} image${c.counts.images === 1 ? "" : "s"}`];
@@ -128,6 +173,7 @@ function clubCountsLine(c) {
 
 function clubCard(c) {
   const url = getClubPageUrl(c.slug);
+  const pending = !!c.pending;
   const inner = [
     el(
       "div",
@@ -144,19 +190,19 @@ function clubCard(c) {
         : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
     ),
     el("h3", { class: "club-card__name" }, c.name),
-    el("p", { class: "club-card__count" }, clubCountsLine(c)),
+    el("p", { class: "club-card__count" }, pending ? c.note : clubCountsLine(c)),
   ];
   const card = el(
     "li",
     {
-      class: "club-card",
+      class: "club-card club-card--pending",
       "data-club-name": c.name.toLowerCase(),
       "data-club-slug": c.slug.toLowerCase(),
       "data-club-body": c.body,
     },
-    url
+    url && !pending
       ? el("a", { href: pageLink(url), "aria-label": `${c.name} — open club page` }, ...inner)
-      : el("div", { class: "club-card__nolink" }, ...inner)
+      : el("div", { class: "club-card__nolink", title: "Club page coming soon" }, ...inner)
   );
   return card;
 }
@@ -176,16 +222,30 @@ export async function initClubs() {
     }
     for (const c of clubs) c.counts.media = mediaByClub.get(c.slug) || 0;
 
-    // Bucket clubs into bodies
+    // Bucket clubs into bodies, then merge in pending (no-data-yet) clubs
     for (const c of clubs) c.body = assignBody(c);
+    const pending = PENDING_CLUBS.filter((p) => !clubs.some((c) => c.slug === p.slug)).map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      body: p.body,
+      note: p.note,
+      pending: true,
+      counts: { images: 0, markdowns: 0, media: 0 },
+    }));
+    const allClubs = [...clubs, ...pending];
 
     const sections = BODIES.map((body) => {
-      const members = clubs.filter((c) => c.body === body.id);
+      const members = allClubs.filter((c) => c.body === body.id);
       if (!members.length) return null;
       return el(
         "section",
         { class: "clubs-body", "data-clubs-body": body.id },
-        el("h2", { class: "clubs-body__title" }, body.label),
+        el(
+          "h2",
+          { class: "clubs-body__title" },
+          body.label,
+          el("span", { class: "clubs-body__count" }, String(members.length))
+        ),
         el("p", { class: "clubs-body__blurb muted" }, body.blurb),
         el("ul", { class: "club-grid club-grid--full" }, ...members.map(clubCard))
       );
