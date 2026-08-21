@@ -1,22 +1,58 @@
 /**
- * pages/events.js — events page initialiser.
+ * pages/events.js — events timeline.
  *
- * Pulls all is_iicm / is_event entries from the assets map, groups them
- * by year (newest first), and renders a timeline with client-side search.
+ * Pulls all is_iicm / is_event entries from the assets map (images AND
+ * event-flagged videos), groups them by year (newest first, undated last),
+ * and renders a timeline with client-side search. Thumbs use the shared
+ * paper-reveal animation and valid figure/figcaption semantics.
  */
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 
-function renderEventMedia(asset, groupName) {
+function dedupe(assets) {
+  const seen = new Set();
+  return assets.filter((a) => {
+    const key = a.public_url || a.path || a.filename;
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function cleanCaption(asset) {
+  const raw = asset.title || asset.filename || "SAC event";
+  return (
+    String(raw)
+      .replace(/\.[a-z0-9]+$/i, "")
+      .trim() || "SAC event"
+  );
+}
+
+function assetRatio(asset) {
+  const ratio =
+    Number(asset.aspect_ratio) ||
+    (asset.width && asset.height ? asset.width / asset.height : 4 / 3);
+  return Math.min(3, Math.max(0.55, ratio));
+}
+
+/** Deterministic pin tilt — same layout every visit (no Math.random jitter). */
+function pinTilt(index) {
+  return (((index % 7) - 3) * 0.6).toFixed(2);
+}
+
+function renderEventMedia(asset) {
   if (asset.file_type === "video") {
+    // preload="none" until the thumb nears the viewport (lazy-video observer
+    // below flips it to "metadata") — avoids 100+ metadata requests on load.
     return el(
       "video",
       {
         controls: true,
-        preload: "metadata",
+        preload: "none",
+        "data-preload-lazy": "",
         playsinline: true,
-        "aria-label": asset.title || asset.filename || "Event video",
+        "aria-label": cleanCaption(asset),
       },
       el("source", {
         src: assetUrl(asset.public_url),
@@ -26,13 +62,40 @@ function renderEventMedia(asset, groupName) {
   }
   return el("img", {
     src: assetUrl(asset.public_url),
-    alt: asset.description,
+    alt: asset.description || asset.title || asset.filename || "SAC event photograph",
     loading: "lazy",
     decoding: "async",
     width: asset.width || undefined,
     height: asset.height || undefined,
-    "data-viewer": groupName,
+    style:
+      asset.width && asset.height ? `aspect-ratio: ${asset.width} / ${asset.height}` : undefined,
   });
+}
+
+/** Flip lazy videos to preload="metadata" as they approach the viewport. */
+function initLazyVideos(root = document) {
+  const videos = Array.from(root.querySelectorAll("video[data-preload-lazy]"));
+  if (!videos.length) return;
+  if (!("IntersectionObserver" in window)) {
+    videos.forEach((v) => {
+      v.preload = "metadata";
+      v.removeAttribute("data-preload-lazy");
+    });
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const video = entry.target;
+        video.preload = "metadata";
+        video.removeAttribute("data-preload-lazy");
+        io.unobserve(video);
+      });
+    },
+    { rootMargin: "600px 0px" }
+  );
+  videos.forEach((v) => io.observe(v));
 }
 
 export async function initEvents() {
@@ -40,27 +103,28 @@ export async function initEvents() {
   if (!mount) return;
   try {
     const assets = await loadAssetsMap();
-    const events = assets
-      .filter((a) => a.is_iicm || a.is_event || a.file_type === "video")
-      .sort((a, b) => (b.year || 0) - (a.year || 0));
+    // Event provenance only — images and videos flagged by the asset pipeline.
+    // (No blanket file_type === "video" catch-all: club practice clips stay out.)
+    const events = dedupe(assets.filter((a) => a.is_iicm || a.is_event)).sort(
+      (a, b) => (b.year || 0) - (a.year || 0)
+    );
 
     const byYear = new Map();
     for (const e of events) {
-      const y = e.year || "Unknown";
+      const y = e.year || "Undated";
       if (!byYear.has(y)) byYear.set(y, []);
       byYear.get(y).push(e);
     }
     const years = Array.from(byYear.keys()).sort((a, b) => {
-      if (a === "Unknown") return 1;
-      if (b === "Unknown") return -1;
+      if (a === "Undated") return 1;
+      if (b === "Undated") return -1;
       return Number(b) - Number(a);
     });
 
     mount.replaceWith(
       el(
         "section",
-        { class: "events", id: "events-list" },
-        el("h2", { class: "section-title", id: "eventsTitle" }, "Events & competitions"),
+        { class: "events", id: "events-list", "aria-label": "Event timeline" },
         years.length === 0
           ? el("p", { class: "muted" }, "No events indexed yet.")
           : el(
@@ -70,18 +134,19 @@ export async function initEvents() {
                 el(
                   "section",
                   { class: "events__year reveal-section" },
-                  el("h3", { class: "events__year-label" }, String(y)),
+                  el("h2", { class: "events__year-label" }, String(y)),
                   el(
                     "ul",
                     { class: "thumb-grid pinned-thumbs" },
-                    ...byYear.get(y).map((e) => {
+                    ...byYear.get(y).map((e, index) => {
                       const groupName = "events-" + y;
+                      const caption = cleanCaption(e);
                       return el(
                         "li",
                         {
-                          class: "thumb",
+                          class: "thumb thumb--reveal",
                           "data-event-search": (
-                            (e.title || "") +
+                            caption +
                             " " +
                             (e.description || "") +
                             " " +
@@ -91,31 +156,28 @@ export async function initEvents() {
                             " " +
                             (e.competition || "")
                           ).toLowerCase(),
-                          style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
+                          style: `--pin-rotate: ${pinTilt(index)}; --thumb-aspect: ${assetRatio(e)};`,
                         },
-                        e.file_type === "video"
-                          ? renderEventMedia(e, groupName)
-                          : el(
-                              "a",
-                              {
-                                href: assetUrl(e.public_url),
-                                "data-viewer": groupName,
-                                "data-title": e.title || e.filename || "",
-                                "data-desc": e.description || e.club_name || "",
-                                "data-credit": e.credit || "",
-                                "data-context": "Events \u00b7 " + y,
-                                title: e.title || e.filename || "",
-                              },
-                              el("img", {
-                                src: assetUrl(e.public_url),
-                                alt: e.description,
-                                loading: "lazy",
-                                decoding: "async",
-                                width: e.width || undefined,
-                                height: e.height || undefined,
-                              })
-                            ),
-                        el("figcaption", { class: "thumb__cap" }, e.title || e.filename)
+                        el(
+                          "figure",
+                          { class: "thumb__figure" },
+                          e.file_type === "video"
+                            ? renderEventMedia(e)
+                            : el(
+                                "a",
+                                {
+                                  href: assetUrl(e.public_url),
+                                  "data-viewer": groupName,
+                                  "data-title": caption,
+                                  "data-desc": e.description || e.club_name || "",
+                                  "data-credit": e.credit || "",
+                                  "data-context": "Events · " + y,
+                                  title: caption,
+                                },
+                                renderEventMedia(e)
+                              ),
+                          el("figcaption", { class: "thumb__cap" }, caption)
+                        )
                       );
                     })
                   )
@@ -130,25 +192,24 @@ export async function initEvents() {
     if (searchInput) {
       searchInput.addEventListener("input", () => {
         const q = searchInput.value.toLowerCase().trim();
-        const items = document.querySelectorAll(".thumb[data-event-search]");
         let visibleCount = 0;
-        items.forEach((item) => {
-          const haystack = item.dataset.eventSearch || "";
-          const match = !q || haystack.includes(q);
-          item.style.display = match ? "" : "none";
-          if (match) visibleCount++;
-        });
-        // Hide year sections with no visible items
         document.querySelectorAll(".events__year").forEach((section) => {
-          const visibleItems = section.querySelectorAll(".thumb:not([style*='display: none'])");
-          section.style.display = visibleItems.length === 0 ? "none" : "";
+          let sectionVisible = 0;
+          section.querySelectorAll(".thumb[data-event-search]").forEach((item) => {
+            const haystack = item.dataset.eventSearch || "";
+            const match = !q || haystack.includes(q);
+            item.classList.toggle("is-hidden", !match);
+            if (match) {
+              sectionVisible++;
+              visibleCount++;
+            }
+          });
+          section.classList.toggle("is-hidden", sectionVisible === 0);
         });
-        // Show/hide no-results message
         const noResults = $(".events-no-results");
         if (!q || visibleCount > 0) {
-          if (noResults) noResults.remove();
+          noResults?.remove();
         } else if (!noResults) {
-          // mount was replaced via replaceWith() earlier — query the live node
           document
             .getElementById("events-list")
             ?.appendChild(
@@ -166,6 +227,7 @@ export async function initEvents() {
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
     // is handled inside initImageReveal so we don't duplicate checks here.
     initImageReveal(document);
+    initLazyVideos(document);
   } catch {
     showError(
       mount,

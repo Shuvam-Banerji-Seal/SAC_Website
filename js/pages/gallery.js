@@ -60,30 +60,44 @@ export async function initGallery() {
           el(
             "ul",
             { class: "thumb-grid pinned-thumbs" },
-            ...images.map((i) =>
+            ...images.map((i, index) =>
               el(
                 "li",
                 {
-                  class: "thumb",
-                  style: "--pin-rotate: " + ((Math.random() - 0.5) * 4).toFixed(1),
+                  class: "thumb thumb--reveal",
+                  style:
+                    `--pin-rotate: ${(((index % 7) - 3) * 0.6).toFixed(2)};` +
+                    (i.width && i.height
+                      ? ` --thumb-aspect: ${(i.width / i.height).toFixed(3)};`
+                      : ""),
                 },
                 el(
-                  "a",
-                  {
-                    href: assetUrl(i.public_url),
-                    "data-viewer": groupName,
-                    title: i.title || i.filename,
-                  },
-                  el("img", {
-                    src: assetUrl(i.public_url),
-                    alt: i.description,
-                    loading: "lazy",
-                    decoding: "async",
-                    width: i.width || undefined,
-                    height: i.height || undefined,
-                  })
-                ),
-                el("figcaption", { class: "thumb__cap" }, i.title || i.filename)
+                  "figure",
+                  { class: "thumb__figure" },
+                  el(
+                    "a",
+                    {
+                      href: assetUrl(i.public_url),
+                      "data-viewer": groupName,
+                      title: i.title || i.filename,
+                    },
+                    el("img", {
+                      src: assetUrl(i.public_url),
+                      alt: i.description || i.title || i.filename || "Gallery image",
+                      loading: "lazy",
+                      decoding: "async",
+                      width: i.width || undefined,
+                      height: i.height || undefined,
+                      style:
+                        i.width && i.height ? `aspect-ratio: ${i.width} / ${i.height}` : undefined,
+                    })
+                  ),
+                  el(
+                    "figcaption",
+                    { class: "thumb__cap" },
+                    String(i.title || i.filename || "SAC image").replace(/\.[a-z0-9]+$/i, "")
+                  )
+                )
               )
             )
           )

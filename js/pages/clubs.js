@@ -1,9 +1,10 @@
 /**
- * pages/clubs.js — all-clubs overview page.
+ * pages/clubs.js — all-clubs directory, grouped by SAC body.
  *
- * Renders a full grid of all 10 clubs with logos, names, and quick stats.
- * Each card links to the single template at club.html?id=<slug>.
- * Includes a client-side search input that filters cards by name.
+ * The home page is the magazine cover; this page is the full index.
+ * Clubs are bucketed into Council / Academics / Hostel / Sports / Cultural
+ * sections (h2 headers, h3 cards — valid heading outline), each card links
+ * to its individual page, and client-side search matches name + slug + body.
  */
 import { $, el, pageLink, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
@@ -20,7 +21,9 @@ function getClubPageUrl(slug) {
     Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
     "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
     "PIXEL-Photography_Club": "pages/pixel.html",
+    Placement_Cell: "pages/placement.html",
     SAC_Academics: "pages/academics.html",
+    SAC_Food_and_Hygiene: "pages/food-hygiene.html",
     SAC_Hostel: "pages/hostel.html",
     SAC_Sports_Athletics: "pages/athletics.html",
     SAC_Sports_Badminton: "pages/badminton.html",
@@ -41,7 +44,121 @@ function getClubPageUrl(slug) {
     Singularity_Astro_Club: "pages/singularity.html",
     Slashdot_Programming_Club: "pages/slashdot.html",
   };
-  return urlMap[slug] || "pages/clubs.html";
+  return urlMap[slug] || null;
+}
+
+/* Body buckets — order defines render order. assignBody is pattern-based so
+ * newly indexed clubs land in a sensible section without code changes. */
+const BODIES = [
+  {
+    id: "council",
+    label: "SAC Council",
+    blurb: "The elected student core that coordinates the year's calendar.",
+  },
+  {
+    id: "academics",
+    label: "Academics",
+    blurb: "Placement, astronomy, programming, and the academic committee.",
+  },
+  {
+    id: "hostel",
+    label: "Hostel Committee",
+    blurb: "Residence life, welfare, and the hostel sub-committees.",
+  },
+  {
+    id: "sports",
+    label: "Sports",
+    blurb: "Sixteen clubs across the fields, courts, and mats — plus IISM.",
+  },
+  {
+    id: "cultural",
+    label: "Cultural",
+    blurb: "Drama to photography — the creative pulse of campus, plus IICM.",
+  },
+];
+
+function assignBody(club) {
+  const name = `${club.name} ${club.slug}`.toLowerCase();
+  if (name.includes("food") || name.includes("hygiene")) return "hostel";
+  if (
+    name.includes("sport") ||
+    /(athletics|badminton|basketball|carrom|chess|cricket|football|gaming|gym|kabaddi|kho[-_ ]?kho|lawn[-_ ]?tennis|rubik|sydc|table[-_ ]?tennis|volleyball)/.test(
+      name
+    )
+  ) {
+    return "sports";
+  }
+  if (
+    name.includes("council") ||
+    name.includes("general secretary") ||
+    name.includes("secretaries")
+  ) {
+    return "council";
+  }
+  if (
+    name.includes("academic") ||
+    name.includes("placement") ||
+    name.includes("singularity") ||
+    name.includes("astronomy") ||
+    name.includes("slashdot") ||
+    name.includes("programming")
+  ) {
+    return "academics";
+  }
+  if (
+    name.includes("hostel") ||
+    name.includes("shc") ||
+    name.includes("smc") ||
+    name.includes("medical")
+  ) {
+    return "hostel";
+  }
+  return "cultural";
+}
+
+function clubCountsLine(c) {
+  const parts = [`${c.counts.images} image${c.counts.images === 1 ? "" : "s"}`];
+  if (c.counts.markdowns) {
+    parts.push(`${c.counts.markdowns} doc${c.counts.markdowns === 1 ? "" : "s"}`);
+  }
+  const media = c.counts.media || 0;
+  if (media) parts.push(`${media} clip${media === 1 ? "" : "s"}`);
+  return parts.join(" · ");
+}
+
+function clubCard(c) {
+  const url = getClubPageUrl(c.slug);
+  const inner = [
+    el(
+      "div",
+      { class: "club-card__logo" },
+      c.logo
+        ? el("img", {
+            src: assetUrl(c.logo.public_url),
+            alt: `${c.name} logo`,
+            loading: "lazy",
+            decoding: "async",
+            width: c.logo.width || 96,
+            height: c.logo.height || 96,
+          })
+        : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
+    ),
+    el("h3", { class: "club-card__name" }, c.name),
+    el("p", { class: "club-card__count" }, clubCountsLine(c)),
+  ];
+  const card = el(
+    "li",
+    {
+      class: "club-card",
+      "data-club-name": c.name.toLowerCase(),
+      "data-club-slug": c.slug.toLowerCase(),
+      "data-club-body": c.body,
+    },
+    url
+      ? el("a", { href: pageLink(url), "aria-label": `${c.name} — open club page` }, ...inner)
+      : el("div", { class: "club-card__nolink" }, ...inner)
+  );
+  return card;
 }
 
 export async function initClubs() {
@@ -50,66 +167,68 @@ export async function initClubs() {
   try {
     const assets = await loadAssetsMap();
     const clubs = indexByClub(assets);
+
+    // Media counts per club (video + audio) for the card meta line
+    const mediaByClub = new Map();
+    for (const a of assets) {
+      if (a.file_type !== "video" && a.file_type !== "audio") continue;
+      mediaByClub.set(a.club, (mediaByClub.get(a.club) || 0) + 1);
+    }
+    for (const c of clubs) c.counts.media = mediaByClub.get(c.slug) || 0;
+
+    // Bucket clubs into bodies
+    for (const c of clubs) c.body = assignBody(c);
+
+    const sections = BODIES.map((body) => {
+      const members = clubs.filter((c) => c.body === body.id);
+      if (!members.length) return null;
+      return el(
+        "section",
+        { class: "clubs-body", "data-clubs-body": body.id },
+        el("h2", { class: "clubs-body__title" }, body.label),
+        el("p", { class: "clubs-body__blurb muted" }, body.blurb),
+        el("ul", { class: "club-grid club-grid--full" }, ...members.map(clubCard))
+      );
+    }).filter(Boolean);
+
     mount.replaceWith(
       el(
         "section",
-        { class: "clubs-grid-wrap", id: "clubs-grid" },
-        el(
-          "ul",
-          { class: "club-grid club-grid--full" },
-          ...clubs.map((c) =>
-            el(
-              "li",
-              { class: "club-card", "data-club-name": c.name.toLowerCase() },
-              el(
-                "a",
-                { href: pageLink(getClubPageUrl(c.slug)) },
-                el(
-                  "div",
-                  { class: "club-card__logo" },
-                  c.logo
-                    ? el("img", {
-                        src: assetUrl(c.logo.public_url),
-                        alt: `${c.name} logo`,
-                        loading: "lazy",
-                        decoding: "async",
-                        width: c.logo.width || 96,
-                        height: c.logo.height || 96,
-                      })
-                    : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
-                ),
-                el("h3", { class: "club-card__name" }, c.name),
-                el(
-                  "p",
-                  { class: "club-card__count" },
-                  `${c.counts.images} images · ${c.counts.markdowns} doc${c.counts.markdowns === 1 ? "" : "s"}`
-                )
-              )
-            )
-          )
-        )
+        { class: "clubs-grid-wrap", id: "clubs-grid", "aria-label": "All clubs" },
+        sections.length ? sections : el("p", { class: "muted" }, "No clubs indexed yet.")
       )
     );
 
-    // Wire up client-side search
+    // Client-side search across name + slug + body label
     const searchInput = $("#clubs-search");
     if (searchInput) {
       searchInput.addEventListener("input", () => {
         const q = searchInput.value.toLowerCase().trim();
-        const cards = document.querySelectorAll(".club-card");
         let visibleCount = 0;
-        cards.forEach((card) => {
-          const name = card.dataset.clubName || "";
-          const match = !q || name.includes(q);
-          card.style.display = match ? "" : "none";
-          if (match) visibleCount++;
+        document.querySelectorAll(".clubs-body").forEach((section) => {
+          const bodyLabel = (
+            section.querySelector(".clubs-body__title")?.textContent || ""
+          ).toLowerCase();
+          let sectionVisible = 0;
+          section.querySelectorAll(".club-card").forEach((card) => {
+            const haystack = [
+              card.dataset.clubName || "",
+              card.dataset.clubSlug || "",
+              bodyLabel,
+            ].join(" ");
+            const match = !q || haystack.includes(q);
+            card.classList.toggle("is-hidden", !match);
+            if (match) {
+              sectionVisible++;
+              visibleCount++;
+            }
+          });
+          section.classList.toggle("is-hidden", sectionVisible === 0);
         });
-        // Show "no results" message if nothing matches
         const noResults = $(".clubs-no-results");
         if (!q || visibleCount > 0) {
-          if (noResults) noResults.remove();
+          noResults?.remove();
         } else if (!noResults) {
-          // mount was replaced via replaceWith() earlier — query the live node
           document
             .getElementById("clubs-grid")
             ?.appendChild(

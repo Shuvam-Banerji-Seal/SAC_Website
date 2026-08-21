@@ -6,9 +6,9 @@
   background: var(--paper-soft);
   border: 1px solid var(--rule);
   color: var(--ink);
+  flex: 1;
   max-width: 420px;
   padding: 0.65rem 0.75rem;
-  width: 100%;
 }
 .events__years {
   border-top: var(--rule-heavy);
@@ -19,11 +19,15 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
 }
+.events__year.is-hidden {
+  display: none;
+}
 .events__year-label {
   color: var(--accent);
   font-size: var(--fs-xl);
   margin-bottom: 0.8rem;
 }
-.events-list li {
-  list-style: none;
+.events__year-label::before {
+  color: var(--accent);
+  content: "§ ";
 }

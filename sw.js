@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v19";
+const CACHE_NAME = "sac-v20";
 
 const STATIC_ASSETS = [
   // Core
@@ -87,6 +87,7 @@ const STATIC_ASSETS = [
   "pages/pixel.html",
   "pages/academics.html",
   "pages/hostel.html",
+  "pages/food-hygiene.html",
   // Sports clubs
   "pages/athletics.html",
   "pages/badminton.html",

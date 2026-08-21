@@ -390,6 +390,14 @@ body.sidebar-open .sidebar-scrim {
   transform-origin: 50% 0%;
 }
 
+/* Valid figure/figcaption semantics inside the pin card */
+.thumb__figure {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+}
+
 .thumb::before {
   /* pin head */
   background: radial-gradient(circle at 30% 30%, #c9a86a, #8b6f32 65%, #5a4220 100%);
@@ -487,6 +495,11 @@ body.sidebar-open .sidebar-scrim {
 .thumb--missing-name {
   outline: 1.5px dashed var(--accent);
   outline-offset: 2px;
+}
+
+/* Shared hidden state for search filtering (avoids fragile style-attr probes) */
+.is-hidden {
+  display: none !important;
 }
 .thumb--reveal {
   opacity: 0;

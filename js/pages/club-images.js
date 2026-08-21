@@ -102,58 +102,62 @@ function renderThumb(asset, group, context, index, opts = {}) {
       style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg; --asset-ratio: ${ratio}; --thumb-aspect: ${ratio}; --caption-lines: ${lines}`,
     },
     el(
-      "a",
-      {
-        href: assetUrl(asset.public_url),
-        "data-viewer": group,
-        "data-title": asset.title || asset.filename || "",
-        "data-desc": asset.description || asset.person || asset.filename || "",
-        "data-credit": asset.credit || "",
-        "data-context": context || "",
-        "data-width": asset.width || "",
-        "data-height": asset.height || "",
-        title: asset.title || asset.filename || "",
-      },
+      "figure",
+      { class: "thumb__figure" },
       el(
-        "span",
-        { class: "thumb__media" },
-        el("img", {
-          src: assetUrl(asset.public_url),
-          alt: asset.description || asset.title || asset.filename || "Club image",
-          loading: "lazy",
-          decoding: "async",
-          width: asset.width || undefined,
-          height: asset.height || undefined,
-          style:
-            asset.width && asset.height
-              ? `aspect-ratio: ${asset.width} / ${asset.height}`
-              : undefined,
-        })
+        "a",
+        {
+          href: assetUrl(asset.public_url),
+          "data-viewer": group,
+          "data-title": asset.title || asset.filename || "",
+          "data-desc": asset.description || asset.person || asset.filename || "",
+          "data-credit": asset.credit || "",
+          "data-context": context || "",
+          "data-width": asset.width || "",
+          "data-height": asset.height || "",
+          title: asset.title || asset.filename || "",
+        },
+        el(
+          "span",
+          { class: "thumb__media" },
+          el("img", {
+            src: assetUrl(asset.public_url),
+            alt: asset.description || asset.title || asset.filename || "Club image",
+            loading: "lazy",
+            decoding: "async",
+            width: asset.width || undefined,
+            height: asset.height || undefined,
+            style:
+              asset.width && asset.height
+                ? `aspect-ratio: ${asset.width} / ${asset.height}`
+                : undefined,
+          })
+        ),
+        needsVerify
+          ? el(
+              "span",
+              {
+                class: "thumb__badge",
+                title: isBogusName
+                  ? `Person name "${asset.person}" looks bogus — needs team follow-up`
+                  : "Person name missing — needs team follow-up",
+              },
+              "verify name"
+            )
+          : null,
+        isDuplicatePerson
+          ? el(
+              "span",
+              {
+                class: "thumb__badge thumb__badge--dup",
+                title: `Duplicate portrait for ${asset.person}`,
+              },
+              "duplicate"
+            )
+          : null
       ),
-      needsVerify
-        ? el(
-            "span",
-            {
-              class: "thumb__badge",
-              title: isBogusName
-                ? `Person name "${asset.person}" looks bogus — needs team follow-up`
-                : "Person name missing — needs team follow-up",
-            },
-            "verify name"
-          )
-        : null,
-      isDuplicatePerson
-        ? el(
-            "span",
-            {
-              class: "thumb__badge thumb__badge--dup",
-              title: `Duplicate portrait for ${asset.person}`,
-            },
-            "duplicate"
-          )
-        : null
-    ),
-    el("figcaption", { class: "thumb__cap" }, caption)
+      el("figcaption", { class: "thumb__cap" }, caption)
+    )
   );
 }
 

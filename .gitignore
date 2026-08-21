@@ -62,3 +62,6 @@ Thumbs.db
 stats.html
 --db-path
 \.playwright-mcp/
+
+# Agent working docs (local only)
+plans/
