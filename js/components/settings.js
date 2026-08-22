@@ -143,6 +143,26 @@ export function applyPrefs(prefs) {
   applyAmbient(prefs);
 }
 
+/* Follow the OS colour scheme live while theme = "auto". Without this,
+ * Auto evaluates once at load and never reacts to the OS switching. */
+const DARK_SCHEME_MQ =
+  typeof window !== "undefined" && window.matchMedia
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
+if (DARK_SCHEME_MQ) {
+  const onSchemeChange = () => {
+    try {
+      const prefs = loadPrefs();
+      const theme = prefs.theme || (prefs.dark === "auto" ? "auto" : undefined);
+      if (theme === "auto") applyTheme(prefs);
+    } catch {
+      /* storage can be blocked */
+    }
+  };
+  if (DARK_SCHEME_MQ.addEventListener) DARK_SCHEME_MQ.addEventListener("change", onSchemeChange);
+  else if (DARK_SCHEME_MQ.addListener) DARK_SCHEME_MQ.addListener(onSchemeChange);
+}
+
 function optionButton(className, value, label, selected) {
   return el(
     "button",
@@ -194,6 +214,16 @@ export function initSettings() {
     button.addEventListener("click", () => {
       prefs.theme = value;
       prefs.dark = value === "dark" ? true : value === "auto" ? "auto" : false;
+      // Escape hatch: the "Dark" paper texture paints dark colours even under
+      // the light theme, trapping users who picked it by accident. An explicit
+      // Light/Auto choice clears the conflict so the theme always wins.
+      if (value !== "dark" && prefs.texture === "dark") {
+        prefs.texture = "fresh";
+        document.documentElement.setAttribute("data-texture", "fresh");
+        textureGrid
+          .querySelectorAll("button")
+          .forEach((item) => item.classList.toggle("is-selected", item.dataset.value === "fresh"));
+      }
       theme
         .querySelectorAll("button")
         .forEach((item) => item.classList.toggle("is-selected", item === button));

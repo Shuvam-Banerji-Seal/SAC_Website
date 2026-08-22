@@ -78,6 +78,36 @@ describe("settings module", () => {
     expect(document.documentElement.getAttribute("data-texture")).toBe("fresh");
   });
 
+  it("clears conflicting 'dark' texture when Light theme is chosen (escape hatch)", async () => {
+    // User picked the "Dark" PAPER texture, site went dark, then clicks Light
+    // theme — the light choice must win and reset the conflicting texture.
+    localStorage.setItem(
+      "sac-site-prefs",
+      JSON.stringify({ texture: "dark", theme: "light", dark: false })
+    );
+    const { initSettings } = await import("../../js/components/settings.js");
+    initSettings();
+    expect(document.documentElement.getAttribute("data-texture")).toBe("dark");
+
+    document.querySelector('.theme-option[data-value="light"]').click();
+
+    const prefs = JSON.parse(localStorage.getItem("sac-site-prefs"));
+    expect(prefs.texture).toBe("fresh");
+    expect(document.documentElement.getAttribute("data-texture")).toBe("fresh");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+  });
+
+  it("keeps non-conflicting textures when switching themes", async () => {
+    localStorage.setItem("sac-site-prefs", JSON.stringify({ texture: "kraft" }));
+    const { initSettings } = await import("../../js/components/settings.js");
+    initSettings();
+
+    document.querySelector('.theme-option[data-value="light"]').click();
+
+    expect(JSON.parse(localStorage.getItem("sac-site-prefs")).texture).toBe("kraft");
+    expect(document.documentElement.getAttribute("data-texture")).toBe("kraft");
+  });
+
   it("dark mode checkbox reflects stored preference", async () => {
     localStorage.setItem("sac-site-prefs", JSON.stringify({ dark: true }));
     const { initSettings } = await import("../../js/components/settings.js");
