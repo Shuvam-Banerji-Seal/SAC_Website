@@ -513,3 +513,68 @@
     background-attachment: scroll;
   }
 }
+
+/* Hero — front-page photograph, newspaper double-rule + pin */
+.hero {
+  border-bottom: var(--rule-double);
+  border-top: var(--rule-double);
+  margin: 0 0 2rem;
+  padding: 0.6rem 0 0.8rem;
+}
+
+.hero__frame {
+  background: var(--paper-deep);
+  border: 1px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--paper-edge);
+  overflow: hidden;
+  position: relative;
+}
+
+.hero__frame::before {
+  background: radial-gradient(circle at 30% 30%, #c9a86a, #8b6f32 65%, #5a4220 100%);
+  border: 1px solid rgba(24, 20, 16, 0.32);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(24, 20, 16, 0.35);
+  content: "";
+  height: 14px;
+  left: 50%;
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%);
+  width: 14px;
+  z-index: 2;
+}
+
+.hero__frame img {
+  display: block;
+  height: auto;
+  max-height: min(62vh, 720px);
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.hero__caption {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  margin: 0.6rem 0 0;
+  text-align: left;
+}
+
+.hero__kicker {
+  color: var(--accent);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .hero__frame img {
+    max-height: 52vh;
+  }
+}
