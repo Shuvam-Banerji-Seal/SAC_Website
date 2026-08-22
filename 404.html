@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 · Page not found — The SAC Chronicle, IISER Kolkata</title>
+    <meta
+      name="description"
+      content="The page you asked for is not in this edition of The SAC Chronicle. Return to the front page or browse the clubs directory."
+    />
+    <!-- Fully self-contained on purpose: GitHub Pages serves this file at ANY
+         broken URL while keeping the requested path, so external css/js would
+         resolve against the wrong depth. Styles are inline; links get their
+         deployment prefix from __SAC_BASE below. -->
+    <style>
+      :root {
+        --paper: #f7f2e7;
+        --paper-deep: #eee5d2;
+        --ink: #181410;
+        --ink-muted: #706454;
+        --accent: #830d0d;
+        --font-display:
+          Impact, "Arial Narrow Bold", "Franklin Gothic Medium", Haettenschweiler, sans-serif;
+        --font-body: Georgia, "Times New Roman", Charter, serif;
+        --font-mono: "Courier New", Courier, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #1b1713;
+          --paper-deep: #30271e;
+          --ink: #f1e8d8;
+          --ink-muted: #ab9c87;
+          --accent: #d46b5f;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-body);
+        line-height: 1.55;
+        margin: 0;
+        min-height: 100vh;
+      }
+      .sheet {
+        margin: 0 auto;
+        max-width: 680px;
+        padding: 2.5rem 1.25rem 3rem;
+      }
+      .brand {
+        border-bottom: 1px solid var(--ink);
+        color: var(--ink-muted);
+        display: flex;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        justify-content: space-between;
+        letter-spacing: 0.12em;
+        padding-bottom: 0.45rem;
+        text-transform: uppercase;
+      }
+      .masthead {
+        border-bottom: 4px double var(--ink);
+        margin-bottom: 2rem;
+        padding: 1rem 0 1.25rem;
+        text-align: center;
+      }
+      .kicker {
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.22em;
+        margin: 0 0 0.6rem;
+        text-transform: uppercase;
+      }
+      .nf-code {
+        line-height: 0.85;
+        margin: 0;
+      }
+      .nf-num {
+        display: block;
+        font-family: var(--font-display);
+        font-size: clamp(6rem, 24vw, 12rem);
+        letter-spacing: -0.02em;
+      }
+      .nf-num em {
+        color: var(--accent);
+        font-style: normal;
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        margin: 0.5rem 0 0;
+      }
+      .nf-label {
+        display: block;
+        font-size: clamp(1.4rem, 5vw, 2.2rem);
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+      }
+      .deck {
+        border-left: 3px solid var(--accent);
+        color: var(--ink-muted);
+        font-size: 1.05rem;
+        font-style: italic;
+        margin: 1.5rem 0 0.75rem;
+        padding-left: 0.9rem;
+        text-align: left;
+      }
+      .byline {
+        color: var(--ink-muted);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .actions {
+        border-top: 1px solid var(--ink);
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+      }
+      .btn {
+        background: var(--ink);
+        color: var(--paper);
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        padding: 0.65rem 1.1rem;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      .btn:hover {
+        background: var(--accent);
+      }
+      .links {
+        color: var(--ink-muted);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        list-style: none;
+        margin: 1.25rem 0 0;
+        padding: 0;
+        text-transform: uppercase;
+      }
+      .links li {
+        display: inline-block;
+        margin: 0 0.35rem;
+      }
+      .links a {
+        color: var(--accent);
+      }
+      .links a:hover {
+        color: var(--ink);
+      }
+      .foot {
+        border-top: 3px double var(--ink);
+        color: var(--ink-muted);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.22em;
+        margin-top: 2.5rem;
+        padding-top: 0.8rem;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .noscript-note {
+        background: var(--paper-deep);
+        border: 1px solid var(--ink-muted);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        margin-top: 1.5rem;
+        padding: 0.75rem 1rem;
+      }
+      .visually-hidden {
+        clip: rect(0 0 0 0);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        width: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <p class="brand"><span>The SAC Chronicle</span><span>IISER Kolkata</span></p>
+
+      <header class="masthead">
+        <p class="kicker">Extra! · Missing page desk</p>
+        <h1>
+          <span aria-hidden="true" class="nf-code"><span class="nf-num">4<em>0</em>4</span></span>
+          <span class="nf-label">Page not found in print</span>
+        </h1>
+        <span class="visually-hidden">Error 404 — the page you requested could not be found.</span>
+        <p class="deck">
+          Our pressmen searched every stack and found no such edition. The story may have been
+          pulped, moved to a later run, or never printed at all.
+        </p>
+        <p class="byline">From the morgue · The missing pages desk</p>
+      </header>
+
+      <nav aria-label="Breadcrumb">
+        <div class="actions">
+          <a id="link-home" class="btn" href="/">Return to the front page</a>
+          <ul class="links">
+            <li><a id="link-clubs" href="/pages/clubs.html">Clubs directory</a> ·</li>
+            <li><a id="link-events" href="/pages/events.html">Events</a> ·</li>
+            <li><a id="link-gallery" href="/pages/gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <noscript>
+        <p class="noscript-note">
+          JavaScript is off, so we could not stamp the full site address onto these links. Use your
+          browser's back button, or add /SAC_Website/ to this address to reach the front page.
+        </p>
+      </noscript>
+
+      <footer>
+        <p class="foot">Student Activity Council · IISER Kolkata · Empowering Voices</p>
+      </footer>
+    </div>
+
+    <script>
+      // Deployment base: project pages live under /SAC_Website/ on GitHub Pages
+      // (both mirrors); local dev serves from the root.
+      var __SAC_BASE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "" : "/SAC_Website";
+      document.getElementById("link-home").href = __SAC_BASE + "/index.html";
+      document.getElementById("link-clubs").href = __SAC_BASE + "/pages/clubs.html";
+      document.getElementById("link-events").href = __SAC_BASE + "/pages/events.html";
+      document.getElementById("link-gallery").href = __SAC_BASE + "/pages/gallery.html";
+    </script>
+  </body>
+</html>
