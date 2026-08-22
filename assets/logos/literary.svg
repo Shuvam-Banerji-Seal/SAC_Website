@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="18" fill="#f7f2e7"/>
+  <rect x="8" y="8" width="184" height="184" rx="14" fill="none" stroke="#181410" stroke-width="3"/>
+  <text x="100" y="95" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="82" fill="#181410">L</text>
+  <line x1="60" y1="108" x2="140" y2="108" stroke="#830d0d" stroke-width="1.5"/>
+  <text x="100" y="132" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="16" fill="#5b4f3d">Literary</text>
+  <text x="100" y="150" text-anchor="middle" font-family="Courier,monospace" font-size="9" fill="#706454" letter-spacing="2">CLUB</text>
+</svg>

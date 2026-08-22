@@ -171,9 +171,19 @@ function clubCountsLine(c) {
   return parts.join(" · ");
 }
 
+const FALLBACK_LOGOS = {
+  Literary_Club_of_IISER_Kolkata: "assets/logos/literary.svg",
+  Music_Club_of_IISER_K: "assets/logos/music.svg",
+  "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "assets/logos/nrutya.svg",
+  SPICMACAY: "assets/logos/spicmacay.svg",
+  Placement_Cell: "assets/logos/placement.svg",
+  SAC_Academics: "assets/logos/sac.svg",
+};
+
 function clubCard(c) {
   const url = getClubPageUrl(c.slug);
   const pending = !!c.pending;
+  const fallbackLogo = !c.logo && FALLBACK_LOGOS[c.slug];
   const inner = [
     el(
       "div",
@@ -187,7 +197,16 @@ function clubCard(c) {
             width: c.logo.width || 96,
             height: c.logo.height || 96,
           })
-        : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
+        : fallbackLogo
+          ? el("img", {
+              src: assetUrl(fallbackLogo),
+              alt: `${c.name} logo`,
+              loading: "lazy",
+              decoding: "async",
+              width: 96,
+              height: 96,
+            })
+          : el("div", { class: "club-card__logo-fallback" }, c.name.charAt(0))
     ),
     el("h3", { class: "club-card__name" }, c.name),
     el("p", { class: "club-card__count" }, pending ? c.note : clubCountsLine(c)),
@@ -195,7 +214,7 @@ function clubCard(c) {
   const card = el(
     "li",
     {
-      class: "club-card club-card--pending",
+      class: "club-card" + (pending ? " club-card--pending" : ""),
       "data-club-name": c.name.toLowerCase(),
       "data-club-slug": c.slug.toLowerCase(),
       "data-club-body": c.body,

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="18" fill="#181410"/>
+  <text x="100" y="115" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="78" fill="#f7f2e7">♪</text>
+  <text x="100" y="142" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="22" fill="#f7f2e7" letter-spacing="1">MUSIC</text>
+  <text x="100" y="160" text-anchor="middle" font-family="Courier,monospace" font-size="8" fill="#c9b896" letter-spacing="3">CLUB • IISER K</text>
+</svg>

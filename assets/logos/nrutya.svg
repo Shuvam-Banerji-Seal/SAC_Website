@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="18" fill="#830d0d"/>
+  <text x="100" y="105" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="64" fill="#f7f2e7" letter-spacing="-1">नृत्य</text>
+  <text x="100" y="132" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="20" fill="#f7f2e7" letter-spacing="3">NRUTYA</text>
+  <text x="100" y="152" text-anchor="middle" font-family="Courier,monospace" font-size="8" fill="#f7f2e7" letter-spacing="2" opacity="0.8">DANCE CLUB</text>
+</svg>

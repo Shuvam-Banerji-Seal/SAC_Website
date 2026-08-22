@@ -273,10 +273,11 @@ async function loadYouTubeSection() {
           "div",
           { class: "notebook-card__media" },
           el("iframe", {
-            src: `https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`,
+            src: `https://www.youtube-nocookie.com/embed/${video.videoId}?rel=0&modestbranding=1`,
             title,
             allowfullscreen: "",
             loading: "lazy",
+            referrerpolicy: "strict-origin-when-cross-origin",
           })
         ),
         el("p", { class: "notebook-card__caption", title }, `“ ${title} ”`),

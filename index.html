@@ -144,9 +144,10 @@
           >
             <title id="structure-title">The SAC organizational structure — newspaper edition</title>
             <desc id="structure-desc">
-              SAC sits at the centre, with four bodies: Academics (Placement, Singularity), Hostel
-              (SHC Committee), Sports (16 clubs, IISM), Cultural (10 clubs, IICM). Printed on paper
-              with double rules and pin marks.
+              SAC sits at the centre, with five bodies: Academics (Placement, Singularity), Hostel
+              (SHC Committee), Sports (16 clubs, IISM), Cultural (10 clubs, IICM), and Food &amp;
+              Hygiene (SMC). Printed on paper with double rules and pin marks, centred on the SAC
+              seal.
             </desc>
             <!-- Paper grain backdrop -->
             <rect
@@ -233,92 +234,107 @@
                 STUDENT COUNCIL
               </text>
             </g>
-            <!-- Body cards — paper with subtle shadow -->
+            <!-- Body cards — paper with subtle shadow (5 bodies, Food & Hygiene added) -->
             <g filter="url(#paperShadow)">
               <g fill="var(--paper, #fffaf0)" stroke="var(--ink, #181410)" stroke-width="1.05">
-                <rect x="36" y="168" width="170" height="78" rx="1.5" />
-                <rect x="218" y="168" width="170" height="78" rx="1.5" />
-                <rect x="412" y="168" width="170" height="78" rx="1.5" />
-                <rect x="594" y="168" width="170" height="78" rx="1.5" />
+                <rect x="24" y="168" width="140" height="78" rx="1.5" />
+                <rect x="176" y="168" width="140" height="78" rx="1.5" />
+                <rect x="328" y="168" width="140" height="78" rx="1.5" />
+                <rect x="480" y="168" width="140" height="78" rx="1.5" />
+                <rect x="632" y="168" width="140" height="78" rx="1.5" />
               </g>
               <!-- pin dots -->
               <g fill="#c9a86a" stroke="rgba(24,20,16,0.32)" stroke-width="0.6">
-                <circle cx="48" cy="176" r="4.2" />
-                <circle cx="230" cy="176" r="4.2" />
-                <circle cx="424" cy="176" r="4.2" />
-                <circle cx="606" cy="176" r="4.2" />
+                <circle cx="36" cy="176" r="4.2" />
+                <circle cx="188" cy="176" r="4.2" />
+                <circle cx="340" cy="176" r="4.2" />
+                <circle cx="492" cy="176" r="4.2" />
+                <circle cx="644" cy="176" r="4.2" />
               </g>
             </g>
-            <!-- dashed connectors -->
+            <!-- dashed connectors (5) -->
             <g
               stroke="var(--ink-muted, #706454)"
               stroke-width="0.9"
               stroke-dasharray="5 4"
               opacity="0.85"
             >
-              <line x1="400" y1="136" x2="121" y2="168" />
-              <line x1="400" y1="136" x2="303" y2="168" />
-              <line x1="400" y1="136" x2="497" y2="168" />
-              <line x1="400" y1="136" x2="679" y2="168" />
+              <line x1="400" y1="136" x2="94" y2="168" />
+              <line x1="400" y1="136" x2="246" y2="168" />
+              <line x1="400" y1="136" x2="398" y2="168" />
+              <line x1="400" y1="136" x2="550" y2="168" />
+              <line x1="400" y1="136" x2="702" y2="168" />
             </g>
             <!-- Body labels -->
             <g text-anchor="middle">
               <text
-                x="121"
+                x="94"
                 y="198"
                 font-family="Georgia,serif"
                 font-weight="700"
-                font-size="13.5"
+                font-size="12.5"
                 fill="#830d0d"
               >
                 Academics
               </text>
               <text
-                x="303"
+                x="246"
                 y="198"
                 font-family="Georgia,serif"
                 font-weight="700"
-                font-size="13.5"
+                font-size="12.5"
                 fill="#830d0d"
               >
                 Hostel
               </text>
               <text
-                x="497"
+                x="398"
                 y="198"
                 font-family="Georgia,serif"
                 font-weight="700"
-                font-size="13.5"
+                font-size="12.5"
                 fill="#830d0d"
               >
                 Sports
               </text>
               <text
-                x="679"
+                x="550"
                 y="198"
                 font-family="Georgia,serif"
                 font-weight="700"
-                font-size="13.5"
+                font-size="12.5"
                 fill="#830d0d"
               >
                 Cultural
               </text>
+              <text
+                x="702"
+                y="198"
+                font-family="Georgia,serif"
+                font-weight="700"
+                font-size="11"
+                fill="#830d0d"
+              >
+                Food &amp; Hyg.
+              </text>
             </g>
             <g
               font-family="Courier New,monospace"
-              font-size="8.2"
+              font-size="7.5"
               fill="currentColor"
               text-anchor="middle"
               opacity="0.9"
             >
-              <text x="121" y="215">Placement · Singularity</text>
-              <text x="121" y="227">Programming · Astronomy</text>
-              <text x="303" y="215">SHC Committee</text>
-              <text x="303" y="227">Residence · Welfare</text>
-              <text x="497" y="215">16 clubs · IISM</text>
-              <text x="497" y="227">Fields · Courts · Mats</text>
-              <text x="679" y="215">10 clubs · IICM</text>
-              <text x="679" y="227">Stage · Studio · Air</text>
+              <text x="94" y="215">Placement · Singularity</text>
+              <text x="94" y="227">Programming · Astronomy</text>
+              <text x="246" y="215">SHC Committee</text>
+              <text x="246" y="227">Residence · Welfare</text>
+              <text x="398" y="215">16 clubs · IISM</text>
+              <text x="398" y="227">Fields · Courts · Mats</text>
+              <text x="550" y="215">10 clubs · IICM</text>
+              <text x="550" y="227">Stage · Studio · Air</text>
+              <text x="702" y="215">SMC · Canteen</text>
+              <text x="702" y="227">Quality · Hygiene</text>
             </g>
             <!-- bottom rule + footer -->
             <g stroke="currentColor" opacity="0.9">

@@ -33,12 +33,27 @@ main {
 @media (min-width: 1024px) {
   main {
     width: min(calc(100% - var(--sidebar-w) - 4rem), var(--max-w));
-    margin-left: calc(var(--sidebar-w) + 2rem);
-    margin-right: 2rem;
+    /* Fluid centering: when viewport is wide, main centers in the
+       remaining space rather than hugging left. The max() ensures the
+       left edge never slides under the fixed sidebar. */
+    margin-left: max(calc(var(--sidebar-w) + 2rem), calc((100vw - var(--max-w)) / 2 + var(--sidebar-w) / 2));
+    margin-right: max(2rem, calc((100vw - var(--max-w)) / 2 - var(--sidebar-w) / 2));
   }
   body.sidebar-collapsed main {
     width: min(calc(100% - var(--sidebar-collapsed-w) - 4rem), var(--max-w));
-    margin-left: calc(var(--sidebar-collapsed-w) + 2rem);
+    margin-left: max(calc(var(--sidebar-collapsed-w) + 2rem), calc((100vw - var(--max-w)) / 2 + var(--sidebar-collapsed-w) / 2));
+    margin-right: max(2rem, calc((100vw - var(--max-w)) / 2 - var(--sidebar-collapsed-w) / 2));
+  }
+}
+
+/* Ultra-wide: ensure text scales gracefully and remains centered.
+   Uses relative units so browser zoom (Ctrl +/-) reflows naturally. */
+@media (min-width: 1600px) {
+  main {
+    /* Allow the paper to breathe on large displays while keeping
+       the newspaper measure (max ~72ch) readable. */
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
