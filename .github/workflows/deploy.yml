@@ -121,7 +121,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site/public/assets/processed
-          cp -r index.html sw.js .nojekyll _site/
+          # 404.html is served by Pages for ANY broken URL — it must ship.
+          test -f 404.html || { echo "::error::404.html missing at repo root"; exit 1; }
+          cp -r index.html 404.html sw.js .nojekyll _site/
           cp -r css js pages assets diagrams _site/
           cp -r public/assets/processed/. _site/public/assets/processed/
           echo "--- staged site size ---"
