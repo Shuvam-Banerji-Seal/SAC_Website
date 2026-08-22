@@ -10,6 +10,7 @@ import { loadAssetsMap, getClubEntries } from "../data.js";
 import { initScrollSounds } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { measureText } from "../utils/text-measure.js";
+import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 
 function assetCaption(asset) {
   return asset.person || asset.title || asset.filename || "SAC image";
@@ -170,16 +171,7 @@ function renderMediaCard(asset, context, index) {
   const media =
     asset.file_type === "audio"
       ? el("audio", { controls: true, preload: "metadata" }, source)
-      : el(
-          "video",
-          {
-            controls: true,
-            preload: "metadata",
-            playsinline: true,
-            "aria-label": caption,
-          },
-          source
-        );
+      : el("video", videoPlayerAttrs(asset, caption), source);
   return el(
     "li",
     {
@@ -360,6 +352,7 @@ export async function initClubImages() {
     console.error("[club-images] Failed to load images:", error);
   }
 
+  initLazyVideos(document);
   initImageReveal(document);
   addTableDataLabels();
   wrapTables();

@@ -38,6 +38,19 @@
   margin: 1.75rem 0;
   padding-top: 0.8rem;
 }
+
+/* The gallery renders 1,100+ images across ~32 club sections — skip layout
+ * and paint for offscreen sections until they scroll near the viewport. */
+@supports (content-visibility: auto) {
+  .gallery__club {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+  .gallery__media {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1200px;
+  }
+}
 .gallery__club-name {
   font-family: var(--font-body);
   font-size: var(--fs-xl);

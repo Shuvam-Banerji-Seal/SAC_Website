@@ -8,6 +8,7 @@
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
+import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 
 function renderMediaCard(asset, index) {
   const title = asset.title || asset.filename || "SAC media";
@@ -18,16 +19,7 @@ function renderMediaCard(asset, index) {
   const media =
     asset.file_type === "audio"
       ? el("audio", { controls: true, preload: "metadata" }, source)
-      : el(
-          "video",
-          {
-            controls: true,
-            preload: "metadata",
-            playsinline: true,
-            "aria-label": title,
-          },
-          source
-        );
+      : el("video", videoPlayerAttrs(asset, title), source);
   return el(
     "li",
     { class: "media-card", style: `--pin-rotate: ${((index % 5) - 2) * 0.45}deg` },
@@ -79,6 +71,12 @@ export async function initGallery() {
                     {
                       href: assetUrl(i.public_url),
                       "data-viewer": groupName,
+                      "data-title": String(i.title || i.filename || "SAC image").replace(
+                        /\.[a-z0-9]+$/i,
+                        ""
+                      ),
+                      "data-desc": i.description && !i.is_extracted_from_doc ? i.description : "",
+                      "data-context": c.name,
                       title: i.title || i.filename,
                     },
                     el("img", {
@@ -165,6 +163,7 @@ export async function initGallery() {
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
     // is handled inside initImageReveal so we don't duplicate checks here.
     initImageReveal(document);
+    initLazyVideos(document);
   } catch {
     showError(
       mount,

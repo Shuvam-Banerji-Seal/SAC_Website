@@ -9,6 +9,7 @@
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
+import { initLazyVideos } from "../utils/media.js";
 
 function dedupe(assets) {
   const seen = new Set();
@@ -70,32 +71,6 @@ function renderEventMedia(asset) {
     style:
       asset.width && asset.height ? `aspect-ratio: ${asset.width} / ${asset.height}` : undefined,
   });
-}
-
-/** Flip lazy videos to preload="metadata" as they approach the viewport. */
-function initLazyVideos(root = document) {
-  const videos = Array.from(root.querySelectorAll("video[data-preload-lazy]"));
-  if (!videos.length) return;
-  if (!("IntersectionObserver" in window)) {
-    videos.forEach((v) => {
-      v.preload = "metadata";
-      v.removeAttribute("data-preload-lazy");
-    });
-    return;
-  }
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const video = entry.target;
-        video.preload = "metadata";
-        video.removeAttribute("data-preload-lazy");
-        io.unobserve(video);
-      });
-    },
-    { rootMargin: "600px 0px" }
-  );
-  videos.forEach((v) => io.observe(v));
 }
 
 export async function initEvents() {

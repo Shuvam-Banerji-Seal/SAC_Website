@@ -136,31 +136,48 @@ function handleKey(e) {
 
 let lastStripGroup = "";
 
+/* Groups can hold 1,000+ images (the whole gallery). Rendering that many
+ * strip buttons on open is wasted memory — render a sliding window around
+ * the current index instead, and slide it as the user navigates. */
+const STRIP_WINDOW = 41;
+
 function buildThumbnailStrip() {
   const strip = overlay.querySelector(".viewer-strip");
   if (!strip) return;
 
-  // Rebuild only when the group changes
-  const groupKey = currentGroup.map((el) => {
-    const img = el.tagName === "IMG" ? el : el.querySelector("img");
-    return img?.src || "";
-  }).join("|");
+  const total = currentGroup.length;
+  if (total < 2) {
+    strip.style.display = "none";
+    return;
+  }
+  strip.style.display = "";
 
-  if (groupKey !== lastStripGroup) {
-    lastStripGroup = groupKey;
+  // Window start: keep currentIndex centred, clamped to [0, total-WINDOW]
+  const half = Math.floor(STRIP_WINDOW / 2);
+  const start =
+    total <= STRIP_WINDOW ? 0 : Math.max(0, Math.min(currentIndex - half, total - STRIP_WINDOW));
+  const end = Math.min(total, start + STRIP_WINDOW);
+
+  const imgAt = (i) => {
+    const el = currentGroup[i];
+    return el.tagName === "IMG" ? el : el.querySelector("img");
+  };
+  const groupKey =
+    currentGroup
+      .map((el) => imgAt(start)?.src || "")
+      .join("|")
+      .slice(0, 80) || "";
+  const key = `${groupKey}#${start}#${end}`;
+
+  if (key !== lastStripGroup) {
+    lastStripGroup = key;
     strip.innerHTML = "";
-
-    if (currentGroup.length < 2) {
-      strip.style.display = "none";
-      return;
-    }
-    strip.style.display = "";
-
-    currentGroup.forEach((item, i) => {
-      const img = item.tagName === "IMG" ? item : item.querySelector("img");
-      if (!img) return;
+    for (let i = start; i < end; i++) {
+      const img = imgAt(i);
+      if (!img) continue;
       const thumb = document.createElement("button");
       thumb.className = "viewer-strip__thumb";
+      thumb.dataset.index = String(i);
       thumb.setAttribute("aria-label", `Go to image ${i + 1}`);
       const thumbImg = document.createElement("img");
       thumbImg.src = img.src;
@@ -173,13 +190,13 @@ function buildThumbnailStrip() {
         updateImage();
       });
       strip.appendChild(thumb);
-    });
+    }
   }
 
-  // Highlight active thumbnail
+  // Highlight active thumbnail by its group index (window offset aware)
   const thumbs = strip.querySelectorAll(".viewer-strip__thumb");
-  thumbs.forEach((t, i) => {
-    t.classList.toggle("is-active", i === currentIndex);
+  thumbs.forEach((t) => {
+    t.classList.toggle("is-active", Number(t.dataset.index) === currentIndex);
   });
 
   // Scroll active thumbnail into view

@@ -19,6 +19,14 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
 }
+
+/* Skip layout/paint for offscreen year sections until scrolled near. */
+@supports (content-visibility: auto) {
+  .events__year {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+}
 .events__year.is-hidden {
   display: none;
 }
