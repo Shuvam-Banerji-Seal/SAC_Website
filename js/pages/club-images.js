@@ -11,9 +11,10 @@ import { initScrollSounds } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { measureText } from "../utils/text-measure.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
+import { captionFor, altTextFor, isGenericTitle } from "../utils/caption.js";
 
 function assetCaption(asset) {
-  return asset.person || asset.title || asset.filename || "SAC image";
+  return captionFor(asset);
 }
 
 function isBogusPerson(name) {
@@ -29,9 +30,9 @@ function isBogusPerson(name) {
 }
 
 function mediaLabel(asset) {
-  return (
-    asset.title || asset.filename || (asset.file_type === "audio" ? "Audio clip" : "Video clip")
-  );
+  const cap = captionFor(asset);
+  if (!isGenericTitle(cap)) return cap;
+  return asset.file_type === "audio" ? "Audio clip" : "Video clip";
 }
 
 function assetRatio(asset) {
@@ -110,7 +111,7 @@ function renderThumb(asset, group, context, index, opts = {}) {
         {
           href: assetUrl(asset.public_url),
           "data-viewer": group,
-          "data-title": asset.title || asset.filename || "",
+          "data-title": assetCaption(asset),
           "data-desc": asset.description || asset.person || asset.filename || "",
           "data-credit": asset.credit || "",
           "data-context": context || "",
@@ -123,7 +124,7 @@ function renderThumb(asset, group, context, index, opts = {}) {
           { class: "thumb__media" },
           el("img", {
             src: assetUrl(asset.public_url),
-            alt: asset.description || asset.title || asset.filename || "Club image",
+            alt: altTextFor(asset, "Club image"),
             loading: "lazy",
             decoding: "async",
             width: asset.width || undefined,
@@ -134,6 +135,9 @@ function renderThumb(asset, group, context, index, opts = {}) {
                 : undefined,
           })
         ),
+        index % 3 === 0
+          ? el("span", { class: "thumb__tape", "aria-hidden": "true" })
+          : null,
         needsVerify
           ? el(
               "span",

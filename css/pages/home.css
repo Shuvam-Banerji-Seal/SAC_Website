@@ -575,6 +575,29 @@
 
 @media (max-width: 720px) {
   .hero__frame img {
+    aspect-ratio: 4 / 3;
     max-height: 52vh;
+    object-position: center 30%;
+  }
+  .hero {
+    margin-bottom: 1.25rem;
+  }
+  .masthead__title {
+    font-size: clamp(2.4rem, 13vw, 3.6rem);
+  }
+  .masthead__edition {
+    font-size: 0.62rem;
+    gap: 0.4rem;
+  }
+  .lead-article__headline {
+    font-size: clamp(1.7rem, 8.5vw, 2.4rem);
+    max-width: 100%;
+  }
+  .postmark {
+    height: 58px;
+    right: 0.5rem;
+    top: 0.5rem;
+    width: 58px;
+    font-size: 0.5rem;
   }
 }

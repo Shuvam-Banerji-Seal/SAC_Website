@@ -60,9 +60,22 @@ function buildIdentity(club, entries) {
   ).length;
   const logoSource = club.logo ? "Map logo" : "Map mark";
 
+  const stampDate = new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
   return el(
     "div",
     { class: "club-detail__identity" },
+    el(
+      "div",
+      { class: "postmark", "aria-hidden": "true" },
+      "SAC",
+      el("span", { class: "postmark__lines" }, stampDate),
+      "IISER·K"
+    ),
     el("div", { class: "club-detail__logo" }, makeLogo(club, entries)),
     el(
       "div",
@@ -117,7 +130,8 @@ export async function initClubPage() {
 
     const backLink = header.querySelector(".back-link");
     const identity = buildIdentity(club, entries);
-    header.replaceChildren(...(backLink ? [backLink] : []), identity);
+    const tear = el("div", { class: "paper-tear", "aria-hidden": "true" });
+    header.replaceChildren(...(backLink ? [backLink] : []), identity, tear);
     header.dataset.clubName = club.name;
     header.dataset.clubSlug = slug;
     document.body.dataset.clubName = club.name;

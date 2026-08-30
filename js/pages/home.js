@@ -11,6 +11,7 @@ import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
 import { measureText } from "../utils/text-measure.js";
+import { captionFor, altTextFor } from "../utils/caption.js";
 
 const EXCERPT_MAX = 240;
 const EXCERPT_MIN = 30;
@@ -123,7 +124,7 @@ function renderCampusGallery(assets) {
 
   mount.replaceChildren(
     ...images.map((asset, index) => {
-      const title = asset.title || asset.filename || "Campus life archive";
+      const title = captionFor(asset);
       const context = asset.club_name || "SAC archive";
       return el(
         "figure",
@@ -140,7 +141,7 @@ function renderCampusGallery(assets) {
           },
           el("img", {
             src: assetUrl(asset.public_url),
-            alt: asset.description || title,
+            alt: altTextFor(asset, title),
             loading: index < 2 ? "eager" : "lazy",
             decoding: "async",
             width: asset.width || undefined,

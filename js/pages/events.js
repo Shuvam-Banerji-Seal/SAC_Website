@@ -10,6 +10,7 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
+import { captionFor, altTextFor } from "../utils/caption.js";
 
 function dedupe(assets) {
   const seen = new Set();
@@ -22,12 +23,7 @@ function dedupe(assets) {
 }
 
 function cleanCaption(asset) {
-  const raw = asset.title || asset.filename || "SAC event";
-  return (
-    String(raw)
-      .replace(/\.[a-z0-9]+$/i, "")
-      .trim() || "SAC event"
-  );
+  return captionFor(asset);
 }
 
 function assetRatio(asset) {
@@ -63,7 +59,7 @@ function renderEventMedia(asset) {
   }
   return el("img", {
     src: assetUrl(asset.public_url),
-    alt: asset.description || asset.title || asset.filename || "SAC event photograph",
+    alt: altTextFor(asset, "SAC event photograph"),
     loading: "lazy",
     decoding: "async",
     width: asset.width || undefined,
@@ -96,10 +92,27 @@ export async function initEvents() {
       return Number(b) - Number(a);
     });
 
+    const campusMap = el(
+      "div",
+      { class: "map-card", "aria-label": "Campus venue map" },
+      el(
+        "div",
+        { class: "map-card__frame" },
+        el("iframe", {
+          src: "https://www.google.com/maps?q=IISER+Kolkata+Mohanpur&output=embed",
+          title: "IISER Kolkata campus map — event venues",
+          loading: "lazy",
+          referrerpolicy: "strict-origin-when-cross-origin",
+        })
+      ),
+      el("p", { class: "map-card__label" }, "Venues · IISER Kolkata, Mohanpur campus")
+    );
+
     mount.replaceWith(
       el(
         "section",
         { class: "events", id: "events-list", "aria-label": "Event timeline" },
+        campusMap,
         years.length === 0
           ? el("p", { class: "muted" }, "No events indexed yet.")
           : el(

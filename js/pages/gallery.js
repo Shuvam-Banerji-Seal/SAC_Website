@@ -9,9 +9,10 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
+import { captionFor, altTextFor } from "../utils/caption.js";
 
 function renderMediaCard(asset, index) {
-  const title = asset.title || asset.filename || "SAC media";
+  const title = captionFor(asset);
   const source = el("source", {
     src: assetUrl(asset.public_url),
     type: asset.mime_type || undefined,
@@ -71,17 +72,14 @@ export async function initGallery() {
                     {
                       href: assetUrl(i.public_url),
                       "data-viewer": groupName,
-                      "data-title": String(i.title || i.filename || "SAC image").replace(
-                        /\.[a-z0-9]+$/i,
-                        ""
-                      ),
+                      "data-title": captionFor(i),
                       "data-desc": i.description && !i.is_extracted_from_doc ? i.description : "",
                       "data-context": c.name,
                       title: i.title || i.filename,
                     },
                     el("img", {
                       src: assetUrl(i.public_url),
-                      alt: i.description || i.title || i.filename || "Gallery image",
+                      alt: altTextFor(i, "Gallery image"),
                       loading: "lazy",
                       decoding: "async",
                       width: i.width || undefined,
@@ -90,11 +88,7 @@ export async function initGallery() {
                         i.width && i.height ? `aspect-ratio: ${i.width} / ${i.height}` : undefined,
                     })
                   ),
-                  el(
-                    "figcaption",
-                    { class: "thumb__cap" },
-                    String(i.title || i.filename || "SAC image").replace(/\.[a-z0-9]+$/i, "")
-                  )
+                  el("figcaption", { class: "thumb__cap" }, captionFor(i))
                 )
               )
             )
