@@ -24,6 +24,7 @@ import { initEvents } from "./pages/events.js";
 import { initGallery } from "./pages/gallery.js";
 import { initLoader } from "./loader.js";
 import { initAmbientMusic } from "./utils/music.js";
+import { initBackToTop } from "./components/back-to-top.js";
 
 const initializers = {
   home: initHome,
@@ -52,6 +53,7 @@ onReady(async () => {
   setupNavbarFold();
   initSettings();
   initAmbientMusic();
+  initBackToTop();
   initViewer();
   initializers[page]?.();
 
