@@ -71,3 +71,14 @@
 .club-card--pending .club-card__count {
   font-style: italic;
 }
+
+/* Live search result count */
+.clubs-search-count {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+

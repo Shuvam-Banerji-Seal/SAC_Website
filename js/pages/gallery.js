@@ -19,7 +19,11 @@ function renderMediaCard(asset, index) {
   });
   const media =
     asset.file_type === "audio"
-      ? el("audio", { controls: true, preload: "metadata" }, source)
+      ? el(
+        "audio",
+        { controls: true, preload: "none", "data-preload-lazy": "" },
+        source
+      )
       : el("video", videoPlayerAttrs(asset, title), source);
   return el(
     "li",

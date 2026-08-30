@@ -82,11 +82,13 @@ export function renderFooter() {
           el("h4", { class: "site-footer__heading" }, "Location"),
           el("div", { class: "site-footer__map" },
             el("iframe", {
+              // 'fullscreen' inside allow subsumes allowfullscreen without
+              // the deprecation warning; the Maps embed probes nothing else.
+              allow: "fullscreen;",
               src: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58828.718524617045!2d88.31544337726389!3d22.637462449361284!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89f2c7c5a0b2f%3A0x9f68e2a2d5e0ec0c!2sIndian%20Institute%20of%20Science%20Education%20and%20Research%2C%20Kolkata!5e0!3m2!1sen!2sin!4v1",
               width: "100%",
               height: "160",
               style: "border:0;border-radius:6px;",
-              allowfullscreen: "",
               loading: "lazy",
               referrerpolicy: "no-referrer-when-downgrade",
               title: "IISER Kolkata campus location"

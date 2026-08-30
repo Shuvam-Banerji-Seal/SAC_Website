@@ -208,6 +208,17 @@ export async function initEvents() {
           });
           section.classList.toggle("is-hidden", sectionVisible === 0);
         });
+        // Live result-count chip
+        let counter = searchInput.parentElement.querySelector(".events-search-count");
+        if (!counter) {
+          counter = el(
+            "span",
+            { class: "clubs-search-count events-search-count", role: "status", "aria-live": "polite" }
+          );
+          searchInput.parentElement.append(counter);
+        }
+        counter.textContent = q ? `${visibleCount} of ${document.querySelectorAll(".thumb[data-event-search]").length} moments` : "";
+
         const noResults = $(".events-no-results");
         if (!q || visibleCount > 0) {
           noResults?.remove();

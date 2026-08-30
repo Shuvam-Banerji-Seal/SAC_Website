@@ -276,7 +276,7 @@ async function loadYouTubeSection() {
           el("iframe", {
             src: `https://www.youtube-nocookie.com/embed/${video.videoId}?rel=0&modestbranding=1`,
             title,
-            allowfullscreen: "",
+            allow: "fullscreen; encrypted-media; picture-in-picture;",
             loading: "lazy",
             referrerpolicy: "strict-origin-when-cross-origin",
           })

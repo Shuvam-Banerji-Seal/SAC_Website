@@ -169,3 +169,16 @@
   display: block;
   font-size: var(--fs-md);
 }
+
+/* Paper swatch chip on each texture button */
+.texture-option__swatch {
+  border: 1px solid var(--ink);
+  display: inline-block;
+  height: 14px;
+  margin-right: 0.45rem;
+  vertical-align: -2px;
+  width: 22px;
+}
+.texture-option {
+  text-transform: capitalize;
+}

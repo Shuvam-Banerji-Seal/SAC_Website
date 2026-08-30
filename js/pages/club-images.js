@@ -174,7 +174,11 @@ function renderMediaCard(asset, context, index) {
   });
   const media =
     asset.file_type === "audio"
-      ? el("audio", { controls: true, preload: "metadata" }, source)
+      ? el(
+        "audio",
+        { controls: true, preload: "none", "data-preload-lazy": "" },
+        source
+      )
       : el("video", videoPlayerAttrs(asset, caption), source);
   return el(
     "li",
@@ -253,13 +257,9 @@ function renderPlaceholder(placeholder, entries) {
   const missingNames = filtered.filter((a) => a.is_ob_portrait && !a.person);
   const bogusNames = filtered.filter((a) => a.is_ob_portrait && isBogusPerson(a.person));
   if (missingNames.length || bogusNames.length) {
+    // One summary line — the affected filenames are visible as page badges
     console.warn(
-      `[club-images] ${missingNames.length} missing + ${bogusNames.length} bogus person names in`,
-      role,
-      [
-        ...missingNames.map((a) => a.filename),
-        ...bogusNames.map((a) => `${a.filename}→${a.person}`),
-      ].join(", ")
+      `[club-images] ${role}: ${missingNames.length} missing + ${bogusNames.length} unverified person name(s) — flagged with "verify name" badges on the page`
     );
   }
 

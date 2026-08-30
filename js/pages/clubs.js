@@ -304,6 +304,19 @@ export async function initClubs() {
           });
           section.classList.toggle("is-hidden", sectionVisible === 0);
         });
+        // Live result-count chip next to the search box
+        let counter = searchInput.parentElement.querySelector(".clubs-search-count");
+        if (!counter) {
+          counter = el(
+            "span",
+            { class: "clubs-search-count", role: "status", "aria-live": "polite" }
+          );
+          searchInput.parentElement.append(counter);
+        }
+        counter.textContent = q
+          ? `${visibleCount} of ${document.querySelectorAll(".club-card").length} clubs`
+          : "";
+
         const noResults = $(".clubs-no-results");
         if (!q || visibleCount > 0) {
           noResults?.remove();

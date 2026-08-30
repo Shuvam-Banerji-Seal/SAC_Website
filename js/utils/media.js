@@ -11,7 +11,7 @@
 const NEAR_VIEWPORT = "600px 0px";
 
 export function initLazyVideos(root = document) {
-  const videos = Array.from(root.querySelectorAll("video[data-preload-lazy]"));
+  const videos = Array.from(root.querySelectorAll("video[data-preload-lazy], audio[data-preload-lazy]"));
   if (!videos.length) return;
 
   if (!("IntersectionObserver" in window)) {
@@ -26,10 +26,10 @@ export function initLazyVideos(root = document) {
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        const video = entry.target;
-        video.preload = "metadata";
+        const media = entry.target;
+        media.preload = "metadata";
         video.removeAttribute("data-preload-lazy");
-        io.unobserve(video);
+        io.unobserve(media);
       });
     },
     { rootMargin: NEAR_VIEWPORT }
