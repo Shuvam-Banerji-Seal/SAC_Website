@@ -231,6 +231,17 @@
   margin: 2rem 0;
   overflow: hidden;
 }
+
+@media (max-width: 720px) {
+  .news-ticker__track {
+    min-width: 0;
+  }
+  /* On phones the bulletin reads as a swipeable strip rather than clipping */
+  .news-ticker {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+}
 .news-ticker__label {
   background: var(--ink);
   color: var(--paper);

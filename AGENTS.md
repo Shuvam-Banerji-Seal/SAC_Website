@@ -1,9 +1,11 @@
 # AGENTS.md — Complete Repository Guide
 
 > **SAC_Website** — Official website of the Student Activity Council (SAC) at IISER Kolkata.
-> A newspaper-themed static site with 3D paper-fold animations, calligraphy text reveals,
-> dynamic textures, and synthesised audio. Served entirely via GitHub Pages — no backend,
-> no build step, no runtime dependency beyond a modern browser.
+> A newspaper-themed static site: CSS-only paper loader, calligraphy reveals, postmarks,
+> washi-tape pins, torn edges, 17 paper textures, synthesised audio, render-time caption
+> derivation (no "img 001" anywhere), and a body-segmented club directory mirroring the
+> source data tree. Served entirely via GitHub Pages — no backend, no build step,
+> no runtime dependency beyond a modern browser.
 
 ---
 
@@ -11,7 +13,7 @@
 
 ```
 SAC_Website/
-├── index.html                  # Home page (masthead, lead article, YouTube/Calendar, 5 body sections)
+├── index.html                  # Home (masthead → hero → lead → 5-body SVG diagram → stats → picture desk → YT/Calendar → ticker)
 ├── .github/workflows/deploy.yml # CI/CD: lint → test → verify → deploy to Pages
 ├── .gitmodules                 # Two submodules: public/assets (images) + utils/pretext
 ├── .nojekyll                   # Instructs GitHub Pages not to run Jekyll
@@ -20,17 +22,18 @@ SAC_Website/
 ├── eslint.config.js            # ESLint flat config (2024+)
 ├── package.json                # Dev tooling: vitest, eslint, prettier, http-server
 ├── vitest.config.js            # Vitest config with jsdom environment
-├── sw.js                       # Service Worker (sac-v15) — caches static assets + all sub-pages
+├── sw.js                       # Service Worker (sac-v25) — caches static assets + all sub-pages + 404
 ├── AGENTS.md                   # ← This file
 ├── README.md                   # Project overview and setup instructions
 │
 ├── css/                        # 11 CSS files + 6 page-specific stylesheets (incl. enhancements, print)
-├── js/                         # 5 components + 5 page initializers + 7 utilities + loader + preloader
-├── pages/                      # 35 static HTML pages (31 clubs/committees + clubs, events, gallery, about)
-├── assets/                     # 9 texture images (PNG/JPG) + audio + SVG logos
+├── js/                         # 8 components + 6 page initializers + 9 utilities + loader + preloader
+├── pages/                      # 37 static HTML pages (32 clubs/committees + clubs, events, gallery, about, food-hygiene)
+├── 404.html                    # Self-contained newspaper 404 (GitHub Pages serves it at any broken URL)
+├── assets/                     # Textures + hero.webp (87KB) + audio + 7 SVG logos
 ├── docs/                       # 20 research documents on paper textures, animations, typography
 ├── diagrams/                   # Mermaid/architecture diagrams
-├── test/                       # 13 test files (160 tests) + setup + e2e/integration/fixtures
+├── test/                       # 13 test files (190 tests) + setup + e2e/integration/fixtures
 ├── public/                     # Git submodule → SAC_website_assets (1393 processed entries)
 │   └── assets/processed/       # assets_map.jsonl + source ledger + website-ready media/docs
 ├── utils/                      # Git submodule → chenglou/pretext (text measurement library)
@@ -209,6 +212,9 @@ Array<ClubRecord>                          Filtered entries
 | `js/utils/dom.js`              | 57    | (none)                                                                                                    | `$`, `$$`, `el()`, `clear()`, `onReady()`, `getQueryParam()`, `isInPagesDir()`, `pageUrl()`                                                   | Tiny DOM helpers                                                              |
 | `js/utils/calligraphy.js`      | 857   | (none)                                                                                                    | `revealText()`, `revealParagraphs()`, `setSoundEnabled()`, `initScrollSounds()`, `playPaperScratch()`, `playPrintSound()`, `playPenScratch()` | Calligraphy text reveal animation + Web Audio API sound synthesis             |
 | `js/utils/text-measure.js`     | 81    | `../pretext/layout.js`                                                                                    | `measureText()`, `measureBlocks()`, `getMaxHeight()`, `clearMeasureCache()`                                                                   | Canvas-based text measurement wrapper                                         |
+| `js/utils/caption.js`          | 95    | (none)                                                                                                    | `captionFor()`, `altTextFor()`, `isGenericTitle()`                                                                                             | Render-time human captions — kills every "img 001" pipeline title (446 fixed) |
+| `js/utils/media.js`             | 55    | (none)                                                                                                    | `initLazyVideos()`, `videoPlayerAttrs()`                                                                                                      | preload=none + IntersectionObserver flip for `<video>`/`<audio>`              |
+| `js/components/back-to-top.js` | 40    | dom.js                                                                                                    | `initBackToTop()`                                                                                                                             | Newspaper ↑ button on every page; reduce-motion aware                         |
 | `js/components/navbar.js`      | 49    | dom, config                                                                                               | `renderNavbar(activePage)`                                                                                                                    | Renders primary nav                                                           |
 | `js/components/navbar-fold.js` | 202   | dom                                                                                                       | `setupNavbarFold()`                                                                                                                           | Mobile curtain + desktop corner drawer                                        |
 | `js/components/footer.js`      | 31    | dom, config                                                                                               | `renderFooter()`                                                                                                                              | Renders site footer                                                           |
@@ -442,7 +448,7 @@ sound source → filter → gain → dryGain ──┐
 
 ## 10. Service Worker (`sw.js`)
 
-- **Cache name**: `sac-v15` (bumped on significant CSS/JS changes)
+- **Cache name**: `sac-v25` (bumped on significant CSS/JS changes)
 - **Install**: `skipWaiting()`, caches ~90 static assets (CSS, JS, textures, audio, ALL sub-pages incl. sports & academic clubs)
 - **Activate**: `clients.claim()`, deletes old cache versions
 - **Fetch strategy**:
@@ -515,7 +521,7 @@ checkout → verify critical paths (index.html, css/, js/, pages/, public/assets
 
 ---
 
-## 15. Test Suite (13 files, 160 tests)
+## 15. Test Suite (17 files, 190 tests)
 
 | Test File                               | Tests | What It Tests                                                                                                         |
 | --------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
@@ -598,20 +604,31 @@ The `assets_map.jsonl` is a newline-delimited JSON file with 1393 records:
 | 11  | Newspaper theme CSS invalid — stray `}` closed first `:root`, leaving ~40 vars as top-level declarations | Wrapped newspaper tokens in second `:root {}` block                        | `css/variables.css`                      |
 | 12  | Clubs/events search "no results" appended to detached mount (post-`replaceWith`) — never visible | Query live node `getElementById(...)` before `appendChild`                 | `js/pages/clubs.js`, `js/pages/events.js` |
 | 13  | Dark-mode auto-switch highlighted texture with `.is-active` but CSS uses `.is-selected` | Unified on `.is-selected`                                                  | `js/components/settings.js`              |
+| 14  | Events force-included ALL 101 videos; fake years 2030/2029/2028 from filename counters | Pipeline year-window + is_event for event-folder videos | `public/assets/tools/generate_assets_map.py` |
+| 15  | Loader injected unstyled on subpages missing loader.css | `<link>` added to about/clubs/events/gallery | subpage heads |
+| 16  | 'Dark' paper texture trapped users in dark colors; Light click did nothing | Theme clears conflicting texture; live matchMedia auto listener | `js/components/settings.js` |
+| 17  | Gallery/club pages preloaded 100+ video metadata requests | Shared `initLazyVideos` (video+audio) preload=none + IO flip | `js/utils/media.js` |
+| 18  | Viewer strip built one button per image (1,133 possible) | 41-thumb sliding window | `js/components/viewer.js` |
+| 19  | deploy.yml staging list omitted 404.html — Pages shipped default 404 | Staged + hard verify step | `.github/workflows/deploy.yml` |
+| 20  | Club cards faded (unconditional `.club-card--pending` at 0.72) | Conditional pending class; 6 SVG crest fallbacks | `js/pages/clubs.js` |
+| 21  | Main column hugged left when zooming out on ultrawide | Fluid `max()` centering margins | `css/main.css` |
+| 22  | 446 images showed pipeline titles ("img 001", "DSC 0718") | `captionFor()` render-time derivation: event-folder → parent-doc plate → role | `js/utils/caption.js` |
+| 23  | Audio preload fired net::ERR_ABORTED churn on gallery | `preload="none"` + IO flip covers `<audio>` | `js/utils/media.js` |
+| 24  | Maps/YT iframes raised Permissions-Policy warnings | `allow="fullscreen; picture-in-picture; encrypted-media"` lists | `footer.js`, `home.js` |
+| 25  | News ticker clipped bulletins on phones (overflow hidden) | Mobile scroll-x fallback | `css/pages/home.css` |
 
 ---
 
 ## 18. Known Limitations
 
-1. **No DPR handling for raster textures**: `natural-paper.png`, `newspaper-bg.jpg`, `old-paper.jpg` lack @2x variants — blurry on retina displays. Fix requires generating @2x images and using `image-set()` in CSS.
-2. **Submodule SSH URLs**: Both submodules use SSH URLs which fail in CI environments without SSH keys. CI works because checkout uses `GITHUB_TOKEN` credentials. Local clone requires SSH setup.
-3. **Pretext tests mock the library**: `text-measure.test.js` mocks `prepare`/`layout`. The real integration test (`pretext-integration.test.js`) provides coverage but requires jsdom canvas mock.
-4. **No E2E test suite**: `test/e2e/` directory exists but is empty. Playwright MCP is used for manual verification (MCP server configured in Cline via `cline_mcp_settings.json` — `--headless --browser chromium` on Arch where bundled Playwright Chromium is used).
-5. **Pretext bundle is oversized**: Only `prepare()` and `layout()` are used, but the entire library (7 files, 4k+ lines) is shipped including unused rich-inline, bidi, and line-text machinery.
-6. **Home page loads `js/loader.js` twice**: via `<script type="module">` tag and via `main.js` import. A module-scope guard prevents re-init, but the duplicate tag is redundant.
-7. **API keys committed**: YouTube/Calendar API keys live in `js/config.js` (referrer-restricted at Google Cloud). They are visible in source but useless off-domain — acceptable for a static site.
-8. **Stray drive-download zips at repo root**: `drive-download-*.zip` files are untracked and gitignored; safe to delete.
----
+1. **71 MB chess finals video** exceeds GitHub's 50 MB recommendation (under the 100 MB hard limit — warning only; LFS would silence it).
+2. **4 unverified OB names** (Nrutya "25_26_OBs_00" etc.) flagged with "verify name" badges — awaiting team follow-up.
+3. **SPICMACAY** submitted zero data — rendered as an honest pending card.
+4. **Third-party console noise** (YouTube/Maps cookies, fingerprinting) originates inside vendor iframes; our code emits none.
+5. **Calendar API 403 on localhost** — key is referrer-restricted to the Pages domains; live works.
+6. **Prettier** still fails on 6 legacy files (pre-dates the redesign; CI `continue-on-error`).
+7. **Pretext bundle oversized** — only `prepare()/layout()` used, full library shipped.
+8. **Submodule SSH URLs** — CI clones with GITHUB_TOKEN; local dev needs SSH keys.
 
 ## 19. Local Development
 
@@ -659,7 +676,7 @@ git push origin main
 - **URL**: `https://shuvam-banerji-seal.github.io/SAC_Website/`
 - **Trigger**: Push to `main` branch → GitHub Actions → Deploy
 - **CDN propagation**: ~60-90s after deploy completes
-- **Cache**: Service Worker caches at `sac-v15`; clients need hard refresh to pick up new SW
+- **Cache**: Service Worker caches at `sac-v25`; clients need hard refresh to pick up new SW
 - **No build step**: The site is pure static — what you see in the repo is what's served
 
 ---
