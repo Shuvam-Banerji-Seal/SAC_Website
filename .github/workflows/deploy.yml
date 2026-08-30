@@ -82,7 +82,10 @@ jobs:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main'
+    # Deploy from the primary repo only — both mirrors run this workflow
+    # on the same shared Pages backend and simultaneous deploys race
+    # (HttpError: 'in progress deployment'). The sbs mirror keeps test/lint.
+    if: github.ref == 'refs/heads/main' && github.repository == 'slashdot-iiserk/SAC_website'
     timeout-minutes: 15
     environment:
       name: github-pages
