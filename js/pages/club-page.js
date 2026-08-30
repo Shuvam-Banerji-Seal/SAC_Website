@@ -7,6 +7,7 @@
  * same useful map-backed visual anchor without making the pages boilerplate.
  */
 import { $, el, assetUrl } from "../utils/dom.js";
+import { altTextFor, captionFor } from "../utils/caption.js";
 import { getClub, getClubEntries, loadAssetsMap } from "../data.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -96,15 +97,88 @@ function buildIdentity(club, entries) {
   );
 }
 
-function updateDescription(club) {
-  const description = document.querySelector('meta[name="description"]');
-  if (description) {
-    description.setAttribute(
-      "content",
-      `${club.name} — official SAC club record at IISER Kolkata, with people, events, images, and achievements.`
-    );
+function setMeta(attr, key, content) {
+  if (!content) return;
+  let tag = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute(attr, key);
+    document.head.appendChild(tag);
   }
+  tag.setAttribute("content", content);
+}
+
+/** Featured strip: the three best landscape event shots above the intro. */
+function buildHeroStrip(club, entries) {
+  const picks = entries
+    .filter(
+      (e) =>
+        e.file_type === "image" &&
+        (e.is_event || e.is_iicm || e.role === "event") &&
+        !e.is_extracted_from_doc &&
+        !e.is_ob_portrait &&
+        (Number(e.aspect_ratio) || 1) >= 1.2
+    )
+    .sort((a, b) => (Number(b.width) || 0) - (Number(a.width) || 0))
+    .slice(0, 3);
+  if (picks.length < 2) return null;
+  return el(
+    "div",
+    { class: "club-hero-strip", "aria-label": "Featured moments" },
+    ...picks.map((e, i) =>
+      el(
+        "button",
+        {
+          class: "club-hero-strip__item" + (i === 0 ? " is-lead" : ""),
+          type: "button",
+          "aria-label": `Open ${e.title || "featured photograph"}`,
+          onclick: () => {
+            const target = document.querySelector(
+              `#club-${e.club} a[data-viewer], a[href$="${e.public_url.split("/").pop()}"]`
+            );
+            target?.click();
+          },
+        },
+        el("img", {
+          src: assetUrl(e.public_url),
+          alt: altTextFor(e, "Featured club photograph"),
+          loading: i === 0 ? "eager" : "lazy",
+          decoding: "async",
+          width: e.width || undefined,
+          height: e.height || undefined,
+        })
+      )
+    )
+  );
+}
+
+function updateDescription(club, entries) {
+  const summary = `${club.name} — official SAC club record at IISER Kolkata, with people, events, images, and achievements.`;
+  const description = document.querySelector('meta[name="description"]');
+  if (description) description.setAttribute("content", summary);
   document.title = `${club.name} · SAC IISER Kolkata`;
+
+  // Social-share cards: og/twitter tags so club links unfurl in WhatsApp,
+  // Telegram, Slack, X. og:image prefers the club crest, absolute-URLed so
+  // crawlers can fetch it regardless of the deployment mirror.
+  const canonical =
+    document.querySelector('link[rel="canonical"]')?.href || document.location.href;
+  const imageEntry =
+    club.logo ||
+    entries.find((e) => e.file_type === "image" && !e.is_extracted_from_doc) ||
+    null;
+  const imageUrl = imageEntry
+    ? new URL(assetUrl(imageEntry.public_url), document.location.href).href
+    : new URL("assets/hero.webp", document.location.href).href;
+  setMeta("property", "og:title", club.name);
+  setMeta("property", "og:description", summary);
+  setMeta("property", "og:url", canonical);
+  setMeta("property", "og:image", imageUrl);
+  setMeta("property", "og:type", "profile");
+  setMeta("name", "twitter:card", "summary_large_image");
+  setMeta("name", "twitter:title", club.name);
+  setMeta("name", "twitter:description", summary);
+  setMeta("name", "twitter:image", imageUrl);
 }
 
 function wrapTables() {
@@ -130,12 +204,18 @@ export async function initClubPage() {
 
     const backLink = header.querySelector(".back-link");
     const identity = buildIdentity(club, entries);
+    const strip = buildHeroStrip(club, entries);
     const tear = el("div", { class: "paper-tear", "aria-hidden": "true" });
-    header.replaceChildren(...(backLink ? [backLink] : []), identity, tear);
+    header.replaceChildren(
+      ...(backLink ? [backLink] : []),
+      identity,
+      ...(strip ? [strip] : []),
+      tear
+    );
     header.dataset.clubName = club.name;
     header.dataset.clubSlug = slug;
     document.body.dataset.clubName = club.name;
-    updateDescription(club);
+    updateDescription(club, entries);
     wrapTables();
 
     // Keep a small, machine-readable provenance marker for future editors and

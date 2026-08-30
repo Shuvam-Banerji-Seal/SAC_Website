@@ -771,3 +771,19 @@ body.sidebar-open .sidebar-scrim {
   margin: 0.5rem 0 0;
   text-transform: uppercase;
 }
+
+/* Header count chip — archive size straight from the map */
+.count-chip {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  color: var(--ink-muted);
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.55rem;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  vertical-align: middle;
+}

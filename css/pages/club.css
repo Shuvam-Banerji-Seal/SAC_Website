@@ -234,3 +234,57 @@
     content: attr(data-label);
   }
 }
+
+/* Featured-moments strip in the club identity header */
+.club-hero-strip {
+  display: flex;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+}
+.club-hero-strip__item {
+  background: var(--paper-deep);
+  border: 1px solid var(--ink);
+  cursor: zoom-in;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.club-hero-strip__item.is-lead {
+  flex: 2.2 1 0;
+}
+.club-hero-strip__item img {
+  aspect-ratio: 16 / 10;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+.club-hero-strip__item:hover {
+  box-shadow: 3px 3px 0 var(--paper-edge);
+  transform: translateY(-2px);
+}
+.club-hero-strip__item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.club-hero-strip__item::after {
+  color: var(--paper);
+  content: "✦";
+  font-size: 0.7rem;
+  position: absolute;
+  right: 0.45rem;
+  text-shadow: 0 1px 2px rgba(24, 20, 16, 0.6);
+  top: 0.35rem;
+}
+@media (max-width: 720px) {
+  .club-hero-strip {
+    flex-wrap: wrap;
+  }
+  .club-hero-strip__item,
+  .club-hero-strip__item.is-lead {
+    flex: 1 1 100%;
+  }
+}

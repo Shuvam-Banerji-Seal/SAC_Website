@@ -108,6 +108,20 @@ export async function initEvents() {
       el("p", { class: "map-card__label" }, "Venues · IISER Kolkata, Mohanpur campus")
     );
 
+    // Dynamic header chip: total moments + clips straight from the map
+    const pageTitle = document.querySelector("h1.page-title");
+    if (pageTitle && !pageTitle.querySelector(".count-chip")) {
+      const photos = events.filter((e) => e.file_type === "image").length;
+      const clips = events.filter((e) => e.file_type === "video").length;
+      pageTitle.append(
+        el(
+          "span",
+          { class: "count-chip", "aria-label": `${events.length} indexed moments` },
+          `${events.length} moments${clips ? ` · ${clips} clips` : ""}`
+        )
+      );
+    }
+
     mount.replaceWith(
       el(
         "section",

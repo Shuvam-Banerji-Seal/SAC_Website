@@ -97,3 +97,13 @@
   opacity: 1;
   outline: 2px solid var(--accent);
 }
+
+/* Click-to-zoom: 2x pixel view with drag-pan inside the frame */
+.viewer-img {
+  transition: transform 220ms ease;
+}
+.viewer-img.is-zoomed {
+  cursor: grab;
+  max-height: none;
+  transition: none;
+}

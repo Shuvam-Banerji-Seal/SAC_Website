@@ -38,6 +38,19 @@ export async function initGallery() {
     const clubs = indexByClub(assets);
     const media = assets.filter((a) => a.file_type === "video" || a.file_type === "audio");
 
+    // Dynamic header chip
+    const pageTitle = document.querySelector("h1.page-title");
+    if (pageTitle && !pageTitle.querySelector(".count-chip")) {
+      const images = assets.filter((a) => a.file_type === "image" && !a.is_ob_portrait).length;
+      pageTitle.append(
+        el(
+          "span",
+          { class: "count-chip", "aria-label": `${images.toLocaleString("en-IN")} photographs` },
+          `${images.toLocaleString("en-IN")} photographs`
+        )
+      );
+    }
+
     // Build club sections with data attributes for filtering
     const clubSections = clubs
       .map((c) => {

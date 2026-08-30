@@ -81,6 +81,10 @@ function open(groupName, startIndex) {
 
   updateImage();
 
+  // Zoom wiring + reset between images
+  wireZoom();
+  resetZoom();
+
   // Wire events (only once)
   if (!overlay._wired) {
     overlay._wired = true;
@@ -128,6 +132,69 @@ function handleKey(e) {
   if (e.key === "Escape") close();
   if (e.key === "ArrowLeft") prev();
   if (e.key === "ArrowRight") next();
+  if (e.key === "z" || e.key === "Z") {
+    zoomed = !zoomed;
+    applyZoom();
+  }
+}
+
+/* -------------------------------------------------------------------------
+ * Zoom — click the image to toggle 100% pixel view, drag to pan
+ * ------------------------------------------------------------------------- */
+
+let zoomed = false;
+let panX = 0;
+let panY = 0;
+let dragStart = null;
+
+function applyZoom() {
+  const img = overlay?.querySelector(".viewer-img");
+  if (!img) return;
+  img.classList.toggle("is-zoomed", zoomed);
+  img.style.transform = zoomed ? `translate(${panX}px, ${panY}px) scale(2)` : "";
+  img.style.cursor = zoomed ? "grab" : "zoom-in";
+  if (!zoomed) {
+    panX = 0;
+    panY = 0;
+  }
+}
+
+function resetZoom() {
+  zoomed = false;
+  dragStart = null;
+  applyZoom();
+}
+
+function wireZoom() {
+  const img = overlay.querySelector(".viewer-img");
+  if (img.__sacZoomBound) return;
+  img.__sacZoomBound = true;
+
+  img.addEventListener("click", (e) => {
+    if (e.detail > 1) return; // let double-click be native where supported
+    zoomed = !zoomed;
+    applyZoom();
+  });
+
+  img.addEventListener("pointerdown", (e) => {
+    if (!zoomed) return;
+    dragStart = { x: e.clientX - panX, y: e.clientY - panY };
+    img.setPointerCapture(e.pointerId);
+    img.style.cursor = "grabbing";
+    e.preventDefault();
+  });
+  img.addEventListener("pointermove", (e) => {
+    if (!dragStart) return;
+    panX = e.clientX - dragStart.x;
+    panY = e.clientY - dragStart.y;
+    applyZoom();
+  });
+  const endDrag = () => {
+    dragStart = null;
+    if (zoomed) img.style.cursor = "grab";
+  };
+  img.addEventListener("pointerup", endDrag);
+  img.addEventListener("pointercancel", endDrag);
 }
 
 /* -------------------------------------------------------------------------

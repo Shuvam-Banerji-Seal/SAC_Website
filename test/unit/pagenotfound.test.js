@@ -59,3 +59,20 @@ describe("custom 404 page", () => {
     expect(html).toContain("#830d0d"); // --accent token
   });
 });
+
+describe("viewer zoom (source contract)", () => {
+  it("viewer.js ships click-zoom, drag-pan, and keyboard toggle", () => {
+    const src = readFileSync(resolve(root, "js/components/viewer.js"), "utf-8");
+    expect(src).toContain("wireZoom");
+    expect(src).toContain("is-zoomed");
+    expect(src).toContain("pointerdown");
+    expect(src).toContain("setPointerCapture");
+    expect(src).toContain('e.key === "z"');
+    // prev/next reset zoom so images never inherit stale pan
+    expect(src).toContain("resetZoom()");
+  });
+  it("viewer.css styles the zoomed state", () => {
+    const css = readFileSync(resolve(root, "css/viewer.css"), "utf-8");
+    expect(css).toContain(".viewer-img.is-zoomed");
+  });
+});
