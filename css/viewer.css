@@ -67,7 +67,8 @@
 }
 .viewer-counter {
   bottom: 1rem;
-  color: var(--paper);
+  /* the overlay is always dark in both themes — fixed light ink */
+  color: #f1e8d8;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   left: 50%;
@@ -86,7 +87,8 @@
   transform: translateX(-50%);
 }
 .viewer-strip__thumb {
-  border: 1px solid var(--paper);
+  /* strip sits on the always-dark overlay — fixed light outline */
+  border: 1px solid #f1e8d8;
   cursor: pointer;
   height: 36px;
   object-fit: cover;

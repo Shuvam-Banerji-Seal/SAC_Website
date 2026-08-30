@@ -271,12 +271,13 @@
   outline-offset: 2px;
 }
 .club-hero-strip__item::after {
-  color: var(--paper);
+  /* fixed light ink: sits directly on the photo in BOTH themes */
+  color: #fffaf0;
   content: "✦";
   font-size: 0.7rem;
   position: absolute;
   right: 0.45rem;
-  text-shadow: 0 1px 2px rgba(24, 20, 16, 0.6);
+  text-shadow: 0 1px 3px rgba(24, 20, 16, 0.85);
   top: 0.35rem;
 }
 @media (max-width: 720px) {
