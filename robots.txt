@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://slashdot-iiserk.github.io/SAC_Website/sitemap.xml
-Sitemap: https://shuvam-banerji-seal.github.io/SAC_Website/sitemap.xml
+# Primary deployment (slashdot-iiserk mirror runs CI tests; Pages is served
+# from this domain only — sbs Pages is not enabled)
+Sitemap: https://slashdot-iiserk.github.io/SAC_website/sitemap.xml
