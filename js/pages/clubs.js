@@ -231,7 +231,8 @@ export async function initClubs() {
   if (!mount) return;
   try {
     const assets = await loadAssetsMap();
-    const clubs = indexByClub(assets);
+    // Campus_Archive is a media collection, not a club — keep the directory clean
+    const clubs = indexByClub(assets.filter((a) => a.club !== "Campus_Archive"));
 
     // Media counts per club (video + audio) for the card meta line
     const mediaByClub = new Map();

@@ -288,8 +288,14 @@ function updateImage() {
   const el = currentGroup[currentIndex];
   if (!el) return;
 
-  // The clickable element is the <a data-viewer> wrapper (or sometimes a bare <img>)
-  const anchor = el.tagName === "A" ? el : el.closest("a[data-viewer]");
+  // Clickable element: <a data-viewer> wrapper, a bare <img>, or a button
+  // (campus carousel cards) — any element carrying the viewer group.
+  const anchor =
+    el.hasAttribute?.("data-context") && el.hasAttribute?.("data-viewer")
+      ? el
+      : el.tagName === "A"
+        ? el
+        : el.closest("a[data-viewer], [data-viewer][data-context]");
   const img = el.tagName === "IMG" ? el : el.querySelector("img");
   if (!img) return;
 

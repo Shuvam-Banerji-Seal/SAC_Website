@@ -10,7 +10,7 @@
  */
 
 const GENERIC_TITLE_RE =
-  /^(img ?_?\d*|img\d+|img[ _]?\d+[ _]?\d*|page\d* ?img\d*|dsc ?_?\d*|dsc\d+|ona\d+|pxl ?_?\d*|vid ?_?\d+|photo|image|untitled|new file)\s*$/i;
+  /^(img ?_?\d*|img\d+|img[ _]?\d+[ _]?\d*|page\d* ?img\d*|dsc ?_?\d*|dsc\d+|ona\d+|pxl ?_?\d*|vid ?_?\d+|mg ?_?\d+([ _]?\d+)?|photo|image|untitled|new file|\d{3,4} ?_?[a-z]?|\d{8,}[ _-].*)\s*$/i;
 
 /** True when the map title is pipeline noise rather than a real name. */
 export function isGenericTitle(title) {
@@ -91,15 +91,16 @@ export function captionFor(asset) {
     .replace(/[_-]+/g, " ")
     .trim();
   if (!isGenericTitle(base) && base) return base;
+  if (asset.club === "Campus_Archive") return "Campus photograph";
   return `${asset.club_name || "SAC"} archive photograph`;
 }
 
 /** Alt text for accessibility: real description, else caption, else fallback. */
 export function altTextFor(asset, fallback = "SAC archive photograph") {
   if (!asset) return fallback;
-  const desc =
-    asset.description && !/extracted from a source document/i.test(asset.description)
-      ? asset.description
-      : "";
-  return desc || captionFor(asset) || fallback;
+  const noisy =
+    !asset.description ||
+    /extracted from a source document/i.test(asset.description) ||
+    /^club photograph\s*—/i.test(asset.description);
+  return noisy ? captionFor(asset) || fallback : asset.description;
 }
