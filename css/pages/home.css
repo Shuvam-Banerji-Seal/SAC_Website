@@ -612,3 +612,13 @@
     font-size: 0.5rem;
   }
 }
+
+/* Diagram body overlays: pointer affordance + focus ring */
+.diagram-link {
+  cursor: pointer;
+}
+a:focus-visible .diagram-link {
+  fill: rgba(131, 13, 13, 0.12);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}

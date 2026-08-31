@@ -69,6 +69,81 @@ function renderEventMedia(asset) {
   });
 }
 
+
+/** The Undated bucket can hold hundreds of items — sub-group by club so it
+ *  reads as club chapters instead of one monolithic dump. */
+function renderUndatedByClub(items) {
+  const byClub = new Map();
+  for (const e of items) {
+    const key = e.club_name || "SAC archive";
+    if (!byClub.has(key)) byClub.set(key, []);
+    byClub.get(key).push(e);
+  }
+  return Array.from(byClub.entries()).map(([clubName, entries]) =>
+    el(
+      "div",
+      { class: "events__undated-club" },
+      el(
+        "h3",
+        { class: "events__undated-club-label" },
+        clubName,
+        el("span", { class: "events__undated-club-count" }, String(entries.length))
+      ),
+      renderEventGrid(entries, "events-undated-" + (entries[0]?.club || "archive"), "Undated · " + clubName)
+    )
+  );
+}
+
+
+/** One dated year's grid of pinned thumbs. */
+function renderEventGrid(yearEvents, groupName, y) {
+  return el(
+    "ul",
+    { class: "thumb-grid pinned-thumbs" },
+    ...yearEvents.map((e, index) => {
+      const caption = cleanCaption(e);
+      return el(
+        "li",
+        {
+          class: "thumb thumb--reveal",
+          "data-event-search": (
+            caption +
+            " " +
+            (e.description || "") +
+            " " +
+            (e.club_name || "") +
+            " " +
+            (e.venue || "") +
+            " " +
+            (e.competition || "")
+          ).toLowerCase(),
+          style: `--pin-rotate: ${pinTilt(index)}; --thumb-aspect: ${assetRatio(e)};`,
+        },
+        el(
+          "figure",
+          { class: "thumb__figure" },
+          e.file_type === "video"
+            ? renderEventMedia(e)
+            : el(
+                "a",
+                {
+                  href: assetUrl(e.public_url),
+                  "data-viewer": groupName,
+                  "data-title": caption,
+                  "data-desc": e.description || e.club_name || "",
+                  "data-credit": e.credit || "",
+                  "data-context": "Events · " + y,
+                  title: caption,
+                },
+                renderEventMedia(e)
+              ),
+          el("figcaption", { class: "thumb__cap" }, caption)
+        )
+      );
+    })
+  );
+}
+
 export async function initEvents() {
   const mount = $("#events-list");
   if (!mount) return;
@@ -132,64 +207,22 @@ export async function initEvents() {
           : el(
               "div",
               { class: "events__years" },
-              ...years.map((y) =>
-                el(
+              ...years.map((y) => {
+                const yearEvents = byYear.get(y);
+                return el(
                   "section",
                   { class: "events__year reveal-section" },
                   el("h2", { class: "events__year-label" }, String(y)),
-                  el(
-                    "ul",
-                    { class: "thumb-grid pinned-thumbs" },
-                    ...byYear.get(y).map((e, index) => {
-                      const groupName = "events-" + y;
-                      const caption = cleanCaption(e);
-                      return el(
-                        "li",
-                        {
-                          class: "thumb thumb--reveal",
-                          "data-event-search": (
-                            caption +
-                            " " +
-                            (e.description || "") +
-                            " " +
-                            (e.club_name || "") +
-                            " " +
-                            (e.venue || "") +
-                            " " +
-                            (e.competition || "")
-                          ).toLowerCase(),
-                          style: `--pin-rotate: ${pinTilt(index)}; --thumb-aspect: ${assetRatio(e)};`,
-                        },
-                        el(
-                          "figure",
-                          { class: "thumb__figure" },
-                          e.file_type === "video"
-                            ? renderEventMedia(e)
-                            : el(
-                                "a",
-                                {
-                                  href: assetUrl(e.public_url),
-                                  "data-viewer": groupName,
-                                  "data-title": caption,
-                                  "data-desc": e.description || e.club_name || "",
-                                  "data-credit": e.credit || "",
-                                  "data-context": "Events · " + y,
-                                  title: caption,
-                                },
-                                renderEventMedia(e)
-                              ),
-                          el("figcaption", { class: "thumb__cap" }, caption)
-                        )
-                      );
-                    })
-                  )
-                )
-              )
+                  ...(y === "Undated"
+                    ? renderUndatedByClub(yearEvents)
+                    : [renderEventGrid(yearEvents, "events-" + y, y)])
+                );
+              })
             )
       )
     );
 
-    // Client-side search
+    // Client-side search// Client-side search
     const searchInput = $("#events-search");
     if (searchInput) {
       searchInput.addEventListener("input", () => {

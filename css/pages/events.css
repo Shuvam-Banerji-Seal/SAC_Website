@@ -39,3 +39,29 @@
   color: var(--accent);
   content: "§ ";
 }
+
+/* Undated bucket: club chapters instead of one monolithic dump */
+.events__undated-club {
+  margin-bottom: 2rem;
+}
+.events__undated-club-label {
+  border-bottom: 1px dashed var(--ink-rule);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  margin: 0 0 0.8rem;
+  padding-bottom: 0.3rem;
+}
+.events__undated-club-label::before {
+  color: var(--accent);
+  content: "· ";
+}
+.events__undated-club-count {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  margin-left: 0.5rem;
+}
+.events__undated-club-count::before {
+  content: "— ";
+}

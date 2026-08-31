@@ -269,7 +269,14 @@ function buildThumbnailStrip() {
   // Scroll active thumbnail into view
   const active = strip.querySelector(".is-active");
   if (active) {
-    active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    const reduced =
+      document.documentElement.getAttribute("data-reduce-motion") === "on" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    active.scrollIntoView({
+      behavior: reduced ? "auto" : "smooth",
+      block: "nearest",
+      inline: "center",
+    });
   }
 }
 

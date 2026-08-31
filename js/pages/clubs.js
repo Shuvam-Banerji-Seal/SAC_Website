@@ -258,7 +258,7 @@ export async function initClubs() {
       if (!members.length) return null;
       return el(
         "section",
-        { class: "clubs-body", "data-clubs-body": body.id },
+        { class: "clubs-body", id: "body-" + body.id, "data-clubs-body": body.id },
         el(
           "h2",
           { class: "clubs-body__title" },
