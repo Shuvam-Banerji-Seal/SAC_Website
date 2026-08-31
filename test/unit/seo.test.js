@@ -27,8 +27,9 @@ describe("search infrastructure", () => {
     const robots = readFileSync(resolve(root, "robots.txt"), "utf-8");
     expect(robots).toContain("User-agent: *");
     expect(robots).toContain("Allow: /");
-    expect(robots).toContain("slashdot-iiserk.github.io/SAC_Website/sitemap.xml");
-    expect(robots).toContain("shuvam-banerji-seal.github.io/SAC_Website/sitemap.xml");
+    // URL case matters: the primary Pages domain is SAC_website (lowercase w)
+    expect(robots).toContain("https://slashdot-iiserk.github.io/SAC_website/sitemap.xml");
+    expect(robots).not.toContain("SAC_Website/sitemap.xml");
   });
 
   it("deploy stages sitemap + robots + 404 + hero pool", () => {
