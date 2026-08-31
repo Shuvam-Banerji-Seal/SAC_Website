@@ -86,8 +86,8 @@ function selectEditorialImages(assets, limit = 6) {
   return chosen;
 }
 
-function renderStats(assets) {
-  const mount = document.getElementById("home-stats");
+function renderStats(assets, mountId = "home-stats") {
+  const mount = document.getElementById(mountId);
   if (!mount) return;
   const stats = [
     ["clubs", new Set(assets.map((asset) => asset.club)).size, "indexed groups"],
@@ -207,6 +207,15 @@ function rotateHero() {
   const pick = HERO_POOL[new Date().getMonth() % HERO_POOL.length];
   img.src = pick.src;
   cap.textContent = pick.caption;
+}
+
+export async function renderArchiveStats(mountId) {
+  try {
+    const assets = await loadAssetsMap();
+    renderStats(assets, mountId);
+  } catch {
+    /* stats are decorative — silent */
+  }
 }
 
 export async function initHome() {

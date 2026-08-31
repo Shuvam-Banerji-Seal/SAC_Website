@@ -1,7 +1,14 @@
+/* Reading column: fixed 70ch measure, centred in the page column so it
+   scales like the rest of the paper instead of hugging the left margin. */
 .prose {
   border-top: var(--rule-double);
+  margin-inline: auto;
   max-width: 70ch;
   padding-top: 1rem;
+  width: 100%;
+}
+.prose .lede {
+  max-width: 60ch;
 }
 .prose h1 {
   font-family: var(--font-body);
@@ -22,4 +29,55 @@
 .prose .lede {
   font-size: var(--fs-md);
   font-style: italic;
+}
+
+/* Live archive stats (same furniture as home) */
+.home-stats {
+  border-block: 1px solid var(--rule);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  margin: 2rem auto;
+  max-width: 70ch;
+  padding: 1rem 0;
+  width: 100%;
+}
+.home-stat {
+  border-left: 3px solid var(--accent);
+  padding: 0.35rem 0 0.35rem 0.9rem;
+}
+.home-stat strong {
+  color: var(--accent);
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 0.9;
+}
+.home-stat span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Map shares the reading measure — page feels like one paper column */
+.map-card {
+  margin-inline: auto;
+  max-width: 70ch;
+}
+
+@media (max-width: 720px) {
+  .prose,
+  .home-stats,
+  .map-card {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .prose h1 {
+    font-size: clamp(2.2rem, 11vw, 3.2rem);
+  }
+  .home-stat strong {
+    font-size: var(--fs-xl);
+  }
 }

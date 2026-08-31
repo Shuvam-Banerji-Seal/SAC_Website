@@ -69,6 +69,12 @@ onReady(async () => {
     document.body.prepend(skipLink);
   }
 
+  // About page: live archive stats under the intro
+  if (page === "about") {
+    const { renderArchiveStats } = await import("./pages/home.js");
+    renderArchiveStats("about-stats");
+  }
+
   // Individual club pages (data-club-slug) — load images from JSONL
   if (document.body.dataset.clubSlug) {
     await Promise.all([initClubPage(), initClubImages()]);
