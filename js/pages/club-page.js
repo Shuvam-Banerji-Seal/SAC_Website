@@ -8,6 +8,7 @@
  */
 import { $, el, assetUrl } from "../utils/dom.js";
 import { altTextFor, captionFor } from "../utils/caption.js";
+import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { getClub, getClubEntries, loadAssetsMap } from "../data.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -217,11 +218,16 @@ export async function initClubPage() {
   const header = $(".club-detail__header");
   if (!slug || !header) return null;
 
+  showIdentitySkeleton(header);
   try {
     const assets = await loadAssetsMap();
     const club = getClub(slug, assets);
-    if (!club) return null;
+    if (!club) {
+      clearSkeleton(header);
+      return null;
+    }
     const entries = getClubEntries(assets, slug);
+    clearSkeleton(header);
 
     const backLink = header.querySelector(".back-link");
     const identity = buildIdentity(club, entries);

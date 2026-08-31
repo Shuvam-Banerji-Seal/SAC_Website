@@ -28,7 +28,7 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
 
 let cachePromise = null;
 // Bump this when assets change to invalidate stale sessionStorage cache
-const CACHE_VERSION = "sac-v31";
+const CACHE_VERSION = "sac-v32";
 
 function fetchJsonl() {
   if (!cachePromise) {

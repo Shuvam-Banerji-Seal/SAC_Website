@@ -802,3 +802,70 @@ body.sidebar-open .sidebar-scrim {
 .reading-progress {
   will-change: transform;
 }
+
+/* ── Skeleton scaffolding — paper placeholders while the map loads ── */
+@keyframes sac-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.skeleton {
+  animation: sac-skeleton-pulse 1.4s ease-in-out infinite;
+  background: var(--paper-deep);
+  border: 1px dashed var(--ink-rule);
+  color: transparent;
+  min-height: 1em;
+  position: relative;
+}
+.skeleton--thumb {
+  aspect-ratio: 4 / 3;
+  border: 1px dashed var(--ink-rule);
+  margin: 0.6rem;
+  min-height: 108px;
+}
+.skeleton--grid {
+  display: grid;
+  gap: 1.25rem 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+.skeleton--grid > li {
+  aspect-ratio: 4 / 3;
+  animation: sac-skeleton-pulse 1.4s ease-in-out infinite;
+  background: var(--paper-deep);
+  border: 1px dashed var(--ink-rule);
+}
+.skeleton--identity {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.skeleton--identity > * {
+  animation: sac-skeleton-pulse 1.4s ease-in-out infinite;
+  background: var(--paper-deep);
+  border: 1px dashed var(--ink-rule);
+}
+.skeleton--identity .sk-logo {
+  flex: 0 0 96px;
+  height: 96px;
+}
+.skeleton--identity .sk-lines {
+  flex: 1;
+  display: grid;
+  gap: 0.5rem;
+}
+.skeleton--identity .sk-lines span {
+  height: 0.9rem;
+}
+.skeleton--identity .sk-lines span:nth-child(2) { width: 70%; }
+.skeleton--identity .sk-lines span:nth-child(3) { width: 45%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton--grid > li,
+  .skeleton--identity > *,
+  .skeleton--identity .sk-lines span {
+    animation: none;
+  }
+}

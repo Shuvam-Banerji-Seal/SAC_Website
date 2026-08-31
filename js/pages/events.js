@@ -11,6 +11,7 @@ import { loadAssetsMap } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
+import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 
 function dedupe(assets) {
   const seen = new Set();
@@ -38,7 +39,7 @@ function pinTilt(index) {
   return (((index % 7) - 3) * 0.6).toFixed(2);
 }
 
-function renderEventMedia(asset) {
+function renderEventMedia(asset, eager = false) {
   if (asset.file_type === "video") {
     // preload="none" until the thumb nears the viewport (lazy-video observer
     // below flips it to "metadata") — avoids 100+ metadata requests on load.
@@ -60,7 +61,8 @@ function renderEventMedia(asset) {
   return el("img", {
     src: assetUrl(asset.public_url),
     alt: altTextFor(asset, "SAC event photograph"),
-    loading: "lazy",
+    loading: eager ? "eager" : "lazy",
+    fetchpriority: eager ? "high" : undefined,
     decoding: "async",
     width: asset.width || undefined,
     height: asset.height || undefined,
@@ -123,7 +125,7 @@ function renderEventGrid(yearEvents, groupName, y) {
           "figure",
           { class: "thumb__figure" },
           e.file_type === "video"
-            ? renderEventMedia(e)
+            ? renderEventMedia(e, index < 3)
             : el(
                 "a",
                 {
@@ -135,7 +137,7 @@ function renderEventGrid(yearEvents, groupName, y) {
                   "data-context": "Events · " + y,
                   title: caption,
                 },
-                renderEventMedia(e)
+                renderEventMedia(e, index < 3)
               ),
           el("figcaption", { class: "thumb__cap" }, caption)
         )
@@ -147,6 +149,7 @@ function renderEventGrid(yearEvents, groupName, y) {
 export async function initEvents() {
   const mount = $("#events-list");
   if (!mount) return;
+  showGridSkeleton(mount, 9);
   try {
     const assets = await loadAssetsMap();
     // Event provenance only — images and videos flagged by the asset pipeline.
@@ -197,6 +200,7 @@ export async function initEvents() {
       );
     }
 
+    clearSkeleton(mount);
     mount.replaceWith(
       el(
         "section",

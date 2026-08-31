@@ -22,6 +22,7 @@ import { initClubImages } from "./pages/club-images.js";
 import { initClubPage } from "./pages/club-page.js";
 import { initEvents } from "./pages/events.js";
 import { initGallery } from "./pages/gallery.js";
+import { initCampusLife } from "./pages/campus-life.js";
 import { initLoader } from "./loader.js";
 import { initAmbientMusic } from "./utils/music.js";
 import { initBackToTop } from "./components/back-to-top.js";
@@ -31,6 +32,7 @@ const initializers = {
   clubs: initClubs,
   events: initEvents,
   gallery: initGallery,
+  "campus-life": initCampusLife,
 };
 
 onReady(async () => {

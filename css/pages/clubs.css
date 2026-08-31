@@ -82,3 +82,15 @@
   white-space: nowrap;
 }
 
+
+/* Campus Life page — categories share the clubs-body furniture */
+.campus-cat .thumb-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+@supports (content-visibility: auto) {
+  .campus-cat {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1000px;
+  }
+}

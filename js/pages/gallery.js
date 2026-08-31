@@ -9,6 +9,7 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
+import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 
 function renderMediaCard(asset, index) {
@@ -37,6 +38,7 @@ function renderMediaCard(asset, index) {
 export async function initGallery() {
   const mount = $("#gallery-grid");
   if (!mount) return;
+  showGridSkeleton(mount, 12);
   try {
     const assets = await loadAssetsMap();
     const clubs = indexByClub(assets);
@@ -114,6 +116,7 @@ export async function initGallery() {
       })
       .filter(Boolean);
 
+    clearSkeleton(mount);
     mount.replaceWith(
       el(
         "section",

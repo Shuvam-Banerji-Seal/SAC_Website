@@ -11,6 +11,7 @@ import { initScrollSounds } from "../utils/calligraphy.js";
 import { initImageReveal } from "../utils/reveal.js";
 import { measureText } from "../utils/text-measure.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
+import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor, isGenericTitle } from "../utils/caption.js";
 
 function assetCaption(asset) {
@@ -345,10 +346,13 @@ export async function initClubImages() {
   const slug = document.body.dataset.clubSlug;
   if (!slug) return;
 
+  const mounts = Array.from(document.querySelectorAll("[data-club-images]"));
+  mounts.forEach((m) => showGridSkeleton(m, 6));
   try {
     const assets = await loadAssetsMap();
     const entries = getClubEntries(assets, slug);
     const placeholders = Array.from(document.querySelectorAll("[data-club-images]"));
+    placeholders.forEach((m) => clearSkeleton(m));
     const rendered = placeholders.map((placeholder) => renderPlaceholder(placeholder, entries));
     if (!rendered.some(Boolean)) renderFallback(entries, placeholders);
     renderMediaArchive(entries);

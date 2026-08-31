@@ -9,6 +9,7 @@ const QUICK_LINKS = [
   { label: "Cultural Clubs", href: "clubs.html" },
   { label: "Events", href: "events.html" },
   { label: "Gallery", href: "gallery.html" },
+  { label: "Campus Life", href: "campus-life.html" },
   { label: "Academics", href: "academics.html" },
   { label: "Hostel", href: "hostel.html" },
   { label: "About", href: "about.html" },

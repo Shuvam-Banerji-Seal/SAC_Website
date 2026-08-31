@@ -784,3 +784,20 @@ a:focus-visible .diagram-link {
     transition: none;
   }
 }
+
+/* Teaser link under the 3D carousel */
+.campus-3d-more {
+  font-family: var(--font-mono);
+  margin-top: 1rem;
+  text-align: center;
+}
+.campus-3d-more__link {
+  border-bottom: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.campus-3d-more__link:hover {
+  color: var(--accent-deep);
+}

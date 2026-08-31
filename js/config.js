@@ -48,4 +48,5 @@ export const NAV_ITEMS = [
   { id: "clubs", label: "Clubs", href: "pages/clubs.html" },
   { id: "events", label: "Events", href: "pages/events.html" },
   { id: "gallery", label: "Gallery", href: "pages/gallery.html" },
+  { id: "campus-life", label: "Campus", href: "pages/campus-life.html" },
 ];

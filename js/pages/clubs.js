@@ -8,6 +8,7 @@
  */
 import { $, el, pageLink, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
+import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 
 function getClubPageUrl(slug) {
   const urlMap = {
@@ -229,6 +230,7 @@ function clubCard(c) {
 export async function initClubs() {
   const mount = $("#clubs-grid");
   if (!mount) return;
+  showGridSkeleton(mount, 10);
   try {
     const assets = await loadAssetsMap();
     // Campus_Archive is a media collection, not a club — keep the directory clean
@@ -271,6 +273,7 @@ export async function initClubs() {
       );
     }).filter(Boolean);
 
+    clearSkeleton(mount);
     mount.replaceWith(
       el(
         "section",
