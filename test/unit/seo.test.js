@@ -77,3 +77,31 @@ describe("wave 8 — undated chapters + diagram navigation", () => {
     expect(css).toContain(".events__undated-club");
   });
 });
+
+describe("wave 9 — mobile & reading features", () => {
+  it("theme-color meta follows the active theme", () => {
+    const src = readFileSync(resolve(root, "js/components/settings.js"), "utf-8");
+    expect(src).toContain("syncThemeColorMeta");
+    expect(src).toContain("#f7f2e7"); // light paper
+    expect(src).toContain("#1b1713"); // dark paper
+  });
+  it("reading progress ships and is wired on every page", () => {
+    const comp = readFileSync(resolve(root, "js/components/reading-progress.js"), "utf-8");
+    expect(comp).toContain("requestAnimationFrame");
+    expect(comp).toContain("passive: true");
+    const main = readFileSync(resolve(root, "js/main.js"), "utf-8");
+    expect(main).toContain("initReadingProgress");
+    const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
+    expect(css).toContain(".reading-progress");
+  });
+  it("club pages offer native share where supported", () => {
+    const src = readFileSync(resolve(root, "js/pages/club-page.js"), "utf-8");
+    expect(src).toContain("navigator.share");
+    expect(src).toContain("club-detail__share");
+  });
+  it("settings becomes a bottom sheet on phones", () => {
+    const css = readFileSync(resolve(root, "css/settings.css"), "utf-8");
+    expect(css).toContain("translateY(105%)");
+    expect(css).toContain("env(safe-area-inset-bottom)");
+  });
+});

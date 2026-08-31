@@ -54,6 +54,8 @@ onReady(async () => {
   initSettings();
   initAmbientMusic();
   initBackToTop();
+  const { initReadingProgress } = await import("./components/reading-progress.js");
+  initReadingProgress();
   initViewer();
   initializers[page]?.();
 

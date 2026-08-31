@@ -93,12 +93,25 @@ function savePrefs(prefs) {
   }
 }
 
+const THEME_COLORS = { light: "#f7f2e7", dark: "#1b1713" };
+
+function syncThemeColorMeta(dark) {
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.setAttribute("name", "theme-color");
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", dark ? THEME_COLORS.dark : THEME_COLORS.light);
+}
+
 export function applyTheme(prefs) {
   const theme =
     prefs.theme || (prefs.dark === true ? "dark" : prefs.dark === "auto" ? "auto" : "light");
   const dark =
     theme === "dark" ||
     (theme === "auto" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+  syncThemeColorMeta(dark);
   document.documentElement.toggleAttribute("data-theme", dark);
   if (dark) document.documentElement.setAttribute("data-theme", "dark");
   else document.documentElement.setAttribute("data-theme", "light");

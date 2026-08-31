@@ -82,6 +82,27 @@ function buildIdentity(club, entries) {
       "div",
       { class: "club-detail__identity-copy" },
       el("p", { class: "club-detail__eyebrow" }, "SAC Chronicle · club record"),
+      navigator.share
+        ? el(
+            "button",
+            {
+              class: "club-detail__share",
+              type: "button",
+              "aria-label": "Share this club page",
+              title: "Share this club page",
+              onclick: () => {
+                navigator
+                  .share({
+                    title: document.title,
+                    text: `${club.name} — SAC club record at IISER Kolkata`,
+                    url: location.href,
+                  })
+                  .catch(() => {});
+              },
+            },
+            "Share ⤴"
+          )
+        : null,
       el("h1", { class: "club-detail__title", id: "clubTitle" }, club.name),
       el(
         "div",

@@ -289,3 +289,26 @@
     flex: 1 1 100%;
   }
 }
+
+/* Native share button in the club identity header */
+.club-detail__share {
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  margin-left: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  text-transform: uppercase;
+  transition: background var(--transition), color var(--transition);
+}
+.club-detail__share:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.club-detail__share:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
