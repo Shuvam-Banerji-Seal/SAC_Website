@@ -41,6 +41,23 @@ export function initImageReveal(root = document, opts = {}) {
   }
 
   const sections = root.querySelectorAll(".reveal-section");
+
+  // Safety net: if a caller passes thumbs WITHOUT a .reveal-section wrapper
+  // (or every section is skipped by content-visibility), reveal after a short
+  // delay so images can never stay invisible. Blank-grid bug seen on
+  // campus-life — clicks opened the viewer but thumbs never appeared.
+  const orphanThumbs = root.querySelectorAll(".thumb--reveal");
+  let orphans = [];
+  sections.forEach((s) => {
+    const inSection = new Set(Array.from(s.querySelectorAll(".thumb--reveal")));
+    orphans.push(...Array.from(orphanThumbs).filter((t) => !inSection.has(t)));
+  });
+  if (orphans.length) {
+    window.setTimeout(() => {
+      orphans.forEach((t) => t.classList.add("is-revealed"));
+    }, 1200);
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -62,7 +79,7 @@ export function initImageReveal(root = document, opts = {}) {
         }
       });
     },
-    { threshold },
+    { threshold }
   );
 
   sections.forEach((s) => observer.observe(s));

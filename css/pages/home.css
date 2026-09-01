@@ -501,9 +501,11 @@
 }
 
 /* Retain a DPI-safe hook for existing paper assets without making them part
-   of the critical background. Browsers use the system gradient above. */
+   of the critical background. Browsers use the system gradient above.
+   The photo masthead (.masthead--photo) is EXCLUDED — its campus photograph
+   and legibility scrim must win over this legacy newspaper texture. */
 @supports (background-image: image-set(url("x") 1x)) {
-  body[data-page="home"] .masthead {
+  body[data-page="home"] .masthead:not(.masthead--photo) {
     background-image: image-set(
       url("../../assets/newspaper-bg.jpg") 1x,
       url("../../assets/newspaper-bg.jpg") 2x
@@ -643,16 +645,73 @@ a:focus-visible .diagram-link {
   cursor: pointer;
   /* torn rough edges on the paper card */
   clip-path: polygon(
-    0 2%, 4% 0, 9% 1.6%, 14% 0.4%, 19% 1.8%, 25% 0.2%, 31% 1.5%, 37% 0.5%,
-    43% 1.7%, 50% 0.3%, 57% 1.6%, 63% 0.4%, 69% 1.8%, 75% 0.6%, 81% 1.5%,
-    87% 0.3%, 93% 1.7%, 97% 0.5%, 100% 2%,
-    99% 6%, 100% 11%, 98.4% 17%, 99.8% 24%, 98.6% 31%, 100% 38%, 98.7% 44%,
-    100% 51%, 98.5% 57%, 99.7% 64%, 98.8% 70%, 100% 77%, 98.6% 84%, 99.8% 90%,
-    100% 95%, 98% 99%, 94% 98.3%, 89% 99.6%, 83% 98.4%, 77% 99.8%, 71% 98.6%,
-    65% 99.7%, 58% 98.5%, 52% 99.8%, 46% 98.6%, 40% 99.7%, 34% 98.5%,
-    28% 99.8%, 22% 98.6%, 16% 99.6%, 10% 98.4%, 5% 99.7%, 1% 98%,
-    2% 93%, 0.4% 88%, 1.6% 82%, 0.2% 75%, 1.4% 68%, 0.3% 62%, 1.7% 55%,
-    0.4% 49%, 1.5% 43%, 0.3% 36%, 1.6% 30%, 0.5% 23%, 1.8% 17%, 0.4% 10%, 2% 5%
+    0 2%,
+    4% 0,
+    9% 1.6%,
+    14% 0.4%,
+    19% 1.8%,
+    25% 0.2%,
+    31% 1.5%,
+    37% 0.5%,
+    43% 1.7%,
+    50% 0.3%,
+    57% 1.6%,
+    63% 0.4%,
+    69% 1.8%,
+    75% 0.6%,
+    81% 1.5%,
+    87% 0.3%,
+    93% 1.7%,
+    97% 0.5%,
+    100% 2%,
+    99% 6%,
+    100% 11%,
+    98.4% 17%,
+    99.8% 24%,
+    98.6% 31%,
+    100% 38%,
+    98.7% 44%,
+    100% 51%,
+    98.5% 57%,
+    99.7% 64%,
+    98.8% 70%,
+    100% 77%,
+    98.6% 84%,
+    99.8% 90%,
+    100% 95%,
+    98% 99%,
+    94% 98.3%,
+    89% 99.6%,
+    83% 98.4%,
+    77% 99.8%,
+    71% 98.6%,
+    65% 99.7%,
+    58% 98.5%,
+    52% 99.8%,
+    46% 98.6%,
+    40% 99.7%,
+    34% 98.5%,
+    28% 99.8%,
+    22% 98.6%,
+    16% 99.6%,
+    10% 98.4%,
+    5% 99.7%,
+    1% 98%,
+    2% 93%,
+    0.4% 88%,
+    1.6% 82%,
+    0.2% 75%,
+    1.4% 68%,
+    0.3% 62%,
+    1.7% 55%,
+    0.4% 49%,
+    1.5% 43%,
+    0.3% 36%,
+    1.6% 30%,
+    0.5% 23%,
+    1.8% 17%,
+    0.4% 10%,
+    2% 5%
   );
   overflow: hidden;
   padding: 0.55rem 0.55rem 2rem;
@@ -660,7 +719,10 @@ a:focus-visible .diagram-link {
   /* 3D placement: neighbours recede and angle in perspective */
   transform: rotateY(calc(var(--rel, 0) * -38deg)) translateZ(calc(var(--rel, 0) * -190px))
     translateX(calc(var(--rel, 0) * -8%)) scale(0.96);
-  transition: transform 480ms cubic-bezier(0.22, 0.9, 0.28, 1), opacity 480ms ease, filter 480ms ease;
+  transition:
+    transform 480ms cubic-bezier(0.22, 0.9, 0.28, 1),
+    opacity 480ms ease,
+    filter 480ms ease;
   width: min(560px, 74vw);
   z-index: calc(10 - min(abs(var(--rel, 0)), 10));
   filter: saturate(0.92);
@@ -725,8 +787,12 @@ a:focus-visible .diagram-link {
   background: var(--accent);
   color: var(--paper);
 }
-.campus-3d__nav--prev { left: 0.25rem; }
-.campus-3d__nav--next { right: 0.25rem; }
+.campus-3d__nav--prev {
+  left: 0.25rem;
+}
+.campus-3d__nav--next {
+  right: 0.25rem;
+}
 .campus-3d__tools {
   align-items: center;
   display: flex;
@@ -775,8 +841,12 @@ a:focus-visible .diagram-link {
   .campus-3d__stage {
     height: clamp(220px, 56vw, 340px);
   }
-  .campus-3d__nav { display: none; }
-  .campus-card__label { font-size: 0.58rem; }
+  .campus-3d__nav {
+    display: none;
+  }
+  .campus-card__label {
+    font-size: 0.58rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -800,4 +870,263 @@ a:focus-visible .diagram-link {
 }
 .campus-3d-more__link:hover {
   color: var(--accent-deep);
+}
+
+/* ── The Campus in Print — a flipping 3D book ───────────────────── */
+.campus-book-section {
+  margin: 2.5rem 0;
+}
+.book {
+  perspective: 1600px;
+}
+.book__stage {
+  height: clamp(300px, 40vw, 430px);
+  margin: 0 auto;
+  max-width: 640px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+.book__base {
+  /* the desk the book rests on — a sheet of paper under the leaves */
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
+  bottom: -14px;
+  box-shadow: 6px 10px 0 var(--paper-edge);
+  inset: -8px -14px -14px -14px;
+  position: absolute;
+  z-index: 0;
+}
+.book__spine {
+  background: linear-gradient(90deg, var(--ink) 0 3px, var(--paper-edge) 3px 7px);
+  bottom: 0;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: 7px;
+  z-index: 6;
+}
+.book__leaf {
+  backface-visibility: hidden;
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  inset: 0 0 0 0;
+  margin: 0 6%;
+  overflow: hidden;
+  position: absolute;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 900ms cubic-bezier(0.3, 0.05, 0.25, 1);
+  z-index: 1;
+  box-shadow: 4px 6px 0 var(--paper-edge);
+}
+.book__leaf.is-active {
+  z-index: 5;
+}
+.book__leaf.is-flipped {
+  transform: rotateY(-180deg);
+  z-index: 4;
+}
+.book__face {
+  align-content: center;
+  bottom: 0;
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  left: 0;
+  padding: 1.4rem 1rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.book__face--cover,
+.book__face--back {
+  background:
+    linear-gradient(135deg, var(--accent) 0 6px, transparent 6px),
+    repeating-linear-gradient(115deg, rgba(24, 20, 16, 0.02) 0 1px, transparent 1px 4px),
+    var(--paper-soft);
+  text-align: center;
+}
+.book__face__kicker {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.book__face__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.3rem);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.book__face__sub {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+.book__face__hint {
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  margin-top: 1.6rem;
+}
+.book__face__link {
+  border-bottom: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-top: 1rem;
+  text-transform: uppercase;
+}
+.book__face--spread {
+  align-content: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.9rem;
+}
+.book__photo {
+  flex: 1 1 calc(50% - 0.3rem);
+  margin: 0;
+  min-width: 0;
+}
+.book__photo img {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--ink-rule);
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+.book__photo__cap {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.book__tools {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.book__counter {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+}
+.book__flip {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: 1.4rem;
+  height: 42px;
+  width: 42px;
+}
+.book__flip:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+.book__play {
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: 0.68rem;
+  padding: 0.25rem 0.6rem;
+}
+.book__play:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@media (max-width: 720px) {
+  .book__stage {
+    height: clamp(340px, 62vw, 420px);
+  }
+  .book__photo__cap {
+    font-size: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book__leaf {
+    transition: none;
+  }
+}
+
+/* Photo masthead — the campus itself behind the Chronicle title */
+.masthead--photo {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(24, 20, 16, 0.62) 0%,
+      rgba(24, 20, 16, 0.34) 45%,
+      rgba(24, 20, 16, 0.72) 100%
+    ),
+    image-set(
+      url("../../assets/masthead-campus.webp") 1x,
+      url("../../assets/masthead-campus.webp") 2x
+    );
+  background-size: cover, cover;
+  background-position:
+    center,
+    center 38%;
+  color: #fffaf0;
+  margin-bottom: 2rem;
+  padding: 2rem 0.8rem 2.2rem;
+}
+.masthead--photo .masthead__edition,
+.masthead--photo .masthead__kicker {
+  color: rgba(255, 250, 240, 0.85);
+}
+.masthead--photo .masthead__edition {
+  border-bottom-color: rgba(255, 250, 240, 0.4);
+}
+.masthead--photo .masthead__title {
+  color: #fffaf0;
+  text-shadow: 0 2px 14px rgba(24, 20, 16, 0.65);
+}
+[data-theme="dark"] .masthead--photo .masthead__title {
+  color: #f1e8d8;
+}
+.masthead--photo .masthead__subtitle {
+  color: rgba(255, 250, 240, 0.92);
+}
+.masthead--photo .masthead__rule {
+  color: #d46b5f;
+}
+/* dark theme: deepen the scrim slightly so light ink still reads */
+[data-theme="dark"] .masthead--photo {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 9, 7, 0.72) 0%,
+      rgba(11, 9, 7, 0.46) 45%,
+      rgba(11, 9, 7, 0.8) 100%
+    ),
+    image-set(
+      url("../../assets/masthead-campus.webp") 1x,
+      url("../../assets/masthead-campus.webp") 2x
+    );
+  background-size: cover, cover;
+  background-position:
+    center,
+    center 38%;
+}
+@media (max-width: 720px) {
+  .masthead--photo {
+    background-position:
+      center,
+      center 30%;
+    padding: 1.2rem 0.5rem 1.5rem;
+  }
 }

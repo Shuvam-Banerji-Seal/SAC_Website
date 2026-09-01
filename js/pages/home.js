@@ -233,8 +233,8 @@ export async function initHome() {
 
   rotateHero();
   renderStats(assets);
-  const { initCampusCarousel } = await import("../components/campus-carousel.js");
-  initCampusCarousel(assets);
+  const { initCampusBook } = await import("../components/campus-book.js");
+  initCampusBook(assets);
 
   // Warm the remaining hero variants after first paint (rotation day swap)
   window.addEventListener("load", () => {

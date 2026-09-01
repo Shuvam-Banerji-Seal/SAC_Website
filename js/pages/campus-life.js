@@ -119,7 +119,7 @@ export async function initCampusLife() {
     const sections = cats.map(([cat, entries]) =>
       el(
         "section",
-        { class: "clubs-body campus-cat", id: "cat-" + cat, "data-campus-cat": cat },
+        { class: "clubs-body campus-cat reveal-section", id: "cat-" + cat, "data-campus-cat": cat },
         el(
           "h2",
           { class: "clubs-body__title" },
