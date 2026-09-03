@@ -7,7 +7,7 @@
  */
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
-import { initImageReveal } from "../utils/reveal.js";
+import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
@@ -176,6 +176,7 @@ export async function initGallery() {
     // IntersectionObserver for section reveals + staggered image entrance.
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
     // is handled inside initImageReveal so we don't duplicate checks here.
+    eagerFirst(document);
     initImageReveal(document);
     initLazyVideos(document);
   } catch {

@@ -195,9 +195,21 @@ function equalizeGalleryCaptions() {
  * changes with the academic year while staying cache-friendly per SW.
  * Photos contributed by Abhinav Dhingra (TheHumanHunter). */
 const HERO_POOL = [
-  { src: "assets/hero.webp", caption: "A farewell gathering on the SAC calendar — one of 1,181 photographs in the Chronicle archive. Every club, every season, printed in code." },
-  { src: "assets/hero-auditorium.webp", caption: "The campus auditorium — where IICM contingents, productions, and convocations take the stage." },
-  { src: "assets/hero-people.webp", caption: "The people of SAC — thirty-two clubs' worth of organisers, performers, athletes, and committees." },
+  {
+    src: "assets/hero.webp",
+    caption:
+      "A farewell gathering on the SAC calendar — one of 1,181 photographs in the Chronicle archive. Every club, every season, printed in code.",
+  },
+  {
+    src: "assets/hero-auditorium.webp",
+    caption:
+      "The campus auditorium — where IICM contingents, productions, and convocations take the stage.",
+  },
+  {
+    src: "assets/hero-people.webp",
+    caption:
+      "The people of SAC — thirty-two clubs' worth of organisers, performers, athletes, and committees.",
+  },
 ];
 
 function rotateHero() {
@@ -237,13 +249,17 @@ export async function initHome() {
   initCampusBook(assets);
 
   // Warm the remaining hero variants after first paint (rotation day swap)
-  window.addEventListener("load", () => {
-    for (const h of HERO_POOL) {
-      const warm = new Image();
-      warm.decoding = "async";
-      warm.src = h.src;
-    }
-  }, { once: true });
+  window.addEventListener(
+    "load",
+    () => {
+      for (const h of HERO_POOL) {
+        const warm = new Image();
+        warm.decoding = "async";
+        warm.src = h.src;
+      }
+    },
+    { once: true }
+  );
   renderCampusGallery(assets);
 
   let loaded = false;
@@ -334,12 +350,38 @@ async function loadYouTubeSection() {
   });
 }
 
-async function loadCalendarSection() {
+export async function loadCalendarSection() {
   const section = document.getElementById("calendar-section");
   const grid = document.getElementById("calendar-grid");
   if (!section || !grid) return;
 
-  const events = await fetchUpcomingEvents();
+  const events = await fetchUpcomingEvents().catch((err) => {
+    // Free/busy-only sharing: the API returns times but no titles.
+    // Show actionable guidance instead of an empty grid.
+    if (err && err.code === "FREEBUSY_ONLY") {
+      section.style.display = "";
+      grid.append(
+        el(
+          "li",
+          { class: "pinned-card pinned-card--event" },
+          el(
+            "div",
+            { class: "pinned-card__body" },
+            el("p", { class: "pinned-card__title" }, "Calendar titles hidden"),
+            el(
+              "p",
+              { class: "pinned-card__meta" },
+              "This calendar is shared as free/busy only, so event names can't be shown. " +
+                "SAC team: set the calendar sharing to 'See all event details'."
+            )
+          )
+        )
+      );
+      return null;
+    }
+    return [];
+  });
+  if (events === null) return; // guidance card already rendered
   section.style.display = "";
   grid.classList.toggle("is-sparse", events.length < 3);
   if (!events.length) {

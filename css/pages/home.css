@@ -650,11 +650,12 @@ a:focus-visible .diagram-link {
   perspective: 1600px;
 }
 .book__stage {
-  height: clamp(280px, 36vw, 400px);
+  height: clamp(340px, 42vw, 520px);
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 880px;
   position: relative;
   transform-style: preserve-3d;
+  width: 100%;
 }
 .book__base {
   /* the desk the book rests on — a sheet of paper under the leaves */
@@ -712,7 +713,8 @@ a:focus-visible .diagram-link {
   justify-items: center;
   left: 0;
   overflow: hidden;
-  padding: 1.4rem 1rem;
+  /* Dynamic spacing: padding scales with the stage instead of fixed rems */
+  padding: clamp(0.6rem, 2.5vw, 1.4rem) clamp(0.5rem, 2vw, 1rem);
   position: absolute;
   right: 0;
   top: 0;
@@ -728,7 +730,7 @@ a:focus-visible .diagram-link {
 .book__plate-no {
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -741,7 +743,7 @@ a:focus-visible .diagram-link {
   height: auto;
   margin-bottom: 0.6rem;
   object-fit: cover;
-  width: min(62%, 190px);
+  width: min(70%, 240px);
 }
 .book__plate-rule {
   color: var(--accent);
@@ -833,13 +835,16 @@ a:focus-visible .diagram-link {
 }
 .book__photo__cap {
   color: var(--ink-muted);
+  display: -webkit-box;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  margin-top: 0.3rem;
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.45;
+  margin-top: 0.45rem;
+  min-height: 2.1em;
   overflow: hidden;
-  text-overflow: ellipsis;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 .book__tools {
   align-items: center;

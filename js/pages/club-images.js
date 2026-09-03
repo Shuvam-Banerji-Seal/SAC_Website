@@ -8,7 +8,7 @@
 import { el, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap, getClubEntries } from "../data.js";
 import { initScrollSounds } from "../utils/calligraphy.js";
-import { initImageReveal } from "../utils/reveal.js";
+import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { measureText } from "../utils/text-measure.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
@@ -136,9 +136,7 @@ function renderThumb(asset, group, context, index, opts = {}) {
                 : undefined,
           })
         ),
-        index % 3 === 0
-          ? el("span", { class: "thumb__tape", "aria-hidden": "true" })
-          : null,
+        index % 3 === 0 ? el("span", { class: "thumb__tape", "aria-hidden": "true" }) : null,
         needsVerify
           ? el(
               "span",
@@ -175,11 +173,7 @@ function renderMediaCard(asset, context, index) {
   });
   const media =
     asset.file_type === "audio"
-      ? el(
-        "audio",
-        { controls: true, preload: "none", "data-preload-lazy": "" },
-        source
-      )
+      ? el("audio", { controls: true, preload: "none", "data-preload-lazy": "" }, source)
       : el("video", videoPlayerAttrs(asset, caption), source);
   return el(
     "li",
@@ -361,6 +355,7 @@ export async function initClubImages() {
   }
 
   initLazyVideos(document);
+  eagerFirst(document);
   initImageReveal(document);
   addTableDataLabels();
   wrapTables();

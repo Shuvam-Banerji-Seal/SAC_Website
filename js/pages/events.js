@@ -8,7 +8,7 @@
  */
 import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
-import { initImageReveal } from "../utils/reveal.js";
+import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
@@ -276,6 +276,7 @@ export async function initEvents() {
     // IntersectionObserver for section reveals + staggered image entrance.
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
     // is handled inside initImageReveal so we don't duplicate checks here.
+    eagerFirst(document);
     initImageReveal(document);
     initLazyVideos(document);
   } catch {

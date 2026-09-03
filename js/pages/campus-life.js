@@ -10,7 +10,7 @@ import { $, el, showError, assetUrl } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
-import { initImageReveal } from "../utils/reveal.js";
+import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
 
 const CATEGORY_BLURBS = {
@@ -146,55 +146,123 @@ export async function initCampusLife() {
       )
     );
 
-    // Search across labels + categories
+    // --- Campus options: search + category chips + sort + live count ---
     const searchInput = $("#campus-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", () => {
-        const q = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
-        document.querySelectorAll(".campus-cat").forEach((section) => {
-          const catLabel = (
-            section.querySelector(".clubs-body__title")?.textContent || ""
-          ).toLowerCase();
-          let sectionVisible = 0;
-          section.querySelectorAll(".thumb[data-campus-search]").forEach((item) => {
-            const match =
-              !q || (item.dataset.campusSearch || "").includes(q) || catLabel.includes(q);
-            item.classList.toggle("is-hidden", !match);
-            if (match) {
-              sectionVisible++;
-              visibleCount++;
-            }
-          });
-          section.classList.toggle("is-hidden", sectionVisible === 0);
+    const sortSelect = $("#campus-sort");
+    const chipsWrap = $("#campus-chips");
+    const countLine = $("#campus-count");
+    let activeCat = "all";
+
+    const updateCount = (visibleCount, visibleCats) => {
+      if (!countLine) return;
+      const q = searchInput?.value.trim();
+      if (!q && activeCat === "all") {
+        countLine.textContent = `Showing all ${campus.length} photographs · ${cats.length} places`;
+      } else {
+        countLine.textContent = `Showing ${visibleCount} of ${campus.length} photographs · ${visibleCats} places`;
+      }
+    };
+
+    const applyFilters = () => {
+      const q = (searchInput?.value || "").toLowerCase().trim();
+      let visibleCount = 0;
+      let visibleCats = 0;
+      document.querySelectorAll(".campus-cat").forEach((section) => {
+        const cat = section.dataset.campusCat || "";
+        const catLabel = (
+          section.querySelector(".clubs-body__title")?.textContent || ""
+        ).toLowerCase();
+        let sectionVisible = 0;
+        section.querySelectorAll(".thumb[data-campus-search]").forEach((item) => {
+          const match =
+            (activeCat === "all" || cat === activeCat) &&
+            (!q || (item.dataset.campusSearch || "").includes(q) || catLabel.includes(q));
+          item.classList.toggle("is-hidden", !match);
+          if (match) {
+            sectionVisible++;
+            visibleCount++;
+          }
         });
-        let counter = searchInput.parentElement.querySelector(".clubs-search-count");
-        if (!counter) {
-          counter = el("span", {
-            class: "clubs-search-count",
-            role: "status",
-            "aria-live": "polite",
-          });
-          searchInput.parentElement.append(counter);
-        }
-        counter.textContent = q ? `${visibleCount} of ${campus.length} photographs` : "";
-        const noResults = $(".campus-no-results");
-        if (!q || visibleCount > 0) {
-          noResults?.remove();
-        } else if (!noResults) {
-          document
-            .getElementById("campus-grid")
-            ?.appendChild(
-              el(
-                "p",
-                { class: "clubs-no-results muted", role: "status" },
-                "No campus places match that search."
-              )
-            );
-        }
+        const showSection = sectionVisible > 0;
+        section.classList.toggle("is-hidden", !showSection);
+        if (showSection) visibleCats++;
+      });
+      updateCount(visibleCount, visibleCats);
+      const noResults = $(".campus-no-results");
+      if (!q && activeCat === "all") {
+        noResults?.remove();
+      } else if (visibleCount > 0) {
+        noResults?.remove();
+      } else if (!noResults) {
+        document
+          .getElementById("campus-grid")
+          ?.appendChild(
+            el(
+              "p",
+              { class: "clubs-no-results muted", role: "status" },
+              "No campus places match that search."
+            )
+          );
+      }
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener("input", applyFilters);
+    }
+
+    // Category chips: All + one per category (tap-friendly on mobile)
+    if (chipsWrap) {
+      const mkChip = (value, label) =>
+        el(
+          "button",
+          {
+            class: "campus-chip" + (value === "all" ? " is-selected" : ""),
+            type: "button",
+            "data-cat": value,
+            "aria-pressed": value === "all" ? "true" : "false",
+          },
+          label
+        );
+      chipsWrap.append(
+        mkChip("all", `All · ${cats.length}`),
+        ...cats.map(([cat, entries]) =>
+          mkChip(cat, `${cat.replace(/_/g, " ")} · ${entries.length}`)
+        )
+      );
+      chipsWrap.addEventListener("click", (e) => {
+        const chip = e.target.closest("[data-cat]");
+        if (!chip) return;
+        activeCat = chip.dataset.cat;
+        chipsWrap.querySelectorAll("[data-cat]").forEach((c) => {
+          const on = c === chip;
+          c.classList.toggle("is-selected", on);
+          c.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        if (searchInput) searchInput.value = "";
+        applyFilters();
       });
     }
 
+    // Sort: reorder existing sections in place (keeps reveal state + images)
+    if (sortSelect) {
+      sortSelect.addEventListener("change", () => {
+        const grid = document.getElementById("campus-grid");
+        const sections = Array.from(grid?.querySelectorAll(".campus-cat") || []);
+        const countOf = (sec) => sec.querySelectorAll(".thumb").length;
+        const nameOf = (sec) => sec.dataset.campusCat || "";
+        const mode = sortSelect.value;
+        if (mode === "az") sections.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+        else if (mode === "count-asc") sections.sort((a, b) => countOf(a) - countOf(b));
+        else if (mode === "shuffle") sections.sort(() => Math.random() - 0.5);
+        else sections.sort((a, b) => countOf(b) - countOf(a)); // count-desc
+        sections.forEach((sec) => grid.appendChild(sec));
+        const first = grid.querySelector(".campus-cat:not(.is-hidden)");
+        first?.scrollIntoView({ block: "nearest" });
+      });
+    }
+
+    applyFilters();
+    eagerFirst(document);
     initImageReveal(document);
     initLazyVideos(document);
   } catch {

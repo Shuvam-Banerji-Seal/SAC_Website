@@ -49,9 +49,9 @@ describe("campus book", () => {
     expect(css).toContain("transition: none");
   });
 
-  it("book is strictly bounded: fixed stage, unclipped 3D leaves, uniform photo frames", () => {
+  it("book is strictly bounded: large responsive stage, unclipped 3D leaves, uniform photo frames", () => {
     expect(css).toContain("perspective: 1600px");
-    expect(css).toContain("max-width: 600px");
+    expect(css).toContain("max-width: 880px");
     expect(js).not.toContain("width: calc(50%");
     // REGRESSION (mirrored leaves): overflow:hidden AND clip-path on .book__leaf
     // both force transform-style:flat, breaking backface-visibility so flipped

@@ -82,6 +82,44 @@
   white-space: nowrap;
 }
 
+/* Campus Life options: sort select, category chips, count line */
+.campus-sort select {
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 0.65rem 0.6rem;
+  text-transform: uppercase;
+}
+.campus-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+.campus-chip {
+  background: transparent;
+  border: 1px solid var(--ink-rule);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 0.35rem 0.7rem;
+  text-transform: uppercase;
+}
+.campus-chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.campus-chip.is-selected {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.campus-count {
+  margin: 0 0 1rem;
+}
 
 /* Campus Life page — categories share the clubs-body furniture */
 .campus-cat .thumb-grid {

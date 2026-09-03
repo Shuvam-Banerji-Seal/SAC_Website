@@ -45,11 +45,29 @@ function isPrivatePlaceholder(title) {
 }
 
 /**
+ * True when the API returned a free/busy ghost: start/end times but no
+ * human details at all. Happens when the calendar is shared as
+ * "See only free/busy" instead of "See all event details" — the API then
+ * withholds summary, description and location for every event.
+ */
+function isTimeOnlyGhost(item) {
+  return (
+    !stripMarkup(item.summary) &&
+    !stripMarkup(item.title) &&
+    !stripMarkup(item.name) &&
+    !stripMarkup(item.description) &&
+    !stripMarkup(item.location)
+  );
+}
+
+/**
  * Fetch upcoming events from a public Google Calendar.
  * The endpoint returns attendees, start/end, location, summary, description
  * but only if the calendar is public and the API key referrer allows the
  * current domain. We request explicit fields to avoid partial responses.
- * @returns {Promise<Array<{title,date,dateTime,dateLabel,dateEndLabel,location,description,people,attendees,htmlLink}>>}
+ * @returns {Promise<Array<{title,date,dateTime,dateLabel,dateEndLabel,location,description,people,attendees,htmlLink,timeOnly}>>}
+ * @throws {Error} with code "FREEBUSY_ONLY" when the calendar shares times
+ *   but no details — callers should render sharing guidance in that case.
  */
 export async function fetchUpcomingEvents() {
   const { API_KEY, CALENDAR_ID, MAX_RESULTS } = CALENDAR;
@@ -81,7 +99,20 @@ export async function fetchUpcomingEvents() {
     }
     const data = await res.json();
 
-    return (data?.items || [])
+    const items = data?.items || [];
+    // Free/busy-only sharing: every item is a ghost (times but no details).
+    // Render nothing and let the caller show the sharing guidance instead of
+    // a wall of "Untitled event" cards that carry zero information.
+    if (items.length > 0 && items.every(isTimeOnlyGhost)) {
+      const err = new Error(
+        "Calendar is shared as free/busy only — no titles, descriptions or locations are visible. " +
+          "Ask the calendar owner to set sharing to 'See all event details' (make public)."
+      );
+      err.code = "FREEBUSY_ONLY";
+      throw err;
+    }
+
+    return items
       .map((item) => {
         const startRaw = item.start?.dateTime || item.start?.date || "";
         const endRaw = item.end?.dateTime || item.end?.date || "";
@@ -128,6 +159,7 @@ export async function fetchUpcomingEvents() {
         const title = eventTitle(item);
         return {
           title,
+          timeOnly: isTimeOnlyGhost(item),
           date: startRaw,
           dateTime: startRaw,
           dateLabel,
@@ -144,8 +176,11 @@ export async function fetchUpcomingEvents() {
           calendarId: item.id || "",
         };
       })
-      .filter((event) => !isPrivatePlaceholder(event.title));
+      .filter((event) => !event.timeOnly && !isPrivatePlaceholder(event.title));
   } catch (err) {
+    // Free/busy-only sharing is actionable (fix the calendar settings), so
+    // let it propagate — the caller renders guidance instead of an empty grid.
+    if (err && err.code === "FREEBUSY_ONLY") throw err;
     console.warn("[calendar] Failed to fetch events:", err);
     return [];
   }

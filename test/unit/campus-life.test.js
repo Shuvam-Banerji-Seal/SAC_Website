@@ -15,7 +15,8 @@ describe("campus life page", () => {
     expect(html).toContain('data-page="campus-life"');
     expect(html).toContain('id="campus-grid"');
     expect(html).toContain('id="campus-search"');
-    expect(html).toContain('rel="preload" as="fetch"');
+    expect(html).toContain('rel="preload"');
+    expect(html).toContain('as="fetch"');
     expect(html).toContain('property="og:title"');
   });
 

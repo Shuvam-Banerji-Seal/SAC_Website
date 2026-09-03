@@ -8,7 +8,12 @@
       name="description"
       content="The campus in print — 269 photographs of IISER Kolkata's buildings, libraries, courts, hostels, and commons, filed from the SAC archive."
     />
-    <link rel="preload" as="fetch" href="../public/assets/processed/assets_map.jsonl" crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="fetch"
+      href="../public/assets/processed/assets_map.jsonl"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="../css/preloader.css" />
     <link rel="stylesheet" href="../css/reset.css" />
     <link rel="stylesheet" href="../css/variables.css" />
@@ -71,8 +76,8 @@
     <main>
       <h1 class="page-title">Campus Life</h1>
       <p class="page-sub">
-        The campus in print — every building, court, library, and commons of IISER Kolkata,
-        filed from the SAC photographic archive.
+        The campus in print — every building, court, library, and commons of IISER Kolkata, filed
+        from the SAC photographic archive.
       </p>
 
       <div class="clubs-search-wrap">
@@ -84,7 +89,23 @@
           aria-label="Search campus places and categories"
           autocomplete="off"
         />
+        <label class="campus-sort">
+          <span class="visually-hidden">Sort categories</span>
+          <select id="campus-sort" aria-label="Sort campus categories">
+            <option value="count-desc">Most photos first</option>
+            <option value="az">A – Z</option>
+            <option value="count-asc">Fewest photos first</option>
+            <option value="shuffle">Shuffle</option>
+          </select>
+        </label>
       </div>
+      <div
+        id="campus-chips"
+        class="campus-chips"
+        role="group"
+        aria-label="Filter by campus category"
+      ></div>
+      <p id="campus-count" class="campus-count muted" role="status" aria-live="polite"></p>
 
       <section id="campus-grid" aria-label="Campus photograph archive">
         <p class="muted">Loading…</p>
@@ -92,11 +113,15 @@
     </main>
 
     <div id="footer"></div>
-    <noscript><p class="noscript-warning">Enable JavaScript to browse the campus archive.</p></noscript>
+    <noscript
+      ><p class="noscript-warning">Enable JavaScript to browse the campus archive.</p></noscript
+    >
     <script type="module" src="../js/main.js"></script>
 
     <div class="settings-overlay" id="settings-overlay"></div>
     <div class="settings-panel" id="settings-panel"></div>
-    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">⚙</button>
+    <button class="settings-fab" id="settings-fab" aria-label="Open settings" aria-expanded="false">
+      ⚙
+    </button>
   </body>
 </html>
