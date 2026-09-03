@@ -10,6 +10,7 @@
  */
 import { el, assetUrl } from "../utils/dom.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
+import { gridSrc } from "../utils/thumb.js";
 
 const PHOTO_COUNT = 12;
 const AUTO_FLIP_MS = 7000;
@@ -121,7 +122,7 @@ export function initCampusBook(assets) {
             "aria-label": `View ${label(p)} full-screen`,
           },
           el("img", {
-            src: assetUrl(p.public_url),
+            src: assetUrl(gridSrc(p)),
             alt: altTextFor(p, "Campus photograph"),
             loading: "eager",
             decoding: "async",
@@ -144,7 +145,7 @@ export function initCampusBook(assets) {
         { class: "book__face book__face--backface", "aria-hidden": "true" },
         el("img", {
           class: "book__plate-thumb",
-          src: assetUrl(p.public_url),
+          src: assetUrl(gridSrc(p)),
           alt: "",
           loading: "lazy",
           decoding: "async",

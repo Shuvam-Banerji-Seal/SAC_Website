@@ -12,6 +12,7 @@ import { captionFor, altTextFor } from "../utils/caption.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
+import { gridSrc } from "../utils/thumb.js";
 
 const CATEGORY_BLURBS = {
   Administrative_Building: "The institute's front offices and administration block.",
@@ -68,7 +69,7 @@ function renderThumb(asset, group, index) {
           title: caption,
         },
         el("img", {
-          src: assetUrl(asset.public_url),
+          src: assetUrl(gridSrc(asset)),
           alt: altTextFor(asset, "Campus photograph"),
           loading: index < 3 ? "eager" : "lazy",
           fetchpriority: index < 3 ? "high" : undefined,

@@ -12,6 +12,7 @@ import { fetchLatestVideos } from "../utils/youtube.js";
 import { fetchUpcomingEvents } from "../utils/calendar.js";
 import { measureText } from "../utils/text-measure.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
+import { gridSrc } from "../utils/thumb.js";
 
 const EXCERPT_MAX = 240;
 const EXCERPT_MIN = 30;
@@ -140,7 +141,7 @@ function renderCampusGallery(assets) {
             title,
           },
           el("img", {
-            src: assetUrl(asset.public_url),
+            src: assetUrl(gridSrc(asset)),
             alt: altTextFor(asset, title),
             loading: index < 2 ? "eager" : "lazy",
             decoding: "async",

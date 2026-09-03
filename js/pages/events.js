@@ -11,6 +11,7 @@ import { loadAssetsMap } from "../data.js";
 import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
+import { gridSrc } from "../utils/thumb.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 
 function dedupe(assets) {
@@ -53,13 +54,13 @@ function renderEventMedia(asset, eager = false) {
         "aria-label": cleanCaption(asset),
       },
       el("source", {
-        src: assetUrl(asset.public_url),
+        src: assetUrl(asset.public_url), // full video file — never a thumb
         type: asset.mime_type || "video/mp4",
       })
     );
   }
   return el("img", {
-    src: assetUrl(asset.public_url),
+    src: assetUrl(gridSrc(asset)),
     alt: altTextFor(asset, "SAC event photograph"),
     loading: eager ? "eager" : "lazy",
     fetchpriority: eager ? "high" : undefined,
@@ -70,7 +71,6 @@ function renderEventMedia(asset, eager = false) {
       asset.width && asset.height ? `aspect-ratio: ${asset.width} / ${asset.height}` : undefined,
   });
 }
-
 
 /** The Undated bucket can hold hundreds of items — sub-group by club so it
  *  reads as club chapters instead of one monolithic dump. */
@@ -91,11 +91,14 @@ function renderUndatedByClub(items) {
         clubName,
         el("span", { class: "events__undated-club-count" }, String(entries.length))
       ),
-      renderEventGrid(entries, "events-undated-" + (entries[0]?.club || "archive"), "Undated · " + clubName)
+      renderEventGrid(
+        entries,
+        "events-undated-" + (entries[0]?.club || "archive"),
+        "Undated · " + clubName
+      )
     )
   );
 }
-
 
 /** One dated year's grid of pinned thumbs. */
 function renderEventGrid(yearEvents, groupName, y) {
@@ -189,7 +192,6 @@ export async function initEvents() {
     // Dynamic header chip: total moments + clips straight from the map
     const pageTitle = document.querySelector("h1.page-title");
     if (pageTitle && !pageTitle.querySelector(".count-chip")) {
-      const photos = events.filter((e) => e.file_type === "image").length;
       const clips = events.filter((e) => e.file_type === "video").length;
       pageTitle.append(
         el(
@@ -248,13 +250,16 @@ export async function initEvents() {
         // Live result-count chip
         let counter = searchInput.parentElement.querySelector(".events-search-count");
         if (!counter) {
-          counter = el(
-            "span",
-            { class: "clubs-search-count events-search-count", role: "status", "aria-live": "polite" }
-          );
+          counter = el("span", {
+            class: "clubs-search-count events-search-count",
+            role: "status",
+            "aria-live": "polite",
+          });
           searchInput.parentElement.append(counter);
         }
-        counter.textContent = q ? `${visibleCount} of ${document.querySelectorAll(".thumb[data-event-search]").length} moments` : "";
+        counter.textContent = q
+          ? `${visibleCount} of ${document.querySelectorAll(".thumb[data-event-search]").length} moments`
+          : "";
 
         const noResults = $(".events-no-results");
         if (!q || visibleCount > 0) {

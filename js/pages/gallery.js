@@ -11,6 +11,7 @@ import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
+import { gridSrc } from "../utils/thumb.js";
 
 function renderMediaCard(asset, index) {
   const title = captionFor(asset);
@@ -97,7 +98,7 @@ export async function initGallery() {
                       title: i.title || i.filename,
                     },
                     el("img", {
-                      src: assetUrl(i.public_url),
+                      src: assetUrl(gridSrc(i)),
                       alt: altTextFor(i, "Gallery image"),
                       loading: "lazy",
                       decoding: "async",
