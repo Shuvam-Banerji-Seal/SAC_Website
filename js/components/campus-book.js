@@ -135,10 +135,31 @@ export function initCampusBook(assets) {
   }
 
   function backFace(page) {
-    const caption =
-      page.type === "photo"
-        ? `Plate ${page.plate} · ${page.photo.category_label || "Campus"}`
-        : "The Campus in Print";
+    if (page.type === "photo") {
+      // The reverse side of a photo leaf: a small plate thumbnail + caption,
+      // so the left pile never reads as a blank page mid-flip or at rest.
+      const p = page.photo;
+      return el(
+        "div",
+        { class: "book__face book__face--backface", "aria-hidden": "true" },
+        el("img", {
+          class: "book__plate-thumb",
+          src: assetUrl(p.public_url),
+          alt: "",
+          loading: "lazy",
+          decoding: "async",
+          width: 200,
+          height: 150,
+        }),
+        el(
+          "span",
+          { class: "book__plate-no" },
+          `Plate ${page.plate} · ${p.category_label || "Campus"}`
+        ),
+        el("span", { class: "book__plate-rule", "aria-hidden": "true" }, "✦ ✦ ✦")
+      );
+    }
+    const caption = "The Campus in Print";
     return el(
       "div",
       { class: "book__face book__face--backface", "aria-hidden": "true" },

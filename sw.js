@@ -49,7 +49,6 @@ const STATIC_ASSETS = [
   "js/pretext/rich-inline.js",
   "js/pretext/generated/bidi-data.js",
   "js/components/navbar.js",
-  "js/components/campus-carousel.js",
   "js/components/campus-book.js",
   "js/utils/skeleton.js",
   "js/pages/campus-life.js",

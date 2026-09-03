@@ -625,250 +625,20 @@ a:focus-visible .diagram-link {
   stroke-width: 1.5;
 }
 
-/* ── The Campus in Print — 3D paper stack ─────────────────────── */
-.campus-3d {
-  perspective: 1400px;
-  position: relative;
-}
-.campus-3d__stage {
-  align-items: center;
-  display: flex;
-  height: clamp(260px, 44vw, 460px);
-  justify-content: center;
-  position: relative;
-  transform-style: preserve-3d;
-}
-.campus-card {
-  background: var(--paper-soft);
-  border: 1px solid var(--ink);
-  box-shadow: 6px 8px 0 var(--paper-edge);
-  cursor: pointer;
-  /* torn rough edges on the paper card */
-  clip-path: polygon(
-    0 2%,
-    4% 0,
-    9% 1.6%,
-    14% 0.4%,
-    19% 1.8%,
-    25% 0.2%,
-    31% 1.5%,
-    37% 0.5%,
-    43% 1.7%,
-    50% 0.3%,
-    57% 1.6%,
-    63% 0.4%,
-    69% 1.8%,
-    75% 0.6%,
-    81% 1.5%,
-    87% 0.3%,
-    93% 1.7%,
-    97% 0.5%,
-    100% 2%,
-    99% 6%,
-    100% 11%,
-    98.4% 17%,
-    99.8% 24%,
-    98.6% 31%,
-    100% 38%,
-    98.7% 44%,
-    100% 51%,
-    98.5% 57%,
-    99.7% 64%,
-    98.8% 70%,
-    100% 77%,
-    98.6% 84%,
-    99.8% 90%,
-    100% 95%,
-    98% 99%,
-    94% 98.3%,
-    89% 99.6%,
-    83% 98.4%,
-    77% 99.8%,
-    71% 98.6%,
-    65% 99.7%,
-    58% 98.5%,
-    52% 99.8%,
-    46% 98.6%,
-    40% 99.7%,
-    34% 98.5%,
-    28% 99.8%,
-    22% 98.6%,
-    16% 99.6%,
-    10% 98.4%,
-    5% 99.7%,
-    1% 98%,
-    2% 93%,
-    0.4% 88%,
-    1.6% 82%,
-    0.2% 75%,
-    1.4% 68%,
-    0.3% 62%,
-    1.7% 55%,
-    0.4% 49%,
-    1.5% 43%,
-    0.3% 36%,
-    1.6% 30%,
-    0.5% 23%,
-    1.8% 17%,
-    0.4% 10%,
-    2% 5%
-  );
-  overflow: hidden;
-  padding: 0.55rem 0.55rem 2rem;
-  position: absolute;
-  /* 3D placement: neighbours recede and angle in perspective */
-  transform: rotateY(calc(var(--rel, 0) * -38deg)) translateZ(calc(var(--rel, 0) * -190px))
-    translateX(calc(var(--rel, 0) * -8%)) scale(0.96);
-  transition:
-    transform 480ms cubic-bezier(0.22, 0.9, 0.28, 1),
-    opacity 480ms ease,
-    filter 480ms ease;
-  width: min(560px, 74vw);
-  z-index: calc(10 - min(abs(var(--rel, 0)), 10));
-  filter: saturate(0.92);
-}
-.campus-card.is-active {
-  cursor: zoom-in;
-  filter: saturate(1);
-  transform: none;
-  z-index: 20;
-}
-.campus-card.is-near {
-  opacity: 0.96;
-}
-.campus-card.is-far {
-  opacity: 0;
-  pointer-events: none;
-  filter: saturate(0.7) blur(1px);
-}
-.campus-card img {
-  aspect-ratio: 8 / 5;
-  display: block;
-  object-fit: cover;
-  width: 100%;
-}
-.campus-card__tape {
-  background: rgba(183, 141, 47, 0.45);
-  box-shadow: 0 1px 2px rgba(24, 20, 16, 0.25);
-  height: 18px;
-  left: 50%;
-  position: absolute;
-  top: -9px;
-  transform: translateX(-50%) rotate(-2deg);
-  width: 72px;
-}
-.campus-card__label {
-  bottom: 0.4rem;
-  color: var(--ink-muted);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  left: 0.7rem;
-  letter-spacing: 0.08em;
-  overflow: hidden;
-  position: absolute;
-  right: 0.7rem;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.campus-3d__nav {
-  background: var(--paper-soft);
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-size: 1.6rem;
-  height: 46px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  z-index: 30;
-}
-.campus-3d__nav:hover {
-  background: var(--accent);
-  color: var(--paper);
-}
-.campus-3d__nav--prev {
-  left: 0.25rem;
-}
-.campus-3d__nav--next {
-  right: 0.25rem;
-}
-.campus-3d__tools {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1rem;
-}
-.campus-3d__counter {
-  color: var(--ink-muted);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.1em;
-}
-.campus-3d__dots {
-  display: flex;
-  gap: 0.4rem;
-}
-.campus-3d__dot {
-  background: transparent;
-  border: 1px solid var(--ink-muted);
-  border-radius: 50%;
-  height: 9px;
-  padding: 0;
-  width: 9px;
-}
-.campus-3d__dot.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.campus-3d__play {
-  background: transparent;
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-size: 0.7rem;
-  padding: 0.25rem 0.6rem;
-}
-.campus-3d__play:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-@media (max-width: 720px) {
-  .campus-card {
-    width: min(420px, 86vw);
-  }
-  .campus-3d__stage {
-    height: clamp(220px, 56vw, 340px);
-  }
-  .campus-3d__nav {
-    display: none;
-  }
-  .campus-card__label {
-    font-size: 0.58rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .campus-card {
-    transition: none;
-  }
-}
-
-/* Teaser link under the 3D carousel */
-.campus-3d-more {
+/* Teaser link under the flipping book */
+.campus-more {
   font-family: var(--font-mono);
   margin-top: 1rem;
   text-align: center;
 }
-.campus-3d-more__link {
+.campus-more__link {
   border-bottom: 1px solid var(--accent);
   color: var(--accent);
   font-size: var(--fs-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.campus-3d-more__link:hover {
+.campus-more__link:hover {
   color: var(--accent-deep);
 }
 
@@ -880,9 +650,9 @@ a:focus-visible .diagram-link {
   perspective: 1600px;
 }
 .book__stage {
-  height: clamp(300px, 40vw, 430px);
+  height: clamp(280px, 36vw, 400px);
   margin: 0 auto;
-  max-width: 640px;
+  max-width: 600px;
   position: relative;
   transform-style: preserve-3d;
 }
@@ -909,7 +679,11 @@ a:focus-visible .diagram-link {
 .book__leaf {
   /* Half the stage, hinged on the centre spine: unflipped it covers the
      right page; flipped (-180deg) it lands exactly on the left page.
-     Nothing ever leaves the stage bounds. z-index is set inline by paint(). */
+     NO overflow/clip on this element: both force transform-style:flat,
+     which breaks backface-visibility and renders flipped leaves mirrored.
+     Bounds are guaranteed structurally instead — faces are inset:0 with
+     their own overflow:hidden, photos use a fixed aspect-ratio, captions
+     ellipsis. The drop-shadow intentionally bleeds 4-6px like stacked paper. */
   background: var(--paper-soft);
   border: 1px solid var(--ink);
   bottom: 0;
@@ -957,6 +731,17 @@ a:focus-visible .diagram-link {
   font-size: 0.66rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+/* Plate thumbnail on the reverse side — the left pile always shows a
+   framed mini print, never a bare caption on blank paper. */
+.book__plate-thumb {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--ink-rule);
+  display: block;
+  height: auto;
+  margin-bottom: 0.6rem;
+  object-fit: cover;
+  width: min(62%, 190px);
 }
 .book__plate-rule {
   color: var(--accent);
@@ -1035,10 +820,13 @@ a:focus-visible .diagram-link {
   outline-offset: 2px;
 }
 .book__photo img {
+  /* Strict uniform frame: every campus photo renders at the same 4:3
+     size regardless of source dimensions — no more "huge" outliers. */
+  aspect-ratio: 4 / 3;
   border: 1px solid var(--ink-rule);
   display: block;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: none;
+  height: auto;
   object-fit: cover;
   object-position: center;
   width: 100%;
