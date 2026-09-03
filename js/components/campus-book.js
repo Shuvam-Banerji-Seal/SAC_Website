@@ -258,10 +258,14 @@ export function initCampusBook(assets) {
       },
       el(
         "div",
-        { class: "book__stage" },
-        el("div", { class: "book__base", "aria-hidden": "true" }),
-        el("div", { class: "book__spine", "aria-hidden": "true" }),
-        ...leaves
+        { class: "book__viewport", "aria-hidden": "false" },
+        el(
+          "div",
+          { class: "book__stage" },
+          el("div", { class: "book__base", "aria-hidden": "true" }),
+          el("div", { class: "book__spine", "aria-hidden": "true" }),
+          ...leaves
+        )
       ),
       el("div", { class: "book__tools" }, flipL, counter, flipR, playBtn)
     )

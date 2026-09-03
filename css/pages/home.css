@@ -647,7 +647,18 @@ a:focus-visible .diagram-link {
   margin: 2.5rem 0;
 }
 .book {
-  perspective: 1600px;
+  perspective: 2600px;
+}
+/* Viewport clip OUTSIDE the 3D scene: mid-flip leaves swing toward the
+   viewer and perspective magnifies them past the stage bounds. Clipping
+   here is safe because this wrapper carries no preserve-3d of its own —
+   unlike overflow/clip on .book__stage or .book__leaf, which would flatten
+   the scene and mirror flipped pages. The 16px bleed preserves base +
+   shadow edges; anything beyond reads as the book's physical extent. */
+.book__viewport {
+  margin: 0 -16px;
+  overflow: hidden;
+  padding: 16px;
 }
 .book__stage {
   height: clamp(340px, 42vw, 520px);

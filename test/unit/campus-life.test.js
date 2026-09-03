@@ -85,7 +85,7 @@ describe("campus-life blank-grid regression + campus book", () => {
     expect(readFileSync(resolve(root, "index.html"), "utf-8")).toContain('id="campus-book"');
     const css = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");
     expect(css).toContain("transform-origin: left center");
-    expect(css).toContain("perspective: 1600px");
+    expect(css).toContain("perspective: 2600px");
   });
   it("masthead ships the campus photo with the title overlaid on a scrim", () => {
     const css = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");

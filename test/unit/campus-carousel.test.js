@@ -50,7 +50,7 @@ describe("campus book", () => {
   });
 
   it("book is strictly bounded: large responsive stage, unclipped 3D leaves, uniform photo frames", () => {
-    expect(css).toContain("perspective: 1600px");
+    expect(css).toContain("perspective: 2600px"); // gentler projection: less mid-flip magnification past the frame
     expect(css).toContain("max-width: 880px");
     expect(js).not.toContain("width: calc(50%");
     // REGRESSION (mirrored leaves): overflow:hidden AND clip-path on .book__leaf
@@ -70,6 +70,21 @@ describe("campus book", () => {
     expect(css).toMatch(/\.book__photo img\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*3/s);
     // backfaces carry a framed plate thumbnail, never a bare caption
     expect(js).toContain("book__plate-thumb");
+  });
+
+  it("mid-flip leaves cannot escape the book frame", () => {
+    // Perspective magnifies leaves swinging toward the viewer past stage
+    // bounds. The clip MUST live on .book__viewport — an element outside
+    // the 3D scene — never on .book/.book__stage/.book__leaf, where it
+    // would flatten preserve-3d (same mirrored-leaf class of bug).
+    expect(js).toContain("book__viewport");
+    const cssNoComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    const viewportBlock = cssNoComments.match(/\.book__viewport\s*\{[^}]*\}/s)?.[0] ?? "";
+    expect(viewportBlock).toMatch(/overflow\s*:\s*hidden/);
+    for (const sel of ["\\.book\\s*\\{", "\\.book__stage\\s*\\{"]) {
+      const block = cssNoComments.match(new RegExp(sel + "[^}]*\\}", "s"))?.[0] ?? "";
+      expect(block).not.toMatch(/overflow\s*:/);
+    }
   });
 
   it("facing photo opens the shared viewer lightbox", () => {
