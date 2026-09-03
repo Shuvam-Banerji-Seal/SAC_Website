@@ -1,16 +1,17 @@
 /**
  * components/campus-book.js — The Campus in Print, as a flipping book.
  *
- * A real 3D book on the front page: a cover and page spreads on a spine;
- * pages physically flip (rotateY around the spine) revealing 2 photographs
- * per spread plus an inside-cover. Click a page corner or use the arrows /
- * keyboard to flip. The spread sits in its own bounded stage — never
- * overlapping surrounding text.
+ * A real two-page-spread book on the front page: cover, one photo per page,
+ * back cover. Each leaf is exactly half the stage wide, hinged on the centre
+ * spine; flipping rotates it -180deg so it lands exactly on the left half.
+ * Nothing ever leaves the stage bounds. Every leaf has a front face and a
+ * paper back face (plate caption), so mid-flip and stacked states both read
+ * correctly. Clicking the facing photo opens the shared viewer lightbox.
  */
 import { el, assetUrl } from "../utils/dom.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 
-const SPREADS = 6; // cover + 5 photo spreads (12 photos + back cover)
+const PHOTO_COUNT = 12;
 const AUTO_FLIP_MS = 7000;
 
 function isReducedMotion() {
@@ -39,27 +40,29 @@ function pickPhotos(assets, count) {
   while (picked.length < count && cats.some((c) => c.length)) {
     for (const c of cats) if (c.length && picked.length < count) picked.push(c.shift());
   }
-  return picked;
+  // rotate the starting offset by day so the front page feels alive
+  const offset = new Date().getDate() % Math.max(1, picked.length);
+  return [...picked.slice(offset), ...picked.slice(0, offset)];
 }
 
 export function initCampusBook(assets) {
   const mount = document.getElementById("campus-book");
   if (!mount || mount.dataset.bound === "true") return;
-  const photos = pickPhotos(assets, 12);
+  const photos = pickPhotos(assets, PHOTO_COUNT);
   if (photos.length < 4) return;
   mount.dataset.bound = "true";
 
-  // Build spreads: [cover, 2-photo spreads..., back cover]
   const label = (a) => captionFor(a) || "Campus photograph";
-  const spreads = [];
-  spreads.push({ type: "cover" });
-  for (let i = 0; i < photos.length; i += 2) {
-    spreads.push({ type: "spread", photos: photos.slice(i, i + 2) });
-  }
-  spreads.push({ type: "back" });
-  const total = spreads.length;
 
-  let current = 0; // spread index; flipping advances one leaf
+  // Page model: cover + one photo per page + back cover.
+  const pages = [
+    { type: "cover" },
+    ...photos.map((photo, i) => ({ type: "photo", photo, plate: i + 1 })),
+    { type: "back" },
+  ];
+  const total = pages.length;
+
+  let current = 0; // index of the leaf facing us on the right
   let auto = !isReducedMotion();
   let timer = null;
 
@@ -80,71 +83,101 @@ export function initCampusBook(assets) {
     auto ? "❙❙" : "▶"
   );
 
-  // Build leaves: each spread is a leaf stacked with 3D translateZ;
-  // flip = rotateY(-180deg) once we pass it, with a spine gradient.
-  const leaves = spreads.map((sp, i) => {
-    const leaf = el(
-      "div",
-      { class: "book__leaf", "data-leaf": String(i) },
-      buildFace(sp, i, i === 0)
-    );
-    return leaf;
-  });
-
-  function buildFace(sp, i, isCover) {
-    if (sp.type === "cover") {
+  function frontFace(page) {
+    if (page.type === "cover") {
       return el(
         "div",
-        { class: "book__face book__face--cover" },
+        { class: "book__face book__face--front book__face--cover" },
         el("span", { class: "book__face__kicker" }, "The SAC Chronicle · Extra"),
         el("span", { class: "book__face__title" }, "The Campus in Print"),
         el("span", { class: "book__face__sub" }, `${photos.length} photographs · IISER Kolkata`),
         el("span", { class: "book__face__hint" }, "Flip through →")
       );
     }
-    if (sp.type === "back") {
+    if (page.type === "back") {
       return el(
         "div",
-        { class: "book__face book__face--back" },
+        { class: "book__face book__face--front book__face--back" },
         el("span", { class: "book__face__kicker" }, "End of the album"),
         el("span", { class: "book__face__sub" }, "Browse all 269 prints on the Campus Life page →"),
         el("a", { class: "book__face__link", href: "pages/campus-life.html" }, "Open the archive")
       );
     }
+    const p = page.photo;
     return el(
       "div",
-      { class: "book__face book__face--spread" },
-      ...sp.photos.map((p, j) =>
+      { class: "book__face book__face--front book__face--spread" },
+      el(
+        "figure",
+        { class: "book__photo" },
         el(
-          "figure",
-          { class: "book__photo" },
+          "button",
+          {
+            class: "book__photo-btn",
+            type: "button",
+            "data-viewer": "campus-book",
+            "data-context": "The Campus in Print",
+            "data-title": label(p),
+            "aria-label": `View ${label(p)} full-screen`,
+          },
           el("img", {
             src: assetUrl(p.public_url),
             alt: altTextFor(p, "Campus photograph"),
-            loading: i <= 2 && j === 0 ? "eager" : "lazy",
+            loading: "eager",
             decoding: "async",
             width: p.width || 1200,
             height: p.height || 900,
-          }),
-          el("figcaption", { class: "book__photo__cap" }, label(p))
-        )
+          })
+        ),
+        el("figcaption", { class: "book__photo__cap" }, label(p))
       )
     );
   }
 
+  function backFace(page) {
+    const caption =
+      page.type === "photo"
+        ? `Plate ${page.plate} · ${page.photo.category_label || "Campus"}`
+        : "The Campus in Print";
+    return el(
+      "div",
+      { class: "book__face book__face--backface", "aria-hidden": "true" },
+      el("span", { class: "book__plate-no" }, caption),
+      el("span", { class: "book__plate-rule", "aria-hidden": "true" }, "✦ ✦ ✦")
+    );
+  }
+
+  // Build leaves: later leaves stack above; paint() fixes z-order per state.
+  const leaves = pages.map((sp, i) => {
+    const leaf = el(
+      "div",
+      { class: "book__leaf", "data-leaf": String(i) },
+      frontFace(sp),
+      backFace(sp)
+    );
+    return leaf;
+  });
+
   function paint() {
     leaves.forEach((leaf, i) => {
-      // leaves before `current` have flipped past; the current one faces us
       const flipped = i < current;
       leaf.classList.toggle("is-flipped", flipped);
       leaf.classList.toggle("is-active", i === current);
+      // Right pile: the current (facing) leaf sits on top.
+      // Left pile: later flips sit on top of earlier ones.
+      leaf.style.zIndex = String(flipped ? 10 + i : 100 - i);
+      // Only the facing page is interactive.
+      const btn = leaf.querySelector(".book__photo-btn, .book__face__link");
+      if (btn) btn.tabIndex = i === current ? 0 : -1;
+      leaf.setAttribute("aria-hidden", i === current ? "false" : "true");
     });
     counter.textContent = `${Math.min(current, total - 1) + 1} / ${total}`;
-    const spread = spreads[Math.min(current, total - 1)];
-    const photoCount = spread.type === "spread" ? spread.photos.length : 0;
+    const page = pages[Math.min(current, total - 1)];
     counter.setAttribute(
       "aria-label",
-      `Page ${Math.min(current, total - 1) + 1} of ${total}${photoCount ? `, ${photoCount} photographs` : ""}`
+      `Page ${Math.min(current, total - 1) + 1} of ${total}${
+        page.type === "photo" ? `, ${label(page.photo)}` : ""
+      }`
     );
   }
 
@@ -152,7 +185,13 @@ export function initCampusBook(assets) {
     if (current < total - 1) {
       current++;
     } else {
-      current = 0; // wrap to cover
+      // Close the book: snap every leaf back without animating.
+      const stage = mount.querySelector(".book__stage");
+      stage.classList.add("no-anim");
+      current = 0;
+      paint();
+      void stage.offsetWidth; // force reflow so the snap applies instantly
+      stage.classList.remove("no-anim");
     }
     paint();
   }

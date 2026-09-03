@@ -73,10 +73,13 @@ describe("campus-life blank-grid regression + campus book", () => {
   it("home uses the 3D flipping book (cover + spreads + back), not the card stack", () => {
     const book = readFileSync(resolve(root, "js/components/campus-book.js"), "utf-8");
     expect(book).toContain("book__leaf");
-    expect(book).toContain("rotateY(-180deg)"); // via CSS class
     expect(book).toContain("book__flip--prev");
     expect(book).toContain("book__flip--next");
     expect(book).toContain("AUTO_FLIP_MS");
+    // the -180deg leaf flip lives in CSS (half-width leaves hinged on the spine)
+    const cssBook = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");
+    expect(cssBook).toContain("rotateY(-180deg)");
+    expect(cssBook).toContain("width: calc(50% - 5px)");
     expect(readFileSync(resolve(root, "js/pages/home.js"), "utf-8")).toContain("initCampusBook");
     expect(readFileSync(resolve(root, "index.html"), "utf-8")).toContain('id="campus-book"');
     const css = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");

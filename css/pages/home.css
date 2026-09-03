@@ -907,37 +907,62 @@ a:focus-visible .diagram-link {
   z-index: 6;
 }
 .book__leaf {
-  backface-visibility: hidden;
+  /* Half the stage, hinged on the centre spine: unflipped it covers the
+     right page; flipped (-180deg) it lands exactly on the left page.
+     Nothing ever leaves the stage bounds. z-index is set inline by paint(). */
   background: var(--paper-soft);
   border: 1px solid var(--ink);
-  inset: 0 0 0 0;
-  margin: 0 6%;
-  overflow: hidden;
+  bottom: 0;
+  box-shadow: 4px 6px 0 var(--paper-edge);
+  left: 50%;
   position: absolute;
+  top: 0;
+  transform: rotateY(0deg);
   transform-origin: left center;
   transform-style: preserve-3d;
   transition: transform 900ms cubic-bezier(0.3, 0.05, 0.25, 1);
-  z-index: 1;
-  box-shadow: 4px 6px 0 var(--paper-edge);
-}
-.book__leaf.is-active {
-  z-index: 5;
+  width: calc(50% - 5px);
 }
 .book__leaf.is-flipped {
   transform: rotateY(-180deg);
-  z-index: 4;
+}
+/* Wrap-around reset: snap every leaf home with no animation. */
+.book__stage.no-anim .book__leaf {
+  transition: none !important;
 }
 .book__face {
   align-content: center;
+  backface-visibility: hidden;
   bottom: 0;
   display: grid;
-  inset: 0;
   justify-items: center;
   left: 0;
+  overflow: hidden;
   padding: 1.4rem 1rem;
   position: absolute;
   right: 0;
   top: 0;
+}
+/* Paper reverse side of every leaf — what you see mid-flip and on the
+   left pile. Pre-rotated so it reads correctly once the leaf turns. */
+.book__face--backface {
+  background:
+    repeating-linear-gradient(115deg, rgba(24, 20, 16, 0.02) 0 1px, transparent 1px 4px),
+    var(--paper-deep);
+  transform: rotateY(180deg);
+}
+.book__plate-no {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.book__plate-rule {
+  color: var(--accent);
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  margin-top: 0.5rem;
 }
 .book__face--cover,
 .book__face--back {
@@ -984,21 +1009,38 @@ a:focus-visible .diagram-link {
 }
 .book__face--spread {
   align-content: stretch;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0.9rem;
+  display: block;
+  padding: 0.7rem;
 }
 .book__photo {
-  flex: 1 1 calc(50% - 0.3rem);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   margin: 0;
-  min-width: 0;
+}
+.book__photo-btn {
+  background: none;
+  border: 0;
+  cursor: zoom-in;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  width: 100%;
+}
+.book__photo-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .book__photo img {
-  aspect-ratio: 4 / 3;
   border: 1px solid var(--ink-rule);
   display: block;
+  flex: 1 1 auto;
+  min-height: 0;
   object-fit: cover;
+  object-position: center;
   width: 100%;
 }
 .book__photo__cap {
@@ -1054,6 +1096,12 @@ a:focus-visible .diagram-link {
   }
   .book__photo__cap {
     font-size: 0.5rem;
+  }
+  .book__face {
+    padding: 0.9rem 0.6rem;
+  }
+  .book__plate-no {
+    font-size: 0.56rem;
   }
 }
 
