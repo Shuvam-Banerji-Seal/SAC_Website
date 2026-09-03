@@ -44,7 +44,7 @@ describe("footer component", () => {
     const links = document.querySelectorAll(".site-footer__links a");
     expect(links.length).toBeGreaterThan(5); // QUICK_LINKS + SPORTS_LINKS
     // Check that Athletics is in the links
-    const athleticsLink = Array.from(links).find(l => l.textContent.includes("Athletics"));
+    const athleticsLink = Array.from(links).find((l) => l.textContent.includes("Athletics"));
     expect(athleticsLink).not.toBeUndefined();
   });
 
@@ -55,8 +55,12 @@ describe("footer component", () => {
     renderFooter();
 
     const links = document.querySelectorAll(".site-footer__links a");
-    const hrefs = Array.from(links).map(l => l.getAttribute("href"));
+    const hrefs = Array.from(links).map((l) => l.getAttribute("href"));
     // All links should point to pages/
-    expect(hrefs.every(h => h.startsWith("pages/") || h.startsWith("../pages/") || h.startsWith("http"))).toBe(true);
+    expect(
+      hrefs.every(
+        (h) => h.startsWith("pages/") || h.startsWith("../pages/") || h.startsWith("http")
+      )
+    ).toBe(true);
   });
 });

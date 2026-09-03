@@ -231,7 +231,7 @@ function buildThumbnailStrip() {
   };
   const groupKey =
     currentGroup
-      .map((el) => imgAt(start)?.src || "")
+      .map(() => imgAt(start)?.src || "")
       .join("|")
       .slice(0, 80) || "";
   const key = `${groupKey}#${start}#${end}`;
@@ -284,7 +284,7 @@ function buildThumbnailStrip() {
  * Update displayed image
  * ------------------------------------------------------------------------- */
 
-function updateImage() {
+function updateImage(_unused) {
   const el = currentGroup[currentIndex];
   if (!el) return;
 

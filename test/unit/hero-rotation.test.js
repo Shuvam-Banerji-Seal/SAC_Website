@@ -11,7 +11,11 @@ const root = resolve(__dirname, "../..");
 
 describe("seasonal hero rotation", () => {
   it("ships the full pool as tiny WebP assets", () => {
-    for (const f of ["assets/hero.webp", "assets/hero-auditorium.webp", "assets/hero-people.webp"]) {
+    for (const f of [
+      "assets/hero.webp",
+      "assets/hero-auditorium.webp",
+      "assets/hero-people.webp",
+    ]) {
       const stat = readFileSync(resolve(root, f));
       expect(stat.length, f).toBeGreaterThan(1000);
       expect(stat.length / 1024, f + " should stay extreme (<300KB)").toBeLessThan(300);

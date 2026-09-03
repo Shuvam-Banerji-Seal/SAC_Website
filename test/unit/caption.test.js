@@ -59,8 +59,12 @@ describe("caption util — kills untitled images", () => {
   });
 
   it("venue and competition context beat bare roles", () => {
-    expect(captionFor({ ...base, is_event: true, venue: "Main Auditorium" })).toMatch(/Main Auditorium/);
-    expect(captionFor({ ...base, is_event: true, competition: "Interbatch 2026" })).toMatch(/Interbatch 2026/);
+    expect(captionFor({ ...base, is_event: true, venue: "Main Auditorium" })).toMatch(
+      /Main Auditorium/
+    );
+    expect(captionFor({ ...base, is_event: true, competition: "Interbatch 2026" })).toMatch(
+      /Interbatch 2026/
+    );
   });
 
   it("cleaned filename is the last resort, never an extension", () => {

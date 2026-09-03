@@ -5,7 +5,7 @@
  * uniform photo frames, rich backfaces, full tooling, viewer integration,
  * and no leftover code from the retired rotating-card stack.
  */
-import { describe, it, expect, existsSync as _e } from "vitest";
+import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";

@@ -183,7 +183,6 @@
   text-transform: capitalize;
 }
 
-
 /* Mobile: settings becomes a thumb-reachable bottom sheet */
 @media (max-width: 720px) {
   .settings-panel {

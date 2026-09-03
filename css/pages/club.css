@@ -250,7 +250,9 @@
   overflow: hidden;
   padding: 0;
   position: relative;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 .club-hero-strip__item.is-lead {
   flex: 2.2 1 0;
@@ -302,7 +304,9 @@
   margin-left: 0.75rem;
   padding: 0.3rem 0.6rem;
   text-transform: uppercase;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 .club-detail__share:hover {
   background: var(--ink);

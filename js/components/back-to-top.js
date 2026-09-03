@@ -2,8 +2,6 @@
  * components/back-to-top.js — newspaper-styled back-to-top button.
  * Appears after scrolling down, respects reduce-motion, keyboard accessible.
  */
-import { $ } from "../utils/dom.js";
-
 export function initBackToTop() {
   if (document.querySelector(".back-to-top")) return;
 

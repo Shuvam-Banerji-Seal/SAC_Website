@@ -60,7 +60,8 @@ export function setupNavbarFold() {
     lockBodyScroll(false);
     setToggleLabel();
     // Return focus to toggle for continuity
-    if (document.activeElement && navbar.contains(document.activeElement)) toggle.focus({ preventScroll: true });
+    if (document.activeElement && navbar.contains(document.activeElement))
+      toggle.focus({ preventScroll: true });
   };
   const setCollapsed = (collapsed) => {
     document.body.classList.toggle("sidebar-collapsed", collapsed);

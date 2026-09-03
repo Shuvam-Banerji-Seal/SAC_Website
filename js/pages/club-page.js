@@ -7,7 +7,7 @@
  * same useful map-backed visual anchor without making the pages boilerplate.
  */
 import { $, el, assetUrl } from "../utils/dom.js";
-import { altTextFor, captionFor } from "../utils/caption.js";
+import { altTextFor } from "../utils/caption.js";
 import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { getClub, getClubEntries, loadAssetsMap } from "../data.js";
 
@@ -183,12 +183,9 @@ function updateDescription(club, entries) {
   // Social-share cards: og/twitter tags so club links unfurl in WhatsApp,
   // Telegram, Slack, X. og:image prefers the club crest, absolute-URLed so
   // crawlers can fetch it regardless of the deployment mirror.
-  const canonical =
-    document.querySelector('link[rel="canonical"]')?.href || document.location.href;
+  const canonical = document.querySelector('link[rel="canonical"]')?.href || document.location.href;
   const imageEntry =
-    club.logo ||
-    entries.find((e) => e.file_type === "image" && !e.is_extracted_from_doc) ||
-    null;
+    club.logo || entries.find((e) => e.file_type === "image" && !e.is_extracted_from_doc) || null;
   const imageUrl = imageEntry
     ? new URL(assetUrl(imageEntry.public_url), document.location.href).href
     : new URL("assets/hero.webp", document.location.href).href;

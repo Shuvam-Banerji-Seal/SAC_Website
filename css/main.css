@@ -36,12 +36,18 @@ main {
     /* Fluid centering: when viewport is wide, main centers in the
        remaining space rather than hugging left. The max() ensures the
        left edge never slides under the fixed sidebar. */
-    margin-left: max(calc(var(--sidebar-w) + 2rem), calc((100vw - var(--max-w)) / 2 + var(--sidebar-w) / 2));
+    margin-left: max(
+      calc(var(--sidebar-w) + 2rem),
+      calc((100vw - var(--max-w)) / 2 + var(--sidebar-w) / 2)
+    );
     margin-right: max(2rem, calc((100vw - var(--max-w)) / 2 - var(--sidebar-w) / 2));
   }
   body.sidebar-collapsed main {
     width: min(calc(100% - var(--sidebar-collapsed-w) - 4rem), var(--max-w));
-    margin-left: max(calc(var(--sidebar-collapsed-w) + 2rem), calc((100vw - var(--max-w)) / 2 + var(--sidebar-collapsed-w) / 2));
+    margin-left: max(
+      calc(var(--sidebar-collapsed-w) + 2rem),
+      calc((100vw - var(--max-w)) / 2 + var(--sidebar-collapsed-w) / 2)
+    );
     margin-right: max(2rem, calc((100vw - var(--max-w)) / 2 - var(--sidebar-collapsed-w) / 2));
   }
 }

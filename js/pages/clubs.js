@@ -311,10 +311,11 @@ export async function initClubs() {
         // Live result-count chip next to the search box
         let counter = searchInput.parentElement.querySelector(".clubs-search-count");
         if (!counter) {
-          counter = el(
-            "span",
-            { class: "clubs-search-count", role: "status", "aria-live": "polite" }
-          );
+          counter = el("span", {
+            class: "clubs-search-count",
+            role: "status",
+            "aria-live": "polite",
+          });
           searchInput.parentElement.append(counter);
         }
         counter.textContent = q

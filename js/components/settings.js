@@ -59,22 +59,22 @@ export const FONT_PRESETS = {
 
 export const TEXTURES = {
   fresh: { label: "Fresh", swatch: ["#f7f2e7", "#eee5d2"] },
-  aged: { label: "Aged", swatch: ['#eee2cb', '#e2d2b4'] },
-  rustic: { label: "Rustic", swatch: ['#e8d8bd', '#d7c09b'] },
-  notice: { label: "Notice", swatch: ['#e8e5d5', '#d6d1bb'] },
-  dark: { label: "Dark", swatch: ['#27221c', '#17130f'] },
-  kraft: { label: "Kraft", swatch: ['#cdb58c', '#b99d6d'] },
-  parchment: { label: "Parchment", swatch: ['#f3e8c8', '#e1d0a7'] },
-  slate: { label: "Slate", swatch: ['#d6d7d0', '#bec1b8'] },
+  aged: { label: "Aged", swatch: ["#eee2cb", "#e2d2b4"] },
+  rustic: { label: "Rustic", swatch: ["#e8d8bd", "#d7c09b"] },
+  notice: { label: "Notice", swatch: ["#e8e5d5", "#d6d1bb"] },
+  dark: { label: "Dark", swatch: ["#27221c", "#17130f"] },
+  kraft: { label: "Kraft", swatch: ["#cdb58c", "#b99d6d"] },
+  parchment: { label: "Parchment", swatch: ["#f3e8c8", "#e1d0a7"] },
+  slate: { label: "Slate", swatch: ["#d6d7d0", "#bec1b8"] },
   natural: { label: "Natural paper", swatch: ["#f4ecdc", "#e3d6bf"] },
   fibers: { label: "Paper fibers", swatch: ["#f0e9d8", "#ddcfb2"] },
   rice: { label: "Rice paper", swatch: ["#f7f3e6", "#e7dfca"] },
   linen: { label: "Stressed linen", swatch: ["#ece6d4", "#d6ccb0"] },
   groove: { label: "Groove paper", swatch: ["#e9e2cf", "#d4c9a6"] },
   wall: { label: "Old wall", swatch: ["#d9d3c4", "#bfb69e"] },
-  newsprint: { label: "Newsprint", swatch: ['#f3efe3', '#e0dccb'] },
-  ledger: { label: "Ledger", swatch: ['#f5f1e4', '#dfd8c2'] },
-  blueprint: { label: "Blueprint", swatch: ['#eef2f7', '#d6dce8'] },
+  newsprint: { label: "Newsprint", swatch: ["#f3efe3", "#e0dccb"] },
+  ledger: { label: "Ledger", swatch: ["#f5f1e4", "#dfd8c2"] },
+  blueprint: { label: "Blueprint", swatch: ["#eef2f7", "#d6dce8"] },
 };
 
 export function loadPrefs() {

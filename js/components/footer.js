@@ -42,14 +42,18 @@ export function renderFooter() {
         el(
           "div",
           { class: "site-footer__col" },
-          el("div", { class: "site-footer__brand" },
+          el(
+            "div",
+            { class: "site-footer__brand" },
             el("span", { class: "site-footer__brand-icon" }, "SAC"),
             el("span", { class: "site-footer__brand-name" }, "Student Activity Council")
           ),
-          el("p", { class: "site-footer__desc" },
+          el(
+            "p",
+            { class: "site-footer__desc" },
             "The Student Activity Council of IISER Kolkata brings together cultural, academic, and residential societies under a single administrative body — fostering creativity, inquiry, and community."
           ),
-          el("p", { class: "site-footer__credit" }, `© ${year} ${SITE_TITLE}. All rights reserved.`),
+          el("p", { class: "site-footer__credit" }, `© ${year} ${SITE_TITLE}. All rights reserved.`)
         ),
 
         // ── Column 2: Quick Links ──
@@ -57,7 +61,9 @@ export function renderFooter() {
           "div",
           { class: "site-footer__col" },
           el("h4", { class: "site-footer__heading" }, "Explore"),
-          el("ul", { class: "site-footer__links" },
+          el(
+            "ul",
+            { class: "site-footer__links" },
             ...QUICK_LINKS.map((link) =>
               el("li", {}, el("a", { href: pageLink(link.href) }, link.label))
             )
@@ -69,7 +75,9 @@ export function renderFooter() {
           "div",
           { class: "site-footer__col" },
           el("h4", { class: "site-footer__heading" }, "Sports"),
-          el("ul", { class: "site-footer__links" },
+          el(
+            "ul",
+            { class: "site-footer__links" },
             ...SPORTS_LINKS.map((link) =>
               el("li", {}, el("a", { href: pageLink(link.href) }, link.label))
             )
@@ -81,7 +89,9 @@ export function renderFooter() {
           "div",
           { class: "site-footer__col" },
           el("h4", { class: "site-footer__heading" }, "Location"),
-          el("div", { class: "site-footer__map" },
+          el(
+            "div",
+            { class: "site-footer__map" },
             el("iframe", {
               // 'fullscreen' inside allow subsumes allowfullscreen without
               // the deprecation warning; the Maps embed probes nothing else.
@@ -92,16 +102,21 @@ export function renderFooter() {
               style: "border:0;border-radius:6px;",
               loading: "lazy",
               referrerpolicy: "no-referrer-when-downgrade",
-              title: "IISER Kolkata campus location"
+              title: "IISER Kolkata campus location",
             })
           ),
-          el("p", { class: "site-footer__address" },
+          el(
+            "p",
+            { class: "site-footer__address" },
             "IISER Kolkata, Mohanpur Campus, Nadia — 741246, West Bengal"
-          ),
-        ),
-
+          )
+        )
       ),
-      el("p", { class: "site-footer__meta" }, "Built with pure HTML, CSS, and JavaScript. · SAC Web Team")
+      el(
+        "p",
+        { class: "site-footer__meta" },
+        "Built with pure HTML, CSS, and JavaScript. · SAC Web Team"
+      )
     )
   );
 }

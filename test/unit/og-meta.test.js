@@ -3,7 +3,7 @@
  * Club pages hydrate meta at runtime; directory pages ship static tags.
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -13,7 +13,12 @@ const read = (rel) => readFileSync(resolve(root, rel), "utf-8");
 
 describe("social-share cards", () => {
   it("directory pages ship static OG + Twitter tags", () => {
-    for (const p of ["pages/clubs.html", "pages/events.html", "pages/gallery.html", "pages/about.html"]) {
+    for (const p of [
+      "pages/clubs.html",
+      "pages/events.html",
+      "pages/gallery.html",
+      "pages/about.html",
+    ]) {
       const html = read(p);
       expect(html, p).toContain('property="og:title"');
       expect(html, p).toContain('property="og:description"');
@@ -45,9 +50,9 @@ describe("runtime OG injection (jsdom shell)", () => {
     document.body.dataset.clubSlug = "AARSHI_-_Drama_Club";
 
     // Point data.js at a tiny inline map
-    const { loadAssetsMap } = await import("../../js/data.js");
+    await import("../../js/data.js");
     const orig = global.fetch;
-    global.fetch = async (url) => ({
+    global.fetch = async (_url) => ({
       ok: true,
       text: async () =>
         JSON.stringify({
