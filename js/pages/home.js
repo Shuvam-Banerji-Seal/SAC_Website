@@ -214,10 +214,14 @@ const HERO_POOL = [
 ];
 
 function rotateHero() {
+  // The inline <script> in index.html already picked this month's hero
+  // pre-paint (kills the swap-flash). This confirms the choice and only
+  // rewrites when a stale paint survived (e.g. noscript fallback restored).
   const img = document.getElementById("heroImg");
   const cap = document.getElementById("heroCaptionText");
   if (!img || !cap) return;
   const pick = HERO_POOL[new Date().getMonth() % HERO_POOL.length];
+  if (img.currentSrc && !img.currentSrc.includes(pick.src)) return; // already right
   img.src = pick.src;
   cap.textContent = pick.caption;
 }
@@ -248,6 +252,10 @@ export async function initHome() {
   renderStats(assets);
   const { initCampusBook } = await import("../components/campus-book.js");
   initCampusBook(assets);
+
+  // The Campus Board: pinned Campus_Places postcards (map-desk wall)
+  const { initCampusBoard } = await import("../components/campus-board.js");
+  initCampusBoard(assets);
 
   // Warm the remaining hero variants after first paint (rotation day swap)
   window.addEventListener(

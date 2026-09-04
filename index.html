@@ -120,12 +120,42 @@
             decoding="async"
             fetchpriority="high"
           />
+          <script>
+            /* Seasonal hero must be chosen BEFORE first paint — the static
+               src above is only a no-JS fallback. Without this, the page
+               painted hero.webp and then swap-flashed to the month's pick
+               once the JSONL arrived. Mirrors HERO_POOL in js/pages/home.js:
+               keep the two lists in sync (0,1,2 = hero/auditorium/people). */
+            (function () {
+              var img = document.getElementById("heroImg");
+              var cap = document.getElementById("heroCaptionText");
+              var pool = [
+                {
+                  src: "assets/hero.webp",
+                  cap: "A farewell gathering on the SAC calendar — one of 1,181 photographs in the Chronicle archive. Every club, every season, printed in code.",
+                },
+                {
+                  src: "assets/hero-auditorium.webp",
+                  cap: "The campus auditorium — where IICM contingents, productions, and convocations take the stage.",
+                },
+                {
+                  src: "assets/hero-people.webp",
+                  cap: "The people of SAC — thirty-two clubs' worth of organisers, performers, athletes, and committees.",
+                },
+              ];
+              var pick = pool[new Date().getMonth() % pool.length];
+              if (img && pick.src !== img.getAttribute("src")) {
+                img.src = pick.src;
+                if (cap) cap.textContent = pick.cap;
+              }
+            })();
+          </script>
         </div>
         <figcaption id="hero-caption" class="hero__caption">
           <span class="hero__kicker">Front page · Campus life</span>
           <span id="heroCaptionText">
-            A farewell gathering on the SAC calendar — one of 1,181 photographs in the Chronicle archive.
-            Every club, every season, printed in code.
+            A farewell gathering on the SAC calendar — one of 1,181 photographs in the Chronicle
+            archive. Every club, every season, printed in code.
           </span>
         </figcaption>
       </figure>
@@ -159,7 +189,7 @@
         </div>
       </article>
 
-<div class="paper-tear" aria-hidden="true"></div>
+      <div class="paper-tear" aria-hidden="true"></div>
       <section class="sac-diagram-section" aria-labelledby="structure-title">
         <div class="sac-diagram-wrap">
           <svg
@@ -282,23 +312,58 @@
             <!-- Clickable body overlays → clubs page sections -->
             <g role="navigation" aria-label="SAC bodies">
               <a href="pages/clubs.html#body-academics" tabindex="0">
-                <rect x="24" y="168" width="140" height="78" fill="transparent" class="diagram-link" />
+                <rect
+                  x="24"
+                  y="168"
+                  width="140"
+                  height="78"
+                  fill="transparent"
+                  class="diagram-link"
+                />
                 <title>See all Academic clubs</title>
               </a>
               <a href="pages/clubs.html#body-hostel" tabindex="0">
-                <rect x="176" y="168" width="140" height="78" fill="transparent" class="diagram-link" />
+                <rect
+                  x="176"
+                  y="168"
+                  width="140"
+                  height="78"
+                  fill="transparent"
+                  class="diagram-link"
+                />
                 <title>See the Hostel committee</title>
               </a>
               <a href="pages/clubs.html#body-sports" tabindex="0">
-                <rect x="328" y="168" width="140" height="78" fill="transparent" class="diagram-link" />
+                <rect
+                  x="328"
+                  y="168"
+                  width="140"
+                  height="78"
+                  fill="transparent"
+                  class="diagram-link"
+                />
                 <title>See all 16 Sports clubs</title>
               </a>
               <a href="pages/clubs.html#body-cultural" tabindex="0">
-                <rect x="480" y="168" width="140" height="78" fill="transparent" class="diagram-link" />
+                <rect
+                  x="480"
+                  y="168"
+                  width="140"
+                  height="78"
+                  fill="transparent"
+                  class="diagram-link"
+                />
                 <title>See all Cultural clubs</title>
               </a>
               <a href="pages/clubs.html#body-food" tabindex="0">
-                <rect x="632" y="168" width="140" height="78" fill="transparent" class="diagram-link" />
+                <rect
+                  x="632"
+                  y="168"
+                  width="140"
+                  height="78"
+                  fill="transparent"
+                  class="diagram-link"
+                />
                 <title>See Food &amp; Hygiene (SMC)</title>
               </a>
             </g>
@@ -422,13 +487,15 @@
         </div>
       </section>
 
-<div class="paper-tear" aria-hidden="true"></div>
+      <div class="paper-tear" aria-hidden="true"></div>
       <section class="campus-book-section reveal-section" aria-labelledby="campus-book-title">
-        <div class="section-divider" aria-hidden="true"><span class="section-divider__ornament">✦ ✦ ✦</span></div>
+        <div class="section-divider" aria-hidden="true">
+          <span class="section-divider__ornament">✦ ✦ ✦</span>
+        </div>
         <h2 id="campus-book-title" class="section-title">The Campus in Print</h2>
         <p class="muted">
-          Buildings, courts, libraries, and commons — the IISER Kolkata campus bound as a
-          flipping album. Turn the pages with the arrows, or let it flip itself.
+          Buildings, courts, libraries, and commons — the IISER Kolkata campus bound as a flipping
+          album. Turn the pages with the arrows, or let it flip itself.
         </p>
         <div id="campus-book"></div>
         <p class="campus-more">
@@ -436,6 +503,18 @@
             Browse all 269 campus photographs →
           </a>
         </p>
+      </section>
+
+      <section class="campus-board-section reveal-section" aria-labelledby="campus-board-title">
+        <div class="section-divider" aria-hidden="true">
+          <span class="section-divider__ornament">✦ ✦ ✦</span>
+        </div>
+        <h2 id="campus-board-title" class="section-title">The Campus Board</h2>
+        <p class="muted">
+          A map-desk wall of pinned postcards from Campus Places — the corners, courts, and
+          corridors of IISER Kolkata, filed by the Chronicle's photographers.
+        </p>
+        <div id="campus-board"></div>
       </section>
 
       <section class="home-stats" id="home-stats" aria-label="Archive statistics"></section>

@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v36";
+const CACHE_NAME = "sac-v37";
 
 const STATIC_ASSETS = [
   // Core
@@ -50,6 +50,7 @@ const STATIC_ASSETS = [
   "js/pretext/generated/bidi-data.js",
   "js/components/navbar.js",
   "js/components/campus-book.js",
+  "js/components/campus-board.js",
   "js/utils/skeleton.js",
   "js/pages/campus-life.js",
   "js/components/navbar-fold.js",
