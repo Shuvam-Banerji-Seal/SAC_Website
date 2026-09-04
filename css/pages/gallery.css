@@ -62,3 +62,10 @@
   content: "§";
   margin-right: 0.35rem;
 }
+
+/* Touch targets: filter tabs clear 44px on coarse pointers. */
+@media (pointer: coarse) {
+  .gallery-filter-tab {
+    padding-block: 0.7rem;
+  }
+}

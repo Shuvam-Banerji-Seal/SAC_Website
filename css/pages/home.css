@@ -1094,3 +1094,16 @@ a:focus-visible .diagram-link {
     transition: none;
   }
 }
+
+/* Touch targets: book tools + board link clear 44px on coarse pointers. */
+@media (pointer: coarse) {
+  .book__flip,
+  .book__play {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .board__more {
+    display: block;
+    padding-block: 0.5rem;
+  }
+}

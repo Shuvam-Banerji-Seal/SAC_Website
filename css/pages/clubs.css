@@ -132,3 +132,18 @@
     contain-intrinsic-size: auto 1000px;
   }
 }
+
+/* Touch targets: chips, sort, and back-links clear the 44px tap guideline
+   (padding grows the visual box; the type stays small). */
+@media (pointer: coarse) {
+  .campus-chip {
+    padding-block: 0.55rem;
+  }
+  .campus-sort select {
+    padding-block: 0.65rem;
+  }
+  .back-link {
+    display: inline-block;
+    padding: 0.35rem 0;
+  }
+}

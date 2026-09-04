@@ -901,3 +901,10 @@ body.sidebar-open .sidebar-scrim {
     animation: none;
   }
 }
+
+/* Backstopped thumbs skip the fade: their sections live offscreen under
+   content-visibility:auto, which freezes running transitions — a fading
+   reveal would paint blank until scrolled into view. */
+.thumb--reveal.is-backstopped {
+  transition: none;
+}

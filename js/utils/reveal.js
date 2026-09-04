@@ -97,10 +97,13 @@ export function initImageReveal(root = document, opts = {}) {
   // Global backstop: any thumb still hidden 4s after bind gets revealed.
   // Covers late-appended nodes, IO flakiness, and content-visibility races
   // that the 1200ms orphan net can miss on slow mobile loads.
+  // .is-backstopped also skips the fade transition: offscreen sections
+  // under content-visibility:auto freeze transitions, so a fading reveal
+  // would otherwise render blank until scrolled into view and thawed.
   window.setTimeout(() => {
     root.querySelectorAll(".thumb--reveal:not(.is-revealed)").forEach((t) => {
       t.style.transitionDelay = "";
-      t.classList.add("is-revealed");
+      t.classList.add("is-revealed", "is-backstopped");
     });
   }, 4000);
 }
