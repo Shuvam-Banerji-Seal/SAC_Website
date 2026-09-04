@@ -10,7 +10,7 @@
  */
 
 const GENERIC_TITLE_RE =
-  /^(img ?_?\d*|img\d+|img[ _]?\d+[ _]?\d*|page\d* ?img\d*|dsc ?_?\d*|dsc\d+|ona\d+|pxl ?_?\d*|vid ?_?\d+|mg ?_?\d+([ _]?\d+)?|photo|image|untitled|new file|\d{3,4} ?_?[a-z]?|\d{8,}[ _-].*)\s*$/i;
+  /^(img ?_?\d*|img\d+|img[ _]?\d+[ _]?\d*|page\d* ?img\d*|dsc ?_?\d*|dsc\d+|ona\d+|pxl ?_?\d*|vid ?_?\d+|mg ?_?\d+([ _]?\d+)?|photo|image|untitled|new file|\d{3,4} ?_?[a-z]?|\d{8,}[ _-].*|\d+)\s*$/i;
 
 /** True when the map title is pipeline noise rather than a real name. */
 export function isGenericTitle(title) {
@@ -19,6 +19,21 @@ export function isGenericTitle(title) {
 }
 
 /** Short, human name of the parent document for extracted plates. */
+/** Trim camera-stamp noise from a title: leading digit runs ("1000041954 -"),
+ *  trailing "Copy N", bare "Copy". Returns "" when nothing human remains. */
+function humanizedTitle(title) {
+  if (!title) return "";
+  const t = String(title)
+    .replace(/^(\d{4,}[-_ ]*)+/g, "") // leading numeric stamps
+    .replace(/([-_ ]*copy( of)?( \d+)?)+$/i, "") // trailing Copy/Copy 2/Copy of (repeated)
+    .replace(/_+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  // what's left must be a real phrase: letters present AND not itself generic
+  if (!t || !/[a-z]/i.test(t)) return "";
+  return isGenericTitle(t) ? "" : t;
+}
+
 function parentDocName(asset) {
   const label = String(asset.category_label || "");
   const m = label.match(/extracted from (.+)$/i);
@@ -58,6 +73,9 @@ function roleLabel(asset) {
  */
 export function captionFor(asset) {
   if (!asset) return "SAC archive";
+
+  const human = humanizedTitle(asset.title);
+  if (human) return human; // numeric-stamp titles whose tail is a real name/phrase
 
   if (!isGenericTitle(asset.title) && asset.title) {
     return String(asset.title).trim();

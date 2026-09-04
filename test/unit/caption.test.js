@@ -119,3 +119,29 @@ describe("caption util — camera stamps fall back to event folder names", () =>
     expect(cap).toBe("Rampage — Battle of Bands");
   });
 });
+
+describe("caption util — humanized camera-stamp titles (Campus_Places)", () => {
+  const cap = (title) =>
+    captionFor({
+      title,
+      filename: "x.webp",
+      category_label: "Campus Places",
+      club_name: "Campus Archive",
+      role: "other",
+      file_type: "image",
+    });
+
+  it("strips leading numeric stamps, 'Copy' suffixes, keeps the photographer", () => {
+    expect(cap("1000041954 - Adarsh Singh - Copy")).toBe("Adarsh Singh");
+    expect(cap("1000041954 Adarsh Singh Copy Copy 2")).toBe("Adarsh Singh");
+  });
+
+  it("keeps a human phrase when only a stamp is noise", () => {
+    expect(cap("20230518 182910 01 Happy Bravo")).toBe("01 Happy Bravo");
+  });
+
+  it("still falls back to category for pure camera noise", () => {
+    expect(cap("MG 5586")).toBe("Campus Places");
+    expect(cap("1000041954")).toBe("Campus Places");
+  });
+});
