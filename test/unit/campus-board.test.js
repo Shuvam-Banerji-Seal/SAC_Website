@@ -58,3 +58,31 @@ describe("campus board", () => {
     expect(home).toContain("already right");
   });
 });
+
+describe("board aspect + about page", () => {
+  it("board imgs declare height:auto — attribute hints can't stretch cards", () => {
+    // REGRESSION: with width/height attributes present and no CSS height,
+    // Chrome fell back to the attr height (1200px tall cards). aspect-ratio
+    // only applies when height is auto in used value.
+    const css = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");
+    const block = css.match(/\.board-card img\s*\{[^}]*\}/s)?.[0] ?? "";
+    expect(block).toMatch(/height:\s*auto/);
+    expect(block).toMatch(/aspect-ratio:\s*5\s*\/\s*4/);
+  });
+
+  it("about page ships the five-bodies quick navigation", () => {
+    const html = readFileSync(resolve(root, "pages/about.html"), "utf-8");
+    for (const body of [
+      "body-academics",
+      "body-cultural",
+      "body-sports",
+      "body-hostel",
+      "body-food",
+    ]) {
+      expect(html).toContain(`clubs.html#${body}`);
+    }
+    expect(html).toContain("How the Council works");
+    const css = readFileSync(resolve(root, "css/pages/about.css"), "utf-8");
+    expect(css).toContain(".about-bodies__link");
+  });
+});

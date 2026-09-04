@@ -1041,9 +1041,13 @@ a:focus-visible .diagram-link {
   overflow: hidden;
 }
 .board-card img {
+  /* height:auto lets aspect-ratio beat the width/height attribute hints —
+     with attrs present, an unset height falls back to the attr value (1200px
+     tall cards). auto re-arms the 5/4 box. */
   aspect-ratio: 5 / 4;
   border: 1px solid var(--ink-rule);
   display: block;
+  height: auto;
   object-fit: cover;
   width: 100%;
 }
