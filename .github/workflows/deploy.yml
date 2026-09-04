@@ -86,10 +86,12 @@ jobs:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: test
-    # Deploy from the primary repo only — both mirrors run this workflow
-    # on the same shared Pages backend and simultaneous deploys race
-    # (HttpError: 'in progress deployment'). The sbs mirror keeps test/lint.
-    if: github.ref == 'refs/heads/main' && github.repository == 'slashdot-iiserk/SAC_website'
+    # Deploy on main from BOTH mirrors — each GitHub account serves its own
+    # Pages URL (separate backends). The earlier 'in progress deployment'
+    # race was two simultaneous runs of the SAME repo; the workflow-level
+    # concurrency.cancel-in-progress already serializes those, so both
+    # mirrors can safely deploy and stay fresh.
+    if: github.ref == 'refs/heads/main'
     timeout-minutes: 15
     environment:
       name: github-pages
