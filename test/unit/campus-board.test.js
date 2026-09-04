@@ -86,3 +86,35 @@ describe("board aspect + about page", () => {
     expect(css).toContain(".about-bodies__link");
   });
 });
+
+describe("cycle 26 — drawer notch, settings open, SVG glow", () => {
+  const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
+  const settings = readFileSync(resolve(root, "js/components/settings.js"), "utf-8");
+  const homeCss = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");
+  const html = readFileSync(resolve(root, "index.html"), "utf-8");
+
+  it("mobile drawer reserves a top notch under the hamburger (no wordmark overlap)", () => {
+    expect(css).toContain("body.sidebar-open #navbar");
+    expect(css).toMatch(/padding-top:\s*4\.25rem/);
+  });
+
+  it("settings: Typography + Paper texture groups open by default", () => {
+    // both <details> get open:true — the boolean el() helper serializes to open=""
+    expect(settings).toMatch(/settings-advanced",\s*open:\s*true/g);
+    expect(settings.match(/open:\s*true/g).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("SAC seal glows and adapts to theme via --accent", () => {
+    expect(html).toContain('id="sealGlow"');
+    expect(html).toContain('class="sac-seal"');
+    expect(homeCss).toContain("seal-pulse");
+    expect(homeCss).toContain("@media (prefers-reduced-motion: reduce)");
+    // dark mode: diagram gets the accent drop-shadow wash
+    expect(homeCss).toContain('[data-theme="dark"] .sac-diagram');
+  });
+
+  it("diagram side ornaments ship", () => {
+    expect(html).toContain("sac-diagram__ornament");
+    expect(html).toMatch(/<circle cx="40" cy="22"/);
+  });
+});

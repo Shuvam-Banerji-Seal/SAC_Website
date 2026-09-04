@@ -1111,3 +1111,30 @@ a:focus-visible .diagram-link {
     padding-block: 0.5rem;
   }
 }
+
+/* SAC seal glow — pulses slowly in both themes; dark mode inherits the
+   warmer --accent automatically. */
+.sac-seal {
+  animation: seal-pulse 5.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes seal-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.82;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sac-seal {
+    animation: none;
+  }
+}
+[data-theme="dark"] .sac-diagram {
+  /* gentle vignette under the whole diagram so the paper reads differently
+     in the dark edition without repainting the SVG */
+  filter: drop-shadow(0 0 18px rgba(212, 107, 95, 0.12));
+}

@@ -32,6 +32,19 @@
   z-index: 900;
 }
 
+/* Mobile drawer-open state: reserve a top notch so the hamburger button
+   never paints over the "The SAC Chronicle" wordmark (button is fixed at
+   top-left; the brand starts right under it). */
+@media (max-width: 1023px) {
+  body.sidebar-open #navbar {
+    padding-top: 4.25rem;
+  }
+  /* wordmark gets breathing room under the button on phones */
+  body.sidebar-open .sidebar__brand {
+    padding-top: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #navbar {
     transition: none;

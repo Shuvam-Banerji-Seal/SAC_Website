@@ -245,6 +245,45 @@
             >
               THE ORGANIZATIONAL STRUCTURE
             </text>
+            <!-- side ornaments: dotted rails flanking the masthead strip -->
+            <g class="sac-diagram__ornament" aria-hidden="true">
+              <line
+                x1="40"
+                y1="24"
+                x2="40"
+                y2="40"
+                stroke="var(--accent)"
+                stroke-width="1"
+                stroke-dasharray="2 3"
+              />
+              <line
+                x1="760"
+                y1="24"
+                x2="760"
+                y2="40"
+                stroke="var(--accent)"
+                stroke-width="1"
+                stroke-dasharray="2 3"
+              />
+              <circle cx="40" cy="22" r="2" fill="var(--accent)" />
+              <circle cx="760" cy="22" r="2" fill="var(--accent)" />
+              <line
+                x1="56"
+                y1="32"
+                x2="330"
+                y2="32"
+                stroke="var(--ink-muted, #706454)"
+                stroke-width="0.4"
+              />
+              <line
+                x1="470"
+                y1="32"
+                x2="744"
+                y2="32"
+                stroke="var(--ink-muted, #706454)"
+                stroke-width="0.4"
+              />
+            </g>
             <text
               x="400"
               y="36"
@@ -256,15 +295,22 @@
             >
               EST. 2006 · IISER KOLKATA · VOL. 01
             </text>
-            <!-- Central SAC seal -->
-            <g>
-              <circle cx="400" cy="96" r="40" fill="none" stroke="#830d0d" stroke-width="1.8" />
+            <!-- Central SAC seal (glow + slow pulse; colors theme via --accent) -->
+            <g class="sac-seal" filter="url(#sealGlow)">
+              <circle
+                cx="400"
+                cy="96"
+                r="40"
+                fill="none"
+                stroke="var(--accent)"
+                stroke-width="1.8"
+              />
               <circle
                 cx="400"
                 cy="96"
                 r="32"
                 fill="none"
-                stroke="#830d0d"
+                stroke="var(--accent)"
                 stroke-width="0.7"
                 opacity="0.45"
               />
@@ -481,6 +527,22 @@
             <defs>
               <filter id="paperShadow" x="-8%" y="-8%" width="116%" height="116%">
                 <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-opacity="0.12" />
+              </filter>
+              <filter id="sealGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feDropShadow
+                  dx="0"
+                  dy="0"
+                  stdDeviation="6"
+                  flood-color="var(--accent)"
+                  flood-opacity="0.55"
+                />
+                <feDropShadow
+                  dx="0"
+                  dy="0"
+                  stdDeviation="14"
+                  flood-color="var(--accent)"
+                  flood-opacity="0.25"
+                />
               </filter>
             </defs>
           </svg>

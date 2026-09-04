@@ -351,13 +351,13 @@ export function initSettings() {
     ),
     el(
       "details",
-      { class: "settings-group settings-advanced" },
+      { class: "settings-group settings-advanced", open: true },
       el("summary", { class: "settings-group__label" }, "Typography"),
       fontGrid
     ),
     el(
       "details",
-      { class: "settings-group settings-advanced" },
+      { class: "settings-group settings-advanced", open: true },
       el("summary", { class: "settings-group__label" }, "Paper texture"),
       textureGrid
     ),
