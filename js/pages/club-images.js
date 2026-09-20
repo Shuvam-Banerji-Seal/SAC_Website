@@ -19,11 +19,15 @@ function assetCaption(asset) {
   return captionFor(asset);
 }
 
-function isBogusPerson(name) {
+/** Camera/file prefixes are only bogus when they actually look like stamps:
+ *  "IMG 20250101", "VID_0042", "DSC-12" — not real names that merely start
+ *  with the same letters ("Vidhi Bhushan" is not a "VID" stamp). The prefix
+ *  must be followed by a delimiter, a digit, or end the string. */
+export function isBogusPerson(name) {
   if (!name) return false;
   const n = String(name).trim();
   if (n.length < 3) return true;
-  if (/^(IMG|DSC|PXL|VID|OBs?|sri|sleeveless|tank\s*top)/i.test(n)) return true;
+  if (/^(IMG|DSC|PXL|VID|OBs?|sri|sleeveless|tank\s*top)([_\s.-]|\d|$)/i.test(n)) return true;
   if (/^\d/.test(n)) return true;
   if (/^(25|26)\s*26/.test(n)) return true;
   if (n.split(/\s+/).length === 1 && n.length < 6 && /^[a-z]+$/.test(n)) return true; // single lowercase word like "sri"
