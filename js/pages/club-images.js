@@ -14,6 +14,7 @@ import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 import { gridSrc } from "../utils/thumb.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor, isGenericTitle } from "../utils/caption.js";
+import { isCurrentTenure } from "../utils/tenure.js";
 
 function assetCaption(asset) {
   return captionFor(asset);
@@ -51,7 +52,7 @@ function assetRatio(asset) {
 function assetMatchesRole(asset, role) {
   if (asset.file_type !== "image") return false;
   if (!role) return true;
-  if (role === "ob_portrait") return asset.is_ob_portrait;
+  if (role === "ob_portrait") return asset.is_ob_portrait && isCurrentTenure(asset);
   if (role === "logo") return asset.is_logo;
   if (role === "event") return asset.is_event;
   if (role === "iicm") return asset.is_iicm;

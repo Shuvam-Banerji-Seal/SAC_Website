@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v45";
+const CACHE_NAME = "sac-v46";
 
 const STATIC_ASSETS = [
   // Core
@@ -40,6 +40,7 @@ const STATIC_ASSETS = [
   "js/utils/calendar.js",
   "js/utils/youtube.js",
   "js/utils/reveal.js",
+  "js/utils/tenure.js",
   "js/pretext/analysis.js",
   "js/pretext/bidi.js",
   "js/pretext/layout.js",

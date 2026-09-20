@@ -9,6 +9,7 @@
 import { $, el, assetUrl } from "../utils/dom.js";
 import { altTextFor } from "../utils/caption.js";
 import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
+import { isCurrentTenure } from "../utils/tenure.js";
 import { getClub, getClubEntries, loadAssetsMap } from "../data.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -55,7 +56,9 @@ function makeLogo(club, entries) {
 function buildIdentity(club, entries) {
   const imageCount = entries.filter((entry) => entry.file_type === "image").length;
   const documentCount = entries.filter((entry) => entry.file_type === "markdown").length;
-  const portraitCount = entries.filter((entry) => entry.is_ob_portrait).length;
+  const portraitCount = entries.filter(
+    (entry) => entry.is_ob_portrait && isCurrentTenure(entry)
+  ).length;
   const eventCount = entries.filter((entry) => entry.is_event || entry.is_iicm).length;
   const mediaCount = entries.filter(
     (entry) => entry.file_type === "video" || entry.file_type === "audio"
