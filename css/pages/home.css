@@ -1396,3 +1396,35 @@
      in the dark edition without repainting the SVG */
   filter: drop-shadow(0 0 18px rgba(212, 107, 95, 0.12));
 }
+
+/* ── Editorial folios ─────────────────────────────────────────────
+   Section numbers, as a printed edition carries them. Counters derive
+   from document order, so adding a section renumbers the rest for free. */
+main.home {
+  counter-reset: folio;
+}
+main.home .section-title,
+main.home .notebook-section__heading {
+  counter-increment: folio;
+}
+main.home .section-title::after,
+main.home .notebook-section__heading::after {
+  color: var(--ink-muted);
+  content: "§ " counter(folio, upper-roman);
+  float: right;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  padding-top: 0.55em;
+}
+
+/* End-mark at the foot of the edition */
+main.home::after {
+  color: var(--accent);
+  content: "❦";
+  display: block;
+  font-size: 1.3rem;
+  margin-top: 2rem;
+  text-align: center;
+}

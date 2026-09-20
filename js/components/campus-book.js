@@ -66,6 +66,8 @@ export function initCampusBook(assets) {
   let current = 0; // index of the leaf facing us on the right
   let auto = !isReducedMotion();
   let timer = null;
+  let inView = true; // the book is inside the viewport
+  let paused = false; // pointer or keyboard focus is on the book
 
   const counter = el("span", { class: "book__counter", "aria-live": "polite" });
   const flipL = el(
@@ -233,9 +235,16 @@ export function initCampusBook(assets) {
       timer = null;
     }
   }
+  /** The auto-flip runs only while the book is on screen, the tab is
+   *  visible, and nobody is reaching for it — a timer turning pages in a
+   *  hidden tab or three screens away is pure wasted work. Every manual
+   *  action calls restart(), which also gives the reader a full interval
+   *  before the book moves again. */
   function restart() {
     stop();
-    if (auto) timer = setInterval(flipNext, AUTO_FLIP_MS);
+    if (auto && inView && !document.hidden && !paused) {
+      timer = setInterval(flipNext, AUTO_FLIP_MS);
+    }
   }
 
   flipL.addEventListener("click", () => {
@@ -326,6 +335,42 @@ export function initCampusBook(assets) {
       { passive: true }
     );
   }
+
+  // Reader interaction pauses the auto-flip: hover, focus, or touch on the
+  // spread means they are looking at a page, not waiting for the next one.
+  mount.addEventListener("pointerenter", () => {
+    paused = true;
+    restart();
+  });
+  mount.addEventListener("pointerleave", () => {
+    paused = false;
+    restart();
+  });
+  mount.addEventListener("focusin", () => {
+    paused = true;
+    restart();
+  });
+  mount.addEventListener("focusout", () => {
+    paused = false;
+    restart();
+  });
+
+  // Auto-flip only while the spread is actually on screen.
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          inView = entry.isIntersecting;
+          restart();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(mount);
+  }
+
+  // …and only while the tab is in the foreground.
+  document.addEventListener("visibilitychange", restart);
 
   paint();
   restart();

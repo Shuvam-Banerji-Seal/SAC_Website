@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v41";
+const CACHE_NAME = "sac-v44";
 
 const STATIC_ASSETS = [
   // Core
@@ -122,6 +122,12 @@ const STATIC_ASSETS = [
 
 const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];
 
+/* The repo is mirrored under different path casings — /SAC_website/ on the
+ * primary Pages domain, /SAC_Website/ on the secondary — so never hard-code
+ * one: derive the deployment prefix from the worker's own scope. Resolves
+ * to "/" for custom-domain roots, which correctly matches everything. */
+const SCOPE_PATH = new URL(self.registration.scope).pathname;
+
 /* -------------------------------------------------------------------------
  * Install — cache static assets
  * ------------------------------------------------------------------------- */
@@ -183,7 +189,7 @@ self.addEventListener("fetch", (event) => {
       return cache.match(event.request).then((cached) => {
         const networkFetch = fetch(event.request)
           .then((response) => {
-            if (response.ok && url.pathname.startsWith("/SAC_Website/")) {
+            if (response.ok && url.pathname.startsWith(SCOPE_PATH)) {
               cache.put(event.request, response.clone());
             }
             return response;

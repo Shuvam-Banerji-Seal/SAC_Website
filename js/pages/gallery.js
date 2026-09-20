@@ -56,11 +56,16 @@ export async function initGallery() {
           el(
             "ul",
             { class: "thumb-grid pinned-thumbs" },
-            ...images.map((i, index) =>
-              el(
+            ...images.map((i, index) => {
+              const thumbCaption = captionFor(i);
+              return el(
                 "li",
                 {
                   class: "thumb thumb--reveal",
+                  "data-gallery-search": [thumbCaption, i.title, i.filename, c.name]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase(),
                   style:
                     `--pin-rotate: ${(((index % 7) - 3) * 0.6).toFixed(2)};` +
                     (i.width && i.height
@@ -75,7 +80,7 @@ export async function initGallery() {
                     {
                       href: assetUrl(i.public_url),
                       "data-viewer": groupName,
-                      "data-title": captionFor(i),
+                      "data-title": thumbCaption,
                       "data-desc": i.description && !i.is_extracted_from_doc ? i.description : "",
                       "data-context": c.name,
                       title: i.title || i.filename,
@@ -91,10 +96,10 @@ export async function initGallery() {
                         i.width && i.height ? `aspect-ratio: ${i.width} / ${i.height}` : undefined,
                     })
                   ),
-                  el("figcaption", { class: "thumb__cap" }, captionFor(i))
+                  el("figcaption", { class: "thumb__cap" }, thumbCaption)
                 )
-              )
-            )
+              );
+            })
           )
         );
       })
@@ -118,44 +123,115 @@ export async function initGallery() {
       )
     );
 
-    // Build filter tabs
+    // ── Toolbar: search, live count, and club filter tabs ───────────
     const filterWrap = $("#gallery-filter-wrap");
-    if (filterWrap && clubs.length > 0) {
+    const searchInput = $("#gallery-search");
+    const countLine = $("#gallery-count");
+    const gridMount = document.getElementById("gallery-grid");
+    const totalPhotos = clubSections.reduce(
+      (n, section) => n + section.querySelectorAll(".thumb").length,
+      0
+    );
+    const fmt = (n) => n.toLocaleString("en-IN");
+    let activeClub = "all";
+
+    const updateCount = (visiblePhotos) => {
+      if (!countLine) return;
+      const q = searchInput?.value.trim();
+      if (!q && activeClub === "all") {
+        countLine.textContent = `${fmt(totalPhotos)} photographs · ${clubSections.length} clubs · tap a plate to view it full-screen`;
+      } else {
+        countLine.textContent = `${fmt(visiblePhotos)} of ${fmt(totalPhotos)} photographs match`;
+      }
+    };
+
+    const applyFilters = () => {
+      const q = (searchInput?.value || "").toLowerCase().trim();
+      let visiblePhotos = 0;
+      clubSections.forEach((section) => {
+        const inClub = activeClub === "all" || section.dataset.galleryClub === activeClub;
+        const clubName = (
+          section.querySelector(".gallery__club-name")?.textContent || ""
+        ).toLowerCase();
+        let sectionVisible = 0;
+        section.querySelectorAll(".thumb").forEach((thumb) => {
+          const match =
+            inClub && (!q || `${thumb.dataset.gallerySearch || ""} ${clubName}`.includes(q));
+          thumb.classList.toggle("is-hidden", !match);
+          if (match) sectionVisible++;
+        });
+        section.style.display = sectionVisible ? "" : "none";
+        visiblePhotos += sectionVisible;
+      });
+      updateCount(visiblePhotos);
+
+      const noResults = $(".gallery-no-results");
+      const isFiltered = Boolean(q) || activeClub !== "all";
+      if (!isFiltered || visiblePhotos > 0) noResults?.remove();
+      else if (!noResults) {
+        gridMount?.appendChild(
+          el(
+            "p",
+            { class: "gallery-no-results muted", role: "status" },
+            "No photographs match that search."
+          )
+        );
+      }
+    };
+
+    if (filterWrap && clubSections.length) {
       const tabs = [
         el(
           "button",
-          { class: "gallery-filter-tab is-selected", "data-filter": "all", type: "button" },
-          "All"
+          {
+            class: "gallery-filter-tab is-selected",
+            "data-filter": "all",
+            type: "button",
+            "aria-pressed": "true",
+          },
+          `All · ${totalPhotos}`
         ),
-        ...clubSections.map((section) =>
-          el(
+        ...clubSections.map((section) => {
+          const name = section.querySelector(".gallery__club-name")?.textContent || "";
+          const count = section.querySelectorAll(".thumb").length;
+          return el(
             "button",
             {
               class: "gallery-filter-tab",
               "data-filter": section.dataset.galleryClub,
               type: "button",
+              "aria-pressed": "false",
             },
-            section.querySelector(".gallery__club-name")?.textContent || ""
-          )
-        ),
+            `${name} · ${count}`
+          );
+        }),
       ];
       filterWrap.appendChild(el("div", { class: "gallery-filter-bar" }, ...tabs));
 
-      // Wire filter logic
+      // Deep link from elsewhere on the site: #club-<slug> opens one club.
+      const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+      if (hash.startsWith("club-")) {
+        const slug = hash.slice(5);
+        const target = tabs.find((t) => t.dataset.filter === slug);
+        target?.click();
+      }
+
       filterWrap.addEventListener("click", (e) => {
         const tab = e.target.closest(".gallery-filter-tab");
         if (!tab) return;
-        const filter = tab.dataset.filter;
-        filterWrap
-          .querySelectorAll(".gallery-filter-tab")
-          .forEach((t) => t.classList.remove("is-selected"));
-        tab.classList.add("is-selected");
-        document.querySelectorAll(".gallery__club").forEach((section) => {
-          section.style.display =
-            filter === "all" || section.dataset.galleryClub === filter ? "" : "none";
+        activeClub = tab.dataset.filter;
+        filterWrap.querySelectorAll(".gallery-filter-tab").forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle("is-selected", on);
+          t.setAttribute("aria-pressed", on ? "true" : "false");
         });
+        if (searchInput) searchInput.value = "";
+        applyFilters();
       });
     }
+
+    searchInput?.addEventListener("input", applyFilters);
+    updateCount(totalPhotos);
 
     // IntersectionObserver for section reveals + staggered image entrance.
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)

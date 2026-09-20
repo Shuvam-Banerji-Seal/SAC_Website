@@ -85,7 +85,15 @@ onReady(async () => {
   }
 
   // Register Service Worker for asset caching (production only).
+  // Resolve relative to THIS module, not a hard-coded "/SAC_Website/" — the
+  // repo is mirrored under /SAC_website/ (lowercase w) on the primary Pages
+  // domain, where the old absolute path 404'd and the SW never registered.
   if ("serviceWorker" in navigator && location.protocol === "https:") {
-    navigator.serviceWorker.register("/SAC_Website/sw.js").catch(() => {});
+    try {
+      const swUrl = new URL("../sw.js", import.meta.url);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    } catch {
+      /* URL resolution failed — non-fatal */
+    }
   }
 });

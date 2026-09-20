@@ -104,10 +104,14 @@ function open(groupName, startIndex) {
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay || e.target.classList.contains("viewer-stage")) close();
     });
-
-    // Keyboard
-    document.addEventListener("keydown", handleKey);
   }
+
+  // Keyboard: re-armed on EVERY open. close() removes this listener (or the
+  // page behind would keep paging while the dialog is down), so binding it
+  // inside the one-time _wired block meant Esc/arrows/Z worked exactly once
+  // per page load. addEventListener dedupes identical listeners, so calling
+  // it again while the viewer is already open is harmless.
+  document.addEventListener("keydown", handleKey);
 
   // Focus the close button so Escape/Tab land inside the dialog
   overlay.querySelector(".viewer-close")?.focus({ preventScroll: true });

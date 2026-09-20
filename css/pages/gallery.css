@@ -1,26 +1,100 @@
-.gallery-filter-wrap {
-  margin: 1rem 0;
-}
-.gallery-filter-bar {
+.gallery-toolbar {
+  align-items: center;
+  background: var(--paper-soft);
   border-block: 1px solid var(--rule);
   display: flex;
   flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin: 0 0 0.5rem;
+  padding: 0.55rem 0.65rem;
+  position: sticky;
+  top: 0;
+  transition: top var(--transition);
+  z-index: 70;
+}
+/* On phones the sticky toolbar tucks under the sticky masthead strip, and
+   rises to the very top when that strip auto-hides. */
+@media (max-width: 1023px) {
+  .gallery-toolbar {
+    top: var(--topbar-h);
+  }
+  body.topbar-hidden .gallery-toolbar {
+    top: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-toolbar {
+    transition: none;
+  }
+}
+.gallery-search {
+  align-items: center;
+  display: flex;
+  flex: 1 1 260px;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.gallery-search__label {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.gallery-search__input {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+}
+.gallery-search__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.gallery-count {
+  color: var(--ink-muted);
+  flex: 1 1 100%;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+.gallery-filter-wrap {
+  margin: 0 0 1rem;
+}
+.gallery-filter-bar {
+  border-bottom: 1px solid var(--rule);
+  display: flex;
   gap: 0.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
   padding: 0.35rem 0;
+  scrollbar-width: thin;
 }
 .gallery-filter-tab {
   background: transparent;
   border: 0;
   color: var(--ink-muted);
+  flex: none;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   padding: 0.4rem 0.6rem;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .gallery-filter-tab.is-selected,
 .gallery-filter-tab:hover {
   background: var(--ink);
   color: var(--paper);
+}
+.gallery-no-results {
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
 }
 .gallery {
   border-top: var(--rule-heavy);
