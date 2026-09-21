@@ -53,7 +53,9 @@ function buildOverlay() {
         <button class="viewer-nav viewer-nav--prev" type="button" aria-label="Previous image">&#8249;</button>
         <div class="viewer-counter" aria-live="polite"></div>
         <button class="viewer-nav viewer-nav--next" type="button" aria-label="Next image">&#8250;</button>
+        <button class="viewer-zoom" type="button" aria-label="Zoom image" aria-pressed="false" title="Zoom (Z)">&#10530;</button>
       </div>
+      <p class="viewer-hint" aria-hidden="true">Click the photo to zoom &middot; &larr; &rarr; to browse &middot; Esc closes</p>
     </div>
   `;
   document.body.appendChild(el);
@@ -99,6 +101,11 @@ function open(groupName, startIndex) {
     overlay.querySelector(".viewer-close").addEventListener("click", close);
     overlay.querySelector(".viewer-nav--prev").addEventListener("click", prev);
     overlay.querySelector(".viewer-nav--next").addEventListener("click", next);
+    // Explicit zoom, for touch users who have no Z key and no cursor hint.
+    overlay.querySelector(".viewer-zoom").addEventListener("click", () => {
+      zoomed = !zoomed;
+      applyZoom();
+    });
     // Tapping the dark space around the plate closes, as does the overlay
     // itself — but never a tap that lands on the picture or the chrome.
     overlay.addEventListener("click", (e) => {
@@ -235,6 +242,11 @@ let swipeConsumedClick = false;
 function applyZoom() {
   const img = overlay?.querySelector(".viewer-img");
   if (!img) return;
+  const zoomBtn = overlay.querySelector(".viewer-zoom");
+  if (zoomBtn) {
+    zoomBtn.classList.toggle("is-active", zoomed);
+    zoomBtn.setAttribute("aria-pressed", zoomed ? "true" : "false");
+  }
   img.classList.toggle("is-zoomed", zoomed);
   img.style.transform = zoomed ? `translate(${panX}px, ${panY}px) scale(2)` : "";
   img.style.cursor = zoomed ? "grab" : "zoom-in";
@@ -441,6 +453,10 @@ function updateImage(_unused) {
 
   // Thumbnail strip: build once per group, then highlight active
   buildThumbnailStrip();
+
+  // A new plate starts un-zoomed: the previous pan offset belonged to the
+  // old photograph, so carrying it over is disorienting.
+  if (zoomed) resetZoom();
 }
 
 /* -------------------------------------------------------------------------

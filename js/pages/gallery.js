@@ -233,6 +233,50 @@ export async function initGallery() {
     searchInput?.addEventListener("input", applyFilters);
     updateCount(totalPhotos);
 
+    // ── Layout: Pinned (tilted cards) vs Sheet (dense contact sheet) ──
+    // Persisted per reader — someone cataloguing wants the wall of paper,
+    // someone hunting one photo wants 150px tiles and no captions.
+    const VIEW_KEY = "sac-gallery-view";
+    const viewWrap = $("#gallery-view");
+    const viewButtons = viewWrap ? Array.from(viewWrap.querySelectorAll("[data-view]")) : [];
+    const applyView = (view) => {
+      const next = view === "sheet" ? "sheet" : "pinned";
+      document.documentElement.dataset.galleryView = next;
+      viewButtons.forEach((button) => {
+        const on = button.dataset.view === next;
+        button.classList.toggle("is-selected", on);
+        button.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      try {
+        localStorage.setItem(VIEW_KEY, next);
+      } catch {
+        /* storage can be blocked */
+      }
+    };
+    let savedView = "pinned";
+    try {
+      savedView = localStorage.getItem(VIEW_KEY) || "pinned";
+    } catch {
+      /* storage can be blocked */
+    }
+    applyView(savedView);
+    viewWrap?.addEventListener("click", (e) => {
+      const button = e.target.closest("[data-view]");
+      if (button) applyView(button.dataset.view);
+    });
+
+    // ── Surprise me: open a random photo from the current filter ─────
+    // With 1,000+ plates, browsing by search is efficient but joyless; this
+    // is the "flip to any page" button. It respects the active club filter
+    // and search so it never opens something the reader filtered away.
+    $("#gallery-surprise")?.addEventListener("click", () => {
+      const visible = Array.from(
+        document.querySelectorAll(".gallery__club .thumb:not(.is-hidden) a[data-viewer]")
+      ).filter((a) => a.closest("section")?.style.display !== "none");
+      if (!visible.length) return;
+      visible[Math.floor(Math.random() * visible.length)].click();
+    });
+
     // IntersectionObserver for section reveals + staggered image entrance.
     // Reduced-motion (prefers-reduced-motion or data-reduce-motion override)
     // is handled inside initImageReveal so we don't duplicate checks here.

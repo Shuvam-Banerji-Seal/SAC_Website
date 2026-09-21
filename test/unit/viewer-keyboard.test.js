@@ -124,4 +124,39 @@ describe("viewer keyboard", () => {
     const viewerImg = document.getElementById("viewer-overlay").querySelector(".viewer-img");
     expect(viewerImg.getAttribute("src")).toBe("big.jpg");
   });
+
+  it("has a zoom button that mirrors the click-to-zoom state", async () => {
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    mountGroup();
+    clickFirst();
+
+    const overlay = document.getElementById("viewer-overlay");
+    const zoom = overlay.querySelector(".viewer-zoom");
+    const viewerImg = overlay.querySelector(".viewer-img");
+    expect(zoom.getAttribute("aria-pressed")).toBe("false");
+
+    zoom.click();
+    expect(zoom.getAttribute("aria-pressed")).toBe("true");
+    expect(viewerImg.classList.contains("is-zoomed")).toBe(true);
+
+    zoom.click();
+    expect(zoom.getAttribute("aria-pressed")).toBe("false");
+    expect(viewerImg.classList.contains("is-zoomed")).toBe(false);
+  });
+
+  it("resets zoom when paging to the next image", async () => {
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    mountGroup();
+    clickFirst();
+
+    const overlay = document.getElementById("viewer-overlay");
+    overlay.querySelector(".viewer-zoom").click();
+    expect(overlay.querySelector(".viewer-img").classList.contains("is-zoomed")).toBe(true);
+
+    press("ArrowRight");
+    expect(overlay.querySelector(".viewer-img").classList.contains("is-zoomed")).toBe(false);
+    expect(overlay.querySelector(".viewer-zoom").getAttribute("aria-pressed")).toBe("false");
+  });
 });

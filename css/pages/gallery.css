@@ -56,6 +56,51 @@
   outline: 2px solid var(--accent);
   outline-offset: -1px;
 }
+/* Layout switch + surprise: compact press-room controls */
+.gallery-view {
+  border: 1px solid var(--rule);
+  display: flex;
+  flex: none;
+}
+.gallery-view-btn {
+  background: var(--paper);
+  border: 0;
+  border-right: 1px solid var(--rule);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.6rem;
+  text-transform: uppercase;
+}
+.gallery-view-btn:last-child {
+  border-right: 0;
+}
+.gallery-view-btn.is-selected {
+  background: var(--ink);
+  color: var(--paper);
+}
+.gallery-surprise {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--accent);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.7rem;
+  text-transform: uppercase;
+}
+.gallery-surprise:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+@media (pointer: coarse) {
+  .gallery-view-btn,
+  .gallery-surprise {
+    padding-block: 0.7rem;
+  }
+}
 .gallery-count {
   color: var(--ink-muted);
   flex: 1 1 100%;
@@ -145,4 +190,53 @@
   .gallery-search__input {
     min-height: 44px;
   }
+}
+
+/* ── Sheet view: the archive as a contact sheet ────────────────────
+   Same markup, same viewer wiring, different reading posture: uniform
+   ~148px tiles, no pins or rotations or captions. Someone hunting one
+   photo gets ~5x more plates per screen; someone browsing keeps the
+   pinboard. Persisted per reader (js/pages/gallery.js). */
+html[data-gallery-view="sheet"] .gallery .thumb-grid {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
+  margin-top: 0.6rem;
+}
+html[data-gallery-view="sheet"] .gallery .thumb {
+  flex: none;
+  max-width: none;
+  min-width: 0;
+  transform: none;
+}
+html[data-gallery-view="sheet"] .gallery .thumb::before,
+html[data-gallery-view="sheet"] .gallery .thumb__tape {
+  display: none;
+}
+html[data-gallery-view="sheet"] .gallery .thumb a {
+  border: 0;
+  box-shadow: none;
+  min-height: 0;
+  padding: 0;
+}
+html[data-gallery-view="sheet"] .gallery .thumb__media {
+  aspect-ratio: 1 / 1;
+  max-height: none;
+  min-height: 0;
+}
+html[data-gallery-view="sheet"] .gallery .thumb img {
+  aspect-ratio: auto;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  width: 100%;
+}
+html[data-gallery-view="sheet"] .gallery .thumb__cap {
+  display: none;
+}
+html[data-gallery-view="sheet"] .gallery .thumb--reveal {
+  transform: translateY(10px);
+}
+html[data-gallery-view="sheet"] .gallery .thumb--reveal.is-revealed {
+  transform: none;
 }

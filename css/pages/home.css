@@ -1352,6 +1352,52 @@
   color: var(--accent);
 }
 
+/* Shuffle: deal a fresh wall of postcards */
+.board__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.board__actions .board__more {
+  margin-top: 0;
+  width: auto;
+}
+.board__shuffle {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 2px 2px 0 rgba(24, 20, 16, 0.28);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  padding: 0.45rem 0.8rem;
+  text-transform: uppercase;
+}
+.board__shuffle:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+.board__grid {
+  transition: opacity 170ms ease;
+}
+.board__grid.is-refreshing {
+  opacity: 0.2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .board__grid {
+    transition: none;
+  }
+}
+@media (pointer: coarse) {
+  .board__shuffle {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .board-card,
   .board-card:hover {

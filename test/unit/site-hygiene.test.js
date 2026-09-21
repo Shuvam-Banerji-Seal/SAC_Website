@@ -105,4 +105,19 @@ describe("gallery toolbar", () => {
     expect(css).toContain("position: sticky");
     expect(css).toContain("gallery-search__input");
   });
+
+  it("gallery offers a pinned/sheet layout toggle and a surprise jump", () => {
+    const html = read("/pages/gallery.html");
+    expect(html).toContain('data-view="pinned"');
+    expect(html).toContain('data-view="sheet"');
+    expect(html).toContain('id="gallery-surprise"');
+
+    const js = read("/js/pages/gallery.js");
+    expect(js).toContain("sac-gallery-view");
+    expect(js).toContain("dataset.galleryView");
+    expect(js).toContain("gallery-surprise");
+
+    const css = read("/css/pages/gallery.css");
+    expect(css).toContain('[data-gallery-view="sheet"]');
+  });
 });

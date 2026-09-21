@@ -51,6 +51,17 @@ describe("campus board", () => {
     expect(life).toContain('id: "cat-" + cat');
   });
 
+  it("shuffle deals a fresh wall deterministically", () => {
+    // A counter, not randomness — the suite above already bans Math.random.
+    expect(js).toContain("board__shuffle");
+    expect(js).toContain("let shuffle = 0");
+    expect(js).toMatch(/shuffle \* BOARD_COUNT/);
+    expect(css).toContain(".board__shuffle");
+    expect(css).toContain(".board__grid.is-refreshing");
+    // Reduced motion swaps instantly instead of fading
+    expect(js).toContain("isReducedMotion");
+  });
+
   it("hero flash regression: month pick is made pre-paint inline", () => {
     expect(html).toContain("Seasonal hero must be chosen BEFORE first paint");
     expect(html).toContain("getMonth() % pool.length");
