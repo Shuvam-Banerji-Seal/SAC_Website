@@ -159,4 +159,89 @@ describe("viewer keyboard", () => {
     expect(overlay.querySelector(".viewer-img").classList.contains("is-zoomed")).toBe(false);
     expect(overlay.querySelector(".viewer-zoom").getAttribute("aria-pressed")).toBe("false");
   });
+
+  it("copies the full-size URL when no native share sheet exists", async () => {
+    const written = [];
+    Object.defineProperty(navigator, "share", { value: undefined, configurable: true });
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: (text) => {
+          written.push(text);
+          return Promise.resolve();
+        },
+      },
+      configurable: true,
+    });
+
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    document.body.innerHTML = `
+      <a href="full-share.jpg" data-viewer="s" data-title="Share Plate" data-context="Ctx">
+        <img src="thumb-share.jpg" alt="plate" />
+      </a>`;
+    document
+      .querySelector('[data-viewer="s"]')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+    document.getElementById("viewer-overlay").querySelector(".viewer-share").click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(written.length).toBe(1);
+    expect(written[0]).toContain("full-share.jpg");
+  });
+
+  it("prefers the native share sheet when available", async () => {
+    const shared = [];
+    Object.defineProperty(navigator, "share", {
+      value: (data) => {
+        shared.push(data);
+        return Promise.resolve();
+      },
+      configurable: true,
+    });
+
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    document.body.innerHTML = `
+      <a href="native.jpg" data-viewer="n" data-title="Native Plate" data-context="Ctx">
+        <img src="thumb-n.jpg" alt="plate" />
+      </a>`;
+    document
+      .querySelector('[data-viewer="n"]')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+    document.getElementById("viewer-overlay").querySelector(".viewer-share").click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(shared.length).toBe(1);
+    expect(shared[0].url).toContain("native.jpg");
+    expect(shared[0].title).toBe("Native Plate");
+  });
+
+  it("falls back to selection copy when the clipboard API is denied", async () => {
+    Object.defineProperty(navigator, "share", { value: undefined, configurable: true });
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+      configurable: true,
+    });
+    const calls = [];
+    document.execCommand = (command) => {
+      calls.push(command);
+      return true;
+    };
+
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    document.body.innerHTML = `
+      <a href="fallback.jpg" data-viewer="x" data-title="Fallback" data-context="Ctx">
+        <img src="thumb-x.jpg" alt="x" />
+      </a>`;
+    document
+      .querySelector('[data-viewer="x"]')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+    const share = document.getElementById("viewer-overlay").querySelector(".viewer-share");
+    share.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toEqual(["copy"]);
+    expect(share.textContent).toBe("✓");
+  });
 });

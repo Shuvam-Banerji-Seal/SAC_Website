@@ -35,7 +35,10 @@ function buildOverlay() {
   el.innerHTML = `
     <div class="viewer-bar">
       <div class="viewer-info__context"></div>
-      <button class="viewer-close" type="button" aria-label="Close viewer">&times;</button>
+      <div class="viewer-bar__actions">
+        <button class="viewer-share" type="button" aria-label="Share this photo" title="Share or copy link">&#8599;</button>
+        <button class="viewer-close" type="button" aria-label="Close viewer">&times;</button>
+      </div>
     </div>
     <div class="viewer-stage">
       <div class="viewer-frame">
@@ -106,6 +109,7 @@ function open(groupName, startIndex) {
       zoomed = !zoomed;
       applyZoom();
     });
+    overlay.querySelector(".viewer-share").addEventListener("click", shareCurrent);
     // Tapping the dark space around the plate closes, as does the overlay
     // itself — but never a tap that lands on the picture or the chrome.
     overlay.addEventListener("click", (e) => {
@@ -152,6 +156,58 @@ function next() {
   if (currentGroup.length < 2) return;
   currentIndex = (currentIndex + 1) % currentGroup.length;
   updateImage();
+}
+
+/** Share the plate: native share sheet where available, clipboard otherwise.
+ *  The URL shared is the full-size file, never the grid thumbnail. */
+function shareCurrent() {
+  const img = overlay?.querySelector(".viewer-img");
+  const title = overlay?.querySelector(".viewer-info__title")?.textContent || "SAC photograph";
+  const shareBtn = overlay?.querySelector(".viewer-share");
+  const url = img?.currentSrc || img?.src || location.href;
+
+  const feedback = () => {
+    if (!shareBtn) return;
+    shareBtn.textContent = "✓";
+    shareBtn.setAttribute("aria-label", "Link copied");
+    window.setTimeout(() => {
+      shareBtn.textContent = "↗";
+      shareBtn.setAttribute("aria-label", "Share this photo");
+    }, 1600);
+  };
+
+  // Last resort for browsers/permissions where the async clipboard API is
+  // denied: the old selection copy still works inside a user gesture.
+  const legacyCopy = (text) => {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch {
+      ok = false;
+    }
+    area.remove();
+    if (ok) feedback();
+  };
+
+  if (navigator.share) {
+    navigator.share({ title, url }).catch(() => {});
+    return;
+  }
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard
+      .writeText(url)
+      .then(feedback)
+      .catch(() => legacyCopy(url));
+  } else {
+    legacyCopy(url);
+  }
 }
 
 function handleKey(e) {

@@ -35,6 +35,11 @@
   justify-content: space-between;
   padding: 0.6rem 0.75rem;
 }
+.viewer-bar__actions {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+}
 .viewer-info__context {
   /* the overlay is always dark in both themes — fixed light ink */
   color: #d8ccb6;
@@ -127,7 +132,8 @@
 
 .viewer-nav,
 .viewer-close,
-.viewer-zoom {
+.viewer-zoom,
+.viewer-share {
   align-items: center;
   background: var(--paper-soft);
   border: 1px solid var(--rule);
@@ -143,7 +149,8 @@
 }
 .viewer-nav:focus-visible,
 .viewer-close:focus-visible,
-.viewer-zoom:focus-visible {
+.viewer-zoom:focus-visible,
+.viewer-share:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
