@@ -395,7 +395,13 @@ function updateImage(_unused) {
   const infoDesc = overlay.querySelector(".viewer-info__desc");
   const infoCredit = overlay.querySelector(".viewer-info__credit");
 
-  viewerImg.src = img.src;
+  // Full-resolution plate, never the grid thumbnail. Grid tiles deliberately
+  // ship a 480px `thumb_url` (js/utils/thumb.js); the lightbox renders up to
+  // ~920px wide and zooms 2x, so a thumbnail is visibly soft there. The
+  // anchor's href (or the control's data-full) is the full-size file.
+  const fullSrc =
+    anchor?.dataset?.full || anchor?.getAttribute?.("href") || el.getAttribute?.("href") || img.src;
+  viewerImg.src = fullSrc;
   viewerImg.alt = img.alt || "";
 
   // Context (e.g., "AARSHI · Event Photos" or "Gallery · All")

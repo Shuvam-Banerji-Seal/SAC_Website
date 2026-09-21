@@ -125,6 +125,9 @@ export function initCampusBook(assets) {
             "data-viewer": "campus-book",
             "data-context": "The Campus in Print",
             "data-title": label(p),
+            // Buttons carry no href, so name the full-size file explicitly —
+            // the img inside serves the 480px grid thumbnail.
+            "data-full": assetUrl(p.public_url),
             "aria-label": `View ${label(p)} full-screen`,
           },
           el("img", {

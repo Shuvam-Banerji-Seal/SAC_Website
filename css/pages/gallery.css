@@ -142,4 +142,7 @@
   .gallery-filter-tab {
     padding-block: 0.7rem;
   }
+  .gallery-search__input {
+    min-height: 44px;
+  }
 }

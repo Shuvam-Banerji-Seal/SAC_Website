@@ -90,4 +90,38 @@ describe("viewer keyboard", () => {
     press("ArrowLeft");
     expect(overlay.querySelector(".viewer-counter").textContent).toBe("1 / 2");
   });
+
+  // Regression: grid tiles serve a 480px thumb_url; the lightbox rendered that
+  // thumbnail instead of the full plate (soft at ~920px + 2x zoom).
+  it("shows the anchor's full-size href, not the grid thumbnail", async () => {
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    document.body.innerHTML = `
+      <a href="full.jpg" data-viewer="f" data-title="Plate" data-context="Ctx">
+        <img src="thumb.jpg" alt="plate" />
+      </a>`;
+
+    document
+      .querySelector('[data-viewer="f"]')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+    const viewerImg = document.getElementById("viewer-overlay").querySelector(".viewer-img");
+    expect(viewerImg.getAttribute("src")).toBe("full.jpg");
+  });
+
+  it("honours data-full for controls without an href", async () => {
+    const { initViewer } = await import("../../js/components/viewer.js");
+    initViewer();
+    document.body.innerHTML = `
+      <button type="button" data-viewer="b" data-context="Book" data-title="Leaf" data-full="big.jpg">
+        <img src="thumb-b.jpg" alt="leaf" />
+      </button>`;
+
+    document
+      .querySelector('[data-viewer="b"]')
+      .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+
+    const viewerImg = document.getElementById("viewer-overlay").querySelector(".viewer-img");
+    expect(viewerImg.getAttribute("src")).toBe("big.jpg");
+  });
 });
