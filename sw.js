@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v46";
+const CACHE_NAME = "sac-v47";
 
 const STATIC_ASSETS = [
   // Core

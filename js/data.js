@@ -29,6 +29,11 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
  * wrote into it. Nothing is deleted from the archive; drop the manifest and
  * every image comes back.
  *
+ * `curated` is a hand-kept list (non-content artefacts extracted from club
+ * documents) merged with the generated lists; build_manifest.py preserves it
+ * across regenerations. `duplicates.json` must be staged with the site — it
+ * 404'd in production until 2026-09-21, silently showing every duplicate.
+ *
  * Fails open: if the manifest is missing or malformed the site shows
  * everything, which is the pre-dedupe behaviour. */
 const DUPES_PATH = "public/duplicates.json";
@@ -39,7 +44,11 @@ function fetchSuppressed() {
     .then((res) => (res.ok ? res.json() : null))
     .then((manifest) => {
       if (!manifest) return new Set();
-      const ids = [...(manifest.suppress || []), ...(manifest.degenerate || [])];
+      const ids = [
+        ...(manifest.suppress || []),
+        ...(manifest.degenerate || []),
+        ...(manifest.curated || []),
+      ];
       return new Set(ids);
     })
     .catch(() => new Set());
@@ -57,7 +66,7 @@ function fetchSuppressed() {
 
 let cachePromise = null;
 // Bump this when assets change to invalidate stale sessionStorage cache
-const CACHE_VERSION = "sac-v46";
+const CACHE_VERSION = "sac-v47";
 
 function fetchJsonl() {
   if (!cachePromise) {

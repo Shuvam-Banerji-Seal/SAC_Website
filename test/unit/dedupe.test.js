@@ -20,17 +20,30 @@ const images = readFileSync(resolve(root, "public/assets/processed/assets_map.js
   .filter((r) => r.file_type === "image");
 
 const byId = new Map(images.map((r) => [r.id, r]));
-const dropped = new Set([...manifest.suppress, ...manifest.degenerate]);
+const curated = manifest.curated || [];
+const dropped = new Set([...manifest.suppress, ...manifest.degenerate, ...curated]);
 const surviving = images.filter((r) => !dropped.has(r.id));
 
 describe("duplicate manifest", () => {
   it("is internally consistent", () => {
     expect(manifest.suppress.length).toBe(new Set(manifest.suppress).size);
+    expect(curated.length).toBe(new Set(curated).size);
     const keepers = new Set(manifest.groups.map((g) => g.keep));
     // nothing may be both kept and suppressed
     expect(manifest.suppress.some((id) => keepers.has(id))).toBe(false);
     // every suppressed id is a real image
     for (const id of manifest.suppress) expect(byId.has(id)).toBe(true);
+  });
+
+  it("curated ids are real images, listed only once", () => {
+    // A curated id may be a dedupe group's keeper (all its near-identical
+    // siblings were already dropped) — curating it removes the last copy of
+    // an artefact, which is the point.
+    for (const id of curated) {
+      expect(byId.has(id), `curated id ${id} is not an image`).toBe(true);
+      expect(manifest.suppress).not.toContain(id);
+      expect(manifest.degenerate).not.toContain(id);
+    }
   });
 
   it("every group keeps exactly one member and names what it dropped", () => {
@@ -105,7 +118,23 @@ describe("duplicate manifest", () => {
     const src = readFileSync(resolve(root, "js/data.js"), "utf-8");
     expect(src).toContain("public/duplicates.json");
     expect(src).toContain("suppressed.has(entry.id)");
+    // the hand-curated list must be merged alongside the generated ones
+    expect(src).toContain("manifest.curated");
     // a missing/broken manifest must resolve to an empty Set, not throw
     expect(src).toMatch(/catch\(\(\) => new Set\(\)\)/);
+  });
+
+  // Regression: the manifest was never staged by CI, so it 404'd live and the
+  // site showed every duplicate while localhost (which serves it) looked fine.
+  it("the deploy workflow stages duplicates.json", () => {
+    const deploy = readFileSync(resolve(root, ".github/workflows/deploy.yml"), "utf-8");
+    expect(deploy).toContain("cp public/duplicates.json _site/public/duplicates.json");
+    expect(deploy).toMatch(/test -f public\/duplicates\.json/);
+  });
+
+  it("the manifest builder preserves curation across regenerations", () => {
+    const builder = readFileSync(resolve(root, "utils/dedupe/build_manifest.py"), "utf-8");
+    expect(builder).toContain('previous.get("curated")');
+    expect(builder).toContain("curated_note");
   });
 });

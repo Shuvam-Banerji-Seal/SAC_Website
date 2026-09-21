@@ -126,7 +126,8 @@ def main() -> int:
                 "keep_title": keeper.get("title"),
                 "keep_path": keeper["path"],
                 "drop": [
-                    {"id": r["id"], "title": r.get("title"), "path": r["path"]} for r in rest
+                    {"id": r["id"], "title": r.get("title"), "path": r["path"]}
+                    for r in rest
                 ],
             }
         )
@@ -138,17 +139,36 @@ def main() -> int:
             "See utils/dedupe/README.md."
         ),
         "generated_from": str(args.clusters.name),
+        "curated_note": "",
+        "curated": [],
         "suppress": sorted(suppress),
         "degenerate": degenerate,
         "groups": groups,
     }
+
+    # Curation survives regeneration: the hand-picked `curated` list (non-content
+    # artefacts a human removed from the site) is carried over from the existing
+    # manifest. Without this, re-running the pipeline would silently restore
+    # blank frames and decorative document images to the galleries.
+    if args.out.exists():
+        try:
+            previous = json.loads(args.out.read_text())
+            manifest["curated"] = sorted(
+                {int(i) for i in (previous.get("curated") or [])}
+            )
+            if previous.get("curated_note"):
+                manifest["curated_note"] = previous["curated_note"]
+        except (ValueError, TypeError):
+            pass  # a broken existing manifest must not block a rebuild
+
     args.out.write_text(json.dumps(manifest, indent=1) + "\n")
 
     kept = len(rows) - len(suppress) - len(degenerate)
     print(f"images in map      : {len(rows)}")
     print(f"suppressed as dupes: {len(suppress)} across {len(groups)} groups")
     print(f"degenerate (<64px) : {len(degenerate)}")
-    print(f"images the site shows: {kept}")
+    print(f"curated (manual)   : {len(manifest['curated'])} preserved")
+    print(f"images the site shows: {kept - len(manifest['curated'])}")
     print(f"wrote {args.out.relative_to(REPO)}")
     return 0
 

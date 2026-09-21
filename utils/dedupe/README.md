@@ -30,14 +30,33 @@ npx vitest run test/unit/dedupe.test.js
 No third-party dependencies beyond Pillow and numpy. `imagehash` is not used;
 dHash and pHash are ~15 lines each and are implemented in `hash_images.py`.
 
+## Curated removals
+
+Some images the extractor finds are not content at all: blank slide frames,
+"Made with GAMMA" chrome, blurred template backgrounds, decorative 3D renders
+that shipped inside a club's DOCX/PDF. Those are listed by hand in the
+`curated` array of `public/duplicates.json`, with `curated_note` explaining
+the policy. `js/data.js` merges `suppress` + `degenerate` + `curated`.
+
+**Regeneration preserves curation** — `build_manifest.py` reads the existing
+manifest and carries `curated` / `curated_note` forward, so re-running the
+duplicate pipeline cannot silently restore an artefact to a gallery.
+
+## Deployment requirement
+
+`public/duplicates.json` must be **staged with the site**. It was omitted
+from `.github/workflows/deploy.yml` until 2026-09-21, so the manifest 404'd
+in production and the site quietly showed all 299 duplicates. The workflow
+now stages the file and fails the build if it is missing.
+
 ## Thresholds, and why they are where they are
 
 An image pairs with another only when **both** hashes agree, within the same
 club:
 
-| | phash | dhash |
-|---|---|---|
-| default | ≤ 6 | ≤ 8 |
+|         | phash | dhash |
+| ------- | ----- | ----- |
+| default | ≤ 6   | ≤ 8   |
 
 Requiring both is what keeps false positives out — phash alone pairs up
 low-detail images (a white slide, a dark stage) that share a DCT signature
@@ -51,7 +70,7 @@ framing. Perceptual hashing keys on composition, so on a portrait session it
 matches the set, not the sitter. At 12/14 this pipeline would delete real
 people.
 
-## What this does *not* catch
+## What this does _not_ catch
 
 Two genuinely different photographs of the same person — a second selfie, a
 different pose or background — are not near-duplicates in pixel space and no
@@ -76,7 +95,7 @@ First rule that separates a cluster wins:
 1. A real title beats pipeline noise — `Smarane Rabindranath` over `page3 img1`.
 2. The entry flagged `is_logo`, so a club never loses its mark.
 3. The most descriptive real title — `Sukanya Chowdhury Event Coordinator
-   2025 26` over `25 26 OBs 00`. Noise titles score zero here, so when
+2025 26` over `25 26 OBs 00`. Noise titles score zero here, so when
    neither title means anything the decision falls through to resolution
    rather than rewarding the word "page".
 4. A real category over `Images extracted from <doc>`.

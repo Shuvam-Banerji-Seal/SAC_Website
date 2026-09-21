@@ -112,6 +112,7 @@ jobs:
           test -d pages/                || { echo "::error::pages/ directory missing"; exit 1; }
           test -d public/assets/processed || { echo "::error::public/assets submodule not checked out"; exit 1; }
           test -f public/assets/processed/assets_map.jsonl || { echo "::error::assets_map.jsonl missing"; exit 1; }
+          test -f public/duplicates.json || { echo "::error::public/duplicates.json missing — every duplicate image would ship"; exit 1; }
           test -f .nojekyll             || { echo "::error::.nojekyll missing — GitHub Pages would run Jekyll on the site"; exit 1; }
           test -f js/pretext/layout.js  || { echo "::error::pretext layout.js missing — run npm run build:pretext"; exit 1; }
           echo "All critical paths present."
@@ -132,9 +133,14 @@ jobs:
           mkdir -p _site/public/assets/processed
           # 404.html is served by Pages for ANY broken URL — it must ship.
           test -f 404.html || { echo "::error::404.html missing at repo root"; exit 1; }
+          # The site filters duplicate/degenerate/curated ids from the map at
+          # load time; without this manifest it shows every duplicate. It was
+          # missing from staging and 404'd live until 2026-09-21.
+          test -f public/duplicates.json || { echo "::error::public/duplicates.json missing"; exit 1; }
           cp -r index.html 404.html sw.js .nojekyll sitemap.xml robots.txt _site/
           cp -r css js pages assets diagrams _site/
           cp -r public/assets/processed/. _site/public/assets/processed/
+          cp public/duplicates.json _site/public/duplicates.json
           echo "--- staged site size ---"
           du -sh _site
 
