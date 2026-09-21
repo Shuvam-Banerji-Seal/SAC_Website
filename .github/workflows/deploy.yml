@@ -152,3 +152,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # The artifact carries ~500MB of processed media; the action's
+          # 10-minute default has timed out on slow Pages backends
+          # (2026-09-21). 20 minutes rides out a slow queue.
+          timeout: 1200000
