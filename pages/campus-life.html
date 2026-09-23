@@ -89,6 +89,19 @@
           aria-label="Search campus places and categories"
           autocomplete="off"
         />
+        <div class="view-toggle" id="campus-view" role="group" aria-label="Card layout">
+          <button
+            type="button"
+            class="view-toggle__btn is-selected"
+            data-view="pinned"
+            aria-pressed="true"
+          >
+            Pinned
+          </button>
+          <button type="button" class="view-toggle__btn" data-view="sheet" aria-pressed="false">
+            Sheet
+          </button>
+        </div>
         <label class="campus-sort">
           <span class="visually-hidden">Sort categories</span>
           <select id="campus-sort" aria-label="Sort campus categories">

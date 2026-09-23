@@ -36,6 +36,17 @@ describe("service worker registration is mirror-agnostic", () => {
     expect(sw).not.toContain('startsWith("/SAC_Website/")');
     expect(sw).not.toContain("startsWith('/SAC_Website/')");
   });
+
+  // Regression: after a deploy, returning readers could get fresh HTML with
+  // stale scripts from the SW cache — controls rendered but did nothing until
+  // a second reload (gallery layout toggle, 2026-09-21).
+  it("sw.js serves code (html/css/js) network-first", () => {
+    const sw = read("/sw.js");
+    expect(sw).toContain("CODE_RE");
+    expect(sw).toMatch(/CODE_RE\.test\(url\.pathname\)/);
+    // media caching behaviour must stay stale-while-revalidate
+    expect(sw).toContain("stale-while-revalidate");
+  });
 });
 
 describe("cache version parity", () => {
@@ -113,11 +124,23 @@ describe("gallery toolbar", () => {
     expect(html).toContain('id="gallery-surprise"');
 
     const js = read("/js/pages/gallery.js");
-    expect(js).toContain("sac-gallery-view");
-    expect(js).toContain("dataset.galleryView");
+    expect(js).toContain("wireThumbViewToggle");
     expect(js).toContain("gallery-surprise");
 
-    const css = read("/css/pages/gallery.css");
-    expect(css).toContain('[data-gallery-view="sheet"]');
+    // The sheet mode is shared furniture now (components.css loads everywhere)
+    const css = read("/css/components.css");
+    expect(css).toContain('[data-thumb-view="sheet"]');
+    expect(css).toContain(".view-toggle__btn");
+  });
+
+  it("campus life shares the same layout toggle and preference", () => {
+    const html = read("/pages/campus-life.html");
+    expect(html).toContain('id="campus-view"');
+    expect(html).toContain('data-view="sheet"');
+    const js = read("/js/pages/campus-life.js");
+    expect(js).toContain("wireThumbViewToggle");
+    // Every page applies the stored preference, even without a toggle
+    const main = read("/js/main.js");
+    expect(main).toContain("applyThumbView(loadThumbView())");
   });
 });

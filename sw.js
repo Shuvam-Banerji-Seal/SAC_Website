@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v50";
+const CACHE_NAME = "sac-v51";
 
 const STATIC_ASSETS = [
   // Core
@@ -41,6 +41,7 @@ const STATIC_ASSETS = [
   "js/utils/youtube.js",
   "js/utils/reveal.js",
   "js/utils/tenure.js",
+  "js/utils/view-pref.js",
   "js/pretext/analysis.js",
   "js/pretext/bidi.js",
   "js/pretext/layout.js",
@@ -129,6 +130,10 @@ const DYNAMIC_ASSETS = ["public/assets/processed/assets_map.jsonl"];
  * to "/" for custom-domain roots, which correctly matches everything. */
 const SCOPE_PATH = new URL(self.registration.scope).pathname;
 
+/* Code is network-first (see the fetch handler): a deploy must never leave a
+ * reader with fresh markup and stale scripts. */
+const CODE_RE = /\.(?:html|css|js)$/i;
+
 /* -------------------------------------------------------------------------
  * Install — cache static assets
  * ------------------------------------------------------------------------- */
@@ -176,6 +181,27 @@ self.addEventListener("fetch", (event) => {
         .then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Code (HTML, CSS, JS, and navigations) — network first, cache fallback.
+  // A deploy once left readers with fresh HTML and stale scripts: the gallery
+  // layout toggle shipped, appeared in the markup, and did nothing until a
+  // second reload (2026-09-21). Fetching code live costs a few ms on Pages
+  // and removes that whole class of mixed-version bugs. Media below stays
+  // stale-while-revalidate so grids stay instant and work offline.
+  if (CODE_RE.test(url.pathname) || url.pathname.endsWith("/")) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok && url.pathname.startsWith(SCOPE_PATH)) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
           return response;
         })
         .catch(() => caches.match(event.request))

@@ -12,6 +12,7 @@ import { initLazyVideos, videoPlayerAttrs } from "../utils/media.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 import { gridSrc } from "../utils/thumb.js";
+import { wireThumbViewToggle } from "../utils/view-pref.js";
 
 function renderMediaCard(asset, index) {
   const title = captionFor(asset);
@@ -234,36 +235,9 @@ export async function initGallery() {
     updateCount(totalPhotos);
 
     // ── Layout: Pinned (tilted cards) vs Sheet (dense contact sheet) ──
-    // Persisted per reader — someone cataloguing wants the wall of paper,
-    // someone hunting one photo wants 150px tiles and no captions.
-    const VIEW_KEY = "sac-gallery-view";
-    const viewWrap = $("#gallery-view");
-    const viewButtons = viewWrap ? Array.from(viewWrap.querySelectorAll("[data-view]")) : [];
-    const applyView = (view) => {
-      const next = view === "sheet" ? "sheet" : "pinned";
-      document.documentElement.dataset.galleryView = next;
-      viewButtons.forEach((button) => {
-        const on = button.dataset.view === next;
-        button.classList.toggle("is-selected", on);
-        button.setAttribute("aria-pressed", on ? "true" : "false");
-      });
-      try {
-        localStorage.setItem(VIEW_KEY, next);
-      } catch {
-        /* storage can be blocked */
-      }
-    };
-    let savedView = "pinned";
-    try {
-      savedView = localStorage.getItem(VIEW_KEY) || "pinned";
-    } catch {
-      /* storage can be blocked */
-    }
-    applyView(savedView);
-    viewWrap?.addEventListener("click", (e) => {
-      const button = e.target.closest("[data-view]");
-      if (button) applyView(button.dataset.view);
-    });
+    // One site-wide reading preference, shared with Campus Life, Events,
+    // and the club pages (js/utils/view-pref.js).
+    wireThumbViewToggle($("#gallery-view"));
 
     // ── Surprise me: open a random photo from the current filter ─────
     // With 1,000+ plates, browsing by search is efficient but joyless; this

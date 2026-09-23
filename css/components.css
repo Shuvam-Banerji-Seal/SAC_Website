@@ -1092,6 +1092,86 @@ body.sidebar-open .navbar-corner__bars span:nth-child(3) {
   }
 }
 
+/* ── Thumb-wall reading preference ────────────────────────────────
+   One preference rules every wall of photographs: Gallery, Campus Life,
+   Events, and club pages. The button row lives wherever a page has a
+   toolbar; the mode is mirrored on <html data-thumb-view> by
+   js/utils/view-pref.js. */
+.view-toggle {
+  border: 1px solid var(--rule);
+  display: flex;
+  flex: none;
+}
+.view-toggle__btn {
+  background: var(--paper);
+  border: 0;
+  border-right: 1px solid var(--rule);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.6rem;
+  text-transform: uppercase;
+}
+.view-toggle__btn:last-child {
+  border-right: 0;
+}
+.view-toggle__btn.is-selected {
+  background: var(--ink);
+  color: var(--paper);
+}
+@media (pointer: coarse) {
+  .view-toggle__btn {
+    padding-block: 0.7rem;
+  }
+}
+
+/* Sheet: the archive as a dense contact sheet — uniform ~148px tiles,
+   no pins, no rotations, no captions. Same markup, same viewer wiring. */
+html[data-thumb-view="sheet"] .thumb-grid {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
+  margin-top: 0.6rem;
+}
+html[data-thumb-view="sheet"] .thumb-grid .thumb {
+  flex: none;
+  max-width: none;
+  min-width: 0;
+  transform: none;
+}
+html[data-thumb-view="sheet"] .thumb::before,
+html[data-thumb-view="sheet"] .thumb__tape {
+  display: none;
+}
+html[data-thumb-view="sheet"] .thumb a {
+  border: 0;
+  box-shadow: none;
+  min-height: 0;
+  padding: 0;
+}
+html[data-thumb-view="sheet"] .thumb__media {
+  aspect-ratio: 1 / 1;
+  max-height: none;
+  min-height: 0;
+}
+html[data-thumb-view="sheet"] .thumb img {
+  aspect-ratio: auto;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  width: 100%;
+}
+html[data-thumb-view="sheet"] .thumb__cap {
+  display: none;
+}
+html[data-thumb-view="sheet"] .thumb--reveal {
+  transform: translateY(10px);
+}
+html[data-thumb-view="sheet"] .thumb--reveal.is-revealed {
+  transform: none;
+}
+
 /* Backstopped thumbs skip the fade: their sections live offscreen under
    content-visibility:auto, which freezes running transitions — a fading
    reveal would paint blank until scrolled into view. */

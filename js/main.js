@@ -26,6 +26,7 @@ import { initCampusLife } from "./pages/campus-life.js";
 import { initLoader } from "./loader.js";
 import { initAmbientMusic } from "./utils/music.js";
 import { initBackToTop } from "./components/back-to-top.js";
+import { applyThumbView, loadThumbView } from "./utils/view-pref.js";
 
 const initializers = {
   home: initHome,
@@ -46,6 +47,15 @@ onReady(async () => {
   // Apply saved prefs BEFORE anything renders to prevent FOUC.
   try {
     applyPrefs(loadPrefs());
+  } catch {
+    /* ignore */
+  }
+
+  // The thumb-wall preference (pinned cards vs contact sheet) applies on
+  // EVERY page — club and events grids honour it even though only Gallery
+  // and Campus Life carry the switch.
+  try {
+    applyThumbView(loadThumbView());
   } catch {
     /* ignore */
   }

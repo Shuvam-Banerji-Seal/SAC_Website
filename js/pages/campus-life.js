@@ -13,6 +13,7 @@ import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { initImageReveal, eagerFirst } from "../utils/reveal.js";
 import { initLazyVideos } from "../utils/media.js";
 import { gridSrc } from "../utils/thumb.js";
+import { wireThumbViewToggle } from "../utils/view-pref.js";
 
 const CATEGORY_BLURBS = {
   Administrative_Building: "The institute's front offices and administration block.",
@@ -86,6 +87,8 @@ function renderThumb(asset, group, index) {
 export async function initCampusLife() {
   const mount = $("#campus-grid");
   if (!mount) return;
+  // Apply the shared thumb-wall preference before the grid paints.
+  wireThumbViewToggle($("#campus-view"));
   showGridSkeleton(mount, 12);
   try {
     const assets = await loadAssetsMap();
