@@ -112,50 +112,20 @@
         <div class="hero__frame">
           <img
             id="heroImg"
-            src="assets/hero.webp"
-            alt="Students gathered for a campus farewell — one of the many SAC moments captured this year"
+            src="assets/hero-people.webp"
+            alt="Members of the Student Activity Council's clubs posing together on the auditorium stage, holding a banner"
             width="1400"
-            height="1050"
+            height="844"
             loading="eager"
             decoding="async"
             fetchpriority="high"
           />
-          <script>
-            /* Seasonal hero must be chosen BEFORE first paint — the static
-               src above is only a no-JS fallback. Without this, the page
-               painted hero.webp and then swap-flashed to the month's pick
-               once the JSONL arrived. Mirrors HERO_POOL in js/pages/home.js:
-               keep the two lists in sync (0,1,2 = hero/auditorium/people). */
-            (function () {
-              var img = document.getElementById("heroImg");
-              var cap = document.getElementById("heroCaptionText");
-              var pool = [
-                {
-                  src: "assets/hero.webp",
-                  cap: "A farewell gathering on the SAC calendar. The Council's year runs from Freshers' week to the farewell matches each club closes its tenure with.",
-                },
-                {
-                  src: "assets/hero-auditorium.webp",
-                  cap: "The campus auditorium — where IICM contingents, productions, and convocations take the stage.",
-                },
-                {
-                  src: "assets/hero-people.webp",
-                  cap: "The people of SAC — the office bearers, conveners, and treasurers elected each year across its clubs and committees.",
-                },
-              ];
-              var pick = pool[new Date().getMonth() % pool.length];
-              if (img && pick.src !== img.getAttribute("src")) {
-                img.src = pick.src;
-                if (cap) cap.textContent = pick.cap;
-              }
-            })();
-          </script>
         </div>
         <figcaption id="hero-caption" class="hero__caption">
           <span class="hero__kicker">Front page · Campus life</span>
-          <span id="heroCaptionText">
-            A farewell gathering on the SAC calendar. The Council's year runs from Freshers' week
-            to the farewell matches each club closes its tenure with.
+          <span>
+            The people of SAC — organisers, performers, athletes, and committee members from across
+            the Council's clubs, posed together on the auditorium stage.
           </span>
         </figcaption>
       </figure>

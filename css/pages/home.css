@@ -843,7 +843,8 @@
 
 @media (max-width: 720px) {
   .hero__frame img {
-    aspect-ratio: 4 / 3;
+    /* ≈ the stage photo's native 1400×844 — 4/3 clipped the outermost people */
+    aspect-ratio: 5 / 3;
     max-height: 52vh;
     object-position: center 30%;
   }

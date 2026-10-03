@@ -7,7 +7,7 @@
  * but cached with a short TTL.
  */
 
-const CACHE_NAME = "sac-v51";
+const CACHE_NAME = "sac-v52";
 
 const STATIC_ASSETS = [
   // Core
@@ -70,9 +70,7 @@ const STATIC_ASSETS = [
   "assets/natural-paper.png",
   "assets/paper-fibers.png",
   "assets/paper.png",
-  "assets/hero.webp",
   "assets/masthead-campus.webp",
-  "assets/hero-auditorium.webp",
   "assets/hero-people.webp",
   "assets/groovepaper.png",
   "assets/rice-paper.png",
