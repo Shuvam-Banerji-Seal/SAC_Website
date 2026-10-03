@@ -46,7 +46,7 @@ after the page has finished loading. Layout shift is ≈ 0 and Lighthouse (mobil
 index.html, pages/       38 pages
 css/                     tokens (variables.css), shell, per-page stylesheets
 js/                      main.js (entry) · components/ · pages/ · utils/ · pretext/ (vendored)
-tools/                   sync-preloads · gen-sitemap · dedupe/ (image de-duplication, Python)
+tools/                   sync-pages · gen-sitemap · dedupe/ (image de-duplication, Python)
 test/unit/               ~550 tests (Vitest + jsdom)
 docs/                    ARCHITECTURE.md and research notes
 public/assets/           git submodule — every image, document and video, plus assets_map.jsonl

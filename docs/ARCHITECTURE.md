@@ -48,7 +48,7 @@ Why it is this way (all measured on a "slow 4G, 4× CPU" phone profile):
 | Decision | Reason |
 |---|---|
 | Per-page dynamic `import()` | Every page used to load every other page's script (≈40 module requests). |
-| `modulepreload` block in every `<head>` | ES modules are discovered one level at a time; each level is a network round trip. The block lists the whole graph so it is fetched in one round. It is **generated** from the real import graph (`tools/sync-preloads.mjs`). |
+| `modulepreload` block in every `<head>` | ES modules are discovered one level at a time; each level is a network round trip. The block lists the whole graph so it is fetched in one round. It is **generated** from the real import graph (`tools/sync-pages.mjs`). |
 | Service worker registered after load, shell-only precache | It used to precache ~1.7 MB (every page, textures, an audio track) *during* first paint. Now ~23 small files; everything else is cached the first time it is used. |
 | Hero / masthead / textures served in several sizes | A phone fetched a 299 KB masthead and a 119 KB hero it could not use. |
 | Campus Book loads only nearby pages | Twelve stacked plates meant even `loading="lazy"` fetched all of them. |
@@ -122,7 +122,7 @@ Events" calendar is the intended setup), and its sharing level.
 
 | Generator | Writes | Guarded by |
 |---|---|---|
-| `tools/sync-preloads.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js` | `load-budget.test.js` runs it in `--check` mode |
+| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js` | `load-budget.test.js` runs it in `--check` mode |
 | `tools/gen-sitemap.mjs` | `sitemap.xml`, `robots.txt` (CI regenerates both for the host being deployed) | `sitemap.test.js` |
 | `tools/dedupe/build_manifest.py` | `public/duplicates.json` | `dedupe.test.js` |
 
