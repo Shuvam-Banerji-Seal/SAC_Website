@@ -226,7 +226,9 @@ function clubCard(c) {
       "data-club-body": c.body,
     },
     url && !pending
-      ? el("a", { href: pageLink(url), "aria-label": `${c.name} — open club page` }, ...inner)
+      ? // No aria-label: the link's own text (name + body line) is its name. An
+        // override that left out the visible body line failed WCAG "Label in Name".
+        el("a", { href: pageLink(url) }, ...inner)
       : el("div", { class: "club-card__nolink", title: "Club page coming soon" }, ...inner)
   );
   return card;

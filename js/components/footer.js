@@ -60,7 +60,7 @@ export function renderFooter() {
         el(
           "div",
           { class: "site-footer__col" },
-          el("h4", { class: "site-footer__heading" }, "Explore"),
+          el("h3", { class: "site-footer__heading" }, "Explore"),
           el(
             "ul",
             { class: "site-footer__links" },
@@ -74,7 +74,7 @@ export function renderFooter() {
         el(
           "div",
           { class: "site-footer__col" },
-          el("h4", { class: "site-footer__heading" }, "Sports"),
+          el("h3", { class: "site-footer__heading" }, "Sports"),
           el(
             "ul",
             { class: "site-footer__links" },
@@ -88,7 +88,7 @@ export function renderFooter() {
         el(
           "div",
           { class: "site-footer__col" },
-          el("h4", { class: "site-footer__heading" }, "Location"),
+          el("h3", { class: "site-footer__heading" }, "Location"),
           el(
             "div",
             { class: "site-footer__map" },

@@ -20,32 +20,40 @@ export function slugify(text) {
 
 /**
  * @param {Array<{id: string, label: string, count?: number}>} items
- * @param {{label?: string}} [options] accessible name of the landmark
+ * @param {{label?: string, into?: HTMLElement}} [options]
+ *   `label`: accessible name of the landmark. `into`: an empty
+ *   `.section-nav--slot` already in the page — filled in place instead of
+ *   creating a new element, so a bar that arrives after load does not shove
+ *   the page down (each club page ships the slot, at the bar's exact height).
  * @returns {HTMLElement}
  */
-export function buildSectionNav(items, { label = "Jump to a section" } = {}) {
-  return el(
-    "nav",
-    { class: "section-nav", "aria-label": label },
-    el(
-      "ul",
-      { class: "section-nav__list" },
-      ...items.map((item) =>
+export function buildSectionNav(items, { label = "Jump to a section", into = null } = {}) {
+  const list = el(
+    "ul",
+    { class: "section-nav__list" },
+    ...items.map((item) =>
+      el(
+        "li",
+        {},
         el(
-          "li",
-          {},
-          el(
-            "a",
-            { class: "section-nav__chip", href: `#${item.id}`, "data-target": item.id },
-            item.label,
-            item.count != null
-              ? el("span", { class: "section-nav__count" }, String(item.count))
-              : null
-          )
+          "a",
+          { class: "section-nav__chip", href: `#${item.id}`, "data-target": item.id },
+          item.label,
+          item.count != null
+            ? el("span", { class: "section-nav__count" }, String(item.count))
+            : null
         )
       )
     )
   );
+  if (into) {
+    into.classList.remove("section-nav--slot");
+    into.removeAttribute("aria-hidden");
+    into.setAttribute("aria-label", label);
+    into.replaceChildren(list);
+    return into;
+  }
+  return el("nav", { class: "section-nav", "aria-label": label }, list);
 }
 
 /**
@@ -102,7 +110,8 @@ export function trackSections(nav) {
  * Call it after the page's dynamic sections have rendered.
  */
 export function initClubSectionNav(root = document.querySelector("main")) {
-  if (!root || root.querySelector(".section-nav")) return null;
+  if (!root || root.querySelector(".section-nav:not(.section-nav--slot)")) return null;
+  const slot = root.querySelector(".section-nav--slot");
   const used = new Set([...document.querySelectorAll("[id]")].map((n) => n.id));
   const items = [];
   for (const h of root.querySelectorAll("h2")) {
@@ -116,10 +125,15 @@ export function initClubSectionNav(root = document.querySelector("main")) {
     }
     items.push({ id: h.id, label: h.textContent.replace(/\s+/g, " ").trim() });
   }
-  if (items.length < 3) return null;
-  const nav = buildSectionNav(items, { label: "Sections on this page" });
-  const anchor = root.querySelector(".club-detail__body, .club-detail__section, section");
-  (anchor || root.firstElementChild)?.before(nav);
+  if (items.length < 3) {
+    slot?.remove();
+    return null;
+  }
+  const nav = buildSectionNav(items, { label: "Sections on this page", into: slot });
+  if (!slot) {
+    const anchor = root.querySelector(".club-detail__body, .club-detail__section, section");
+    (anchor || root.firstElementChild)?.before(nav);
+  }
   trackSections(nav);
   return nav;
 }

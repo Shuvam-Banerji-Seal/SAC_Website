@@ -2,7 +2,7 @@
  * test/unit/section-nav.test.js — the sticky "jump to" bar.
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import {
@@ -96,6 +96,55 @@ describe("initClubSectionNav", () => {
     const nav = initClubSectionNav();
     expect([...nav.querySelectorAll("a")].map((a) => a.textContent)).not.toContain(
       "Office Bearers — 2026-27"
+    );
+  });
+});
+
+describe("reserved slot (no layout shift)", () => {
+  const page = (sections) => `
+    <main>
+      <nav class="section-nav section-nav--slot" aria-hidden="true"></nav>
+      ${sections.map((t) => `<section class="club-detail__body"><h2>${t}</h2></section>`).join("")}
+    </main>`;
+
+  it("fills the slot in place instead of inserting a second element", () => {
+    document.body.innerHTML = page(["About", "Events", "Contact"]);
+    const slot = document.querySelector(".section-nav--slot");
+    const nav = initClubSectionNav();
+    expect(nav).toBe(slot); // same node: nothing moves
+    expect(nav.classList.contains("section-nav--slot")).toBe(false);
+    expect(nav.hasAttribute("aria-hidden")).toBe(false);
+    expect(nav.getAttribute("aria-label")).toBe("Sections on this page");
+    expect(nav.querySelectorAll("a")).toHaveLength(3);
+    expect(document.querySelectorAll(".section-nav")).toHaveLength(1);
+  });
+
+  it("removes the slot when the page is too short to need a bar", () => {
+    document.body.innerHTML = page(["About", "Contact"]);
+    expect(initClubSectionNav()).toBeNull();
+    expect(document.querySelector(".section-nav")).toBeNull();
+  });
+
+  it("every club page ships the slot, in front of its first section", () => {
+    const dir = resolve(root, "pages");
+    const clubs = readdirSync(dir).filter((f) => f.endsWith(".html"));
+    let checked = 0;
+    for (const f of clubs) {
+      const html = readFileSync(resolve(dir, f), "utf-8");
+      if (!html.includes("data-club-slug")) continue;
+      checked++;
+      const slot = html.indexOf('class="section-nav section-nav--slot"');
+      const first = html.indexOf('<section class="club-detail__');
+      expect(slot, f).toBeGreaterThan(-1);
+      expect(slot, `${f}: slot must precede the first section`).toBeLessThan(first);
+    }
+    expect(checked).toBe(32);
+  });
+
+  it("the slot and the filled bar are the same height", () => {
+    const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
+    expect(css).toMatch(
+      /\.section-nav \{[^}]*--section-nav-h: 3\.7rem;[^}]*min-height: var\(--section-nav-h\)/
     );
   });
 });

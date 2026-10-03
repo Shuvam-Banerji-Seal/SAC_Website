@@ -1201,6 +1201,10 @@ html[data-thumb-view="sheet"] .thumb--reveal.is-revealed {
    The sticky "jump to" bar (js/components/section-nav.js) on the clubs
    directory and every club page. Chips scroll sideways on a phone. */
 .section-nav {
+  /* One height for the filled bar and for the empty slot club pages ship in
+     their HTML, so filling it in after load moves nothing. */
+  --section-nav-h: 3.7rem;
+  min-height: var(--section-nav-h);
   background: color-mix(in srgb, var(--paper) 97%, transparent);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
@@ -1269,6 +1273,9 @@ body.has-topbar.topbar-hidden .section-nav {
   opacity: 0.75;
 }
 @media (pointer: coarse), (max-width: 640px) {
+  .section-nav {
+    --section-nav-h: 4.25rem;
+  }
   .section-nav__chip {
     min-height: 2.75rem;
   }
@@ -1283,4 +1290,19 @@ main h2[id] {
   main h2[id] {
     scroll-margin-top: 4.5rem;
   }
+}
+
+/* A page-level directory holds at least a screen from the first paint.
+   Without it the page is a few hundred px tall until the script mounts the
+   list, so the footer sits inside the first viewport; when the real content
+   arrives (Events: 24,000px) the footer is thrown off-screen — a 0.5 layout
+   shift on its own. It has to be static CSS on the mount: anything JS creates
+   (a skeleton) arrives after that first paint. Club-page galleries are small
+   and are left alone. */
+#clubs-grid,
+#events-list,
+#gallery-grid,
+#campus-grid {
+  min-height: 90vh;
+  min-height: 90svh;
 }

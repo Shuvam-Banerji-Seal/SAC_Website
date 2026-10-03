@@ -66,3 +66,29 @@ describe("stylesheet shell", () => {
     });
   }
 });
+
+describe("layout stability (Lighthouse CLS)", () => {
+  const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
+  const clubsJs = readFileSync(resolve(root, "js/pages/clubs.js"), "utf-8");
+
+  it("every page reserves the mobile masthead strip from first paint", () => {
+    // has-topbar used to be added by JS after load, so the whole page jumped
+    // 54px down on every phone (0.06 CLS on each page).
+    for (const page of pages) {
+      expect(readFileSync(resolve(root, page), "utf-8"), page).toMatch(
+        /<body class="has-topbar" data-page=/
+      );
+    }
+  });
+
+  it("directory mounts hold a screen from first paint, so the footer starts below the fold", () => {
+    // static CSS on the mount itself — a JS-made skeleton arrives after first paint
+    for (const mount of ["#clubs-grid", "#events-list", "#gallery-grid", "#campus-grid"]) {
+      expect(css).toMatch(new RegExp(`${mount}[,\\s{][^}]*min-height: 90svh`));
+    }
+  });
+
+  it("club cards are named by their own text, not an override that omits part of it", () => {
+    expect(clubsJs).not.toContain("open club page");
+  });
+});

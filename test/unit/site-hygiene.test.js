@@ -144,3 +144,19 @@ describe("gallery toolbar", () => {
     expect(main).toContain("applyThumbView(loadThumbView())");
   });
 });
+
+// Found by Lighthouse (2026-10-03): the footer skipped from <h2> to <h4>, and the
+// YouTube cards were <li>s inside a <div>. Both are screen-reader-visible defects.
+describe("document outline", () => {
+  it("footer headings follow the page's <h2>s with <h3>s, never a skipped level", () => {
+    const footer = read("/js/components/footer.js");
+    expect(footer).toContain('el("h3", { class: "site-footer__heading" }');
+    expect(footer).not.toContain('el("h4"');
+  });
+
+  it("the YouTube cards live in a real list", () => {
+    const index = read("/index.html");
+    expect(index).toMatch(/<ul id="youtube-grid"><\/ul>/);
+    expect(read("/js/pages/home.js")).toContain('"li",\n        { class: "notebook-card"');
+  });
+});
