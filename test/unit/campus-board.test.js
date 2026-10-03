@@ -103,9 +103,13 @@ describe("cycle 26 — drawer notch, settings open, SVG glow", () => {
   const html = readFileSync(resolve(root, "index.html"), "utf-8");
   const diagram = readFileSync(resolve(root, "js/components/sac-diagram.js"), "utf-8");
 
-  it("mobile drawer reserves a top notch under the hamburger (no wordmark overlap)", () => {
+  it("the phone masthead strip clears the 56px dog-ear, so the corner never covers the wordmark", () => {
+    // was: a 4.25rem top notch under a floating hamburger. The corner now sits in the
+    // strip's top-left, and the sheet hangs from the strip's bottom edge instead.
+    const strip = css.match(/\.mobile-topbar \{[^}]*\}/s)?.[0] ?? "";
+    const left = Number(strip.match(/padding:\s*0 [\d.]+rem 0 ([\d.]+)rem/)?.[1]);
+    expect(left * 16).toBeGreaterThanOrEqual(56);
     expect(css).toContain("body.sidebar-open #navbar");
-    expect(css).toMatch(/padding-top:\s*4\.25rem/);
   });
 
   it("settings: Typography + Paper texture groups open by default", () => {

@@ -1,41 +1,61 @@
 /**
- * components/navbar.js — renders the sidebar navigation into the existing
- * <nav id="navbar"> mount on every page, plus the mobile furniture that
- * goes with it.
+ * components/navbar.js — the navigation, as a sheet of folded paper.
  *
- * Desktop (>=1024px): the sidebar is the page's left margin/index.
- * Mobile  (<1024px):  the sidebar is an off-canvas drawer, opened from a
- *                     sticky masthead strip that also names the section
- *                     you're on — a bare floating button left readers with
- *                     no sense of place.
+ * The toggle is a dog-eared page corner; opening it peels the flap flat while
+ * the nav unfolds below as a concertina. The geometry lives in CSS (components.css,
+ * "Navigation — a folded sheet"); this file builds the structure it needs.
  *
- * Structure:
- *   <div class="mobile-topbar">…wordmark + section…</div>   (injected, mobile only)
+ * Desktop (>=1024px): the sheet is the page's left margin/index, open by default.
+ *                     Folding it up leaves a narrow brand tab.
+ * Mobile  (<1024px):  the sheet hangs from a sticky masthead strip that also
+ *                     names the section you are in.
+ *
+ * Structure (panels nest, each hinged to the bottom edge of the one above, which
+ * is what lets one rotation carry everything below it — a real concertina):
  *   <nav id="navbar" class="sidebar">
- *     <div class="sidebar__brand">The SAC <em>Chronicle</em>
- *       <p class="sidebar__tagline">IISER Kolkata</p>
- *     </div>
- *     <div class="sidebar__nav"> …links… </div>
- *     <div class="sidebar__foot">Vol. 01 · Empowering Voices</div>
+ *     <div class="fold">
+ *       <div class="fold__panel fold__panel--1">   brand
+ *         <div class="fold__sheet">…</div> <div class="fold__back"/> <div class="fold__shade"/>
+ *         <div class="fold__panel fold__panel--2">   first half of the links
+ *           <div class="fold__panel fold__panel--3">   second half
+ *             <div class="fold__panel fold__panel--4">   reader settings + footer line
  *   </nav>
+ *   <button id="navbarCorner" class="navbar-corner">   the dog-ear (layers built here)
  */
 import { el, clear, pageUrl } from "../utils/dom.js";
 import { NAV_ITEMS } from "../config.js";
 
-/** Hamburger that can morph into a close cross — three spans the CSS
- *  animates, rather than a static <svg> baked into 38 HTML files. */
-function renderToggleIcon(toggle) {
-  if (!toggle || toggle.querySelector(".navbar-corner__bars")) return;
+/**
+ * The dog-ear. Three layers, all decorative (the <button> carries the label):
+ *   under  the table showing through where the corner is folded away
+ *   flap   the folded-over triangle; it rotates about the fold line (the diagonal)
+ *          — flat at rest, lifted on hover, 180deg (unfolded) when the nav is open
+ *   faces  the flap's two sides: the paper's back with the menu mark, and — once it
+ *          has turned over — the page's front with a close mark
+ * Built here, not in 38 HTML files; before this runs the static hamburger <svg>
+ * is shown on a CSS stand-in for the folded corner, so nothing jumps.
+ */
+function buildCorner(toggle) {
+  if (!toggle || toggle.querySelector(".corner__flap")) return;
   clear(toggle);
-  toggle.appendChild(
+  toggle.append(
+    el("span", { class: "corner__under", "aria-hidden": "true" }),
     el(
       "span",
-      { class: "navbar-corner__bars", "aria-hidden": "true" },
-      el("span", {}),
-      el("span", {}),
-      el("span", {})
+      { class: "corner__flap", "aria-hidden": "true" },
+      el(
+        "span",
+        { class: "corner__face corner__face--back" },
+        el("span", { class: "corner__glyph corner__glyph--menu" }, el("i"), el("i"), el("i"))
+      ),
+      el(
+        "span",
+        { class: "corner__face corner__face--front" },
+        el("span", { class: "corner__glyph corner__glyph--close" })
+      )
     )
   );
+  toggle.classList.add("is-folded");
 }
 
 /** Sticky masthead strip for phones: wordmark on the left (clear of the
@@ -59,6 +79,18 @@ function renderMobileTopbar(activePage) {
   return bar;
 }
 
+/** One panel of the concertina: its face, its back, its shade, then the next panel. */
+function foldPanel(index, content, nested = null) {
+  return el(
+    "div",
+    { class: `fold__panel fold__panel--${index}` },
+    el("div", { class: "fold__sheet" }, content),
+    el("div", { class: "fold__back", "aria-hidden": "true" }),
+    el("div", { class: "fold__shade", "aria-hidden": "true" }),
+    nested
+  );
+}
+
 export function renderNavbar(activePage) {
   const mount = document.getElementById("navbar");
   if (!mount) return;
@@ -76,9 +108,8 @@ export function renderNavbar(activePage) {
     el("p", { class: "sidebar__tagline" }, "IISER Kolkata · Vol. 01")
   );
 
-  // Links
-  const nav = el("div", { class: "sidebar__nav" });
-  for (const item of NAV_ITEMS) {
+  // Links, in two groups of three — one per panel, so the sheet unfolds in steps
+  const links = NAV_ITEMS.map((item) => {
     const link = el(
       "a",
       {
@@ -89,8 +120,11 @@ export function renderNavbar(activePage) {
       el("span", { class: "sidebar__link-label" }, item.label)
     );
     if (item.id === activePage) link.setAttribute("aria-current", "page");
-    nav.appendChild(link);
-  }
+    return link;
+  });
+  const half = Math.ceil(links.length / 2);
+  const groupA = el("div", { class: "sidebar__nav" }, ...links.slice(0, half));
+  const groupB = el("div", { class: "sidebar__nav" }, ...links.slice(half));
 
   // Reader controls, reachable without hunting for the floating cog.
   // Mobile-only: on desktop the cog is never far from the pointer.
@@ -113,7 +147,6 @@ export function renderNavbar(activePage) {
     }
   });
 
-  // Footer of the rail
   const foot = el(
     "div",
     { class: "sidebar__foot" },
@@ -121,10 +154,16 @@ export function renderNavbar(activePage) {
     el("p", { class: "sidebar__foot-line" }, "Student Activity Council · Empowering Voices")
   );
 
-  mount.append(brand, nav, foot);
+  mount.append(
+    el(
+      "div",
+      { class: "fold" },
+      foldPanel(1, brand, foldPanel(2, groupA, foldPanel(3, groupB, foldPanel(4, foot))))
+    )
+  );
 
   const toggle = document.getElementById("navbarCorner");
-  renderToggleIcon(toggle);
+  buildCorner(toggle);
   if (toggle) {
     toggle.setAttribute("aria-label", "Collapse navigation");
     toggle.setAttribute("title", "Collapse navigation");

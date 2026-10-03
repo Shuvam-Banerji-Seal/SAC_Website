@@ -14,124 +14,300 @@
   transform: translateY(0);
 }
 
+/* ===========================================================================
+   Navigation — a folded sheet
+   ---------------------------------------------------------------------------
+   The nav is one sheet of paper folded in four. The toggle is a dog-eared
+   corner: hover lifts its flap, and opening turns the flap flat (180deg about
+   the fold line) while the sheet unfolds below it as a concertina.
+
+   How the concertina works (js/components/navbar.js builds the markup):
+   panels NEST. Panel 2 hangs from the bottom edge of panel 1, panel 3 from
+   panel 2, and so on. Rotating a panel about its own top edge therefore carries
+   every panel below it along, exactly like a real accordion fold. Neighbouring
+   panels fold in opposite directions (-180 / +180), so mid-motion the sheet
+   zig-zags like a paper fan. Each panel has a back (paper reverse, seen when it
+   has turned over), a shade (darkest when folded, gone when flat) and a crease.
+
+   State comes from <body> classes the controller already maintains:
+     phones   body.sidebar-open        unfolded
+     desktop  body.sidebar-collapsed   folded up (open is the default)
+   Transitions are enabled by body.fold-ready, set after first paint, so a page
+   never animates its own initial state.
+   =========================================================================== */
+
+:root {
+  --fold-ease: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --fold-paper: var(--paper-fiber), var(--paper-grain), var(--paper-soft);
+}
+
+/* ------------------------------------------------------------------ container */
 #navbar {
-  /* The same stock as the page, a shade lighter: pulp tooth, laid lines, a tea
-     tint pooled at the top, and a darker spine toward the ruled edge. */
+  /* desktop: the page's left margin — a full-height index column */
   background:
     linear-gradient(90deg, transparent 82%, rgba(70, 44, 20, calc(0.1 * var(--age))) 100%),
     radial-gradient(ellipse at 18% 0%, rgba(150, 96, 40, calc(0.13 * var(--age))), transparent 62%),
     var(--paper-fiber), var(--paper-grain), var(--paper-soft);
   border-right: 1px solid var(--rule);
-  contain: layout paint;
-  display: flex;
-  flex-direction: column;
+  display: block;
   inset: 0 auto 0 0;
-  padding: 1.15rem 1rem;
   position: fixed;
-  transform: translateX(-105%);
-  transition:
-    transform var(--transition),
-    width var(--transition);
+  transition: width 0.45s var(--fold-ease);
   width: var(--sidebar-w);
-  will-change: transform, width;
   z-index: 900;
 }
 
-/* Mobile drawer-open state: reserve a top notch so the hamburger button
-   never paints over the "The SAC Chronicle" wordmark (button is fixed at
-   top-left; the brand starts right under it). */
-@media (max-width: 1023px) {
-  body.sidebar-open #navbar {
-    padding-top: 4.25rem;
-  }
-  /* wordmark gets breathing room under the button on phones */
-  body.sidebar-open .sidebar__brand {
-    padding-top: 0;
-  }
-  /* The drawer sits over the page, so it needs its own edge shadow */
-  #navbar {
-    box-shadow: 4px 0 18px rgba(24, 20, 16, 0.28);
-  }
+.fold {
+  perspective: 1200px;
+  perspective-origin: 50% 0;
+  position: relative;
+  width: 100%;
 }
-
-/* ── Mobile masthead strip ───────────────────────────────────────
-   A bare floating button gave phone readers no sense of place. This
-   sticky strip carries the wordmark and the section they're in, and
-   the toggle now sits inside it rather than over the page. */
-
-.mobile-topbar {
-  align-items: baseline;
-  background: var(--paper-soft);
-  border-bottom: var(--rule-double);
-  display: none;
-  gap: 0.75rem;
-  height: var(--topbar-h);
-  inset: 0 0 auto 0;
-  justify-content: space-between;
-  padding: 0 0.9rem 0 3.6rem;
-  position: fixed;
-  transition: transform var(--transition);
-  z-index: 880;
+.fold__panel {
+  position: relative;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
 }
-.mobile-topbar__brand {
-  font-family: var(--font-display);
-  font-size: var(--fs-md);
-  letter-spacing: 0.01em;
-  line-height: var(--topbar-h);
-  text-transform: uppercase;
-  white-space: nowrap;
+/* every panel after the first hangs from the bottom edge of its parent */
+.fold__panel > .fold__panel {
+  inset: 100% 0 auto 0;
+  position: absolute;
 }
-.mobile-topbar__brand em {
-  color: var(--accent);
-  font-style: normal;
-}
-.mobile-topbar__section {
-  color: var(--ink-muted);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.1em;
-  line-height: var(--topbar-h);
+.fold__sheet {
+  background: var(--fold-paper);
+  backface-visibility: hidden;
+  /* while the desktop rail narrows, a panel must not spill its links onto the page */
   overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+  position: relative;
+}
+/* the reverse of the paper: what you see once a panel has turned over */
+.fold__back {
+  background: var(--fold-paper);
+  backface-visibility: hidden;
+  filter: sepia(0.25) brightness(0.93);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: rotateX(180deg);
+}
+/* darkest when folded, gone when flat — the cue the eye reads as depth */
+.fold__shade {
+  background: linear-gradient(180deg, rgba(34, 20, 8, 0.6), rgba(34, 20, 8, 0.16));
+  backface-visibility: hidden;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+/* the crease each panel is hinged on: a shadow line, a highlight beside it */
+.fold__panel > .fold__panel > .fold__sheet::before {
+  background: rgba(60, 40, 20, 0.3);
+  box-shadow: 0 1px 0 rgba(255, 251, 238, 0.7);
+  content: "";
+  height: 1px;
+  inset: 0 0 auto 0;
+  position: absolute;
+  z-index: 1;
+}
+.fold__panel > .fold__panel > .fold__sheet::after {
+  background: linear-gradient(180deg, rgba(60, 40, 20, 0.1), transparent 18px);
+  content: "";
+  height: 18px;
+  inset: 0 0 auto 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* -------------------------------------------------------- folded (closed) state */
+.fold__panel--2,
+.fold__panel--3,
+.fold__panel--4 {
+  visibility: hidden;
+}
+.fold__panel--2 {
+  transform: rotateX(-180deg);
+}
+.fold__panel--3 {
+  transform: rotateX(180deg);
+}
+.fold__panel--4 {
+  transform: rotateX(-180deg);
+}
+.fold__panel--2 > .fold__shade,
+.fold__panel--3 > .fold__shade,
+.fold__panel--4 > .fold__shade {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------- unfolded
+   Opening: panel 2 goes first, then 3, then 4. Closing runs it back up. */
+@media (max-width: 1023px) {
+  body.sidebar-open .fold__panel--2,
+  body.sidebar-open .fold__panel--3,
+  body.sidebar-open .fold__panel--4 {
+    transform: none;
+    visibility: visible;
+  }
+  body.sidebar-open .fold__panel--2 > .fold__shade,
+  body.sidebar-open .fold__panel--3 > .fold__shade,
+  body.sidebar-open .fold__panel--4 > .fold__shade {
+    opacity: 0;
+  }
+}
+@media (min-width: 1024px) {
+  body:not(.sidebar-collapsed) .fold__panel--2,
+  body:not(.sidebar-collapsed) .fold__panel--3,
+  body:not(.sidebar-collapsed) .fold__panel--4 {
+    transform: none;
+    visibility: visible;
+  }
+  body:not(.sidebar-collapsed) .fold__panel--2 > .fold__shade,
+  body:not(.sidebar-collapsed) .fold__panel--3 > .fold__shade,
+  body:not(.sidebar-collapsed) .fold__panel--4 > .fold__shade {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- the motion */
+body.fold-ready .fold__panel--2,
+body.fold-ready .fold__panel--3,
+body.fold-ready .fold__panel--4 {
+  /* closing: the bottom panel folds first. Hidden only once it has landed. */
+  transition:
+    transform 0.5s var(--fold-ease),
+    visibility 0s linear 0.78s;
+}
+body.fold-ready .fold__panel--4 {
+  transition-delay: 0s, 0.7s;
+}
+body.fold-ready .fold__panel--3 {
+  transition-delay: 0.09s, 0.78s;
+}
+body.fold-ready .fold__panel--2 {
+  transition-delay: 0.18s, 0.86s;
+}
+body.fold-ready .fold__panel > .fold__shade {
+  transition: opacity 0.5s ease;
 }
 
 @media (max-width: 1023px) {
-  .mobile-topbar {
+  body.fold-ready.sidebar-open .fold__panel--2,
+  body.fold-ready.sidebar-open .fold__panel--3,
+  body.fold-ready.sidebar-open .fold__panel--4 {
+    transition:
+      transform 0.62s var(--fold-ease),
+      visibility 0s;
+  }
+  body.fold-ready.sidebar-open .fold__panel--2 {
+    transition-delay: 0.1s, 0s;
+  }
+  body.fold-ready.sidebar-open .fold__panel--3 {
+    transition-delay: 0.22s, 0s;
+  }
+  body.fold-ready.sidebar-open .fold__panel--4 {
+    transition-delay: 0.34s, 0s;
+  }
+}
+@media (min-width: 1024px) {
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--2,
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--3,
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--4 {
+    transition:
+      transform 0.62s var(--fold-ease),
+      visibility 0s;
+  }
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--2 {
+    transition-delay: 0.1s, 0s;
+  }
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--3 {
+    transition-delay: 0.22s, 0s;
+  }
+  body.fold-ready:not(.sidebar-collapsed) .fold__panel--4 {
+    transition-delay: 0.34s, 0s;
+  }
+}
+
+/* --------------------------------------------------------------------- phones
+   The sheet hangs from the bottom edge of the masthead strip. Panel 1 swings
+   down from that edge, then the rest unfold below it. Closed, the whole thing
+   is turned edge-on and hidden, and the container ignores the pointer. */
+@media (max-width: 1023px) {
+  #navbar {
+    background: none;
+    border: 0;
+    inset: var(--topbar-h) auto auto 0;
+    pointer-events: none;
+    width: min(280px, 78vw);
+  }
+  body.sidebar-open #navbar {
+    pointer-events: auto;
+  }
+  .fold__panel--1 {
+    transform: rotateX(-100deg);
+    visibility: hidden;
+  }
+  body.sidebar-open .fold__panel--1 {
+    transform: none;
+    visibility: visible;
+  }
+  body.fold-ready .fold__panel--1 {
+    transition:
+      transform 0.5s var(--fold-ease) 0.12s,
+      visibility 0s linear 0.62s;
+  }
+  body.fold-ready.sidebar-open .fold__panel--1 {
+    transition:
+      transform 0.5s var(--fold-ease),
+      visibility 0s;
+  }
+  /* on a phone the sheet is a card lying over the page */
+  .fold__sheet {
+    border: 1px solid var(--rule);
+    border-top: 0;
+    box-shadow: 4px 5px 0 rgba(24, 20, 16, 0.18);
+  }
+  .fold__panel--1 > .fold__sheet {
+    border-top: 1px solid var(--rule);
+  }
+  /* thumb-sized targets: 48px comfortable, WCAG 2.5.8 wants 24px minimum */
+  .sidebar__link {
+    align-items: center;
+    display: flex;
+    font-size: var(--fs-lg);
+    min-height: 48px;
+    padding: 0.35rem 0.7rem;
+  }
+  .sidebar__nav {
+    gap: 0.2rem;
+  }
+  .sidebar__link.is-active::after {
+    background: var(--accent);
+    border-radius: 50%;
+    content: "";
+    height: 6px;
+    margin-left: auto;
+    width: 6px;
+  }
+  .sidebar__action {
     display: flex;
   }
-  body.has-topbar {
-    padding-top: var(--topbar-h);
-  }
-  /* Reading room: the strip retracts as you go down the page and comes
-     back the moment you scroll up. It never hides while the drawer is
-     open, or the toggle would float free again. */
-  body.topbar-hidden:not(.sidebar-open) .mobile-topbar,
-  body.topbar-hidden:not(.sidebar-open) .navbar-corner {
-    transform: translateY(calc(-1 * var(--topbar-h) - 8px));
-  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .mobile-topbar {
-    transition: none;
-  }
+/* -------------------------------------------------- the sheet's own furniture */
+.fold__panel--1 > .fold__sheet {
+  padding: 1.15rem 1rem 0.7rem;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  #navbar {
-    transition: none;
-  }
+.fold__panel--2 > .fold__sheet,
+.fold__panel--3 > .fold__sheet {
+  padding: 0.2rem 1rem;
 }
-
-body.sidebar-open #navbar {
-  transform: none;
+.fold__panel--4 > .fold__sheet {
+  padding: 0.7rem 1rem 1rem;
 }
-
 @media (min-width: 1024px) {
-  #navbar {
-    transform: none;
+  /* the corner sits at the rail's top-right; keep the brand clear of it */
+  .fold__panel--1 > .fold__sheet {
+    padding-right: 3.6rem;
   }
 }
 
@@ -143,7 +319,6 @@ body.sidebar-open #navbar {
   padding: 0.35rem 0.25rem 0.8rem;
   text-transform: uppercase;
 }
-
 .sidebar__brand em {
   color: var(--accent);
   font-style: normal;
@@ -159,7 +334,6 @@ body.sidebar-open #navbar {
 .sidebar__nav {
   display: grid;
   gap: 0.15rem;
-  margin-top: 1rem;
 }
 .sidebar__link {
   border-left: 3px solid transparent;
@@ -190,7 +364,6 @@ body.sidebar-open #navbar {
   font-size: var(--fs-xs);
   letter-spacing: 0.08em;
   line-height: 1.5;
-  margin-top: auto;
   padding-top: 0.8rem;
   text-transform: uppercase;
 }
@@ -220,12 +393,65 @@ body.sidebar-open #navbar {
 .sidebar__action-icon {
   font-size: 1rem;
 }
+
+/* --------------------------------------------------------------- mobile strip
+   A bare floating button gave phone readers no sense of place. This sticky
+   strip carries the wordmark and the section they are in; the dog-ear sits
+   in its top-left corner. */
+.mobile-topbar {
+  align-items: baseline;
+  background: var(--paper-soft);
+  border-bottom: var(--rule-double);
+  display: none;
+  gap: 0.75rem;
+  height: var(--topbar-h);
+  inset: 0 0 auto 0;
+  justify-content: space-between;
+  padding: 0 0.9rem 0 4.2rem;
+  position: fixed;
+  transition: transform var(--transition);
+  z-index: 880;
+}
+.mobile-topbar__brand {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  letter-spacing: 0.01em;
+  line-height: var(--topbar-h);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.mobile-topbar__brand em {
+  color: var(--accent);
+  font-style: normal;
+}
+.mobile-topbar__section {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  line-height: var(--topbar-h);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 @media (max-width: 1023px) {
-  /* On desktop the cog is a short pointer trip away; on a phone it is a
-     44px target in the corner of a scrolling page, so the drawer offers
-     the same door. */
-  .sidebar__action {
+  .mobile-topbar {
     display: flex;
+  }
+  body.has-topbar {
+    padding-top: var(--topbar-h);
+  }
+  /* Reading room: the strip retracts as you go down the page and comes back
+     the moment you scroll up. It never hides while the sheet is open. */
+  body.topbar-hidden:not(.sidebar-open) .mobile-topbar,
+  body.topbar-hidden:not(.sidebar-open) .navbar-corner {
+    transform: translateY(calc(-1 * var(--topbar-h) - 8px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-topbar {
+    transition: none;
   }
 }
 
@@ -243,108 +469,183 @@ body.sidebar-open .sidebar-scrim {
   pointer-events: auto;
 }
 
+/* ------------------------------------------------------------------- the dog-ear
+   56px box. The fold line is the box's anti-diagonal; the flap is the bottom-right
+   half, rotating about that line. 0deg = lying flat (the closed look),
+   ~26deg = lifted (hover), 180deg = turned over and flat again (open).
+   Before navbar.js builds the layers, the .navbar-corner:not(.is-folded) rules
+   paint a stand-in for the resting corner under the static hamburger. */
 .navbar-corner {
-  align-items: center;
-  background: var(--ink);
-  border: 1px solid var(--ink);
-  color: var(--paper);
-  display: grid;
-  height: 42px;
-  justify-content: center;
-  left: 0.75rem;
+  --corner: 56px;
+  --mirror: 1;
+  --peel: 0deg;
+  -webkit-tap-highlight-color: transparent;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  filter: drop-shadow(1px 2px 1.5px rgba(40, 24, 10, 0.38));
+  height: var(--corner);
+  left: 0;
+  padding: 0;
+  perspective: 260px;
   position: fixed;
-  top: 0.75rem;
-  transition:
-    background var(--transition),
-    left var(--transition),
-    transform var(--transition);
-  width: 42px;
-  will-change: left, transform;
+  top: 0;
+  transform: scaleX(var(--mirror));
+  transition: transform var(--transition);
+  width: var(--corner);
   z-index: 950;
 }
-
 .navbar-corner:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: 0;
+}
+.navbar-corner:hover,
+.navbar-corner:focus-visible {
+  --peel: 26deg;
+}
+/* stand-in until the layers exist */
+.navbar-corner:not(.is-folded) {
+  background: linear-gradient(135deg, transparent 50%, #f1e5c8 50%);
+  color: var(--ink);
+}
+.navbar-corner:not(.is-folded) svg {
+  margin: 14px 0 0 16px;
 }
 
-/* Three bars that fold into a cross when the drawer opens — replaces the
-   static <svg> that shipped in every page's markup (see navbar.js). */
-.navbar-corner__bars {
-  display: block;
-  height: 14px;
-  position: relative;
-  width: 18px;
+.corner__under {
+  background: linear-gradient(135deg, #2c1e10, #5e4630 55%, #7d6446);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  inset: 0;
+  position: absolute;
 }
-.navbar-corner__bars span {
-  background: currentColor;
+.corner__flap {
+  inset: 0;
+  position: absolute;
+  transform: rotate3d(-1, 1, 0, var(--peel));
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+body.fold-ready .corner__flap {
+  transition: transform 0.55s var(--fold-ease);
+}
+.corner__face {
+  backface-visibility: hidden;
+  inset: 0;
+  position: absolute;
+}
+/* the paper's reverse, with the menu mark printed on it */
+.corner__face--back {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0) 40%, rgba(60, 40, 18, 0.2)),
+    linear-gradient(135deg, #f8efd8, #e2d1ad);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+}
+/* the page's front, once the flap has turned over: it reads as the corner of the
+   sheet again, with a close mark */
+.corner__face--front {
+  background:
+    linear-gradient(315deg, rgba(60, 40, 18, 0.16), rgba(255, 255, 255, 0) 55%), var(--fold-paper);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  transform: rotate3d(-1, 1, 0, 180deg);
+}
+.corner__glyph {
+  position: absolute;
+  transform: translate(-50%, -50%) scaleX(var(--mirror));
+}
+.corner__glyph--menu {
+  display: grid;
+  gap: 3px;
+  height: 11px;
+  left: 66.7%;
+  top: 68%;
+  width: 16px;
+}
+.corner__glyph--menu i {
+  background: var(--ink);
   display: block;
+  height: 2px;
+}
+.corner__glyph--close {
+  height: 14px;
+  left: 33.3%;
+  top: 32%;
+  width: 14px;
+}
+.corner__glyph--close::before,
+.corner__glyph--close::after {
+  background: var(--ink);
+  content: "";
   height: 2px;
   left: 0;
   position: absolute;
-  transition:
-    transform var(--transition),
-    opacity var(--transition);
-  width: 100%;
-}
-.navbar-corner__bars span:nth-child(1) {
-  top: 0;
-}
-.navbar-corner__bars span:nth-child(2) {
   top: 6px;
+  width: 14px;
 }
-.navbar-corner__bars span:nth-child(3) {
-  top: 12px;
+.corner__glyph--close::before {
+  transform: rotate(45deg);
 }
-body.sidebar-open .navbar-corner__bars span:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
+.corner__glyph--close::after {
+  transform: rotate(-45deg);
 }
-body.sidebar-open .navbar-corner__bars span:nth-child(2) {
-  opacity: 0;
+/* a first-visit hint: the corner lifts once, so the fold announces itself */
+.navbar-corner.is-peeking .corner__flap {
+  animation: corner-peek 1.5s ease-in-out 0.6s 1;
 }
-body.sidebar-open .navbar-corner__bars span:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .navbar-corner__bars span {
-    transition: none;
+@keyframes corner-peek {
+  0%,
+  100% {
+    transform: rotate3d(-1, 1, 0, 0deg);
+  }
+  35%,
+  60% {
+    transform: rotate3d(-1, 1, 0, 34deg);
   }
 }
 
-/* Seat the toggle inside the mobile masthead strip */
+/* open: the flap has turned over. Hovering a little way back is a peek, not a fold */
 @media (max-width: 1023px) {
-  .navbar-corner {
-    left: 0.55rem;
-    top: calc((var(--topbar-h) - 42px) / 2);
+  body.sidebar-open .navbar-corner {
+    --peel: 180deg;
+  }
+  body.sidebar-open .navbar-corner:hover {
+    --peel: 162deg;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .navbar-corner {
-    transition: none;
-  }
-}
-
-.navbar-corner:hover {
-  background: var(--accent);
-}
-
+/* ---------------------------------------------------------------- desktop rail */
 @media (min-width: 1024px) {
-  .navbar-corner {
-    left: calc(var(--sidebar-w) - 52px);
-  }
   .sidebar-scrim {
     display: none;
   }
+  /* the corner is the rail's top-right: the same geometry, mirrored */
+  .navbar-corner {
+    --mirror: -1;
+    left: calc(var(--sidebar-w) - var(--corner));
+    transition:
+      left 0.45s var(--fold-ease),
+      transform var(--transition);
+  }
+  body:not(.sidebar-collapsed) .navbar-corner {
+    --peel: 180deg;
+  }
+  body:not(.sidebar-collapsed) .navbar-corner:hover {
+    --peel: 162deg;
+  }
+
+  /* folded up: only the brand tab remains, and the page reclaims the margin */
   body.sidebar-collapsed #navbar {
     width: var(--sidebar-collapsed-w);
   }
   body.sidebar-collapsed .navbar-corner {
-    left: calc(var(--sidebar-collapsed-w) - 52px);
+    left: calc(var(--sidebar-collapsed-w) - var(--corner));
+  }
+  body.sidebar-collapsed .fold__panel--1 > .fold__sheet {
+    padding: 3.6rem 0 0.9rem;
   }
   body.sidebar-collapsed .sidebar__brand {
+    border-bottom: 0;
     font-size: 0;
+    padding: 0;
     text-align: center;
   }
   body.sidebar-collapsed .sidebar__brand::before {
@@ -353,56 +654,8 @@ body.sidebar-open .navbar-corner__bars span:nth-child(3) {
     font-family: var(--font-display);
     font-size: var(--fs-md);
   }
-  body.sidebar-collapsed .sidebar__tagline,
-  body.sidebar-collapsed .sidebar__foot,
-  body.sidebar-collapsed .sidebar__link-label {
+  body.sidebar-collapsed .sidebar__tagline {
     display: none;
-  }
-  body.sidebar-collapsed .sidebar__link {
-    border-left: 0;
-    font-size: var(--fs-md);
-    padding-inline: 0;
-    text-align: center;
-  }
-  body.sidebar-collapsed .sidebar__link::before {
-    color: var(--accent);
-    content: attr(aria-label);
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-}
-
-@media (max-width: 1023px) {
-  #navbar {
-    max-width: 86vw;
-    width: min(280px, 78vw);
-  }
-  /* Thumb-sized targets: the rail's compact 34px rows are a pointer
-     affordance, not a touch one (WCAG 2.5.8 wants 24px minimum; 48px is
-     the comfortable target on a phone). */
-  .sidebar__link {
-    align-items: center;
-    display: flex;
-    font-size: var(--fs-lg);
-    min-height: 48px;
-    padding: 0.35rem 0.7rem;
-  }
-  .sidebar__nav {
-    gap: 0.2rem;
-  }
-  .sidebar__link.is-active::after {
-    background: var(--accent);
-    border-radius: 50%;
-    content: "";
-    height: 6px;
-    margin-left: auto;
-    width: 6px;
   }
 }
 

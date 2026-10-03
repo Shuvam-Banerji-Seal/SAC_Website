@@ -1,16 +1,37 @@
 /**
- * components/navbar-fold.js — sidebar toggle (mobile off-canvas / desktop collapse).
+ * components/navbar-fold.js — the folded navigation's controller.
  *
- * Design contract (fixed in this revision):
+ * The geometry (concertina panels, the dog-ear flap) is CSS; this module owns the
+ * state those rules read from <body> and the things CSS can't do.
+ *
+ * Design contract:
  *  - Single breakpoint token: 1024px via matchMedia("(min-width:1024px)")
- *  - Mobile (<1024): #navbar is off-canvas with transform; .sidebar-open toggles it; scrim + Escape close; body overflow hidden while open
- *  - Desktop (≥1024): #navbar is always visible; same button toggles .sidebar-collapsed (rail width) persisted in localStorage
+ *  - Mobile (<1024): the sheet is folded away until .sidebar-open unfolds it; scrim + Escape close; body overflow hidden while open
+ *  - Desktop (≥1024): the sheet is open by default; the same corner folds it up (.sidebar-collapsed, persisted in localStorage)
+ *  - body.fold-ready is added after first paint. Until then nothing transitions, so a
+ *    page never animates its own initial state (a collapsed rail must not unfold on load)
+ *  - Once per tab session on phones the corner lifts once, so the fold announces itself
  *  - No double-binding (guarded by __sacSidebarBound + __sacNavbarResizeBound)
  *  - Resize across breakpoint clears the opposing state (mobile open → close, desktop collapsed → keep but clear on mobile)
  *  - Respects prefers-reduced-motion for transform duration
  *  - Correct aria-label/title/expanded per mode
  */
 import { $ } from "../utils/dom.js";
+
+/** The page-turn sound, for people who switched sound effects on. calligraphy.js is
+ *  fetched only then — it is a large module and sound is off by default. */
+function paperSound() {
+  try {
+    if (JSON.parse(localStorage.getItem("sac-site-prefs"))?.sound !== true) return;
+  } catch {
+    return;
+  }
+  import("../utils/calligraphy.js").then((m) => m.playPageTurn?.()).catch(() => {});
+}
+
+const prefersLessMotion = () =>
+  document.documentElement.getAttribute("data-reduce-motion") === "on" ||
+  Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 
 export function setupNavbarFold() {
   const toggle = $("#navbarCorner");
@@ -40,8 +61,10 @@ export function setupNavbarFold() {
   };
 
   const lockBodyScroll = (lock) => {
-    // Only lock on mobile; desktop collapsed must not lock
-    if (isDesktop()) return;
+    // Only ever LOCK on mobile — but always allow an unlock. The early return used to
+    // cover both, so opening the nav on a phone and then widening past 1024px (a
+    // tablet rotating to landscape) left the page unable to scroll on desktop.
+    if (lock && isDesktop()) return;
     document.documentElement.style.overflow = lock ? "hidden" : "";
     document.body.style.overflow = lock ? "hidden" : "";
     document.body.style.touchAction = lock ? "none" : "";
@@ -91,6 +114,7 @@ export function setupNavbarFold() {
   // Toggle button
   toggle.addEventListener("click", (e) => {
     e.preventDefault();
+    paperSound();
     if (isDesktop()) setCollapsed(!isCollapsed());
     else isOpen() ? close() : open();
   });
@@ -164,10 +188,32 @@ export function setupNavbarFold() {
     }
     setToggleLabel();
     syncInert();
+    // Enable the transitions only now that the initial state has painted.
+    requestAnimationFrame(() => document.body.classList.add("fold-ready"));
   });
 
+  peekHint(toggle, isDesktop);
   setupDrawerSwipe(navbar, close, isDesktop, isOpen);
   setupTopbarAutoHide();
+}
+
+/* -------------------------------------------------------------------------
+ * First-visit hint: on a phone the nav starts folded away and the corner looks
+ * like a decoration. Lifting it once per tab session shows it is a fold you can
+ * open. Never on desktop (the nav is already open) and never under reduced motion.
+ * ------------------------------------------------------------------------- */
+function peekHint(toggle, isDesktop) {
+  if (isDesktop() || prefersLessMotion()) return;
+  try {
+    if (sessionStorage.getItem("sac-nav-peek")) return;
+    sessionStorage.setItem("sac-nav-peek", "1");
+  } catch {
+    return;
+  }
+  toggle.classList.add("is-peeking");
+  toggle.addEventListener("animationend", () => toggle.classList.remove("is-peeking"), {
+    once: true,
+  });
 }
 
 /* -------------------------------------------------------------------------
