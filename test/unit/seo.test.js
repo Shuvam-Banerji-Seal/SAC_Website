@@ -54,7 +54,7 @@ describe("search infrastructure", () => {
     expect(html).toContain('id="about-stats"');
     // and the dispatcher exists
     const main = readFileSync(resolve(root, "js/main.js"), "utf-8");
-    expect(main).toContain('renderArchiveStats("about-stats")');
+    expect(main).toContain('renderCouncilFacts("about-stats")');
   });
 });
 

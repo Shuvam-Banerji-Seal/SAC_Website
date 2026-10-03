@@ -797,10 +797,8 @@
     background-size: cover;
   }
   .sac-diagram-wrap {
-    background-image: image-set(
-      url("../../assets/old-paper.jpg") 1x,
-      url("../../assets/old-paper.jpg") 2x
-    );
+    /* WebP: the same sheet at a third of the weight (152 KB JPEG → 57 KB) */
+    background-image: url("../../assets/old-paper.webp");
   }
 }
 
@@ -1205,7 +1203,23 @@
   }
 }
 
-/* Photo masthead — the campus itself behind the Chronicle title */
+/* Photo masthead — the campus itself behind the Chronicle title.
+   The picture sits under a dark scrim and white type, so it is served at the
+   size the screen can use: 760px wide for phones (56 KB), 1200px for laptops
+   (129 KB), the full 1600px (299 KB) only on large displays. */
+.masthead--photo {
+  --masthead-img: url("../../assets/masthead-campus.webp");
+}
+@media (max-width: 1400px) {
+  .masthead--photo {
+    --masthead-img: url("../../assets/masthead-campus-1200.webp");
+  }
+}
+@media (max-width: 760px) {
+  .masthead--photo {
+    --masthead-img: url("../../assets/masthead-campus-760.webp");
+  }
+}
 .masthead--photo {
   background:
     linear-gradient(
@@ -1214,10 +1228,7 @@
       rgba(24, 20, 16, 0.34) 45%,
       rgba(24, 20, 16, 0.72) 100%
     ),
-    image-set(
-      url("../../assets/masthead-campus.webp") 1x,
-      url("../../assets/masthead-campus.webp") 2x
-    );
+    var(--masthead-img);
   background-size: cover, cover;
   background-position:
     center,
@@ -1255,10 +1266,7 @@
       rgba(11, 9, 7, 0.46) 45%,
       rgba(11, 9, 7, 0.8) 100%
     ),
-    image-set(
-      url("../../assets/masthead-campus.webp") 1x,
-      url("../../assets/masthead-campus.webp") 2x
-    );
+    var(--masthead-img);
   background-size: cover, cover;
   background-position:
     center,

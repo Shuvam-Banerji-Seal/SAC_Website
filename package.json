@@ -9,12 +9,14 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "vitest run --config vitest.e2e.config.js",
-    "lint": "eslint js/ test/ --ext .js,.mjs",
-    "lint:fix": "eslint js/ test/ --ext .js,.mjs --fix",
-    "format": "prettier --write \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
-    "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
+    "lint": "eslint js/ test/ tools/ --ext .js,.mjs",
+    "lint:fix": "eslint js/ test/ tools/ --ext .js,.mjs --fix",
+    "format": "prettier --write \"js/**/*.js\" \"test/**/*.js\" \"tools/**/*.mjs\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"js/**/*.js\" \"test/**/*.js\" \"tools/**/*.mjs\" \"css/**/*.css\" \"*.json\" \".github/workflows/*.yml\"",
     "audit": "npm audit --audit-level=moderate",
     "serve": "npx http-server . -p 8000 -c-1 --cors",
+    "sync": "node tools/sync-preloads.mjs",
+    "sync:check": "node tools/sync-preloads.mjs --check",
     "build:pretext": "cd utils/pretext && npm install --legacy-peer-deps && npx tsc -p tsconfig.build.json && cp -r dist/generated dist/ && cp dist/*.js ../../js/pretext/ && cp -r dist/generated ../../js/pretext/ && echo 'Pretext built and copied to js/pretext/'"
   },
   "keywords": [

@@ -139,9 +139,11 @@ export function initCampusBook(assets, claimed = new Set()) {
             "aria-label": `View ${label(p)} full-screen`,
           },
           el("img", {
-            src: assetUrl(gridSrc(p)),
+            // No src yet: hydrate() fills it in when the page is near. Twelve
+            // plates are stacked in one spot, so even loading="lazy" would
+            // fetch them all the moment the book neared the screen.
+            "data-src": assetUrl(gridSrc(p)),
             alt: altTextFor(p, "Campus photograph"),
-            loading: "eager",
             decoding: "async",
             width: p.width || 1200,
             height: p.height || 900,
@@ -162,9 +164,8 @@ export function initCampusBook(assets, claimed = new Set()) {
         { class: "book__face book__face--backface", "aria-hidden": "true" },
         el("img", {
           class: "book__plate-thumb",
-          src: assetUrl(gridSrc(p)),
+          "data-src": assetUrl(gridSrc(p)),
           alt: "",
-          loading: "lazy",
           decoding: "async",
           width: 200,
           height: 150,
@@ -197,7 +198,18 @@ export function initCampusBook(assets, claimed = new Set()) {
     return leaf;
   });
 
+  /** Give a leaf's pictures their src — only done for pages the reader can reach soon. */
+  function hydrate(index) {
+    leaves[index]?.querySelectorAll("img[data-src]").forEach((img) => {
+      img.src = img.dataset.src;
+      img.removeAttribute("data-src");
+    });
+  }
+
   function paint() {
+    // The open spread, the leaf just turned, and the next two: that is all a
+    // reader can see before the next flip. Later plates load as the book turns.
+    for (let i = current - 1; i <= current + 2; i++) hydrate(i);
     leaves.forEach((leaf, i) => {
       const flipped = i < current;
       leaf.classList.toggle("is-flipped", flipped);

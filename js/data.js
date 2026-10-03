@@ -70,7 +70,7 @@ function fetchSuppressed() {
 
 let cachePromise = null;
 // Bump this when assets change to invalidate stale sessionStorage cache
-const CACHE_VERSION = "sac-v52";
+const CACHE_VERSION = "sac-v53";
 
 function fetchJsonl() {
   if (!cachePromise) {

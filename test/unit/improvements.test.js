@@ -35,9 +35,9 @@ describe("Phase 1.1: image-set() for raster textures", () => {
     expect(imageSetBlocks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("home.css uses image-set() for old-paper.jpg", () => {
-    const imageSetBlocks = homeCss.match(/image-set\([^)]*old-paper[^)]*\)/g);
-    expect(imageSetBlocks).toBeTruthy();
+  it("home.css serves the old-paper texture as WebP, not the 152 KB JPEG", () => {
+    expect(homeCss).toContain("old-paper.webp");
+    expect(homeCss).not.toContain("old-paper.jpg");
   });
 });
 
@@ -79,42 +79,18 @@ describe("Phase 1.3: mobile background simplification", () => {
   });
 });
 
-describe("Phase 1.4: SW cache for individual club pages", () => {
+describe("Phase 1.4: SW caches club pages as they are visited, not up front", () => {
   const sw = read("/sw.js");
 
-  it("sw.js caches all 12 individual club pages", () => {
-    const clubPages = [
-      "pages/aarshi.html",
-      "pages/arts.html",
-      "pages/radio.html",
-      "pages/ikqc.html",
-      "pages/literary.html",
-      "pages/movie.html",
-      "pages/music.html",
-      "pages/nature.html",
-      "pages/nrutya.html",
-      "pages/pixel.html",
-      "pages/academics.html",
-      "pages/hostel.html",
-    ];
-    clubPages.forEach((page) => {
-      expect(sw).toContain(`"${page}"`);
-    });
+  it("sw.js does not precache the site's pages (they are cached on first use)", () => {
+    const shell = sw.match(/const SHELL = \[([\s\S]*?)\];/)?.[1] || "";
+    expect(shell).not.toMatch(/pages\//);
+    // runtime caching still stores any in-scope page it fetches
+    expect(sw).toContain("cache.put(event.request, clone)");
   });
 
   it("sw.js no longer references the old club.html template", () => {
     expect(sw).not.toContain('"pages/club.html"');
-  });
-});
-
-describe("Phase 1.5: SRI integrity for Three.js CDN", () => {
-  const index = read("/index.html");
-
-  it("index.html has modulepreload with integrity for Three.js", () => {
-    expect(index).toContain('rel="modulepreload"');
-    expect(index).toContain("three@0.171.0");
-    expect(index).toContain('integrity="sha384-');
-    expect(index).toContain('crossorigin="anonymous"');
   });
 });
 

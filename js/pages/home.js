@@ -12,6 +12,7 @@ import { fetchLatestVideos } from "../utils/youtube.js";
 import { measureText } from "../utils/text-measure.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 import { gridSrc } from "../utils/thumb.js";
+import { renderCouncilFacts } from "../components/council-facts.js";
 
 const EXCERPT_MAX = 240;
 const EXCERPT_MIN = 30;
@@ -88,33 +89,6 @@ function selectEditorialImages(assets, limit = 6, claimed = new Set()) {
     if (chosen.length === limit) break;
   }
   return chosen;
-}
-
-/* What the Council is, not how many files describe it. A visitor wants to
- * know its shape and reach; a media tally answers a question nobody asked.
- * Every figure below is the constitutional structure, which is fixed — so
- * it is stated here rather than counted out of the asset map. */
-const COUNCIL_FACTS = [
-  ["bodies", "5", "elected bodies", "Academics, Cultural, Food & Hygiene, Hostel, Sports"],
-  ["clubs", "33", "clubs & committees", "each with its own office bearers and budget"],
-  ["halls", "5", "halls of residence", "wing representatives on every floor"],
-  ["tenure", "1 yr", "office-bearer tenure", "elected annually, club by club"],
-];
-
-function renderStats(_assets, mountId = "home-stats") {
-  const mount = document.getElementById(mountId);
-  if (!mount) return;
-  mount.replaceChildren(
-    ...COUNCIL_FACTS.map(([id, value, label, note]) =>
-      el(
-        "div",
-        { class: "home-stat", "data-stat": id },
-        el("strong", {}, value),
-        el("span", {}, label),
-        el("span", { class: "home-stat__note" }, note)
-      )
-    )
-  );
 }
 
 function renderCampusGallery(assets, claimed) {
@@ -197,16 +171,10 @@ function equalizeGalleryCaptions() {
   } catch {}
 }
 
-export async function renderArchiveStats(mountId) {
-  try {
-    const assets = await loadAssetsMap();
-    renderStats(assets, mountId);
-  } catch {
-    /* stats are decorative — silent */
-  }
-}
-
 export async function initHome() {
+  // Static facts: up at once, no archive needed.
+  renderCouncilFacts();
+
   // The organisational plate is drawn from the BODIES table in its own
   // module, not from the archive — so it goes up before the fetch and
   // still stands if the archive is unreachable.
@@ -225,7 +193,6 @@ export async function initHome() {
     return;
   }
 
-  renderStats(assets);
   // One photograph, one place on the front page: the Book, the Board and the
   // Picture Desk all draw from the same archive, so they share this set.
   const claimed = new Set();

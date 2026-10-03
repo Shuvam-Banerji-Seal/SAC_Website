@@ -32,16 +32,15 @@ describe("campus life page", () => {
   it("is dispatched from main.js and in the navbar", () => {
     expect(existsSync(resolve(root, "js/pages/campus-life.js"))).toBe(true);
     const main = readFileSync(resolve(root, "js/main.js"), "utf-8");
-    expect(main).toContain('"campus-life": initCampusLife');
+    expect(main).toContain('"campus-life": () => import("./pages/campus-life.js")');
     const nav = readFileSync(resolve(root, "js/config.js"), "utf-8");
     expect(nav).toContain('id: "campus-life"');
     const footer = readFileSync(resolve(root, "js/components/footer.js"), "utf-8");
     expect(footer).toContain("campus-life.html");
   });
 
-  it("is in the sitemap, SW cache, and linked from the home carousel", () => {
+  it("is in the sitemap and linked from the home carousel", () => {
     expect(readFileSync(resolve(root, "sitemap.xml"), "utf-8")).toContain("campus-life.html");
-    expect(readFileSync(resolve(root, "sw.js"), "utf-8")).toContain('"pages/campus-life.html"');
     const home = readFileSync(resolve(root, "index.html"), "utf-8");
     expect(home).toContain("pages/campus-life.html");
     expect(home).toContain("Browse the campus archive");

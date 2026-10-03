@@ -45,12 +45,13 @@ export default [
     },
   },
   {
-    ignores: [
-      "js/pretext/**",
-      "node_modules/**",
-      "utils/**",
-      "public/**",
-      ".ruff_cache/**",
-    ],
+    // Command-line tools print their results; the site's own code must not.
+    files: ["tools/**/*.mjs"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
+    ignores: ["js/pretext/**", "node_modules/**", "utils/**", "public/**", ".ruff_cache/**"],
   },
 ];

@@ -2,11 +2,17 @@
  * main.js — entry point. Runs on every page.
  *
  *  1. Applies saved theme / text-size / motion / sound prefs (no FOUC)
- *  2. Renders the sidebar navigation
- *  3. Renders the footer
- *  4. Wires the sidebar toggle (mobile off-canvas)
- *  5. Initialises the lightweight settings panel
- *  6. Dispatches to the page-specific initialiser based on body[data-page]
+ *  2. Renders the sidebar navigation and footer
+ *  3. Wires the sidebar toggle (mobile off-canvas) and the settings panel
+ *  4. Loads ONLY the current page's script (body[data-page] / data-club-slug)
+ *  5. Defers everything that is not needed for first paint to idle time
+ *
+ * Load budget. Every page used to import every other page's script (home,
+ * clubs, events, gallery, campus life, the club pages …) — about 40 module
+ * requests on a cold phone load. Now the entry brings the shell, and a page
+ * brings its own code. Each HTML page also carries a <link rel="modulepreload">
+ * for its module, so the fetch starts with the document instead of waiting
+ * for this file to run.
  *
  * Three.js was removed in the lightweight redesign (new_design.md).
  */
@@ -15,26 +21,48 @@ import { renderNavbar } from "./components/navbar.js";
 import { renderFooter } from "./components/footer.js";
 import { setupNavbarFold } from "./components/navbar-fold.js";
 import { initSettings, applyPrefs, loadPrefs } from "./components/settings.js";
-import { initViewer } from "./components/viewer.js";
-import { initHome } from "./pages/home.js";
-import { initClubs } from "./pages/clubs.js";
-import { initClubImages } from "./pages/club-images.js";
-import { initClubPage } from "./pages/club-page.js";
-import { initEvents } from "./pages/events.js";
-import { initGallery } from "./pages/gallery.js";
-import { initCampusLife } from "./pages/campus-life.js";
 import { initLoader } from "./loader.js";
-import { initAmbientMusic } from "./utils/music.js";
 import { initBackToTop } from "./components/back-to-top.js";
 import { applyThumbView, loadThumbView } from "./utils/view-pref.js";
 
-const initializers = {
-  home: initHome,
-  clubs: initClubs,
-  events: initEvents,
-  gallery: initGallery,
-  "campus-life": initCampusLife,
+/** One lazy loader per page type — nothing is fetched until it is the page. */
+const PAGES = {
+  home: () => import("./pages/home.js").then((m) => m.initHome),
+  clubs: () => import("./pages/clubs.js").then((m) => m.initClubs),
+  events: () => import("./pages/events.js").then((m) => m.initEvents),
+  gallery: () => import("./pages/gallery.js").then((m) => m.initGallery),
+  "campus-life": () => import("./pages/campus-life.js").then((m) => m.initCampusLife),
 };
+
+/** Run `fn` when the browser is idle (or soon after, where it can't tell). */
+function whenIdle(fn, timeout = 1500) {
+  if ("requestIdleCallback" in window) window.requestIdleCallback(fn, { timeout });
+  else window.setTimeout(fn, 200);
+}
+
+/**
+ * Register the service worker once the page has finished loading and the
+ * browser is idle. Registering it during load made the worker's install fetch
+ * compete with the page's own first-paint downloads.
+ *
+ * Resolve relative to THIS module, not a hard-coded "/SAC_Website/" — the
+ * repo is mirrored under /SAC_website/ (lowercase w) on the primary Pages
+ * domain, where the old absolute path 404'd and the SW never registered.
+ */
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
+  const register = () =>
+    whenIdle(() => {
+      try {
+        const swUrl = new URL("../sw.js", import.meta.url);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      } catch {
+        /* URL resolution failed — non-fatal */
+      }
+    }, 4000);
+  if (document.readyState === "complete") register();
+  else window.addEventListener("load", register, { once: true });
+}
 
 onReady(async () => {
   const page = document.body.dataset.page || "home";
@@ -64,12 +92,12 @@ onReady(async () => {
   renderFooter();
   setupNavbarFold();
   initSettings();
-  initAmbientMusic();
   initBackToTop();
-  const { initReadingProgress } = await import("./components/reading-progress.js");
-  initReadingProgress();
-  initViewer();
-  initializers[page]?.();
+
+  // The page's own script — started now, not after the idle work below.
+  const pageReady = PAGES[page]?.()
+    .then((init) => init())
+    .catch((err) => console.error(`[main] could not start the ${page} page:`, err));
 
   // Skip-to-content link — injected once, targets <main>.
   // WCAG 2.1 SC 2.4.1 (Bypass Blocks).
@@ -85,25 +113,32 @@ onReady(async () => {
 
   // About page: live archive stats under the intro
   if (page === "about") {
-    const { renderArchiveStats } = await import("./pages/home.js");
-    renderArchiveStats("about-stats");
+    const { renderCouncilFacts } = await import("./components/council-facts.js");
+    renderCouncilFacts("about-stats");
   }
 
   // Individual club pages (data-club-slug) — load images from JSONL
-  if (document.body.dataset.clubSlug) {
-    await Promise.all([initClubPage(), initClubImages()]);
-  }
+  const clubPage = document.body.dataset.clubSlug
+    ? Promise.all([import("./pages/club-page.js"), import("./pages/club-images.js")])
+        .then(([profile, images]) => Promise.all([profile.initClubPage(), images.initClubImages()]))
+        .catch((err) => console.error("[main] could not start the club page:", err))
+    : null;
 
-  // Register Service Worker for asset caching (production only).
-  // Resolve relative to THIS module, not a hard-coded "/SAC_Website/" — the
-  // repo is mirrored under /SAC_website/ (lowercase w) on the primary Pages
-  // domain, where the old absolute path 404'd and the SW never registered.
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
-    try {
-      const swUrl = new URL("../sw.js", import.meta.url);
-      navigator.serviceWorker.register(swUrl).catch(() => {});
-    } catch {
-      /* URL resolution failed — non-fatal */
-    }
-  }
+  // Not needed for first paint: the lightbox (it listens at the document, so
+  // it only has to exist before someone clicks a plate), the ambient-music
+  // element (preload="none" — nothing is downloaded until it is switched on),
+  // and the reading-progress rule.
+  whenIdle(async () => {
+    const [{ initViewer }, { initAmbientMusic }, { initReadingProgress }] = await Promise.all([
+      import("./components/viewer.js"),
+      import("./utils/music.js"),
+      import("./components/reading-progress.js"),
+    ]);
+    initViewer();
+    initAmbientMusic();
+    initReadingProgress();
+  });
+
+  registerServiceWorker();
+  await Promise.all([pageReady, clubPage]);
 });
