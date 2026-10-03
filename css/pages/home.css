@@ -1491,6 +1491,21 @@ main.home .section-title,
 main.home .notebook-section__heading {
   counter-increment: folio;
 }
+/* The red rule under a title: always drawn (so it exists without scroll-driven animation);
+   enhancements.css draws it in as the title arrives. */
+main.home .section-title {
+  position: relative;
+}
+main.home .section-title::before {
+  background: var(--accent);
+  bottom: -3px;
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  transform-origin: left;
+  width: 4.5rem;
+}
 main.home .section-title::after,
 main.home .notebook-section__heading::after {
   color: var(--ink-muted);
@@ -1528,4 +1543,297 @@ main.home::after {
     top: -6px;
     width: 11px;
   }
+}
+
+/* ── "What are you into?" ─────────────────────────────────────────
+   The block is generated (tools/sync-pages.mjs → home-finder) so it is static HTML:
+   the chips are plain links to the filtered Clubs page and work without JavaScript.
+   Chips are pinned labels — each a hair off square, straightening on hover. */
+.finder {
+  margin: 2.5rem 0;
+  /* .reveal-section is `contain: paint`, which clips anything outside its box — including the
+     cards' hard offset shadows. Keep the shadows' reach (5px) inside it. */
+  margin-right: -6px; /* …and widen the box by the same amount, so titles still line up */
+  padding: 0 6px 8px 0;
+}
+.finder__lede {
+  color: var(--ink-soft);
+  margin: 0 0 1.1rem;
+  max-width: none;
+}
+.finder__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 0.6rem;
+  list-style: none;
+  margin: 0 0 1.4rem;
+  max-width: none;
+  padding: 0;
+}
+.finder__chip {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--paper-edge);
+  color: var(--ink);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  text-decoration: none;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+.finder__chips li:nth-child(odd) .finder__chip {
+  transform: rotate(-0.7deg);
+}
+.finder__chips li:nth-child(even) .finder__chip {
+  transform: rotate(0.6deg);
+}
+.finder__count {
+  border-left: 1px solid var(--ink-rule);
+  color: var(--ink-muted);
+  font-size: var(--fs-xs);
+  padding-left: 0.55rem;
+}
+@media (hover: hover) {
+  .finder__chip:hover {
+    box-shadow: 5px 5px 0 var(--accent);
+    transform: translate(-2px, -2px);
+  }
+}
+.finder__chip:active {
+  box-shadow: 1px 1px 0 var(--paper-edge);
+  transform: translate(1px, 1px);
+}
+
+/* the search "field": a button, because it opens the palette rather than taking text itself */
+.finder__search {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px dashed var(--ink);
+  color: var(--ink-muted);
+  cursor: text;
+  display: flex;
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-style: italic;
+  gap: 0.8rem;
+  margin: 0 0 1.4rem;
+  min-height: 56px;
+  padding: 0 1rem;
+  text-align: left;
+  width: 100%;
+}
+.finder__search-glyph {
+  font-size: 1.4rem;
+  font-style: normal;
+  line-height: 1;
+}
+.finder__kbd {
+  border: 1px solid var(--ink-rule);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-style: normal;
+  margin-left: auto;
+  padding: 0.1rem 0.45rem;
+}
+@media (hover: hover) {
+  .finder__search:hover {
+    border-style: solid;
+    color: var(--ink);
+  }
+}
+@media (pointer: coarse) {
+  .finder__kbd {
+    display: none; /* no "/" key on a touch screen */
+  }
+}
+
+/* Club of the day. The card's height is reserved (min-height) so the filled-in card does not
+   push the sections below it down; it is taller on phones, where the name wraps. */
+.spotlight {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: 64px minmax(0, 1fr);
+  min-height: 12.4rem; /* the tallest card at ≥ 641 px is 196.5 px (measured over every club) */
+  padding: 1.1rem 1.2rem;
+  position: relative;
+}
+.spotlight::before {
+  /* the pin it hangs from, like the hero's */
+  background: radial-gradient(circle at 30% 30%, #c9a86a, #8b6f32 65%, #5a4220 100%);
+  border: 1px solid rgba(24, 20, 16, 0.32);
+  border-radius: 50%;
+  content: "";
+  height: 12px;
+  left: 50%;
+  position: absolute;
+  top: -7px;
+  transform: translateX(-50%);
+  width: 12px;
+}
+.spotlight__crest {
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--ink-rule);
+  display: flex;
+  height: 64px;
+  justify-content: center;
+  overflow: hidden;
+  width: 64px;
+}
+.spotlight__crest img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+.spotlight__initial {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+}
+.spotlight__body {
+  display: flex;
+  flex-direction: column;
+}
+.spotlight__body > * {
+  margin: 0;
+  max-width: none;
+}
+.spotlight__body > * + * {
+  margin-top: 0.35rem;
+}
+.spotlight__kicker {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.spotlight__name {
+  border: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.12;
+  padding: 0;
+}
+/* The card's height is reserved up front, so it must be bounded: a long name or a long list of
+   interests may not make one club's card taller than the space held for it. (Measured in a
+   browser across every club at 360–1366 px; the full name is the link's title.) */
+.spotlight__name {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.spotlight__meta {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.spotlight__known {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spotlight__name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.spotlight__meta,
+.spotlight__known {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+}
+.spotlight__known {
+  font-style: italic;
+}
+.spotlight__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  /* pinned to the card's foot: when a short card sits in the space held for a tall one, the
+     spare room opens between the text and the buttons, like a card's footer, not below them */
+  margin-top: auto !important;
+  padding-top: 0.7rem;
+}
+.spotlight__open,
+.spotlight__shuffle {
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.spotlight__open {
+  background: var(--ink);
+  color: var(--paper);
+}
+@media (hover: hover) {
+  .spotlight__open:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .spotlight__shuffle:hover {
+    background: var(--paper-deep);
+  }
+}
+/* a new club is dealt like a fresh proof: a short rise and a slight settle (transform + opacity) */
+.spotlight__body.is-new {
+  animation: spotlight-deal 360ms var(--ease-ink, ease-out) both;
+}
+@keyframes spotlight-deal {
+  from {
+    opacity: 0;
+    transform: translateY(10px) rotate(-0.6deg);
+  }
+}
+@media (max-width: 640px) {
+  .spotlight {
+    gap: 0.9rem;
+    grid-template-columns: 52px minmax(0, 1fr);
+    min-height: 15.2rem; /* tallest at 360–640 px: 241.5 px */
+    padding: 1rem;
+  }
+  .spotlight__crest {
+    height: 52px;
+    width: 52px;
+  }
+}
+@media (max-width: 359px) {
+  .spotlight {
+    min-height: 18.6rem; /* tallest at 320 px: 295 px */
+  }
+}
+
+/* the counted-up figures (council-facts.js) — digits keep one width so the count doesn't jitter.
+   `.home-stat span` above would otherwise turn the figure into a small mono label. */
+.home-stat strong .home-stat__figure {
+  color: inherit;
+  display: inline;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: inherit;
+  text-transform: none;
 }

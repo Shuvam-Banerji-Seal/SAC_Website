@@ -142,7 +142,7 @@ its own name.
 
 | Generator | Writes | Guarded by |
 |---|---|---|
-| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js` | `load-budget.test.js` runs it in `--check` mode |
+| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js`; from the club registry, each club page's breadcrumb and "more clubs" pager and the home page's "What are you into?" chips | `load-budget.test.js` runs it in `--check` mode; `club-pages.test.js` and `home-features.test.js` pin the club and home blocks to the generator |
 | `tools/gen-sitemap.mjs` | `sitemap.xml`, `robots.txt` (CI regenerates both for the host being deployed) | `sitemap.test.js` |
 | `tools/dedupe/build_manifest.py` | `public/duplicates.json` | `dedupe.test.js` |
 

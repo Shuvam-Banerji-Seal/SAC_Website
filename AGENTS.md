@@ -33,7 +33,7 @@ npm run check                   # lint + prettier + generated-files check + all 
 npm test                        # vitest only        npm run test:watch · test:coverage
 npm run lint:fix · npm run format
 
-npm run sync                    # regenerate generated page blocks (preloads, club breadcrumb/pager) + sw shell list
+npm run sync                    # regenerate generated page blocks (preloads, club breadcrumb/pager, home finder) + sw shell list
 npm run sitemap                 # regenerate sitemap.xml / robots.txt (CI does this per host)
 npm run dedupe:people           # recompile tools/dedupe/same_person.json -> public/duplicates.json
 npm run build:pretext           # only if the utils/pretext submodule changes
@@ -53,7 +53,8 @@ js/
   loader.js, preloader.js  the entrance (once per tab session); preloader is a classic script
   components/              navbar (folded-sheet nav), footer, settings, viewer, calendar, section-nav,
                            club-extras, campus-book/board, sac-diagram, council-facts, back-to-top,
-                           reading-progress; search-launcher (in the shell: "/" and Ctrl/⌘ K) and
+                           reading-progress, club-spotlight (home "club of the day");
+                           search-launcher (in the shell: "/" and Ctrl/⌘ K) and
                            search (the palette — loaded, with css/search.css, on first use)
   data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest
   pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
@@ -65,7 +66,7 @@ css/                       preloader, reset, variables (tokens), main, component
                            viewer, enhancements (last layer), print, search (loaded on demand),
                            pages/{home,clubs,club,events,gallery,about,calendar}.css
 tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
-test/unit/                 44 files, ~670 tests (vitest + jsdom); setup in test/setup.js
+test/unit/                 45 files, ~695 tests (vitest + jsdom); setup in test/setup.js
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)
 utils/pretext/             SUBMODULE (chenglou/pretext)
@@ -97,6 +98,7 @@ sw.js                      service worker (code network-first, media stale-while
 |---|---|---|
 | `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
 | `<!-- club-crumbs … -->` and `<!-- club-pager … -->` on the 32 club pages | the club registry, `js/data/clubs.js` | `npm run sync` |
+| `<!-- home-finder … -->` in `index.html` ("What are you into?" chips + the spotlight's mount) | `INTERESTS` and `CLUBS` in the registry | `npm run sync` |
 | `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
 | `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |
 | `public/duplicates.json` | `tools/dedupe/*` | see `tools/dedupe/README.md` |

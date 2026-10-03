@@ -6,7 +6,7 @@
  * story, a living picture desk, campus statistics, and current notices.
  */
 import { el, assetUrl, showError } from "../utils/dom.js";
-import { loadAssetsMap } from "../data.js";
+import { loadAssetsMap, indexByClub } from "../data.js";
 import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { measureText } from "../utils/text-measure.js";
@@ -175,6 +175,11 @@ export async function initHome() {
   // Static facts: up at once, no archive needed.
   renderCouncilFacts();
 
+  // "Club of the day": from the registry alone, so it is up before the archive; it takes the
+  // archive's logo when that arrives (below). Imported on demand — it is below the fold.
+  const { initClubSpotlight } = await import("../components/club-spotlight.js");
+  const spotlight = initClubSpotlight(document.getElementById("club-spotlight"));
+
   // The organisational plate is drawn from the BODIES table in its own
   // module, not from the archive — so it goes up before the fetch and
   // still stands if the archive is unreachable.
@@ -192,6 +197,8 @@ export async function initHome() {
     );
     return;
   }
+
+  spotlight?.useArchive(indexByClub(assets));
 
   // One photograph, one place on the front page: the Book, the Board and the
   // Picture Desk all draw from the same archive, so they share this set.

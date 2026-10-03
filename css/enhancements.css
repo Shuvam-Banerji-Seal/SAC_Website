@@ -204,12 +204,34 @@ button:not(:disabled):active,
         .lead-article,
         .notebook-section,
         .home-stats,
+        .finder,
         .club-detail__section,
         .clubs-body,
         .campus-cat
       ) {
       animation: sac-rise linear both;
       animation-range: entry 0% entry 28%;
+      animation-timeline: view();
+    }
+  }
+  @supports (animation-timeline: view()) {
+    /* The front-page photograph drifts a little slower than the page, so the sheet seems to
+       have depth. Scaled just enough (3%) that the drift never shows an edge. */
+    html:not([data-reduce-motion="on"]) .hero__frame img {
+      animation: hero-drift linear both;
+      animation-range: cover 0% cover 100%;
+      animation-timeline: view();
+    }
+    /* "Campus edition" is stamped onto the page as the article arrives. */
+    html:not([data-reduce-motion="on"]) .lead-article .ink-stamp {
+      animation: stamp-slam linear both;
+      animation-range: entry 8% entry 42%;
+      animation-timeline: view();
+    }
+    /* Each front-page section title gets its red rule drawn under it, left to right. */
+    html:not([data-reduce-motion="on"]) main.home .section-title::before {
+      animation: rule-draw linear both;
+      animation-range: entry 25% entry 75%;
       animation-timeline: view();
     }
   }
@@ -234,6 +256,35 @@ button:not(:disabled):active,
   to {
     opacity: 1;
     transform: none;
+  }
+}
+@keyframes hero-drift {
+  from {
+    transform: scale(1.03) translateY(-1.4%);
+  }
+  to {
+    transform: scale(1.03) translateY(1.4%);
+  }
+}
+@keyframes stamp-slam {
+  from {
+    opacity: 0;
+    transform: rotate(-5deg) scale(1.9);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-5deg) scale(1);
+  }
+}
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 @keyframes sac-fade-in {
