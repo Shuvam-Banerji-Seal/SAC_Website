@@ -57,6 +57,13 @@
   --accent-red: var(--accent);
   --accent-deep: #5f0808;
   --accent-gold: #b78d2f;
+  /* Rust & tea: the oxidised, sun-aged end of the palette. Used where a
+     surface should read as old iron or a tea-stained sheet (calendar cover,
+     foxed margins) without leaving the newspaper's red-and-cream world. */
+  --rust: #9a4a22;
+  --rust-deep: #6b2e14;
+  --rust-wash: rgba(154, 74, 34, 0.12);
+  --tea: #b58a52;
 
   --font-display:
     Impact, "Arial Narrow Bold", "Franklin Gothic Medium", Haettenschweiler, sans-serif;
@@ -109,6 +116,10 @@
   --accent-red: var(--accent);
   --accent-deep: #f08c7d;
   --accent-gold: #d6b25b;
+  --rust: #b8643a;
+  --rust-deep: #7a3a1c;
+  --rust-wash: rgba(184, 100, 58, 0.16);
+  --tea: #c79a62;
 }
 
 /* The settings texture choices are color/gradient swaps only. */

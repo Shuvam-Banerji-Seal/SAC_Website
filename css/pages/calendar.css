@@ -1,0 +1,658 @@
+/* The SAC Calendar — a desk calendar on the Chronicle's paper.
+   Rust-red cover band with wire binding, a ruled month sheet, taped agenda
+   slips. Loaded on demand by js/components/calendar.js (not render-blocking).
+   Square corners, hard offset shadows and mono small-caps follow the rest of
+   the site; the new colour is the rust/tea pair from variables.css. */
+
+.cal {
+  align-items: start;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1.7fr) minmax(250px, 1fr);
+  margin-top: 0.5rem;
+  /* Reserve the space so late data can't shove the page down. */
+  min-height: 34rem;
+}
+.cal [hidden] {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------- sheet */
+.cal__sheet {
+  background:
+    var(--paper-fiber),
+    linear-gradient(
+      180deg,
+      var(--paper-soft),
+      color-mix(in srgb, var(--paper-soft) 88%, var(--tea))
+    );
+  border: 1px solid var(--rule);
+  /* a few sheets underneath, each peeking out a little further */
+  box-shadow:
+    3px 3px 0 var(--paper-edge),
+    6px 6px 0 -1px var(--paper-deep),
+    7px 7px 0 -1px var(--ink-rule);
+  padding-bottom: 0.9rem;
+  position: relative;
+}
+
+/* wire binding: loops that pass through the cover band */
+.cal__binding {
+  display: flex;
+  inset: -11px 0 auto;
+  justify-content: space-evenly;
+  padding: 0 1.5rem;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+.cal__binding i {
+  background: linear-gradient(90deg, #2a231b, #a8977f 45%, #2a231b);
+  border-radius: 4px;
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.35);
+  height: 24px;
+  width: 8px;
+}
+
+.cal__head {
+  align-items: center;
+  background:
+    var(--paper-fiber),
+    radial-gradient(ellipse at 20% 0%, rgba(255, 220, 170, 0.18), transparent 55%),
+    linear-gradient(180deg, var(--rust), var(--rust-deep));
+  border-bottom: 3px double rgba(255, 240, 215, 0.45);
+  color: #fbf1dc;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: auto 1fr auto auto;
+  padding: 1.35rem 1rem 0.85rem;
+}
+.cal__title {
+  color: inherit;
+  font-family: var(--font-body);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  text-transform: uppercase;
+}
+.cal__year {
+  font-family: var(--font-mono);
+  font-size: 0.55em;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  opacity: 0.85;
+}
+.cal__nav,
+.cal__today {
+  background: rgba(0, 0, 0, 0.14);
+  border: 1px solid rgba(255, 240, 215, 0.55);
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  min-height: 2.4rem;
+  min-width: 2.4rem;
+  transition:
+    background var(--transition),
+    transform var(--transition);
+}
+.cal__nav {
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0 0.5rem 0.15rem;
+}
+.cal__today {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  padding: 0 0.8rem;
+  text-transform: uppercase;
+}
+.cal__nav:hover,
+.cal__today:hover {
+  background: rgba(255, 240, 215, 0.2);
+}
+.cal__nav:active,
+.cal__today:active {
+  transform: translateY(1px);
+}
+.cal :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.cal__head :focus-visible {
+  outline-color: #fbf1dc;
+}
+
+/* ----------------------------------------------------------------- grid */
+.cal__stage {
+  padding: 0.35rem 0.75rem 0;
+  perspective: 1000px;
+}
+.cal__table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  transform-origin: 50% 0;
+  width: 100%;
+}
+.cal__table th {
+  border-bottom: 3px double var(--rule);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  padding: 0.7rem 0 0.45rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+.cal__cell {
+  border: 1px solid color-mix(in srgb, var(--ink-rule) 45%, transparent);
+  height: 5.6rem;
+  padding: 0;
+  position: relative;
+  vertical-align: top;
+}
+.cal__cell.is-weekend {
+  background: color-mix(in srgb, var(--paper-deep) 38%, transparent);
+}
+.cal__cell.is-outside {
+  opacity: 0.4;
+}
+.cal__day {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  gap: 0.2rem;
+  height: 100%;
+  min-height: 5.6rem;
+  padding: 0.3rem 0.35rem;
+  position: relative;
+  text-align: left;
+  transition: background var(--transition);
+  width: 100%;
+}
+.cal__day:hover {
+  background: var(--rust-wash);
+}
+.cal__cell.is-selected {
+  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.cal__num {
+  align-items: center;
+  display: inline-flex;
+  flex: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  height: 1.7rem;
+  justify-content: center;
+  line-height: 1;
+  position: relative;
+  width: 1.7rem;
+}
+
+/* today: circled in red ink, slightly off-true like a hand-drawn ring */
+.cal__cell.is-today .cal__num {
+  color: var(--accent);
+}
+.cal__cell.is-today .cal__num::after {
+  animation: cal-ring 0.55s 0.2s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  border: 2px solid var(--accent);
+  border-radius: 52% 46% 50% 48% / 48% 52% 46% 50%;
+  content: "";
+  inset: -2px;
+  position: absolute;
+  transform: rotate(-7deg);
+}
+
+/* marks: stamped chips (detailed) or hatched bars (free/busy) */
+.cal__marks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cal__chip,
+.cal__bar {
+  animation: cal-stamp 0.38s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal__chip {
+  background: var(--accent);
+  color: var(--paper-soft);
+  transform: rotate(-0.6deg);
+}
+.cal__bar {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--paper-soft) 82%, transparent), transparent 85%),
+    repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--rust) 38%, transparent) 0 2px,
+      transparent 2px 5px
+    );
+  border-left: 3px solid var(--rust);
+  color: var(--ink);
+  font-weight: 700;
+}
+.cal__more {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+.cal__dots {
+  display: none;
+  gap: 3px;
+}
+.cal__dots i {
+  background: var(--accent);
+  border-radius: 50%;
+  height: 6px;
+  width: 6px;
+}
+.cal[data-mode="busy"] .cal__dots i {
+  background: var(--rust);
+}
+
+.cal__banner {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent) 7%, var(--paper-soft));
+  border: 1px dashed var(--accent);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin: 0.75rem;
+  padding: 0.55rem 0.8rem;
+}
+.cal__retry {
+  background: var(--ink);
+  border: 0;
+  color: var(--paper);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.8rem;
+  text-transform: uppercase;
+}
+
+.cal__legend {
+  align-items: center;
+  color: var(--ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  gap: 0.4rem 1.1rem;
+  letter-spacing: 0.08em;
+  margin: 0.7rem 0.9rem 0;
+  text-transform: uppercase;
+}
+.cal__key::before {
+  content: "";
+  display: inline-block;
+  height: 0.7rem;
+  margin-right: 0.4rem;
+  vertical-align: -0.1rem;
+  width: 0.9rem;
+}
+.cal__key--today::before {
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  width: 0.8rem;
+}
+.cal__key--chip::before {
+  background: var(--accent);
+}
+.cal__key--bar::before {
+  background: repeating-linear-gradient(135deg, var(--rust) 0 2px, transparent 2px 4px);
+  border-left: 3px solid var(--rust);
+}
+.cal__tz {
+  margin-left: auto;
+}
+
+/* loading: the sheet dims and the cells shimmer until the month arrives */
+.cal[data-state="loading"] .cal__table {
+  opacity: 0.6;
+}
+.cal[data-state="loading"] .cal__cell {
+  animation: cal-shimmer 1.3s linear infinite;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0 35%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 65% 100%
+  );
+  background-size: 250% 100%;
+}
+
+/* --------------------------------------------------------------- agenda */
+.cal__agenda {
+  display: grid;
+  gap: 1.25rem;
+}
+.cal__selected,
+.cal__upcoming {
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  box-shadow: 3px 3px 0 var(--paper-edge);
+  padding: 1.1rem 1rem 1rem;
+  position: relative;
+}
+.cal__selected::before,
+.cal__note::before {
+  background: rgba(183, 141, 47, 0.45);
+  content: "";
+  height: 14px;
+  left: 1rem;
+  position: absolute;
+  top: -7px;
+  transform: rotate(-4deg);
+  width: 54px;
+}
+.cal__sel-head {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 0.6rem;
+}
+.cal__h {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+.cal__h--small {
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.14em;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.4rem;
+  text-transform: uppercase;
+}
+.cal__sub {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  margin: 0.2rem 0 0;
+  text-transform: uppercase;
+}
+
+/* the postmark: a date stamped in red ink */
+.cal__stamp {
+  align-items: center;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 3px var(--paper-soft),
+    inset 0 0 0 4px var(--accent);
+  color: var(--accent);
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  height: 3.6rem;
+  justify-content: center;
+  line-height: 1;
+  transform: rotate(-8deg);
+  width: 3.6rem;
+}
+.cal__stamp b {
+  font-family: var(--font-body);
+  font-size: 1.35rem;
+}
+.cal__stamp i {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  margin-top: 0.15rem;
+}
+.cal__stamp--small {
+  height: 2.7rem;
+  width: 2.7rem;
+}
+.cal__stamp--small b {
+  font-size: 1rem;
+}
+.cal__stamp--small i {
+  font-size: 0.48rem;
+}
+
+.cal__list,
+.cal__coming {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cal__item {
+  border-top: 1px solid color-mix(in srgb, var(--ink-rule) 55%, transparent);
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.7rem 0;
+}
+.cal__item:first-child {
+  border-top: 0;
+  padding-top: 0.2rem;
+}
+.cal__when {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+}
+.cal__what {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.15;
+}
+.cal__item.is-booked .cal__what {
+  color: var(--ink-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+.cal__meta,
+.cal__where,
+.cal__desc {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.cal__desc {
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+.cal__link {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cal__empty {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+  font-style: italic;
+  margin: 0.4rem 0 0;
+}
+
+.cal__go {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-top: 1px dotted var(--ink-rule);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 0.8rem;
+  padding: 0.6rem 0;
+  text-align: left;
+  transition: transform var(--transition);
+  width: 100%;
+}
+.cal__coming li:first-child .cal__go {
+  border-top: 0;
+}
+.cal__go:hover {
+  transform: translateX(3px);
+}
+.cal__go-text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.cal__go-text strong {
+  font-family: var(--font-body);
+  line-height: 1.15;
+}
+.cal__go-text span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.cal__note {
+  background: color-mix(in srgb, var(--accent-gold) 20%, var(--paper-soft));
+  border: 1px solid var(--ink-rule);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  grid-column: 1 / -1;
+  line-height: 1.55;
+  margin: 0.25rem 0 0;
+  padding: 0.8rem 1rem;
+  position: relative;
+  transform: rotate(-0.25deg);
+}
+
+/* ----------------------------------------------------------- animations */
+@keyframes cal-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.7) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-0.6deg);
+  }
+}
+@keyframes cal-ring {
+  from {
+    opacity: 0;
+    transform: scale(1.9) rotate(-30deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-7deg);
+  }
+}
+@keyframes cal-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cal *,
+  .cal *::before,
+  .cal *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+[data-reduce-motion="on"] .cal *,
+[data-reduce-motion="on"] .cal *::before,
+[data-reduce-motion="on"] .cal *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* --------------------------------------------------------------- narrow */
+@media (max-width: 900px) {
+  .cal {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+}
+/* 44px touch targets on touch screens (the header controls are 38px on mouse) */
+@media (pointer: coarse), (max-width: 640px) {
+  .cal__nav,
+  .cal__today {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+}
+@media (max-width: 640px) {
+  .cal__head {
+    gap: 0.4rem;
+    grid-template-columns: auto 1fr auto;
+    padding: 1.25rem 0.7rem 0.75rem;
+  }
+  .cal__today {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .cal__title {
+    font-size: var(--fs-md);
+    letter-spacing: 0.1em;
+  }
+  .cal__stage {
+    padding: 0.25rem 0.35rem 0;
+  }
+  .cal__table th {
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+  /* at this width a title can't fit in a cell — the day panel carries it */
+  .cal__cell {
+    height: 3.5rem;
+  }
+  .cal__day {
+    align-items: center;
+    gap: 0.15rem;
+    min-height: 3.5rem;
+    padding: 0.25rem 0.1rem;
+  }
+  .cal__chip,
+  .cal__bar,
+  .cal__more {
+    display: none;
+  }
+  .cal__dots {
+    display: flex;
+  }
+  .cal__legend {
+    margin-inline: 0.6rem;
+  }
+  .cal__tz {
+    margin-left: 0;
+  }
+}

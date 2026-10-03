@@ -515,6 +515,35 @@
 .notebook-section {
   margin: 2.5rem 0;
 }
+/* Space held for the calendar until it is scrolled near and loaded, so the
+   page below it never jumps. The placeholder is replaced, not hidden. */
+.cal-mount {
+  min-height: 34rem;
+}
+.cal-mount:empty {
+  align-items: center;
+  background: repeating-linear-gradient(0deg, transparent 0 31px, var(--rust-wash) 31px 32px);
+  border: 1px dashed var(--ink-rule);
+  color: var(--ink-muted);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  justify-content: center;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cal-mount:empty::before {
+  content: "Unfolding the calendar…";
+}
+@media (max-width: 900px) {
+  .cal-mount {
+    min-height: 0;
+  }
+  .cal-mount:empty {
+    min-height: 18rem;
+  }
+}
+
 .notebook-section__heading {
   border-bottom: var(--rule-heavy);
   font-size: var(--fs-xl);

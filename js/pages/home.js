@@ -9,7 +9,6 @@ import { el, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap } from "../data.js";
 import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
-import { fetchUpcomingEvents } from "../utils/calendar.js";
 import { measureText } from "../utils/text-measure.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
 import { gridSrc } from "../utils/thumb.js";
@@ -327,97 +326,28 @@ async function loadYouTubeSection() {
   });
 }
 
-export async function loadCalendarSection() {
-  const section = document.getElementById("calendar-section");
-  const grid = document.getElementById("calendar-grid");
-  if (!section || !grid) return;
-
-  const events = await fetchUpcomingEvents().catch((err) => {
-    // Free/busy-only sharing: the API returns times but no titles.
-    // Show actionable guidance instead of an empty grid.
-    if (err && err.code === "FREEBUSY_ONLY") {
-      section.style.display = "";
-      grid.append(
-        el(
-          "li",
-          { class: "pinned-card pinned-card--event" },
-          el(
-            "div",
-            { class: "pinned-card__body" },
-            el("p", { class: "pinned-card__title" }, "Calendar titles hidden"),
-            el(
-              "p",
-              { class: "pinned-card__meta" },
-              "This calendar is shared as free/busy only, so event names can't be shown. " +
-                "SAC team: set the calendar sharing to 'See all event details'."
-            )
-          )
-        )
-      );
-      return null;
-    }
-    return [];
-  });
-  if (events === null) return; // guidance card already rendered
-  section.style.display = "";
-  grid.classList.toggle("is-sparse", events.length < 3);
-  if (!events.length) {
-    grid.append(
-      el(
-        "li",
-        { class: "pinned-card pinned-card--event" },
-        el(
-          "div",
-          { class: "pinned-card__body" },
-          el("p", { class: "pinned-card__title" }, "No upcoming events"),
-          el("p", { class: "pinned-card__meta" }, "Check back soon for the next campus notice.")
-        )
-      )
-    );
+/**
+ * The calendar is below the fold and brings its own script, stylesheet and API
+ * request — so none of that happens until the visitor scrolls near it.
+ */
+export function loadCalendarSection() {
+  const mount = document.getElementById("calendar-mount");
+  if (!mount) return;
+  const start = async () => {
+    const { initCalendar } = await import("../components/calendar.js");
+    initCalendar(mount);
+  };
+  if (!("IntersectionObserver" in window)) {
+    start();
     return;
   }
-
-  events.forEach((event, index) => {
-    const peopleLabel = event.people?.length
-      ? `With: ${event.people.slice(0, 3).join(", ")}${event.people.length > 3 ? " +" + (event.people.length - 3) + " more" : ""}`
-      : event.organizer
-        ? `Organiser: ${event.organizer}`
-        : "";
-    const timeLabel = event.dateEndLabel
-      ? `${event.dateLabel} – ${event.dateEndLabel}`
-      : event.dateLabel;
-    const desc = event.description
-      ? event.description.slice(0, 240) + (event.description.length > 240 ? "…" : "")
-      : "";
-
-    grid.append(
-      el(
-        "li",
-        {
-          class: "pinned-card pinned-card--event",
-          style: `--tilt: ${((index % 3) - 1) * 0.7}deg`,
-        },
-        el(
-          "div",
-          { class: "pinned-card__body" },
-          el("span", { class: "pinned-card__date" }, timeLabel),
-          el("p", { class: "pinned-card__title", title: event.title }, event.title),
-          event.location
-            ? el("p", { class: "pinned-card__location" }, `📍 ${event.location}`)
-            : null,
-          peopleLabel
-            ? el("p", { class: "pinned-card__meta pinned-card__people" }, peopleLabel)
-            : null,
-          desc ? el("p", { class: "pinned-card__meta" }, desc) : null,
-          event.link
-            ? el(
-                "a",
-                { class: "pinned-card__link", href: event.link, target: "_blank", rel: "noopener" },
-                "Open event →"
-              )
-            : null
-        )
-      )
-    );
-  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      start();
+    },
+    { rootMargin: "400px 0px" }
+  );
+  observer.observe(mount);
 }
