@@ -59,14 +59,14 @@ js/
   data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest
   pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
   utils/                   dom (el, pageUrl, assetUrl, loadStylesheet), calendar(+model), search-index,
-                           caption, thumb, media, reveal, skeleton, view-pref, calligraphy, music,
+                           club-filter, caption, thumb, media, reveal, skeleton, view-pref, calligraphy, music,
                            youtube, tenure, text-measure
   pretext/                 vendored text-measurement library (built from the submodule; don't edit)
 css/                       preloader, reset, variables (tokens), main, components, loader, settings,
                            viewer, enhancements (last layer), print, search (loaded on demand),
                            pages/{home,clubs,club,events,gallery,about,calendar}.css
 tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
-test/unit/                 45 files, ~695 tests (vitest + jsdom); setup in test/setup.js
+test/unit/                 47 files, ~725 tests (vitest + jsdom); setup in test/setup.js
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)
 utils/pretext/             SUBMODULE (chenglou/pretext)
@@ -98,7 +98,7 @@ sw.js                      service worker (code network-first, media stale-while
 |---|---|---|
 | `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
 | `<!-- club-crumbs … -->` and `<!-- club-pager … -->` on the 32 club pages | the club registry, `js/data/clubs.js` | `npm run sync` |
-| `<!-- home-finder … -->` in `index.html` ("What are you into?" chips + the spotlight's mount) | `INTERESTS` and `CLUBS` in the registry | `npm run sync` |
+| `<!-- home-finder … -->` in `index.html` ("What are you into?" chips + the spotlight's mount) and `<!-- clubs-filter … -->` in `pages/clubs.html` (the interest filter row) | `INTERESTS` and the listed clubs in the registry | `npm run sync` |
 | `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
 | `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |
 | `public/duplicates.json` | `tools/dedupe/*` | see `tools/dedupe/README.md` |
@@ -111,7 +111,7 @@ sw.js                      service worker (code network-first, media stale-while
 `<body class="has-topbar" data-page="club" data-club-slug="<Archive_Folder_Slug>">`;
 keep the `.section-nav--slot` before the first section. (2) Add one row to `CLUBS` in
 `js/data/clubs.js` (page, body, name, short name, interests, search keywords) — the
-directory, footer, pager, search and interest filter all read it. Give it `keywords` people would
+directory, footer, pager, search, interest filter and the home chips' counts all read it. Give it `keywords` people would
 actually type ("telescope" finds the astronomy club); `search-index.test.js` fails if a club cannot
 be found by its own name. (3) `npm run sync` (writes
 its breadcrumb and "more clubs" blocks and the preload blocks) and `npm run sitemap`.

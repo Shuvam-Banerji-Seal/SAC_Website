@@ -11,6 +11,12 @@ import { loadAssetsMap, indexByClub } from "../data.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { buildSectionNav, trackSections } from "../components/section-nav.js";
 import { BODIES, PENDING_CLUBS, clubBySlug, clubPageUrl } from "../data/clubs.js";
+import {
+  cardMatches,
+  interestFromSearch,
+  setInterestParam,
+  tokenize,
+} from "../utils/club-filter.js";
 
 function assignBody(club) {
   const registered = clubBySlug(club.slug);
@@ -99,6 +105,8 @@ function clubCard(c) {
       "data-club-name": c.name.toLowerCase(),
       "data-club-slug": c.slug.toLowerCase(),
       "data-club-body": c.body,
+      "data-club-interests": (c.interests ?? clubBySlug(c.slug)?.interests ?? []).join(" "),
+      "data-club-keywords": c.keywords ?? clubBySlug(c.slug)?.keywords ?? "",
     },
     url && !pending
       ? // No aria-label: the link's own text (name + body line) is its name. An
@@ -134,6 +142,8 @@ export async function initClubs() {
       body: p.body,
       note: p.note,
       crest: p.crest,
+      interests: p.interests,
+      keywords: p.keywords,
       pending: true,
       counts: { images: 0, markdowns: 0, media: 0 },
     }));
@@ -180,37 +190,56 @@ export async function initClubs() {
     document.getElementById("clubs-grid")?.before(jump);
     trackSections(jump);
 
-    // Client-side search across name + slug + body label
+    // One filter for the text box and the interest chips, so they combine (and agree on the counts).
     const searchInput = $("#clubs-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", () => {
-        const q = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
-        document.querySelectorAll(".clubs-body").forEach((section) => {
-          const bodyLabel = (
-            section.querySelector(".clubs-body__title")?.textContent || ""
-          ).toLowerCase();
-          let sectionVisible = 0;
-          section.querySelectorAll(".club-card").forEach((card) => {
-            const haystack = [
-              card.dataset.clubName || "",
-              card.dataset.clubSlug || "",
-              bodyLabel,
-            ].join(" ");
-            const match = !q || haystack.includes(q);
-            card.classList.toggle("is-hidden", !match);
-            if (match) {
-              sectionVisible++;
-              visibleCount++;
-            }
-          });
-          section.classList.toggle("is-hidden", sectionVisible === 0);
-          // a body with no matches loses its chip too
-          jump
-            .querySelector(`[data-target="${section.id}"]`)
-            ?.parentElement.toggleAttribute("hidden", sectionVisible === 0);
+    const filterRow = $(".interest-filter");
+    const clearButton = filterRow?.querySelector(".interest-filter__clear");
+    const total = document.querySelectorAll(".club-card").length;
+    let interest = interestFromSearch(location.search);
+
+    const applyFilters = () => {
+      const query = searchInput?.value ?? "";
+      const tokens = tokenize(query);
+      let visibleCount = 0;
+      document.querySelectorAll(".clubs-body").forEach((section) => {
+        let sectionVisible = 0;
+        section.querySelectorAll(".club-card").forEach((card) => {
+          const d = card.dataset;
+          const match = cardMatches(
+            {
+              name: d.clubName || "",
+              slug: d.clubSlug || "",
+              body: section.dataset.clubsBody || "",
+              keywords: d.clubKeywords || "",
+              interests: (d.clubInterests || "").split(" ").filter(Boolean),
+            },
+            tokens,
+            interest
+          );
+          card.classList.toggle("is-hidden", !match);
+          if (match) {
+            sectionVisible++;
+            visibleCount++;
+          }
         });
-        // Live result-count chip next to the search box
+        section.classList.toggle("is-hidden", sectionVisible === 0);
+        // the counts follow what is showing; a body with nothing showing loses its chip too
+        const heading = section.querySelector(".clubs-body__count");
+        if (heading) heading.textContent = String(sectionVisible);
+        const chip = jump.querySelector(`[data-target="${section.id}"]`);
+        chip?.parentElement.toggleAttribute("hidden", sectionVisible === 0);
+        const chipCount = chip?.querySelector(".section-nav__count");
+        if (chipCount) chipCount.textContent = String(sectionVisible);
+      });
+
+      filterRow?.querySelectorAll("[data-interest]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.interest === interest));
+      });
+      if (clearButton) clearButton.hidden = !interest;
+
+      // Live result-count chip next to the search box
+      const filtering = tokens.length > 0 || interest;
+      if (searchInput) {
         let counter = searchInput.parentElement.querySelector(".clubs-search-count");
         if (!counter) {
           counter = el("span", {
@@ -220,26 +249,35 @@ export async function initClubs() {
           });
           searchInput.parentElement.append(counter);
         }
-        counter.textContent = q
-          ? `${visibleCount} of ${document.querySelectorAll(".club-card").length} clubs`
-          : "";
+        counter.textContent = filtering ? `${visibleCount} of ${total} clubs` : "";
+      }
 
-        const noResults = $(".clubs-no-results");
-        if (!q || visibleCount > 0) {
-          noResults?.remove();
-        } else if (!noResults) {
-          document
-            .getElementById("clubs-grid")
-            ?.appendChild(
-              el(
-                "p",
-                { class: "clubs-no-results muted", role: "status" },
-                "No clubs match that search."
-              )
-            );
-        }
-      });
-    }
+      const noResults = $(".clubs-no-results");
+      if (!filtering || visibleCount > 0) {
+        noResults?.remove();
+      } else if (!noResults) {
+        document
+          .getElementById("clubs-grid")
+          ?.appendChild(
+            el(
+              "p",
+              { class: "clubs-no-results muted", role: "status" },
+              "No clubs match that search."
+            )
+          );
+      }
+    };
+
+    searchInput?.addEventListener("input", applyFilters);
+    filterRow?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-interest]");
+      if (button) interest = interest === button.dataset.interest ? null : button.dataset.interest;
+      else if (event.target.closest(".interest-filter__clear")) interest = null;
+      else return;
+      setInterestParam(interest);
+      applyFilters();
+    });
+    if (interest) applyFilters(); // arrived from a home-page chip (?interest=…)
   } catch {
     showError(
       mount,

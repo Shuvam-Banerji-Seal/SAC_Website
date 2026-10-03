@@ -385,6 +385,10 @@ export const clubByPage = (page) => byPage.get(page);
 /** "pages/chess.html" for a slug, or null. */
 export const clubPageUrl = (slug) => bySlug.get(slug)?.page ?? null;
 /** The body record ({id, label, blurb}) for an id. */
+/** Every club the directory lists: those with a page, and those whose records are still to come. */
+export const LISTED_CLUBS = [...CLUBS, ...PENDING_CLUBS];
+/** How many listed clubs answer to an interest — the number on its chip, here and on the home page. */
+export const countForInterest = (id) => LISTED_CLUBS.filter((c) => c.interests.includes(id)).length;
 export const bodyById = (id) => BODIES.find((b) => b.id === id);
 /** Clubs of a body, in registry order. */
 export const clubsInBody = (id) => CLUBS.filter((c) => c.body === id);

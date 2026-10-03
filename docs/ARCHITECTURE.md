@@ -138,11 +138,16 @@ The index is built from `js/data/clubs.js`, so a new club is searchable as soon 
 it has a registry row, and `search-index.test.js` fails if a club cannot be found by
 its own name.
 
+The Clubs directory shares the same vocabulary. Its "What are you into?" row is a static,
+generated set of toggle buttons; pressing one (or arriving from a home-page chip as
+`?interest=sport`) filters the cards, combines with the text box, and is kept in the
+address so a filtered view can be shared. The rules are pure (`utils/club-filter.js`).
+
 ## 7. Generated files and the tests that guard them
 
 | Generator | Writes | Guarded by |
 |---|---|---|
-| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js`; from the club registry, each club page's breadcrumb and "more clubs" pager and the home page's "What are you into?" chips | `load-budget.test.js` runs it in `--check` mode; `club-pages.test.js` and `home-features.test.js` pin the club and home blocks to the generator |
+| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js`; from the club registry, each club page's breadcrumb and "more clubs" pager and the interest chips on the home page and the Clubs directory | `load-budget.test.js` runs it in `--check` mode; `club-pages.test.js` and `home-features.test.js` pin the club and home blocks to the generator |
 | `tools/gen-sitemap.mjs` | `sitemap.xml`, `robots.txt` (CI regenerates both for the host being deployed) | `sitemap.test.js` |
 | `tools/dedupe/build_manifest.py` | `public/duplicates.json` | `dedupe.test.js` |
 

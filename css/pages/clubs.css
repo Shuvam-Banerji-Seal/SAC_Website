@@ -13,6 +13,72 @@
   max-width: 420px;
   padding: 0.65rem 0.75rem;
 }
+/* "What are you into?" — the interest filter. The row is static HTML (generated from the club
+   registry by tools/sync-pages.mjs), so it is there at full height before the script that
+   wires it runs. A chip is a toggle: pressed = filtered to that interest. */
+.interest-filter {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0 0 1.5rem;
+}
+.interest-filter__label {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  margin-right: 0.3rem;
+  text-transform: uppercase;
+}
+.interest-filter__chip {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+.interest-filter__chip[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.interest-filter__count {
+  border-left: 1px solid currentcolor;
+  font-size: var(--fs-xs);
+  opacity: 0.75;
+  padding-left: 0.5rem;
+}
+.interest-filter__clear {
+  background: none;
+  border: 0;
+  border-bottom: 1px dotted var(--accent);
+  color: var(--accent);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  min-height: 44px;
+  padding: 0 0.4rem;
+  text-transform: uppercase;
+}
+.interest-filter__clear[hidden] {
+  display: none;
+}
+@media (hover: hover) {
+  .interest-filter__chip:hover:not([aria-pressed="true"]) {
+    background: var(--paper-deep);
+  }
+}
+
 .clubs-grid-wrap {
   border-top: var(--rule-heavy);
   padding-top: 1rem;
