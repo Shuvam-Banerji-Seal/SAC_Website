@@ -102,3 +102,17 @@ describe("BUG 8: build:pretext script uses && not ;", () => {
     expect(pkg.scripts["build:pretext"]).not.toContain("2>/dev/null");
   });
 });
+
+describe("Campus Life toolbar on phones", () => {
+  it("clubs-search-wrap wraps — search + view toggle + sort overflowed 390px", () => {
+    const block = readCss("/css/pages/clubs.css").match(/\.clubs-search-wrap\s*\{[^}]*\}/s)?.[0];
+    expect(block).toMatch(/flex-wrap:\s*wrap/);
+  });
+
+  it("defines .visually-hidden, which campus-life.html uses for the sort label", () => {
+    expect(readCss("/pages/campus-life.html")).toContain('class="visually-hidden"');
+    const block = readCss("/css/components.css").match(/\.visually-hidden\s*\{[^}]*\}/s)?.[0];
+    expect(block).toMatch(/position:\s*absolute/);
+    expect(block).toMatch(/clip:\s*rect\(0 0 0 0\)/);
+  });
+});
