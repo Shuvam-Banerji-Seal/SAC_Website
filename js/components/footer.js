@@ -2,6 +2,7 @@
  * components/footer.js — renders the footer with IISER location,
  * quick links, and SAC branding.
  */
+import { CLUBS } from "../data/clubs.js";
 import { $, el, pageLink } from "../utils/dom.js";
 import { SITE_TITLE } from "../config.js";
 
@@ -15,13 +16,12 @@ const QUICK_LINKS = [
   { label: "About", href: "about.html" },
 ];
 
+// A short teaser of the sports clubs (the registry's `featured` ones), then the full directory.
 const SPORTS_LINKS = [
-  { label: "Athletics", href: "athletics.html" },
-  { label: "Cricket", href: "cricket.html" },
-  { label: "Football", href: "football.html" },
-  { label: "Basketball", href: "basketball.html" },
-  { label: "Chess", href: "chess.html" },
-  { label: "Kabaddi", href: "kabaddi.html" },
+  ...CLUBS.filter((c) => c.featured).map((c) => ({
+    label: c.short,
+    href: c.page.replace(/^pages\//, ""),
+  })),
   { label: "View All", href: "clubs.html" },
 ];
 

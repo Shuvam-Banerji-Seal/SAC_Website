@@ -10,122 +10,12 @@ import { $, el, pageLink, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { buildSectionNav, trackSections } from "../components/section-nav.js";
-
-function getClubPageUrl(slug) {
-  const urlMap = {
-    "AARSHI_-_Drama_Club": "pages/aarshi.html",
-    Arts_Club_of_IISER_Kolkata: "pages/arts.html",
-    Campus_Radio_IISER_KOLKATA: "pages/radio.html",
-    "IKQC_-_Quiz_Club_of_IISER_Kolkata": "pages/ikqc.html",
-    Literary_Club_of_IISER_Kolkata: "pages/literary.html",
-    Movie_Club_of_IISER_K: "pages/movie.html",
-    Music_Club_of_IISER_K: "pages/music.html",
-    Nature_Club_Of_IISER_Kolkata: "pages/nature.html",
-    "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "pages/nrutya.html",
-    "PIXEL-Photography_Club": "pages/pixel.html",
-    Placement_Cell: "pages/placement.html",
-    SAC_Academics: "pages/academics.html",
-    SAC_Food_and_Hygiene: "pages/food-hygiene.html",
-    SAC_Hostel: "pages/hostel.html",
-    SAC_Sports_Athletics: "pages/athletics.html",
-    SAC_Sports_Badminton: "pages/badminton.html",
-    SAC_Sports_Basketball: "pages/basketball.html",
-    SAC_Sports_Carrom: "pages/carrom.html",
-    SAC_Sports_Chess: "pages/chess.html",
-    SAC_Sports_Cricket: "pages/cricket.html",
-    SAC_Sports_Football: "pages/football.html",
-    SAC_Sports_Gaming: "pages/gaming.html",
-    SAC_Sports_GYM: "pages/gym.html",
-    SAC_Sports_Kabaddi: "pages/kabaddi.html",
-    SAC_Sports_Kho_Kho: "pages/kho-kho.html",
-    SAC_Sports_Lawn_Tennis: "pages/lawn-tennis.html",
-    SAC_Sports_Rubik: "pages/rubik.html",
-    SAC_Sports_SYDC: "pages/sydc.html",
-    SAC_Sports_Table_Tennis: "pages/table-tennis.html",
-    SAC_Sports_Volleyball: "pages/volleyball.html",
-    Singularity_Astro_Club: "pages/singularity.html",
-    Slashdot_Programming_Club: "pages/slashdot.html",
-  };
-  return urlMap[slug] || null;
-}
-
-/* Body segments — mirror the canonical "SAC Website details" source tree:
- *   SAC Academics / SAC Cultural / SAC Food and Hygine / SAC Hostel / SAC Sports
- * Order here defines render order on the page. */
-const BODIES = [
-  {
-    id: "academics",
-    label: "SAC Academics",
-    blurb: "General secretaries, placement, astronomy, and programming — the scholarly societies.",
-  },
-  {
-    id: "cultural",
-    label: "SAC Cultural",
-    blurb: "Drama, art, radio, quizzing, film, music, nature, dance, photography — plus IICM.",
-  },
-  {
-    id: "food",
-    label: "SAC Food & Hygiene",
-    blurb: "The Students' Monitored Canteen (SMC) — menus, quality checks, and grievances.",
-  },
-  {
-    id: "hostel",
-    label: "SAC Hostel",
-    blurb: "General secretaries, sub-committees, and wardens' representatives across the blocks.",
-  },
-  {
-    id: "sports",
-    label: "SAC Sports",
-    blurb: "Sixteen clubs across the fields, courts, and mats — plus the IISM contingent.",
-  },
-];
-
-/* Slug → body, mirroring the source folders one-to-one. Anything not listed
- * falls through to the pattern-based fallback so newly indexed clubs still
- * land somewhere sensible. */
-const SLUG_BODIES = {
-  // SAC Academics/
-  SAC_Academics: "academics",
-  Placement_Cell: "academics",
-  Singularity_Astro_Club: "academics",
-  Slashdot_Programming_Club: "academics",
-  // SAC Cultural/
-  "AARSHI_-_Drama_Club": "cultural",
-  Arts_Club_of_IISER_Kolkata: "cultural",
-  Campus_Radio_IISER_KOLKATA: "cultural",
-  "IKQC_-_Quiz_Club_of_IISER_Kolkata": "cultural",
-  Literary_Club_of_IISER_Kolkata: "cultural",
-  Movie_Club_of_IISER_K: "cultural",
-  Music_Club_of_IISER_K: "cultural",
-  Nature_Club_Of_IISER_Kolkata: "cultural",
-  "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "cultural",
-  "PIXEL-Photography_Club": "cultural",
-  // SAC Food and Hygine/
-  SAC_Food_and_Hygiene: "food",
-  // SAC Hostel/
-  SAC_Hostel: "hostel",
-  // SAC Sports/
-  SAC_Sports_Athletics: "sports",
-  SAC_Sports_Badminton: "sports",
-  SAC_Sports_Basketball: "sports",
-  SAC_Sports_Carrom: "sports",
-  SAC_Sports_Chess: "sports",
-  SAC_Sports_Cricket: "sports",
-  SAC_Sports_Football: "sports",
-  SAC_Sports_Gaming: "sports",
-  SAC_Sports_GYM: "sports",
-  SAC_Sports_Kabaddi: "sports",
-  SAC_Sports_Kho_Kho: "sports",
-  SAC_Sports_Lawn_Tennis: "sports",
-  SAC_Sports_Rubik: "sports",
-  SAC_Sports_SYDC: "sports",
-  SAC_Sports_Table_Tennis: "sports",
-  SAC_Sports_Volleyball: "sports",
-};
+import { BODIES, PENDING_CLUBS, clubBySlug, clubPageUrl } from "../data/clubs.js";
 
 function assignBody(club) {
-  if (SLUG_BODIES[club.slug]) return SLUG_BODIES[club.slug];
-  // Pattern fallback for clubs indexed after this table was written.
+  const registered = clubBySlug(club.slug);
+  if (registered) return registered.body;
+  // Pattern fallback for a club that is in the archive but not yet in data/clubs.js.
   const name = `${club.name} ${club.slug}`.toLowerCase();
   if (
     name.includes("sport") ||
@@ -157,12 +47,6 @@ function assignBody(club) {
   return "cultural";
 }
 
-/* Clubs that exist in the SAC structure but have not submitted records yet.
- * Rendered as placeholder cards so the directory stays complete. */
-const PENDING_CLUBS = [
-  { slug: "SPICMACAY", name: "SPICMACAY", body: "cultural", note: "Records coming soon" },
-];
-
 /* A directory card should say what the club IS, not how many files the
  * pipeline happened to ingest for it. The body it answers to is the useful
  * fact — it is also what the search box matches on. */
@@ -176,19 +60,10 @@ function clubBodyLine(c) {
   return label;
 }
 
-const FALLBACK_LOGOS = {
-  Literary_Club_of_IISER_Kolkata: "assets/logos/literary.svg",
-  Music_Club_of_IISER_K: "assets/logos/music.svg",
-  "Nrutya_-_The_Dance_Club_of_IISER_Kolkata": "assets/logos/nrutya.svg",
-  SPICMACAY: "assets/logos/spicmacay.svg",
-  Placement_Cell: "assets/logos/placement.svg",
-  SAC_Academics: "assets/logos/sac.svg",
-};
-
 function clubCard(c) {
-  const url = getClubPageUrl(c.slug);
+  const url = clubPageUrl(c.slug);
   const pending = !!c.pending;
-  const fallbackLogo = !c.logo && FALLBACK_LOGOS[c.slug];
+  const fallbackLogo = !c.logo && (clubBySlug(c.slug)?.crest ?? c.crest);
   const inner = [
     el(
       "div",
@@ -258,6 +133,7 @@ export async function initClubs() {
       name: p.name,
       body: p.body,
       note: p.note,
+      crest: p.crest,
       pending: true,
       counts: { images: 0, markdowns: 0, media: 0 },
     }));

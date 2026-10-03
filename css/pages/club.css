@@ -264,6 +264,14 @@
   object-fit: cover;
   width: 100%;
 }
+/* The lead photo sets the strip's height; the smaller ones are stretched to match it.
+   Their images fill that frame — at their own 16:10 they left a blank band above. */
+.club-hero-strip__item:not(.is-lead) img {
+  aspect-ratio: auto;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+}
 .club-hero-strip__item:hover {
   box-shadow: 3px 3px 0 var(--paper-edge);
   transform: translateY(-2px);
@@ -290,29 +298,351 @@
   .club-hero-strip__item.is-lead {
     flex: 1 1 100%;
   }
+  /* stacked, each photo is its own height again */
+  .club-hero-strip__item:not(.is-lead) img {
+    aspect-ratio: 16 / 10;
+    height: auto;
+    position: static;
+  }
 }
 
-/* Native share button in the club identity header */
-.club-detail__share {
+/* -------------------------------------------------------------- breadcrumb
+   Static HTML from the registry (tools/sync-pages.mjs): Home › Clubs › body › club. */
+.crumbs {
+  margin: 0 0 0.9rem;
+}
+.crumbs__list {
+  color: var(--ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  gap: 0.2rem 0.5rem;
+  letter-spacing: 0.08em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+}
+.crumbs__list li + li::before {
+  color: var(--accent);
+  content: "›";
+  margin-right: 0.5rem;
+}
+.crumbs a {
+  border-bottom: 1px dotted currentColor;
+  color: inherit;
+  text-decoration: none;
+}
+.crumbs a:hover {
+  border-bottom-style: solid;
+  color: var(--accent);
+}
+.crumbs [aria-current="page"] {
+  color: var(--ink);
+}
+/* the crumbs already say "back to the clubs" */
+.crumbs ~ .club-detail__header .back-link {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- actions */
+.club-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.club-action,
+.person__action {
+  align-items: center;
+  appearance: none;
   background: transparent;
   border: 1px solid var(--ink);
   color: var(--ink);
   cursor: pointer;
+  display: inline-flex;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.08em;
-  margin-left: 0.75rem;
-  padding: 0.3rem 0.6rem;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.8rem;
+  text-decoration: none;
   text-transform: uppercase;
   transition:
     background var(--transition),
-    color var(--transition);
+    color var(--transition),
+    transform var(--transition);
 }
-.club-detail__share:hover {
+.club-action:hover,
+.person__action:hover {
   background: var(--ink);
   color: var(--paper);
 }
-.club-detail__share:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.club-action--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper-soft);
+}
+.club-action--primary:hover {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+}
+@media (pointer: coarse), (max-width: 640px) {
+  .club-action,
+  .person__action {
+    min-height: 2.75rem;
+  }
+}
+
+/* ------------------------------------------------------------ people cards
+   An office bearer as a card: portrait, role, name, tenure, and — when the page's own
+   table lists them — Call / Email / Copy. */
+.people {
+  display: grid;
+  gap: 1.6rem 1.1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+}
+.person {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 3px 4px 0 rgba(24, 20, 16, 0.22);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: rotate(var(--pin-rotate, 0deg));
+  transform-origin: 50% 0;
+}
+/* the pin */
+.person::before {
+  background: radial-gradient(circle at 30% 30%, #d46b5f, #830d0d 68%);
+  border: 1px solid rgba(24, 20, 16, 0.4);
+  border-radius: 50%;
+  box-shadow: 0 2px 3px rgba(24, 20, 16, 0.4);
+  content: "";
+  height: 13px;
+  left: 50%;
+  position: absolute;
+  top: -7px;
+  transform: translateX(-50%);
+  width: 13px;
+  z-index: 2;
+}
+.person__photo {
+  aspect-ratio: 4 / 5;
+  background: var(--paper-deep);
+  border-bottom: 1px solid var(--ink);
+  display: block;
+  overflow: hidden;
+}
+.person__photo img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  width: 100%;
+}
+.person__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0.8rem 0.85rem;
+}
+.person__role {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.person__name {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+.person__tenure,
+.person__flag {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.person__flag {
+  font-style: italic;
+}
+.person__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+.person .person__action {
+  font-size: 0.62rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.55rem;
+}
+/* 44px targets on touch screens — stated after the card's compact size, and with the
+   same specificity, or the compact rule wins by source order */
+@media (pointer: coarse), (max-width: 640px) {
+  .person .person__action {
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+  }
+  .crumbs a {
+    align-items: center;
+    display: inline-flex;
+    min-height: 2.75rem;
+  }
+  .crumbs__list {
+    gap: 0 0.5rem;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .person {
+    transition:
+      transform 0.32s var(--ease-ink),
+      box-shadow 0.3s ease,
+      opacity 0.35s ease;
+  }
+  .person.is-revealed:hover,
+  .person:hover {
+    box-shadow: 4px 8px 0 rgba(24, 20, 16, 0.2);
+    transform: rotate(0deg) translateY(-3px);
+    z-index: 2;
+  }
+  .person__photo img {
+    transition: transform 0.5s var(--ease-ink);
+  }
+  .person:hover .person__photo img {
+    transform: scale(1.05);
+  }
+}
+
+/* phones: two cards to a row — a single column made each portrait ~450px tall */
+@media (max-width: 640px) {
+  .people {
+    gap: 1.4rem 0.7rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .person__body {
+    padding: 0.55rem 0.6rem 0.7rem;
+  }
+  .person__name {
+    font-size: var(--fs-sm);
+  }
+  .person__role {
+    letter-spacing: 0.06em;
+  }
+}
+
+/* ------------------------------------------------------------------ pager
+   "More from <body>" and previous / next — static HTML from the registry. */
+.club-pager {
+  border-top: var(--rule-heavy);
+  margin-top: 2.75rem;
+  padding-top: 1.2rem;
+}
+.club-pager__title {
+  font-size: var(--fs-lg);
+  margin: 0 0 0.9rem;
+}
+.club-pager__related {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.club-pager__related a {
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  box-shadow: 3px 3px 0 var(--paper-edge);
+  color: var(--ink);
+  display: flex;
+  gap: 0.7rem;
+  min-height: 4rem;
+  padding: 0.55rem 0.7rem;
+  text-decoration: none;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+.club-pager__related a:hover {
+  box-shadow: 5px 6px 0 var(--paper-edge);
+  color: var(--accent-deep);
+  transform: translate(-1px, -2px);
+}
+/* a fixed box, so a crest arriving later moves nothing */
+.club-pager__logo {
+  background: var(--paper-deep);
+  display: grid;
+  flex: none;
+  height: 44px;
+  overflow: hidden;
+  place-items: center;
+  width: 44px;
+}
+.club-pager__logo img {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+.club-pager__name {
+  font-family: var(--font-body);
+  font-weight: 700;
+  line-height: 1.15;
+}
+.club-pager__related--bodies a {
+  min-height: 3rem;
+}
+.club-pager__step {
+  border-top: 1px solid var(--ink-rule);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 1.3rem;
+  padding-top: 0.9rem;
+}
+.club-pager__prev,
+.club-pager__next {
+  color: var(--ink);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  min-height: 2.75rem;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.club-pager__next {
+  text-align: right;
+}
+.club-pager__prev span,
+.club-pager__next span {
+  color: var(--accent);
+  display: block;
+  letter-spacing: 0.14em;
+}
+.club-pager__prev:hover,
+.club-pager__next:hover {
+  color: var(--accent-deep);
+}
+.club-pager__prev:hover span::before {
+  content: "← ";
+}
+.club-pager__next:hover span::after {
+  content: " →";
 }

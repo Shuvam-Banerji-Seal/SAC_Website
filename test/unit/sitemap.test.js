@@ -125,7 +125,11 @@ describe("deployment", () => {
 describe("assets directory", () => {
   it("has no orphan files — everything in assets/ is referenced by the site", () => {
     // retired heroes and an unused logo sat here for weeks; git history keeps them
-    const files = execFileSync("git", ["ls-files", "assets"], { cwd: root, encoding: "utf-8" })
+    const files = execFileSync(
+      "git",
+      ["ls-files", "--cached", "--others", "--exclude-standard", "assets"],
+      { cwd: root, encoding: "utf-8" }
+    )
       .split("\n")
       .filter(Boolean);
     const corpus = [
@@ -136,7 +140,10 @@ describe("assets directory", () => {
       ...pageList(root).filter((p) => p !== "index.html"),
     ].map(read);
     const walk = (dir) =>
-      execFileSync("git", ["ls-files", dir], { cwd: root, encoding: "utf-8" })
+      execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard", dir], {
+        cwd: root,
+        encoding: "utf-8",
+      })
         .split("\n")
         .filter((f) => /\.(css|js|json)$/.test(f));
     for (const f of [...walk("css"), ...walk("js"), "js/config.js"]) corpus.push(read(f));

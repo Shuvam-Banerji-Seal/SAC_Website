@@ -115,7 +115,7 @@ export function initClubSectionNav(root = document.querySelector("main")) {
   const used = new Set([...document.querySelectorAll("[id]")].map((n) => n.id));
   const items = [];
   for (const h of root.querySelectorAll("h2")) {
-    if (h.closest(".is-hidden, [hidden]") || !h.textContent.trim()) continue;
+    if (h.closest(".is-hidden, [hidden], [data-no-jump]") || !h.textContent.trim()) continue;
     if (!h.id) {
       let id = slugify(h.textContent);
       if (!id) continue;

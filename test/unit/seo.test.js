@@ -101,10 +101,13 @@ describe("wave 9 — mobile & reading features", () => {
     const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
     expect(css).toContain(".reading-progress");
   });
-  it("club pages offer native share where supported", () => {
-    const src = readFileSync(resolve(root, "js/pages/club-page.js"), "utf-8");
-    expect(src).toContain("navigator.share");
-    expect(src).toContain("club-detail__share");
+  it("club pages offer native share where supported, plus copy-link, print and email", () => {
+    const extras = readFileSync(resolve(root, "js/components/club-extras.js"), "utf-8");
+    expect(extras).toContain("navigator.share");
+    expect(extras).toContain("club-detail__actions");
+    expect(readFileSync(resolve(root, "js/pages/club-page.js"), "utf-8")).toContain(
+      "buildActions(club)"
+    );
   });
   it("settings becomes a bottom sheet on phones", () => {
     const css = readFileSync(resolve(root, "css/settings.css"), "utf-8");

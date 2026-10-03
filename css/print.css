@@ -11,6 +11,9 @@
   #loader,
   .viewer-overlay,
   .news-ticker,
+  .club-detail__actions,
+  .club-pager,
+  .section-nav,
   .paper-grain-overlay,
   .skip-link {
     display: none !important;

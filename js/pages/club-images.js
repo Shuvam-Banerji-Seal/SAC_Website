@@ -15,6 +15,7 @@ import { gridSrc } from "../utils/thumb.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { captionFor, altTextFor, isGenericTitle } from "../utils/caption.js";
 import { isCurrentTenure } from "../utils/tenure.js";
+import { readContacts, normName, phoneHref, copyButton } from "../components/club-extras.js";
 
 function assetCaption(asset) {
   return captionFor(asset);
@@ -171,6 +172,81 @@ function renderThumb(asset, group, context, index, opts = {}) {
   );
 }
 
+/** "26-27" → "2026–27" */
+function tenureLabel(tenure) {
+  const m = String(tenure || "").match(/^(\d{2})[-_/](\d{2})$/);
+  return m ? `20${m[1]}–${m[2]}` : String(tenure || "");
+}
+
+/**
+ * An office bearer as a card: portrait, name, role, tenure — and, when the page's own
+ * table lists them, Call / Email / Copy. The contact details are read from that table
+ * (readContacts), so nothing is typed twice and nothing is invented: a person the table
+ * doesn't list simply gets no buttons.
+ */
+function renderPerson(asset, index, group, contacts) {
+  const verified = asset.person && !isBogusPerson(asset.person);
+  const name = verified ? asset.person : assetCaption(asset);
+  const info = verified ? contacts.get(normName(asset.person)) : null;
+  const role = asset.ob_role || info?.role || "";
+  const tenure = tenureLabel(asset.tenure);
+  const tel = info?.phone ? phoneHref(info.phone) : null;
+  const copyValue = info?.email || info?.phone || "";
+
+  const actions = [
+    tel ? el("a", { class: "person__action", href: tel }, "Call") : null,
+    info?.email
+      ? el("a", { class: "person__action", href: `mailto:${info.email}` }, "Email")
+      : null,
+    copyValue
+      ? copyButton(() => copyValue, {
+          label: info?.email ? "Copy email" : "Copy number",
+          className: "person__action",
+        })
+      : null,
+  ].filter(Boolean);
+
+  return el(
+    "li",
+    {
+      class: "person thumb--reveal",
+      "data-person": asset.person || "",
+      style: `--pin-rotate: ${((index % 5) - 2) * 0.5}deg`,
+    },
+    el(
+      "a",
+      {
+        class: "person__photo",
+        href: assetUrl(asset.public_url),
+        "data-viewer": group,
+        "data-title": name,
+        "data-desc": [role, tenure].filter(Boolean).join(" · "),
+        "data-context": "Office bearers",
+        "data-width": asset.width || "",
+        "data-height": asset.height || "",
+        "aria-label": `Portrait of ${name}`,
+      },
+      el("img", {
+        src: assetUrl(gridSrc(asset)),
+        alt: altTextFor(asset, `Portrait of ${name}`),
+        loading: "lazy",
+        decoding: "async",
+        width: 240,
+        height: 300,
+      })
+    ),
+    el(
+      "div",
+      { class: "person__body" },
+      role ? el("p", { class: "person__role" }, role) : null,
+      el("h3", { class: "person__name" }, name),
+      tenure ? el("p", { class: "person__tenure" }, tenure) : null,
+      verified ? null : el("p", { class: "person__flag" }, "name to be confirmed"),
+      actions.length ? el("div", { class: "person__actions" }, ...actions) : null
+    )
+  );
+}
+
 function renderMediaCard(asset, context, index) {
   const caption = mediaLabel(asset);
   const source = el("source", {
@@ -270,13 +346,22 @@ function renderPlaceholder(placeholder, entries) {
     "div",
     { class: "club-detail__image-block", "data-map-role": role || "all-images" },
     title ? el("h2", { class: "club-detail__section-title" }, title) : null,
-    el(
-      "ul",
-      { class: "thumb-grid pinned-thumbs", "data-asset-count": filtered.length },
-      ...filtered.map((asset, index) =>
-        renderThumb(asset, group, title, index, { duplicatePersons })
-      )
-    )
+    role === "ob_portrait"
+      ? el(
+          "ul",
+          { class: "people", "data-asset-count": filtered.length },
+          ...(() => {
+            const contacts = readContacts(); // the table, read once for the whole wall
+            return filtered.map((asset, index) => renderPerson(asset, index, group, contacts));
+          })()
+        )
+      : el(
+          "ul",
+          { class: "thumb-grid pinned-thumbs", "data-asset-count": filtered.length },
+          ...filtered.map((asset, index) =>
+            renderThumb(asset, group, title, index, { duplicatePersons })
+          )
+        )
   );
   placeholder.replaceChildren(block);
   placeholder.style.display = "";

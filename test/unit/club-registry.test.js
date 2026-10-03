@@ -1,38 +1,33 @@
 /**
  * test/unit/club-registry.test.js — a club exists in four places; they must agree.
  *
+ *   js/data/clubs.js           the registry (slug, page, body, name, interests …)
  *   pages/<club>.html          the page (carries data-club-slug)
- *   js/pages/clubs.js          slug → page URL, and slug → body (the directory)
- *   js/components/footer.js    the Sports column's links
- *   public/.../assets_map      the archive's slug (the folder the photos live in)
+ *   js/pages/clubs.js          the directory, built from the registry
+ *   js/components/footer.js    the footer's Sports teaser, built from the registry
+ *   assets_map.jsonl           the archive's slug (the folder the photos live in)
  *
- * Adding a club means touching all of them; nothing else noticed when one was
- * forgotten. These tests are the checklist, and fail with the name of the gap.
+ * Adding a club means adding a registry row and a page; these tests are the
+ * checklist and fail with the name of whatever was missed.
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import {
+  BODIES,
+  INTERESTS,
+  CLUBS,
+  PENDING_CLUBS,
+  clubBySlug,
+  clubByPage,
+  clubPageUrl,
+  bodyById,
+  clubsInBody,
+} from "../../js/data/clubs.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (rel) => readFileSync(resolve(root, rel), "utf-8");
-
-const clubsJs = read("js/pages/clubs.js");
-const footerJs = read("js/components/footer.js");
-
-/** `key: "value"` pairs inside the object literal that follows `marker`. */
-function literal(source, marker, end = "\n  };") {
-  const start = source.indexOf(marker);
-  const body = source.slice(source.indexOf("{", start) + 1, source.indexOf(end, start));
-  const out = {};
-  for (const m of body.matchAll(/(?:"([^"]+)"|([A-Za-z0-9_]+)):\s*"([^"]+)"/g))
-    out[m[1] || m[2]] = m[3];
-  return out;
-}
-
-const urlMap = literal(clubsJs, "const urlMap = {");
-// SLUG_BODIES is a top-level table (closes at column 0), getClubPageUrl's map is indented
-const bodyMap = literal(clubsJs, "const SLUG_BODIES = {", "\n};");
 
 const pages = readdirSync(resolve(root, "pages")).filter((f) => f.endsWith(".html"));
 const clubPages = pages
@@ -42,76 +37,106 @@ const clubPages = pages
   }))
   .filter((p) => p.slug);
 
-describe("club pages ↔ the directory's URL map", () => {
-  it("every club page is in the map, pointing back at itself", () => {
+describe("registry ↔ pages", () => {
+  it("every club page is in the registry, pointing back at itself", () => {
     expect(clubPages).toHaveLength(32);
     for (const { file, slug } of clubPages) {
-      expect(
-        urlMap[slug],
-        `${file} (${slug}) is missing from getClubPageUrl in js/pages/clubs.js`
-      ).toBe(file);
+      expect(clubBySlug(slug), `${file} (${slug}) is missing from js/data/clubs.js`).toBeDefined();
+      expect(clubPageUrl(slug)).toBe(file);
+      expect(clubByPage(file)?.slug).toBe(slug);
     }
   });
 
-  it("every URL in the map is a page that exists and declares that slug", () => {
-    for (const [slug, file] of Object.entries(urlMap)) {
-      expect(existsSync(resolve(root, file)), `${slug} → ${file} does not exist`).toBe(true);
-      expect(read(file), `${file} should declare data-club-slug="${slug}"`).toContain(
-        `data-club-slug="${slug}"`
+  it("every registry row has a page that exists and declares that slug", () => {
+    expect(CLUBS).toHaveLength(clubPages.length);
+    for (const c of CLUBS) {
+      expect(existsSync(resolve(root, c.page)), `${c.slug} → ${c.page} does not exist`).toBe(true);
+      expect(read(c.page), `${c.page} should declare data-club-slug="${c.slug}"`).toContain(
+        `data-club-slug="${c.slug}"`
       );
     }
   });
 
-  it("every club page has a body, so it lands under a heading in the directory", () => {
-    for (const { file, slug } of clubPages) {
-      expect(bodyMap[slug], `${file} (${slug}) has no entry in SLUG_BODIES`).toMatch(
-        /^(academics|cultural|food|hostel|sports)$/
-      );
+  it("slugs and pages are unique", () => {
+    expect(new Set(CLUBS.map((c) => c.slug)).size).toBe(CLUBS.length);
+    expect(new Set(CLUBS.map((c) => c.page)).size).toBe(CLUBS.length);
+  });
+});
+
+describe("registry rows are complete", () => {
+  const bodyIds = new Set(BODIES.map((b) => b.id));
+  const interestIds = new Set(INTERESTS.map((i) => i.id));
+
+  it("every club has a body, a name, a short name and at least one real interest", () => {
+    for (const c of [...CLUBS, ...PENDING_CLUBS]) {
+      expect(bodyIds.has(c.body), `${c.slug}: unknown body "${c.body}"`).toBe(true);
+      expect(c.name.length, `${c.slug} name`).toBeGreaterThan(2);
+      expect(c.short.length, `${c.slug} short`).toBeGreaterThan(1);
+      expect(c.interests.length, `${c.slug} needs an interest`).toBeGreaterThan(0);
+      for (const i of c.interests)
+        expect(interestIds.has(i), `${c.slug}: unknown interest "${i}"`).toBe(true);
+    }
+  });
+
+  it("every body and every interest has at least one club, so no filter is ever empty", () => {
+    for (const b of BODIES) expect(clubsInBody(b.id).length, b.id).toBeGreaterThan(0);
+    for (const i of INTERESTS) {
+      const n = [...CLUBS, ...PENDING_CLUBS].filter((c) => c.interests.includes(i.id)).length;
+      expect(n, `interest "${i.id}" matches no club`).toBeGreaterThan(0);
+    }
+  });
+
+  it("the five bodies are the five the Council has", () => {
+    expect(BODIES.map((b) => b.id)).toEqual(["academics", "cultural", "food", "hostel", "sports"]);
+    expect(bodyById("sports")?.label).toBe("SAC Sports");
+  });
+
+  it("a pending club has no page — and so cannot be linked to a 404", () => {
+    for (const p of PENDING_CLUBS) {
+      expect(clubPageUrl(p.slug)).toBeNull();
+      expect(p.note).toBeTruthy();
     }
   });
 });
 
-describe("footer Sports column ↔ the sports pages", () => {
-  // The footer shows a handful of featured sports plus "View All" — a teaser,
-  // not the full list — so the invariant is that every link is real.
-  const block = footerJs.slice(
-    footerJs.indexOf("const SPORTS_LINKS"),
-    footerJs.indexOf("];", footerJs.indexOf("const SPORTS_LINKS"))
-  );
-  const footerHrefs = [...block.matchAll(/href:\s*"([^"]+)"/g)].map((m) => `pages/${m[1]}`);
-  const sportsPages = new Set(
-    clubPages.filter((p) => bodyMap[p.slug] === "sports").map((p) => p.file)
-  );
+describe("the footer's Sports column", () => {
+  const featured = CLUBS.filter((c) => c.featured);
 
-  it("links only to pages that exist", () => {
-    expect(footerHrefs.length).toBeGreaterThan(3);
-    for (const href of footerHrefs) expect(existsSync(resolve(root, href)), href).toBe(true);
+  it("shows a handful of featured sports, and only sports", () => {
+    expect(featured.length).toBeGreaterThanOrEqual(4);
+    expect(featured.length).toBeLessThanOrEqual(8);
+    for (const c of featured)
+      expect(c.body, `${c.slug} is featured but not a sport`).toBe("sports");
   });
 
-  it("every featured link is a sports club, apart from the 'View All' link to the directory", () => {
-    for (const href of footerHrefs) {
-      if (href === "pages/clubs.html") continue;
-      expect(
-        sportsPages.has(href),
-        `${href} is in the footer's Sports column but is not a sports club`
-      ).toBe(true);
-    }
-    expect(footerHrefs).toContain("pages/clubs.html");
+  it("is built from the registry, with a link on to the whole directory", () => {
+    const footer = read("js/components/footer.js");
+    expect(footer).toContain('from "../data/clubs.js"');
+    expect(footer).toContain("CLUBS.filter((c) => c.featured)");
+    expect(footer).toContain('{ label: "View All", href: "clubs.html" }');
   });
 });
 
-describe("pages ↔ the archive", () => {
-  const map = read("public/assets/processed/assets_map.jsonl")
-    .split("\n")
-    .filter(Boolean)
-    .map((l) => JSON.parse(l));
-  const archiveSlugs = new Set(map.map((r) => r.club));
+describe("the directory", () => {
+  it("reads the registry rather than keeping private tables", () => {
+    const clubs = read("js/pages/clubs.js");
+    expect(clubs).toContain('from "../data/clubs.js"');
+    expect(clubs).not.toContain("SLUG_BODIES");
+    expect(clubs).not.toContain("const PENDING_CLUBS");
+    expect(clubs).not.toMatch(/"pages\/[a-z-]+\.html"/);
+  });
+});
 
-  it("every club page's slug names a folder that exists in the archive (or is a known pending club)", () => {
-    for (const { file, slug } of clubPages) {
-      expect(archiveSlugs.has(slug), `${file}: slug "${slug}" is not in assets_map.jsonl`).toBe(
-        true
-      );
-    }
+describe("registry ↔ the archive", () => {
+  const archive = new Set(
+    read("public/assets/processed/assets_map.jsonl")
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => JSON.parse(l).club)
+  );
+
+  it("every club's slug names a folder that exists in the archive", () => {
+    for (const c of CLUBS)
+      expect(archive.has(c.slug), `${c.slug} is not in assets_map.jsonl`).toBe(true);
   });
 });

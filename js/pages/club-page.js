@@ -10,7 +10,8 @@ import { $, el, assetUrl } from "../utils/dom.js";
 import { altTextFor } from "../utils/caption.js";
 import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { isCurrentTenure } from "../utils/tenure.js";
-import { getClub, getClubEntries, loadAssetsMap } from "../data.js";
+import { getClub, getClubEntries, loadAssetsMap, indexByClub } from "../data.js";
+import { buildActions, fixBrokenMailtos, hydratePagerLogos } from "../components/club-extras.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -86,27 +87,6 @@ function buildIdentity(club, entries) {
       "div",
       { class: "club-detail__identity-copy" },
       el("p", { class: "club-detail__eyebrow" }, "SAC Chronicle · club record"),
-      navigator.share
-        ? el(
-            "button",
-            {
-              class: "club-detail__share",
-              type: "button",
-              "aria-label": "Share this club page",
-              title: "Share this club page",
-              onclick: () => {
-                navigator
-                  .share({
-                    title: document.title,
-                    text: `${club.name} — SAC club record at IISER Kolkata`,
-                    url: location.href,
-                  })
-                  .catch(() => {});
-              },
-            },
-            "Share ⤴"
-          )
-        : null,
       el("h1", { class: "club-detail__title", id: "clubTitle" }, club.name),
       el(
         "div",
@@ -117,7 +97,9 @@ function buildIdentity(club, entries) {
         el("span", {}, formatCount(mediaCount, "media")),
         el("span", {}, formatCount(documentCount, "document")),
         el("span", { class: "club-detail__source" }, logoSource)
-      )
+      ),
+      // built with the identity, in the same tick, so it cannot move anything later
+      buildActions(club)
     )
   );
 }
@@ -244,6 +226,9 @@ export async function initClubPage() {
     document.body.dataset.clubName = club.name;
     updateDescription(club, entries);
     wrapTables();
+    // a mailto: with no address is a dead link; show the text instead
+    fixBrokenMailtos(document);
+    hydratePagerLogos(indexByClub(assets));
 
     // Keep a small, machine-readable provenance marker for future editors and
     // tests: every hydrated club page is explicitly map-backed.

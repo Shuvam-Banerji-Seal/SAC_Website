@@ -33,7 +33,7 @@ npm run check                   # lint + prettier + generated-files check + all 
 npm test                        # vitest only        npm run test:watch · test:coverage
 npm run lint:fix · npm run format
 
-npm run sync                    # regenerate modulepreload blocks + service-worker shell list
+npm run sync                    # regenerate generated page blocks (preloads, club breadcrumb/pager) + sw shell list
 npm run sitemap                 # regenerate sitemap.xml / robots.txt (CI does this per host)
 npm run dedupe:people           # recompile tools/dedupe/same_person.json -> public/duplicates.json
 npm run build:pretext           # only if the utils/pretext submodule changes
@@ -51,8 +51,10 @@ js/
   data.js                  loads assets_map.jsonl, applies duplicates.json, indexes clubs
   config.js                site constants, nav, API keys (referrer-restricted)
   loader.js, preloader.js  the entrance (once per tab session); preloader is a classic script
-  components/              navbar, footer, settings, viewer, calendar, section-nav, campus-book/board,
-                           sac-diagram, council-facts, back-to-top, reading-progress
+  components/              navbar (folded-sheet nav), footer, settings, viewer, calendar, section-nav,
+                           club-extras, campus-book/board, sac-diagram, council-facts, back-to-top,
+                           reading-progress
+  data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest
   pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
   utils/                   dom (el, pageUrl, assetUrl), calendar(+model), caption, thumb, media,
                            reveal, skeleton, view-pref, calligraphy, music, youtube, tenure, text-measure
@@ -60,7 +62,7 @@ js/
 css/                       preloader, reset, variables (tokens), main, components, loader, settings,
                            viewer, enhancements (last layer), print, pages/{home,clubs,club,events,
                            gallery,about,calendar}.css
-tools/                     sync-preloads.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
+tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
 test/unit/                 40 files, ~550 tests (vitest + jsdom); setup in test/setup.js
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)
@@ -92,6 +94,7 @@ sw.js                      service worker (code network-first, media stale-while
 | File / block | Source | Command |
 |---|---|---|
 | `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
+| `<!-- club-crumbs … -->` and `<!-- club-pager … -->` on the 32 club pages | the club registry, `js/data/clubs.js` | `npm run sync` |
 | `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
 | `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |
 | `public/duplicates.json` | `tools/dedupe/*` | see `tools/dedupe/README.md` |
@@ -102,9 +105,11 @@ sw.js                      service worker (code network-first, media stale-while
 
 **Add a club.** (1) Create `pages/<slug>.html` from a sibling; set
 `<body class="has-topbar" data-page="club" data-club-slug="<Archive_Folder_Slug>">`;
-keep the `.section-nav--slot` before the first section. (2) Add the slug to
-`getClubPageUrl` and `SLUG_BODIES` in `js/pages/clubs.js`. (3) `npm run sync` and
-`npm run sitemap`. (4) `npm test` — `club-registry.test.js` names whatever you missed.
+keep the `.section-nav--slot` before the first section. (2) Add one row to `CLUBS` in
+`js/data/clubs.js` (page, body, name, short name, interests, search keywords) — the
+directory, footer, pager, search and interest filter all read it. (3) `npm run sync` (writes
+its breadcrumb and "more clubs" blocks and the preload blocks) and `npm run sitemap`.
+(4) `npm test` — `club-registry.test.js` and `club-pages.test.js` name whatever you missed.
 
 **Add a script to every page's critical path.** Don't. Import it dynamically from the
 page module or from `whenIdle()` in `main.js`. `load-budget.test.js` caps the shell.
