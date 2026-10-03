@@ -9,6 +9,7 @@
 import { $, el, pageLink, assetUrl, showError } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { showGridSkeleton, clearSkeleton } from "../utils/skeleton.js";
+import { buildSectionNav, trackSections } from "../components/section-nav.js";
 
 function getClubPageUrl(slug) {
   const urlMap = {
@@ -286,6 +287,21 @@ export async function initClubs() {
       )
     );
 
+    // Jump bar: one chip per body, so Sports is one tap away instead of 3,600px.
+    const jump = buildSectionNav(
+      sections.map((section) => {
+        const body = BODIES.find((b) => b.id === section.dataset.clubsBody);
+        return {
+          id: section.id,
+          label: body.label.replace(/^SAC /, ""),
+          count: section.querySelectorAll(".club-card").length,
+        };
+      }),
+      { label: "Jump to a body of the Council" }
+    );
+    document.getElementById("clubs-grid")?.before(jump);
+    trackSections(jump);
+
     // Client-side search across name + slug + body label
     const searchInput = $("#clubs-search");
     if (searchInput) {
@@ -311,6 +327,10 @@ export async function initClubs() {
             }
           });
           section.classList.toggle("is-hidden", sectionVisible === 0);
+          // a body with no matches loses its chip too
+          jump
+            .querySelector(`[data-target="${section.id}"]`)
+            ?.parentElement.toggleAttribute("hidden", sectionVisible === 0);
         });
         // Live result-count chip next to the search box
         let counter = searchInput.parentElement.querySelector(".clubs-search-count");

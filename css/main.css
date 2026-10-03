@@ -254,3 +254,47 @@ body:not([data-page="home"]) main > * {
     font-size: var(--fs-3xl);
   }
 }
+
+/* ---------------------------------------------------------------- ageing
+   The page-wide stains, foxing and vignette live in variables.css (they are
+   gradients on <body>). These are the parts that need real elements. Every
+   value scales with --age, so "Fresh" nearly removes them and "Rustic" doubles
+   down. Nothing here is a network request or a repaint on scroll. */
+
+/* A newspaper is folded once per sheet. One faint crease — a shadow line and a
+   highlight beside it — every ~1380px of column, behind the content. */
+main {
+  isolation: isolate;
+  position: relative;
+}
+main::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 1380px,
+    rgba(70, 44, 20, calc(0.08 * var(--age))) 1380px 1381px,
+    rgba(255, 250, 236, calc(0.6 * var(--age))) 1381px 1383px,
+    transparent 1383px 1384px
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+/* Letterpress ink spreads a hair into the fibres. */
+h1,
+h2,
+h3 {
+  text-shadow: 0 0 0.6px rgba(36, 22, 10, calc(0.32 * var(--age)));
+}
+
+/* Featured photographs read as halftone prints, not screens: a touch of warmth
+   and contrast. Only the handful of lead images — a filter on every thumbnail
+   in a 1,000-image gallery would cost real GPU memory. */
+.hero__frame img,
+.board-card img,
+.book__photo img,
+.campus-gallery__item img {
+  filter: sepia(calc(0.14 * var(--age))) saturate(0.95) contrast(1.03);
+}

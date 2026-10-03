@@ -8,6 +8,17 @@
   const pre = document.getElementById("preloader");
   if (!pre) return;
 
+  // The entrance plays once per tab session — the first page you open. After
+  // that every navigation is instant: the same animation on each of the 38
+  // pages is a toll, not a welcome. sessionStorage is set by js/loader.js.
+  let seen = false;
+  try {
+    seen = window.sessionStorage.getItem("sac-splash") === "1";
+  } catch {
+    /* storage blocked — treat every page as a first visit */
+  }
+  window.__sacSplashSeen = seen;
+
   function detectDeviceTier() {
     const cores = navigator.hardwareConcurrency || 4;
     const memory = navigator.deviceMemory || 8;
@@ -35,6 +46,15 @@
   void SAFETY_BY_TIER;
   void warm;
   window.__sacDeviceTier = detectDeviceTier();
+
+  if (seen) {
+    // Remove before it can paint: the overlay would otherwise flash on every page.
+    if (pre.parentNode) pre.parentNode.removeChild(pre);
+    window.dispatchEvent(
+      new CustomEvent("preloader-done", { detail: { tier: window.__sacDeviceTier } })
+    );
+    return;
+  }
 
   const fill = pre.querySelector(".preloader__fill");
   const num = pre.querySelector(".preloader__percent-num");

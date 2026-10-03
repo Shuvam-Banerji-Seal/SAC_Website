@@ -70,12 +70,13 @@ describe("settings module", () => {
     expect(document.documentElement.getAttribute("data-texture")).toBe("kraft");
   });
 
-  it("applies default texture when not set", async () => {
+  it("applies the aged sheet by default when no texture is saved", async () => {
     localStorage.setItem("sac-site-prefs", JSON.stringify({}));
-    const { initSettings } = await import("../../js/components/settings.js");
+    const { initSettings, DEFAULT_TEXTURE } = await import("../../js/components/settings.js");
     initSettings();
 
-    expect(document.documentElement.getAttribute("data-texture")).toBe("fresh");
+    expect(DEFAULT_TEXTURE).toBe("aged");
+    expect(document.documentElement.getAttribute("data-texture")).toBe("aged");
   });
 
   it("clears conflicting 'dark' texture when Light theme is chosen (escape hatch)", async () => {
@@ -92,8 +93,8 @@ describe("settings module", () => {
     document.querySelector('.theme-option[data-value="light"]').click();
 
     const prefs = JSON.parse(localStorage.getItem("sac-site-prefs"));
-    expect(prefs.texture).toBe("fresh");
-    expect(document.documentElement.getAttribute("data-texture")).toBe("fresh");
+    expect(prefs.texture).toBe("aged");
+    expect(document.documentElement.getAttribute("data-texture")).toBe("aged");
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
   });
 

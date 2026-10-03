@@ -15,7 +15,12 @@
 }
 
 #navbar {
-  background: var(--paper-soft);
+  /* The same stock as the page, a shade lighter: pulp tooth, laid lines, a tea
+     tint pooled at the top, and a darker spine toward the ruled edge. */
+  background:
+    linear-gradient(90deg, transparent 82%, rgba(70, 44, 20, calc(0.1 * var(--age))) 100%),
+    radial-gradient(ellipse at 18% 0%, rgba(150, 96, 40, calc(0.13 * var(--age))), transparent 62%),
+    var(--paper-fiber), var(--paper-grain), var(--paper-soft);
   border-right: 1px solid var(--rule);
   contain: layout paint;
   display: flex;
@@ -1190,4 +1195,92 @@ html[data-thumb-view="sheet"] .thumb--reveal.is-revealed {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+/* --------------------------------------------------------------- section nav
+   The sticky "jump to" bar (js/components/section-nav.js) on the clubs
+   directory and every club page. Chips scroll sideways on a phone. */
+.section-nav {
+  background: color-mix(in srgb, var(--paper) 97%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--ink-rule);
+  margin: 0 0 1.25rem;
+  position: sticky;
+  top: 0;
+  transition: top 0.2s ease;
+  z-index: 40;
+}
+/* below the sticky mobile masthead, and following it when it retracts */
+body.has-topbar .section-nav {
+  top: var(--topbar-h);
+}
+body.has-topbar.topbar-hidden .section-nav {
+  top: 0;
+}
+.section-nav__list {
+  display: flex;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0;
+  overflow-x: auto;
+  padding: 0.55rem 0.1rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.section-nav__list::-webkit-scrollbar {
+  display: none;
+}
+.section-nav__list li {
+  flex: none;
+  scroll-snap-align: start;
+}
+.section-nav__list li[hidden] {
+  display: none;
+}
+.section-nav__chip {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--ink-rule);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  gap: 0.4rem;
+  letter-spacing: 0.06em;
+  min-height: 2.2rem;
+  padding: 0.3rem 0.8rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.section-nav__chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.section-nav__chip.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.section-nav__count {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+@media (pointer: coarse), (max-width: 640px) {
+  .section-nav__chip {
+    min-height: 2.75rem;
+  }
+}
+/* A chosen section lands below the bar, not under it. */
+[id^="body-"],
+main h2[id] {
+  scroll-margin-top: calc(var(--topbar-h, 54px) + 4rem);
+}
+@media (min-width: 1024px) {
+  [id^="body-"],
+  main h2[id] {
+    scroll-margin-top: 4.5rem;
+  }
 }

@@ -25,6 +25,8 @@ function el(tag, attrs = {}, ...children) {
 }
 
 const KEY = "sac-site-prefs";
+/** The sheet a first-time visitor gets: aged stock. "fresh" is the clean alternative. */
+export const DEFAULT_TEXTURE = "aged";
 const FS_SCALE = { s: 0.85, m: 1, l: 1.2, S: 0.85, M: 1, L: 1.2 };
 
 export const FONT_PRESETS = {
@@ -58,7 +60,7 @@ export const FONT_PRESETS = {
 };
 
 export const TEXTURES = {
-  fresh: { label: "Fresh", swatch: ["#f7f2e7", "#eee5d2"] },
+  fresh: { label: "Fresh", swatch: ["#f4eddd", "#e9dfc9"] },
   aged: { label: "Aged", swatch: ["#eee2cb", "#e2d2b4"] },
   rustic: { label: "Rustic", swatch: ["#e8d8bd", "#d7c09b"] },
   notice: { label: "Notice", swatch: ["#e8e5d5", "#d6d1bb"] },
@@ -130,7 +132,7 @@ export function applyFontSize(prefs) {
 }
 
 export function applyTexture(prefs) {
-  document.documentElement.setAttribute("data-texture", prefs.texture || "fresh");
+  document.documentElement.setAttribute("data-texture", prefs.texture || DEFAULT_TEXTURE);
 }
 
 export function applyReduceMotion(prefs) {
@@ -236,11 +238,13 @@ export function initSettings() {
       // the light theme, trapping users who picked it by accident. An explicit
       // Light/Auto choice clears the conflict so the theme always wins.
       if (value !== "dark" && prefs.texture === "dark") {
-        prefs.texture = "fresh";
-        document.documentElement.setAttribute("data-texture", "fresh");
+        prefs.texture = DEFAULT_TEXTURE;
+        document.documentElement.setAttribute("data-texture", DEFAULT_TEXTURE);
         textureGrid
           .querySelectorAll("button")
-          .forEach((item) => item.classList.toggle("is-selected", item.dataset.value === "fresh"));
+          .forEach((item) =>
+            item.classList.toggle("is-selected", item.dataset.value === DEFAULT_TEXTURE)
+          );
       }
       theme
         .querySelectorAll("button")
@@ -310,7 +314,7 @@ export function initSettings() {
       "texture-option",
       value,
       config.label,
-      (prefs.texture || "fresh") === value
+      (prefs.texture || DEFAULT_TEXTURE) === value
     );
     button.dataset.texture = value;
     const swatch = config.swatch || ["#f7f2e7", "#eee5d2"];

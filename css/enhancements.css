@@ -1,4 +1,6 @@
-/* Editorial helpers inspired by the reference broadsheet. */
+/* Enhancement layer, loaded last on every page.
+   1. Editorial helpers inspired by the reference broadsheet (drop caps, pull quotes, columns).
+   2. Interaction polish: hover, press and entrance motion (the second half of this file). */
 .dropcap > p:first-of-type::first-letter,
 .lead-article__body > p:first-of-type::first-letter {
   color: var(--accent);
@@ -71,5 +73,197 @@
   .cols--3 {
     column-count: 1;
     text-align: left;
+  }
+}
+
+/* =====================================================================
+   Interaction polish
+   Everything below refines components.css rather than redefining it, and is
+   built on transform and opacity only (compositor-cheap). Hover effects sit
+   behind (hover: hover) so a touch screen never gets a "stuck" hover, and
+   every moving part is switched off by the OS reduced-motion setting *and*
+   by the site's own Reduce-motion toggle.
+   ===================================================================== */
+:root {
+  --ease-ink: cubic-bezier(0.2, 0.8, 0.3, 1); /* decelerates like a sheet settling */
+  --ease-snap: cubic-bezier(0.34, 1.4, 0.5, 1); /* a small overshoot, like a pin pressed home */
+}
+
+/* In-page links land below the sticky mobile strip, not under it. */
+html {
+  scroll-padding-top: calc(var(--topbar-h, 54px) + 1rem);
+}
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 1rem;
+  }
+}
+
+/* Never strand one word on the last line of a paragraph or caption. */
+p,
+li,
+figcaption {
+  text-wrap: pretty;
+}
+
+/* Touch screens: no 300ms tap delay, and a tap flash in the site's own colour. */
+a,
+button,
+summary,
+label,
+select,
+input {
+  touch-action: manipulation;
+}
+html {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+/* Links ease their underline out instead of snapping. */
+a {
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease,
+    text-underline-offset 0.2s var(--ease-ink);
+}
+
+/* A control that gives under the finger feels like a control. */
+button:not(:disabled):active,
+.sidebar__link:active,
+.campus-chip:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-underline-offset: 0.3em;
+  }
+
+  /* Sidebar: a rust marker slides in and the label eases right. */
+  .sidebar__link {
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease,
+      padding-left 0.2s var(--ease-ink);
+  }
+  .sidebar__link:hover {
+    border-left-color: var(--rust);
+    padding-left: 0.85rem;
+  }
+
+  /* Pinned pictures swing straight from their pin as you reach for them. */
+  html:not([data-thumb-view="sheet"]) .thumb {
+    /* opacity stays in the list: .thumb--reveal fades in with it */
+    transition:
+      transform 0.32s var(--ease-ink),
+      opacity 0.35s ease;
+  }
+  html:not([data-thumb-view="sheet"]) .thumb:hover,
+  html:not([data-thumb-view="sheet"]) .thumb--reveal.is-revealed:hover {
+    transform: rotate(0deg) translateY(-3px);
+    z-index: 2;
+  }
+  html:not([data-thumb-view="sheet"]) .thumb a {
+    transition: box-shadow 0.3s ease;
+  }
+  html:not([data-thumb-view="sheet"]) .thumb:hover a {
+    box-shadow: 4px 8px 0 rgba(24, 20, 16, 0.2);
+  }
+  .thumb::before {
+    transition: transform 0.28s var(--ease-snap);
+  }
+  .thumb:hover::before {
+    transform: translateX(-50%) translateY(-2px) scale(1.2);
+  }
+  .thumb img {
+    transition: transform 0.5s var(--ease-ink);
+  }
+  .thumb:hover img {
+    transform: scale(1.04);
+  }
+
+  /* Club crests tilt toward you inside their cards. */
+  .club-card__logo img,
+  .paper-card__logo img {
+    transition: transform 0.32s var(--ease-snap);
+  }
+  .club-card:hover .club-card__logo img,
+  .paper-card:hover .paper-card__logo img {
+    transform: scale(1.07) rotate(-2.5deg);
+  }
+}
+
+/* Two progressive enhancements: sections rise as they scroll in (CSS
+   scroll-driven animation, no JS), and the sidebar stays put while page content
+   cross-fades between pages. A browser without them simply shows the page. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    html:not([data-reduce-motion="on"])
+      :is(
+        .lead-article,
+        .notebook-section,
+        .home-stats,
+        .club-detail__section,
+        .clubs-body,
+        .campus-cat
+      ) {
+      animation: sac-rise linear both;
+      animation-range: entry 0% entry 28%;
+      animation-timeline: view();
+    }
+  }
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root) {
+    animation: 160ms ease-in both sac-fade-out;
+  }
+  ::view-transition-new(root) {
+    animation: 260ms var(--ease-ink) both sac-fade-in;
+  }
+  #navbar {
+    view-transition-name: sac-sidebar;
+  }
+}
+@keyframes sac-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sac-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes sac-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* 44px touch targets on phones and any touch screen (WCAG 2.5.5, Apple HIG).
+   min-* rather than height: where a control is already taller it is untouched. */
+@media (max-width: 640px), (pointer: coarse) {
+  .gallery-filter-tab,
+  .campus-chip,
+  .view-toggle__btn,
+  .texture-option,
+  .theme-option,
+  .font-size-btn,
+  .board__shuffle,
+  .book__flip,
+  .navbar-corner {
+    min-height: 44px;
+  }
+  .navbar-corner,
+  .book__flip {
+    min-width: 44px;
   }
 }

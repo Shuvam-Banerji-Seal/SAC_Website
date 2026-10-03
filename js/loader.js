@@ -139,6 +139,15 @@ function finish(loader, delay) {
 export function initLoader() {
   if (started) return;
   started = true;
+  // Once per tab session (see js/preloader.js): later pages open straight onto
+  // the content. Marked now, not on finish, so a mid-animation navigation
+  // doesn't replay it.
+  if (window.__sacSplashSeen) return;
+  try {
+    window.sessionStorage.setItem("sac-splash", "1");
+  } catch {
+    /* storage blocked — the splash simply plays on every page, as before */
+  }
   const loader = buildLoader();
   document.body.classList.add("loader-active");
   const reduced =

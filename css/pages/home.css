@@ -1512,3 +1512,20 @@ main.home::after {
   margin-top: 2rem;
   text-align: center;
 }
+
+/* Phones: eight full-width postcards were ~3000px of scrolling. Two to a row
+   keeps the wall a wall — and it fits in about a screen and a half. */
+@media (max-width: 640px) {
+  .board__grid {
+    gap: 0.7rem 0.55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .board-card {
+    padding: 0.3rem 0.3rem 0;
+  }
+  .board-card__pin {
+    height: 11px;
+    top: -6px;
+    width: 11px;
+  }
+}

@@ -43,12 +43,12 @@ export const PAGE_MODULES = {
     "js/components/campus-book.js",
     "js/components/campus-board.js",
   ],
-  clubs: ["js/pages/clubs.js"],
+  clubs: ["js/pages/clubs.js", "js/components/section-nav.js"],
   events: ["js/pages/events.js"],
   gallery: ["js/pages/gallery.js"],
   "campus-life": ["js/pages/campus-life.js"],
   about: ["js/components/council-facts.js"],
-  club: ["js/pages/club-page.js", "js/pages/club-images.js"],
+  club: ["js/pages/club-page.js", "js/pages/club-images.js", "js/components/section-nav.js"],
 };
 
 const STATIC_IMPORT = /(?:^|\n)\s*(?:import|export)\s+(?:[^'"()]*?\sfrom\s+)?["']([^"']+)["']/g;

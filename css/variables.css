@@ -11,15 +11,23 @@
    All are `background-attachment: fixed` on <body>, so the sheet stays put
    while the type scrolls over it — one composited layer, no repaint. */
 :root {
-  --paper: #f4eddd;
-  --paper-soft: #fdf8ec;
-  --paper-deep: #e9dfc9;
-  --paper-edge: #cfc3ad;
+  /* How old the sheet looks, 0 (fresh stock) to ~1.5 (a cellar find). Every
+     ageing layer below scales its opacity by this, so one number moves the
+     whole page. The Paper-texture presets set it: Fresh .35, Aged 1, Rustic 1.5. */
+  --age: 1;
+  /* The default sheet is the aged one (it used to be the clean "fresh" stock),
+     defined here rather than behind a data-texture selector so there is no
+     colour flash while the saved preference is applied. */
+  --paper: #eee2cb;
+  --paper-soft: #f8eedc;
+  --paper-deep: #e2d2b4;
+  --paper-edge: #c9b995;
+  /* A warm, slightly sun-faded centre falling to brown at the trimmed edges. */
   --paper-edge-wear: radial-gradient(
-    ellipse 120% 100% at center,
-    transparent 46%,
-    rgba(74, 56, 30, 0.06) 78%,
-    rgba(46, 34, 18, 0.16) 100%
+    ellipse 125% 100% at 50% 42%,
+    transparent 40%,
+    rgba(108, 70, 30, calc(0.09 * var(--age))) 74%,
+    rgba(60, 36, 14, calc(0.26 * var(--age))) 100%
   );
   --paper-base: var(--paper);
   --paper-grain: repeating-linear-gradient(
@@ -29,23 +37,63 @@
   );
   /* fractalNoise at a high base frequency = pulp tooth rather than clouds */
   --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)' opacity='0.055'/%3E%3C/svg%3E");
-  /* Soft-edged and low-contrast on purpose: crisp dots read as a repeating
-     lattice the moment the tile wraps, blooms read as age. */
+  /* Foxing: the rust-brown freckles old rag paper develops. Soft-edged on
+     purpose — crisp dots read as a repeating lattice the moment the tile wraps,
+     blooms read as age. */
   --paper-foxing:
-    radial-gradient(circle at 18% 32%, rgba(120, 82, 34, 0.03), transparent 9px),
-    radial-gradient(circle at 63% 12%, rgba(120, 82, 34, 0.025), transparent 14px),
-    radial-gradient(circle at 88% 54%, rgba(126, 88, 40, 0.028), transparent 10px),
-    radial-gradient(circle at 34% 78%, rgba(120, 82, 34, 0.022), transparent 18px),
-    radial-gradient(circle at 74% 91%, rgba(126, 88, 40, 0.026), transparent 11px);
+    radial-gradient(
+      circle at 18% 32%,
+      rgba(138, 86, 34, calc(0.075 * var(--age))),
+      transparent 9px
+    ),
+    radial-gradient(
+      circle at 63% 12%,
+      rgba(130, 78, 30, calc(0.06 * var(--age))),
+      transparent 15px
+    ),
+    radial-gradient(
+      circle at 88% 54%,
+      rgba(146, 92, 40, calc(0.07 * var(--age))),
+      transparent 11px
+    ),
+    radial-gradient(
+      circle at 34% 78%,
+      rgba(130, 78, 30, calc(0.055 * var(--age))),
+      transparent 20px
+    ),
+    radial-gradient(
+      circle at 74% 91%,
+      rgba(146, 92, 40, calc(0.065 * var(--age))),
+      transparent 12px
+    ),
+    radial-gradient(circle at 47% 46%, rgba(138, 86, 34, calc(0.04 * var(--age))), transparent 7px),
+    radial-gradient(circle at 8% 88%, rgba(130, 78, 30, calc(0.06 * var(--age))), transparent 16px);
+  /* Stains, top-most first: a coffee-cup ring, a tea wash pooled in one
+     corner, a damp bloom, and the sun-faded middle that keeps text readable. */
   --paper-stains:
-    radial-gradient(ellipse at 12% 18%, rgba(126, 9, 9, 0.035), transparent 26%),
-    radial-gradient(ellipse at 84% 76%, rgba(94, 62, 24, 0.055), transparent 30%),
-    radial-gradient(ellipse at 52% 46%, rgba(120, 88, 40, 0.03), transparent 40%);
+    radial-gradient(
+      circle at 8% 19%,
+      transparent 0 54px,
+      rgba(110, 66, 26, calc(0.12 * var(--age))) 55px 58px,
+      rgba(110, 66, 26, calc(0.05 * var(--age))) 59px 66px,
+      transparent 70px
+    ),
+    radial-gradient(
+      ellipse at 90% 82%,
+      rgba(150, 96, 40, calc(0.17 * var(--age))),
+      transparent 36%
+    ),
+    radial-gradient(ellipse at 96% 5%, rgba(126, 30, 9, calc(0.06 * var(--age))), transparent 28%),
+    radial-gradient(
+      ellipse at 50% 40%,
+      rgba(255, 247, 224, calc(0.22 * var(--age))),
+      transparent 58%
+    );
   --paper-texture-image: none;
 
   --ink: #181410;
   --ink-soft: #42392e;
-  --ink-muted: #706454;
+  --ink-muted: #54493b; /* AA (≥4.5:1) on every light paper tone, incl. Rustic deep */
   --ink-base: var(--ink);
   --ink-rule: #8f806c;
   --ink-rule-strong: var(--ink);
@@ -102,6 +150,7 @@
 }
 
 [data-theme="dark"] {
+  --age: 0.55;
   --paper: #1b1713;
   --paper-soft: #241e18;
   --paper-deep: #30271e;
@@ -123,15 +172,23 @@
 }
 
 /* The settings texture choices are color/gradient swaps only. */
+/* "Fresh" is the clean stock the site used to ship; the default is now "Aged". */
+[data-theme="light"][data-texture="fresh"] {
+  --age: 0.3;
+  --paper: #f4eddd;
+  --paper-soft: #fdf8ec;
+  --paper-deep: #e9dfc9;
+  --paper-edge: #cfc3ad;
+}
 [data-theme="light"][data-texture="aged"] {
-  --paper: #eee2cb;
-  --paper-soft: #f8eedc;
-  --paper-deep: #e2d2b4;
+  --age: 1;
 }
 [data-theme="light"][data-texture="rustic"] {
-  --paper: #e8d8bd;
-  --paper-soft: #f3e5cf;
-  --paper-deep: #d7c09b;
+  --age: 1.5;
+  --paper: #e6d3b2;
+  --paper-soft: #f1e0c3;
+  --paper-deep: #d4b88c;
+  --paper-edge: #bfa070;
 }
 [data-theme="light"][data-texture="notice"] {
   --paper: #e8e5d5;

@@ -121,6 +121,9 @@ onReady(async () => {
   const clubPage = document.body.dataset.clubSlug
     ? Promise.all([import("./pages/club-page.js"), import("./pages/club-images.js")])
         .then(([profile, images]) => Promise.all([profile.initClubPage(), images.initClubImages()]))
+        // the jump bar is built last, once every section (gallery, portraits…) exists
+        .then(() => import("./components/section-nav.js"))
+        .then((nav) => nav.initClubSectionNav())
         .catch((err) => console.error("[main] could not start the club page:", err))
     : null;
 
