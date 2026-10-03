@@ -191,7 +191,7 @@ function updateDescription(club, entries) {
     club.logo || entries.find((e) => e.file_type === "image" && !e.is_extracted_from_doc) || null;
   const imageUrl = imageEntry
     ? new URL(assetUrl(imageEntry.public_url), document.location.href).href
-    : new URL("assets/hero.webp", document.location.href).href;
+    : new URL(assetUrl("assets/hero-people.webp"), document.location.href).href;
   setMeta("property", "og:title", club.name);
   setMeta("property", "og:description", summary);
   setMeta("property", "og:url", canonical);

@@ -37,7 +37,34 @@ describe("social-share cards", () => {
 
   it("og:image falls back to the shared hero when a club has no images", async () => {
     const src = read("js/pages/club-page.js");
-    expect(src).toContain('new URL("assets/hero.webp"');
+    // assetUrl() adds the ../ a page under pages/ needs; a bare relative
+    // "assets/…" resolved to pages/assets/… and 404'd.
+    expect(src).toContain('new URL(assetUrl("assets/hero-people.webp")');
+  });
+
+  it("every static og:image is an absolute URL to a file that ships", () => {
+    const pages = [
+      "index.html",
+      "pages/clubs.html",
+      "pages/events.html",
+      "pages/gallery.html",
+      "pages/about.html",
+      "pages/campus-life.html",
+    ];
+    const base = "https://shuvam-banerji-seal.github.io/SAC_Website/";
+    for (const p of pages) {
+      const html = read(p);
+      // \s+ also spans the line break Prettier puts between the two attributes.
+      const found = [
+        ...html.matchAll(/(?:property|name)="(?:og|twitter):image"\s+content="([^"]+)"/g),
+      ].map((m) => m[1]);
+      expect(found.length, p).toBeGreaterThan(0);
+      for (const url of found) {
+        expect(url.startsWith(base), `${p}: ${url} must be absolute`).toBe(true);
+        const rel = url.slice(base.length);
+        expect(() => readFileSync(resolve(root, rel)), `${p}: ${rel} must exist`).not.toThrow();
+      }
+    }
   });
 });
 
