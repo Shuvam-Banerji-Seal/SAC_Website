@@ -62,11 +62,9 @@ describe("campus board", () => {
     expect(js).toContain("isReducedMotion");
   });
 
-  it("hero flash regression: month pick is made pre-paint inline", () => {
-    expect(html).toContain("Seasonal hero must be chosen BEFORE first paint");
-    expect(html).toContain("getMonth() % pool.length");
-    // home.js no longer unconditionally rewrites (no double-swap)
-    expect(home).toContain("already right");
+  it("hero flash regression: the hero is fixed in markup, nothing swaps it after paint", () => {
+    expect(html).toContain('src="assets/hero-people.webp"');
+    expect(home).not.toContain("heroImg");
   });
 });
 
