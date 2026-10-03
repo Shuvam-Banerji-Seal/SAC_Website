@@ -70,13 +70,50 @@ framing. Perceptual hashing keys on composition, so on a portrait session it
 matches the set, not the sitter. At 12/14 this pipeline would delete real
 people.
 
+## Same-person curation (`same_person.json`)
+
+Two different frames of one sitter are not near-duplicates in pixel space, so
+the hashing pipeline cannot pair them — and a face-embedding tool could delete
+the wrong person's portrait. The Dean's-office staff set
+(`Campus_Archive/Administrative_Staffs_Doaa`, 55 photographs of 20 people) is
+therefore curated **by eye**: look at the contact sheets, group the frames that
+belong to one person, and record one keeper per person in
+`utils/dedupe/same_person.json`.
+
+```jsonc
+{ "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+  "label": "man, navy floral shirt, black office chair",
+  "keep": "_MG_5614.webp",
+  "drop": ["_MG_5607.webp", "_MG_5608.webp"] }
+```
+
+The source is keyed by **path**, not id: ids are a generation-time counter that
+a map regenerate can shift, whereas a path is what a person actually wrote
+down. `build_manifest.py` compiles the file into `same_person` in
+`public/duplicates.json` (ids + paths), and `js/data.js` hides the `drop` ids.
+
+```bash
+python3 utils/dedupe/build_manifest.py --people-only   # recompile, no fingerprints needed
+npx vitest run test/unit/dedupe.test.js
+```
+
+The builder refuses an unknown file, a file claimed by two people, or a keeper
+the pipeline has already suppressed. Where two sittings looked like the same
+person but could not be told apart with confidence, both were kept — a surplus
+portrait is a smaller error than a missing colleague.
+
+`dedupe.test.js` also checks that every id in the manifest still points at the
+path it was built for, so a regenerate that shifts ids fails CI instead of
+quietly hiding the wrong photographs.
+
 ## What this does _not_ catch
 
 Two genuinely different photographs of the same person — a second selfie, a
 different pose or background — are not near-duplicates in pixel space and no
 perceptual hash will pair them. That needs face embeddings (identity
 clustering), which is a different tool and carries a different risk: a false
-positive there deletes one person's portrait in favour of another's.
+positive there deletes one person's portrait in favour of another's. Curate
+those by hand in `same_person.json` (above).
 
 As of this pass the archive has 48 office-bearer portraits and no two share a
 `(club, person)`, so the metadata shows no same-person duplication in the set

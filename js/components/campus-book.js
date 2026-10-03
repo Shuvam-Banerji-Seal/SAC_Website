@@ -23,11 +23,12 @@ function isReducedMotion() {
 }
 
 /** Landscape campus shots, round-robin across categories for variety. */
-function pickPhotos(assets, count) {
+function pickPhotos(assets, count, claimed) {
   const pool = assets.filter(
     (a) =>
       a.club === "Campus_Archive" &&
       a.file_type === "image" &&
+      !claimed.has(a.id) &&
       (Number(a.aspect_ratio) || 1) >= 1.25
   );
   const byCat = new Map();
@@ -46,12 +47,19 @@ function pickPhotos(assets, count) {
   return [...picked.slice(offset), ...picked.slice(0, offset)];
 }
 
-export function initCampusBook(assets) {
+/**
+ * @param {object[]} assets
+ * @param {Set<number>} [claimed] ids already on the page. The book takes its
+ *   photographs first and adds them here, so the Board and the Picture Desk
+ *   below it never repeat a plate.
+ */
+export function initCampusBook(assets, claimed = new Set()) {
   const mount = document.getElementById("campus-book");
   if (!mount || mount.dataset.bound === "true") return;
-  const photos = pickPhotos(assets, PHOTO_COUNT);
+  const photos = pickPhotos(assets, PHOTO_COUNT, claimed);
   if (photos.length < 4) return;
   mount.dataset.bound = "true";
+  for (const photo of photos) claimed.add(photo.id);
 
   const label = (a) => captionFor(a) || "Campus photograph";
 

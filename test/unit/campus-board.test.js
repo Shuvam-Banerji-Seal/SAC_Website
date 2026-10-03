@@ -38,7 +38,7 @@ describe("campus board", () => {
   });
 
   it("home wires the board; index ships the mount; css pins it", () => {
-    expect(home).toContain("initCampusBoard(assets)");
+    expect(home).toContain("initCampusBoard(assets, claimed)");
     expect(html).toContain('id="campus-board"');
     expect(html).toContain("The Campus Board");
     expect(css).toContain(".board-card__pin");
@@ -142,5 +142,32 @@ describe("cycle 26 — drawer notch, settings open, SVG glow", () => {
       expect(diagram).toContain(name);
     }
     expect(diagram).not.toMatch(/photographs|\bdocs\b|audio \/ video/);
+  });
+});
+
+describe("one photograph, one place on the front page", () => {
+  const home = readFileSync(resolve(root, "js/pages/home.js"), "utf-8");
+  const book = readFileSync(resolve(root, "js/components/campus-book.js"), "utf-8");
+  const board = readFileSync(resolve(root, "js/components/campus-board.js"), "utf-8");
+
+  it("the Book, Board and Picture Desk share one claimed-ids set", () => {
+    expect(home).toContain("const claimed = new Set()");
+    expect(home).toContain("initCampusBook(assets, claimed)");
+    expect(home).toContain("initCampusBoard(assets, claimed)");
+    expect(home).toContain("renderCampusGallery(assets, claimed)");
+    // each later section must actually skip what an earlier one took
+    expect(book).toContain("!claimed.has(a.id)");
+    expect(book).toContain("claimed.add(photo.id)");
+    expect(board).toContain("!claimed.has(a.id)");
+    expect(home).toContain("!claimed.has(asset.id)");
+  });
+
+  it("the Picture Desk leaves the campus archive to the Book and Board", () => {
+    expect(home).toContain('asset.club !== "Campus_Archive"');
+  });
+
+  it("a club whose only image is its logo does not show it twice", () => {
+    const clubImages = readFileSync(resolve(root, "js/pages/club-images.js"), "utf-8");
+    expect(clubImages).toMatch(/asset\.file_type === "image" && !asset\.is_logo/);
   });
 });

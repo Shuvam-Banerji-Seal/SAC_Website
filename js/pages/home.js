@@ -59,14 +59,18 @@ function editorialScore(asset) {
   return score;
 }
 
-function selectEditorialImages(assets, limit = 6) {
+function selectEditorialImages(assets, limit = 6, claimed = new Set()) {
   const candidates = assets
     .filter(
       (asset) =>
         asset.file_type === "image" &&
         !asset.is_logo &&
         !asset.is_ob_portrait &&
-        !asset.is_extracted_from_doc
+        !asset.is_extracted_from_doc &&
+        // The campus photographs belong to the Book and the Board above; the
+        // Picture Desk is the clubs' work, so it never repeats a plate.
+        asset.club !== "Campus_Archive" &&
+        !claimed.has(asset.id)
     )
     .sort((a, b) => editorialScore(b) - editorialScore(a));
   const chosen = [];
@@ -114,10 +118,10 @@ function renderStats(_assets, mountId = "home-stats") {
   );
 }
 
-function renderCampusGallery(assets) {
+function renderCampusGallery(assets, claimed) {
   const mount = document.getElementById("campus-gallery-grid");
   if (!mount) return;
-  const images = selectEditorialImages(assets);
+  const images = selectEditorialImages(assets, 6, claimed);
   if (!images.length) {
     mount.replaceChildren(
       el("p", { class: "muted" }, "The picture desk is preparing its first edition.")
@@ -223,14 +227,17 @@ export async function initHome() {
   }
 
   renderStats(assets);
+  // One photograph, one place on the front page: the Book, the Board and the
+  // Picture Desk all draw from the same archive, so they share this set.
+  const claimed = new Set();
   const { initCampusBook } = await import("../components/campus-book.js");
-  initCampusBook(assets);
+  initCampusBook(assets, claimed);
 
   // The Campus Board: pinned Campus_Places postcards (map-desk wall)
   const { initCampusBoard } = await import("../components/campus-board.js");
-  initCampusBoard(assets);
+  initCampusBoard(assets, claimed);
 
-  renderCampusGallery(assets);
+  renderCampusGallery(assets, claimed);
 
   let loaded = false;
   const onReadyForMeasure = () => {

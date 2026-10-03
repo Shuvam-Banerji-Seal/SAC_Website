@@ -21,7 +21,13 @@ const images = readFileSync(resolve(root, "public/assets/processed/assets_map.js
 
 const byId = new Map(images.map((r) => [r.id, r]));
 const curated = manifest.curated || [];
-const dropped = new Set([...manifest.suppress, ...manifest.degenerate, ...curated]);
+const people = manifest.same_person || [];
+const dropped = new Set([
+  ...manifest.suppress,
+  ...manifest.degenerate,
+  ...curated,
+  ...people.flatMap((g) => g.drop.map((d) => d.id)),
+]);
 const surviving = images.filter((r) => !dropped.has(r.id));
 
 describe("duplicate manifest", () => {
@@ -132,9 +138,71 @@ describe("duplicate manifest", () => {
     expect(deploy).toMatch(/test -f public\/duplicates\.json/);
   });
 
+  it("data.js hides the extra frames recorded in same_person", () => {
+    const src = readFileSync(resolve(root, "js/data.js"), "utf-8");
+    expect(src).toContain("manifest.same_person");
+  });
+
   it("the manifest builder preserves curation across regenerations", () => {
     const builder = readFileSync(resolve(root, "utils/dedupe/build_manifest.py"), "utf-8");
     expect(builder).toContain('previous.get("curated")');
     expect(builder).toContain("curated_note");
+  });
+});
+
+describe("same-person curation (Dean's office staff portraits)", () => {
+  const source = JSON.parse(
+    readFileSync(resolve(root, "utils/dedupe/same_person.json"), "utf-8")
+  ).groups;
+  const byPath = new Map(images.map((r) => [r.path, r]));
+  const visible = new Set(surviving.map((r) => r.id));
+
+  it("shows exactly one frame per person", () => {
+    expect(people.length).toBe(source.length);
+    for (const g of source) {
+      const members = [g.keep, ...g.drop].map((f) => byPath.get(`${g.folder}/${f}`));
+      for (const m of members) expect(m, `${g.label}: file missing from the map`).toBeDefined();
+      const shown = members.filter((m) => visible.has(m.id));
+      expect(
+        shown.map((m) => m.filename),
+        g.label
+      ).toEqual([g.keep]);
+    }
+  });
+
+  it("the Dean's-office page shows one portrait per staff member", () => {
+    const inFolder = surviving.filter((r) => r.category === "Administrative_Staffs_Doaa");
+    expect(inFolder.length).toBe(source.length);
+    expect(inFolder.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("the compiled manifest matches its path-keyed source (re-run build_manifest.py --people-only)", () => {
+    expect(people.map((g) => g.label)).toEqual(source.map((g) => g.label));
+    for (const [i, g] of source.entries()) {
+      expect(people[i].keep_path).toBe(`${g.folder}/${g.keep}`);
+      expect(people[i].drop.map((d) => d.path)).toEqual(g.drop.map((f) => `${g.folder}/${f}`));
+    }
+  });
+
+  it("no file is claimed by two people", () => {
+    const all = source.flatMap((g) => [g.keep, ...g.drop].map((f) => `${g.folder}/${f}`));
+    expect(all.length).toBe(new Set(all).size);
+  });
+});
+
+describe("manifest ids still point at the files they were built for", () => {
+  // Ids are a generation-time counter. If `sac-assets-map` is re-run after files
+  // are added, ids shift and an id-keyed manifest would silently hide the wrong
+  // photographs while showing the real duplicates. Every entry carries its path
+  // for exactly this reason, so a regenerate that breaks the mapping fails here.
+  it("every group entry resolves to the same path", () => {
+    for (const g of manifest.groups) {
+      expect(byId.get(g.keep)?.path, `keep ${g.keep}`).toBe(g.keep_path);
+      for (const d of g.drop) expect(byId.get(d.id)?.path, `drop ${d.id}`).toBe(d.path);
+    }
+    for (const g of people) {
+      expect(byId.get(g.keep)?.path, `keep ${g.keep}`).toBe(g.keep_path);
+      for (const d of g.drop) expect(byId.get(d.id)?.path, `drop ${d.id}`).toBe(d.path);
+    }
   });
 });

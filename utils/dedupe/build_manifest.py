@@ -89,10 +89,64 @@ def score(rec: dict) -> tuple:
     )
 
 
+PEOPLE = Path(__file__).with_name("same_person.json")
+
+
+def compile_people(rows: dict, dropped: set, path: Path = PEOPLE) -> list:
+    """Compile same_person.json (filenames) into manifest groups (ids + paths).
+
+    The source file is keyed by path because ids are a generation-time counter
+    that a map regenerate can shift; paths are what a person actually wrote
+    down. Resolving them here, at build time, means a regenerate only needs a
+    re-run of this script — never a hand edit of ids.
+
+    Fails loudly rather than quietly mis-hiding: an unknown file, a file listed
+    twice, or a keeper the pipeline already suppressed is a hand-curation
+    mistake, and shipping it would drop a real person's only portrait.
+    """
+    if not path.exists():
+        return []
+    by_path = {r["path"]: r for r in rows.values()}
+    seen: set = set()
+    out = []
+    for g in json.loads(path.read_text())["groups"]:
+        folder = g["folder"].rstrip("/")
+        paths = [f"{folder}/{g['keep']}"] + [f"{folder}/{d}" for d in g["drop"]]
+        for p in paths:
+            if p not in by_path:
+                raise SystemExit(f"same_person.json: {p} is not an image in the map")
+            if p in seen:
+                raise SystemExit(f"same_person.json: {p} appears in two groups")
+            seen.add(p)
+        keeper = by_path[paths[0]]
+        if keeper["id"] in dropped:
+            raise SystemExit(
+                f"same_person.json: keeper {paths[0]} is already suppressed by the "
+                "duplicate pipeline — pick a visible frame as the keeper"
+            )
+        out.append(
+            {
+                "label": g["label"],
+                "keep": keeper["id"],
+                "keep_path": keeper["path"],
+                "drop": [
+                    {"id": by_path[p]["id"], "path": p} for p in paths[1:]
+                ],
+            }
+        )
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("clusters", type=Path)
+    ap.add_argument("clusters", type=Path, nargs="?")
     ap.add_argument("--out", type=Path, default=REPO / "public/duplicates.json")
+    ap.add_argument(
+        "--people-only",
+        action="store_true",
+        help="recompile same_person.json into the existing manifest and leave "
+        "the generated duplicate lists untouched (no fingerprints needed)",
+    )
     args = ap.parse_args()
 
     rows = {
@@ -100,6 +154,21 @@ def main() -> int:
         for r in map(json.loads, MAP.read_text().splitlines())
         if r.get("file_type") == "image"
     }
+
+    if args.people_only:
+        manifest = json.loads(args.out.read_text())
+        dropped = set(manifest["suppress"]) | set(manifest["degenerate"]) | set(
+            manifest.get("curated") or []
+        )
+        manifest["same_person"] = compile_people(rows, dropped)
+        args.out.write_text(json.dumps(manifest, indent=1) + "\n")
+        n = sum(len(g["drop"]) for g in manifest["same_person"])
+        print(f"same_person: {len(manifest['same_person'])} people, {n} extra frames hidden")
+        print(f"wrote {args.out.relative_to(REPO)}")
+        return 0
+
+    if args.clusters is None:
+        ap.error("clusters.json is required unless --people-only is given")
     clusters = json.loads(args.clusters.read_text())["clusters"]
 
     degenerate = sorted(
@@ -161,14 +230,23 @@ def main() -> int:
         except (ValueError, TypeError):
             pass  # a broken existing manifest must not block a rebuild
 
+    # Hand-curated same-person groups are recompiled from their path-keyed
+    # source every run, so the ids in the manifest are always fresh.
+    manifest["same_person"] = compile_people(
+        rows,
+        set(suppress) | set(degenerate) | set(manifest["curated"]),
+    )
+
     args.out.write_text(json.dumps(manifest, indent=1) + "\n")
 
     kept = len(rows) - len(suppress) - len(degenerate)
     print(f"images in map      : {len(rows)}")
     print(f"suppressed as dupes: {len(suppress)} across {len(groups)} groups")
     print(f"degenerate (<64px) : {len(degenerate)}")
+    people_hidden = sum(len(g["drop"]) for g in manifest["same_person"])
     print(f"curated (manual)   : {len(manifest['curated'])} preserved")
-    print(f"images the site shows: {kept - len(manifest['curated'])}")
+    print(f"same-person frames : {people_hidden} hidden across {len(manifest['same_person'])} people")
+    print(f"images the site shows: {kept - len(manifest['curated']) - people_hidden}")
     print(f"wrote {args.out.relative_to(REPO)}")
     return 0
 

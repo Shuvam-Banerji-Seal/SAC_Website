@@ -1,0 +1,178 @@
+{
+ "_comment": "Hand-curated same-person groups. The perceptual-hash pipeline cannot pair two different frames of one sitter (see README, 'What this does not catch'), so a person looks at the contact sheets and records one keeper per person here. Paths are relative to `folder` and survive an assets_map regenerate; build_manifest.py compiles them to ids. Nothing is deleted from the archive.",
+ "groups": [
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, navy floral shirt, black office chair",
+   "keep": "_MG_5614.webp",
+   "drop": [
+    "_MG_5607.webp",
+    "_MG_5608.webp",
+    "_MG_5612.webp",
+    "_MG_5614_1.webp",
+    "_MG_5617.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, pink kurta, HP monitor",
+   "keep": "_MG_5618.webp",
+   "drop": [
+    "_MG_5620.webp",
+    "_MG_5622.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, maroon top and grey scarf, Ganesh calendar",
+   "keep": "_MG_5625.webp",
+   "drop": [
+    "_MG_5624.webp",
+    "_MG_5625_1.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "bald man, blue polo, glass desk",
+   "keep": "_MG_5629.webp",
+   "drop": [
+    "_MG_5629_1.webp",
+    "_MG_5632.webp",
+    "_MG_5633.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, cream half-sleeve shirt, window",
+   "keep": "_MG_5638.webp",
+   "drop": [
+    "_MG_5637.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, blue and white print shirt",
+   "keep": "_MG_5653.webp",
+   "drop": []
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, white shirt, red chairs",
+   "keep": "_MG_5660.webp",
+   "drop": [
+    "_MG_5660_1.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, blue leaf-print shirt, glasses",
+   "keep": "_MG_5666.webp",
+   "drop": [
+    "_MG_5667.webp",
+    "_MG_5670.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "bearded man, checked shirt",
+   "keep": "_MG_5674.webp",
+   "drop": [
+    "_MG_5673.webp",
+    "_MG_5675.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, teal kurta, brown leather chair",
+   "keep": "_MG_5685.webp",
+   "drop": [
+    "_MG_5686.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, blue patterned polo, moustache",
+   "keep": "_MG_5694.webp",
+   "drop": [
+    "_MG_5693.webp",
+    "_MG_5695.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, navy striped polo, glasses",
+   "keep": "_MG_5705.webp",
+   "drop": []
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, navy floral kurti",
+   "keep": "_MG_5707.webp",
+   "drop": [
+    "_MG_5708.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, pink printed polo (glasses on/off)",
+   "keep": "_MG_5712.webp",
+   "drop": [
+    "_MG_5709.webp",
+    "_MG_5713.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, peach kurta with red embroidery",
+   "keep": "_MG_5715.webp",
+   "drop": [
+    "_MG_5716.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, olive top, grey scarf, glasses",
+   "keep": "_MG_5719.webp",
+   "drop": [
+    "_MG_5718.webp",
+    "_MG_5720.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, yellow INDIA polo",
+   "keep": "_MG_5721.webp",
+   "drop": [
+    "_MG_5722.webp",
+    "_MG_5724.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "bald bearded man, white shirt, glasses",
+   "keep": "_MG_5726.webp",
+   "drop": [
+    "_MG_5725.webp",
+    "_MG_5727.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "man, curly grey hair, patterned shirt, sofa",
+   "keep": "_MG_5730.webp",
+   "drop": [
+    "_MG_5729.webp",
+    "_MG_5737.webp",
+    "_MG_5738.webp"
+   ]
+  },
+  {
+   "folder": "Campus_Archive/Administrative_Staffs_Doaa",
+   "label": "woman, navy leaf kurta, glasses, blinds",
+   "keep": "_MG_5735.webp",
+   "drop": [
+    "_MG_5734.webp"
+   ]
+  }
+ ]
+}

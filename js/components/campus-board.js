@@ -21,13 +21,15 @@ const BOARD_COUNT = 8;
  *  (stable across reloads, no layout jank between visits). */
 const TILTS = [-1.8, 1.4, -0.9, 2.1, -1.3, 0.8, -2.2, 1.7, -0.6, 1.1];
 
-/** Landscape Campus_Places shots, in archive order. */
-function boardPool(assets) {
+/** Landscape Campus_Places shots, in archive order, minus anything the Book
+ *  above has already put on the page. */
+function boardPool(assets, claimed) {
   return assets.filter(
     (a) =>
       a.club === "Campus_Archive" &&
       a.category === "Campus_Places" &&
       a.file_type === "image" &&
+      !claimed.has(a.id) &&
       (Number(a.aspect_ratio) || 1) >= 1.25
   );
 }
@@ -73,10 +75,10 @@ function boardCard(asset, index, seed) {
   );
 }
 
-export function initCampusBoard(assets) {
+export function initCampusBoard(assets, claimed = new Set()) {
   const mount = document.getElementById("campus-board");
   if (!mount || mount.dataset.bound === "true") return;
-  const pool = boardPool(assets);
+  const pool = boardPool(assets, claimed);
   if (pool.length < 4) return;
   mount.dataset.bound = "true";
 

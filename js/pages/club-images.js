@@ -284,7 +284,11 @@ function renderPlaceholder(placeholder, entries) {
 }
 
 function renderFallback(entries, placeholders) {
-  const allImages = uniqueAssets(entries.filter((asset) => asset.file_type === "image"));
+  // The crest already stands in the page header; repeating it as the "archive"
+  // left Gaming (whose only image is its logo) showing the same picture twice.
+  const allImages = uniqueAssets(
+    entries.filter((asset) => asset.file_type === "image" && !asset.is_logo)
+  );
   if (!allImages.length || !placeholders.length) return;
   const last = placeholders[placeholders.length - 1];
   const section = last.closest(".reveal-section") || last.closest("section");

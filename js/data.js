@@ -31,8 +31,11 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
  *
  * `curated` is a hand-kept list (non-content artefacts extracted from club
  * documents) merged with the generated lists; build_manifest.py preserves it
- * across regenerations. `duplicates.json` must be staged with the site — it
- * 404'd in production until 2026-09-21, silently showing every duplicate.
+ * across regenerations. `same_person` is the other hand-kept layer: perceptual
+ * hashes cannot pair two different frames of one sitter, so a person records
+ * one keeper per staff member in utils/dedupe/same_person.json and the
+ * builder compiles it to ids. `duplicates.json` must be staged with the site —
+ * it 404'd in production until 2026-09-21, silently showing every duplicate.
  *
  * Fails open: if the manifest is missing or malformed the site shows
  * everything, which is the pre-dedupe behaviour. */
@@ -48,6 +51,7 @@ function fetchSuppressed() {
         ...(manifest.suppress || []),
         ...(manifest.degenerate || []),
         ...(manifest.curated || []),
+        ...(manifest.same_person || []).flatMap((group) => group.drop.map((d) => d.id)),
       ];
       return new Set(ids);
     })

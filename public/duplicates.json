@@ -3163,5 +3163,285 @@
     }
    ]
   }
+ ],
+ "same_person": [
+  {
+   "label": "man, navy floral shirt, black office chair",
+   "keep": 69,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5614.webp",
+   "drop": [
+    {
+     "id": 66,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5607.webp"
+    },
+    {
+     "id": 67,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5608.webp"
+    },
+    {
+     "id": 68,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5612.webp"
+    },
+    {
+     "id": 70,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5614_1.webp"
+    },
+    {
+     "id": 71,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5617.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, pink kurta, HP monitor",
+   "keep": 72,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5618.webp",
+   "drop": [
+    {
+     "id": 73,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5620.webp"
+    },
+    {
+     "id": 74,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5622.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, maroon top and grey scarf, Ganesh calendar",
+   "keep": 76,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5625.webp",
+   "drop": [
+    {
+     "id": 75,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5624.webp"
+    },
+    {
+     "id": 77,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5625_1.webp"
+    }
+   ]
+  },
+  {
+   "label": "bald man, blue polo, glass desk",
+   "keep": 78,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5629.webp",
+   "drop": [
+    {
+     "id": 79,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5629_1.webp"
+    },
+    {
+     "id": 80,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5632.webp"
+    },
+    {
+     "id": 81,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5633.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, cream half-sleeve shirt, window",
+   "keep": 83,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5638.webp",
+   "drop": [
+    {
+     "id": 82,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5637.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, blue and white print shirt",
+   "keep": 84,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5653.webp",
+   "drop": []
+  },
+  {
+   "label": "man, white shirt, red chairs",
+   "keep": 85,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5660.webp",
+   "drop": [
+    {
+     "id": 86,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5660_1.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, blue leaf-print shirt, glasses",
+   "keep": 87,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5666.webp",
+   "drop": [
+    {
+     "id": 88,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5667.webp"
+    },
+    {
+     "id": 89,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5670.webp"
+    }
+   ]
+  },
+  {
+   "label": "bearded man, checked shirt",
+   "keep": 91,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5674.webp",
+   "drop": [
+    {
+     "id": 90,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5673.webp"
+    },
+    {
+     "id": 92,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5675.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, teal kurta, brown leather chair",
+   "keep": 93,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5685.webp",
+   "drop": [
+    {
+     "id": 94,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5686.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, blue patterned polo, moustache",
+   "keep": 96,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5694.webp",
+   "drop": [
+    {
+     "id": 95,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5693.webp"
+    },
+    {
+     "id": 97,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5695.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, navy striped polo, glasses",
+   "keep": 98,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5705.webp",
+   "drop": []
+  },
+  {
+   "label": "woman, navy floral kurti",
+   "keep": 99,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5707.webp",
+   "drop": [
+    {
+     "id": 100,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5708.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, pink printed polo (glasses on/off)",
+   "keep": 102,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5712.webp",
+   "drop": [
+    {
+     "id": 101,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5709.webp"
+    },
+    {
+     "id": 103,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5713.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, peach kurta with red embroidery",
+   "keep": 104,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5715.webp",
+   "drop": [
+    {
+     "id": 105,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5716.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, olive top, grey scarf, glasses",
+   "keep": 107,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5719.webp",
+   "drop": [
+    {
+     "id": 106,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5718.webp"
+    },
+    {
+     "id": 108,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5720.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, yellow INDIA polo",
+   "keep": 109,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5721.webp",
+   "drop": [
+    {
+     "id": 110,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5722.webp"
+    },
+    {
+     "id": 111,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5724.webp"
+    }
+   ]
+  },
+  {
+   "label": "bald bearded man, white shirt, glasses",
+   "keep": 113,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5726.webp",
+   "drop": [
+    {
+     "id": 112,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5725.webp"
+    },
+    {
+     "id": 114,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5727.webp"
+    }
+   ]
+  },
+  {
+   "label": "man, curly grey hair, patterned shirt, sofa",
+   "keep": 116,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5730.webp",
+   "drop": [
+    {
+     "id": 115,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5729.webp"
+    },
+    {
+     "id": 119,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5737.webp"
+    },
+    {
+     "id": 120,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5738.webp"
+    }
+   ]
+  },
+  {
+   "label": "woman, navy leaf kurta, glasses, blinds",
+   "keep": 118,
+   "keep_path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5735.webp",
+   "drop": [
+    {
+     "id": 117,
+     "path": "Campus_Archive/Administrative_Staffs_Doaa/_MG_5734.webp"
+    }
+   ]
+  }
  ]
 }
