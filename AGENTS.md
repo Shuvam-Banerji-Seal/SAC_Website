@@ -149,6 +149,13 @@ calendar month). Re-export all four sizes (480/800/1100/1400), update the width/
 - `http-server` doesn't gzip, so local byte counts overstate the live site (the 2 MB map
   is ~100 KB on Pages). Throttle (1.6 Mbps, 150 ms, 4× CPU) when judging load time.
 - Measure layout shift with a `PerformanceObserver` for `layout-shift`; expect ≈ 0.
+  Use a **fresh browser context per measurement** (`browser.newContext()`) and one observer:
+  every `page.addInitScript` stacks for the life of the page, so a second run in the same
+  context counts each shift twice (a phantom 0.40 became 1.30 → 1.74 → 2.03 once). Land on an
+  anchor (`index.html#finder-title`) to measure what fills in while it is on screen, and scroll
+  at human pace to measure lazy sections — a 120 ms scroll loop loads the calendar mid-jump.
+- To check a change against `main`, serve a throwaway `git worktree` on another port; don't
+  `pkill -f` by command text (it matches your own shell) — find the PID with `ss -ltnp`.
 - Lighthouse (mobile) should stay 100 / 100 / 100 on home, clubs and a club page.
 
 ## Gotchas
