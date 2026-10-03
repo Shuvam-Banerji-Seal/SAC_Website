@@ -15,6 +15,8 @@ build step and no runtime dependencies.
   (pinned postcards), a picture desk, latest videos and **The SAC Calendar**.
 - **Clubs** — every club and committee in five bodies (Academics, Cultural, Food &
   Hygiene, Hostel, Sports), with a sticky jump bar and search.
+- **Search** — press `/` (or Ctrl/⌘ K, or the sidebar's Search button) to find any club or
+  page by name, by what it does ("telescope"), or by what you are into. It loads only when used.
 - **Club pages** (32) — office bearers, events, achievements, galleries, and a
   jump bar built from the page's own sections.
 - **Events, Gallery, Campus Life** — the photographic archive, grouped and searchable.

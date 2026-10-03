@@ -147,9 +147,32 @@ export function renderNavbar(activePage) {
     }
   });
 
+  // Search is on every screen size (unlike the settings button): on a phone it is the
+  // quickest way to a club, and on desktop it advertises the "/" shortcut. The launcher
+  // (search-launcher.js) picks the click up from the document via data-open-search.
+  const searchBtn = el(
+    "button",
+    {
+      class: "sidebar__action sidebar__action--search",
+      type: "button",
+      "data-open-search": "",
+      "aria-keyshortcuts": "/ Control+K Meta+K",
+    },
+    el("span", { class: "sidebar__action-icon", "aria-hidden": "true" }, "⌕"),
+    el("span", {}, "Search"),
+    el("kbd", { class: "sidebar__kbd", "aria-hidden": "true" }, "/")
+  );
+  // same courtesy as the settings button: fold the sheet away before the palette opens
+  searchBtn.addEventListener("click", () => {
+    if (document.body.classList.contains("sidebar-open")) {
+      document.getElementById("navbarCorner")?.click();
+    }
+  });
+
   const foot = el(
     "div",
     { class: "sidebar__foot" },
+    searchBtn,
     settingsBtn,
     el("p", { class: "sidebar__foot-line" }, "Student Activity Council · Empowering Voices")
   );

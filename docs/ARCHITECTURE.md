@@ -27,7 +27,7 @@ tests, linting and a few small generators in `tools/`.
   shell, then loads *only* the script for the current page (`body[data-page]`,
   or `data-club-slug` for club pages).
 - **Generated, not hand-kept.** Anything that must stay in step across many
-  files is produced by a tool in `tools/` and guarded by a test (§6).
+  files is produced by a tool in `tools/` and guarded by a test (§7).
 
 ## 2. How a page loads
 
@@ -118,7 +118,27 @@ Two things are decisions for the Council, not code: the calendar id in
 `js/config.js` is a *personal* institute calendar (a dedicated, public "SAC
 Events" calendar is the intended setup), and its sharing level.
 
-## 6. Generated files and the tests that guard them
+## 6. Search
+
+One palette finds every club and page: the sidebar's **Search** button, `/`, or
+Ctrl/⌘ K. It is built to cost nothing until it is used.
+
+| Piece | Where | Loaded |
+|---|---|---|
+| `components/search-launcher.js` | listens for the shortcuts and for any `[data-open-search]` | in the shell (~1 KB) |
+| `components/search.js` | the dialog: ARIA combobox + listbox, focus trap, interest chips | first use |
+| `css/search.css` | its styles — never linked from a page | first use, via `loadStylesheet()` |
+| `utils/search-index.js` | pure ranking over the club registry, bodies and pages | with the palette |
+
+Ranking is deliberately plain so it can be reasoned about: every word must match
+(AND); a match at the start of a word in the title beats one inside a word, which
+beats keywords, which beats the body/interest labels; one slip is forgiven in words
+of four letters or more; a label that matches twice outranks one that matches once.
+The index is built from `js/data/clubs.js`, so a new club is searchable as soon as
+it has a registry row, and `search-index.test.js` fails if a club cannot be found by
+its own name.
+
+## 7. Generated files and the tests that guard them
 
 | Generator | Writes | Guarded by |
 |---|---|---|
@@ -136,7 +156,7 @@ Other invariants with tests: every page shares one stylesheet shell
 archive (`club-registry.test.js`); `sw.js` and `js/data.js` carry the same cache
 version (`site-hygiene.test.js`).
 
-## 7. Look and motion
+## 8. Look and motion
 
 - **Tokens** live in `css/variables.css`. Paper ageing is one number, `--age`
   (Fresh 0.3, **Aged 1 — the default**, Rustic 1.5, dark 0.55), that scales
@@ -150,7 +170,7 @@ version (`site-hygiene.test.js`).
   shows the page.
 - **Touch:** controls are ≥ 44 px on phones and touch screens.
 
-## 8. Deployment
+## 9. Deployment
 
 `.github/workflows/deploy.yml`: on pull requests, lint + format + tests. On a push
 to `main`, the same, then stage only the files Pages serves into `_site/`
@@ -158,7 +178,7 @@ to `main`, the same, then stage only the files Pages serves into `_site/`
 generate the sitemap for that host, and deploy. The submodule is checked out
 recursively; the deploy fails loudly if it is missing.
 
-## 9. Known limits
+## 10. Known limits
 
 - The archive submodule is a separate repository; this repo records only the
   pinned commit. Hiding a photo is done with the manifest, not by deleting it.

@@ -14,7 +14,7 @@
  * is actually used.
  */
 
-const CACHE_NAME = "sac-v53";
+const CACHE_NAME = "sac-v54";
 
 /* The app shell: the pages' shared CSS and the modules every page loads.
  * Generated from the real import graph — run `node tools/sync-pages.mjs`
@@ -39,6 +39,7 @@ const SHELL = [
   "js/components/footer.js",
   "js/data/clubs.js",
   "js/components/navbar-fold.js",
+  "js/components/search-launcher.js",
   "js/components/settings.js",
   "js/utils/calligraphy.js",
   "js/utils/music.js",

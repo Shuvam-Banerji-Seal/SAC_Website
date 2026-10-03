@@ -53,17 +53,19 @@ js/
   loader.js, preloader.js  the entrance (once per tab session); preloader is a classic script
   components/              navbar (folded-sheet nav), footer, settings, viewer, calendar, section-nav,
                            club-extras, campus-book/board, sac-diagram, council-facts, back-to-top,
-                           reading-progress
+                           reading-progress; search-launcher (in the shell: "/" and Ctrl/⌘ K) and
+                           search (the palette — loaded, with css/search.css, on first use)
   data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest
   pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
-  utils/                   dom (el, pageUrl, assetUrl), calendar(+model), caption, thumb, media,
-                           reveal, skeleton, view-pref, calligraphy, music, youtube, tenure, text-measure
+  utils/                   dom (el, pageUrl, assetUrl, loadStylesheet), calendar(+model), search-index,
+                           caption, thumb, media, reveal, skeleton, view-pref, calligraphy, music,
+                           youtube, tenure, text-measure
   pretext/                 vendored text-measurement library (built from the submodule; don't edit)
 css/                       preloader, reset, variables (tokens), main, components, loader, settings,
-                           viewer, enhancements (last layer), print, pages/{home,clubs,club,events,
-                           gallery,about,calendar}.css
+                           viewer, enhancements (last layer), print, search (loaded on demand),
+                           pages/{home,clubs,club,events,gallery,about,calendar}.css
 tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
-test/unit/                 40 files, ~550 tests (vitest + jsdom); setup in test/setup.js
+test/unit/                 44 files, ~670 tests (vitest + jsdom); setup in test/setup.js
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)
 utils/pretext/             SUBMODULE (chenglou/pretext)
@@ -107,9 +109,15 @@ sw.js                      service worker (code network-first, media stale-while
 `<body class="has-topbar" data-page="club" data-club-slug="<Archive_Folder_Slug>">`;
 keep the `.section-nav--slot` before the first section. (2) Add one row to `CLUBS` in
 `js/data/clubs.js` (page, body, name, short name, interests, search keywords) — the
-directory, footer, pager, search and interest filter all read it. (3) `npm run sync` (writes
+directory, footer, pager, search and interest filter all read it. Give it `keywords` people would
+actually type ("telescope" finds the astronomy club); `search-index.test.js` fails if a club cannot
+be found by its own name. (3) `npm run sync` (writes
 its breadcrumb and "more clubs" blocks and the preload blocks) and `npm run sitemap`.
 (4) `npm test` — `club-registry.test.js` and `club-pages.test.js` name whatever you missed.
+
+**Add a stylesheet or script only some visitors need** (a palette, a calendar). Don't link it from
+pages: load it on first use, `loadStylesheet("css/<name>.css")` from `utils/dom.js` plus a dynamic
+`import()`. The search palette is the model (`search-launcher.js` in the shell, `search.js` on demand).
 
 **Add a script to every page's critical path.** Don't. Import it dynamically from the
 page module or from `whenIdle()` in `main.js`. `load-budget.test.js` caps the shell.
@@ -155,4 +163,4 @@ calendar month). Re-export all four sizes (480/800/1100/1400), update the width/
 
 ## Known limits
 
-See `docs/ARCHITECTURE.md` §9.
+See `docs/ARCHITECTURE.md` §10.

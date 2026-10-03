@@ -1,0 +1,297 @@
+/* ==========================================================================
+   search.css — the "Search the Chronicle" palette.
+   Loaded on first use by components/search.js (loadStylesheet), never linked
+   from a page. Tokens only; new colours would go in variables.css.
+   ========================================================================== */
+
+body.search-open {
+  overflow: hidden;
+}
+/* keep the scrollbar's width reserved while the page is locked, or the page jumps sideways */
+html:has(body.search-open) {
+  scrollbar-gutter: stable;
+}
+
+.search {
+  inset: 0;
+  position: fixed;
+  z-index: 1200; /* above the settings sheet (990) and the nav's dog-ear */
+}
+.search[hidden] {
+  display: none;
+}
+
+.search__scrim {
+  background: rgba(24, 20, 16, 0.55);
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity var(--transition);
+}
+.search.is-open .search__scrim {
+  opacity: 1;
+}
+
+/* The sheet drops in like a proof pulled from the press: transform + opacity only. */
+.search__sheet {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  margin: 0 auto;
+  max-height: calc(100dvh - max(1rem, 9vh) - 1rem); /* what is left under `top`, less a margin */
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: max(1rem, 9vh);
+  transform: translateY(-14px);
+  transition:
+    opacity var(--transition),
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: min(40rem, calc(100vw - 2rem));
+}
+.search.is-open .search__sheet {
+  opacity: 1;
+  transform: none;
+}
+
+/* ----------------------------------------------------------------- the field */
+.search__form {
+  align-items: center;
+  border-bottom: var(--rule-heavy);
+  display: flex;
+  gap: 0.6rem;
+  padding: 0 0.6rem 0 1rem;
+}
+.search__glyph {
+  color: var(--ink-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.search__input {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  min-height: 3.6rem;
+  min-width: 0;
+  outline: none;
+  padding: 0;
+}
+.search__input::placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+  opacity: 1;
+}
+/* the browser's own clear (×) would be a second, smaller close button */
+.search__input::-webkit-search-cancel-button {
+  appearance: none;
+}
+/* reset.css gives every input a 2px offset outline (specificity 0,1,1) that would spill out of the
+   sheet; the form's own accent underline is the focus indicator here */
+.search__input:focus-visible {
+  outline: none;
+}
+.search__form:focus-within {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.search__close {
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  min-height: 44px;
+  min-width: 44px;
+  text-transform: uppercase;
+}
+.search__close:hover {
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------------- results */
+.search__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.search__results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.search__results li + li {
+  border-top: 1px solid var(--ink-rule);
+}
+.search__link {
+  align-items: center;
+  color: var(--ink);
+  display: flex;
+  gap: 0.9rem;
+  min-height: 56px;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+.search__results .is-active .search__link {
+  background: var(--paper-deep);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.search__kind {
+  border: 1px solid var(--ink-rule);
+  color: var(--ink-muted);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.35rem;
+  text-align: center;
+  text-transform: uppercase;
+  width: 4.2rem;
+}
+.search__text {
+  display: grid;
+  min-width: 0;
+}
+.search__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  line-height: 1.2;
+}
+.search__meta {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.search__mark {
+  background: var(--rust-wash);
+  box-shadow: inset 0 -2px 0 var(--rust);
+  color: inherit;
+}
+
+/* main.css caps every <p> and <ul> at 72ch, which stopped the hint's rule and the result rows
+   short of the sheet's edge */
+.search p,
+.search ul {
+  max-width: none;
+}
+
+/* ---------------------------------------------------- the empty state: chips */
+.search__suggest {
+  padding: 0.9rem 1rem 1rem;
+}
+.search__suggest:empty {
+  display: none;
+}
+.search__heading {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  margin: 0 0 0.55rem;
+  text-transform: uppercase;
+}
+.search__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.search__chip {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  min-height: 44px;
+  padding: 0 0.8rem;
+  text-decoration: none;
+}
+.search__chip.is-on {
+  background: var(--ink);
+  color: var(--paper);
+}
+.search__chip--wild {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.search__try {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+  margin: 0.9rem 0 0;
+}
+.search__try-word {
+  background: none;
+  border: 0;
+  border-bottom: 1px dotted var(--ink-muted);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  padding: 0 0.1rem;
+}
+.search__empty {
+  font-style: italic;
+  margin: 0 0 0.8rem;
+}
+
+/* ---------------------------------------------------------------- the footer */
+.search__hint {
+  border-top: 1px solid var(--ink-rule);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+.search__hint kbd {
+  border: 1px solid var(--ink-rule);
+  font: inherit;
+  padding: 0 0.3rem;
+}
+
+@media (hover: hover) {
+  .search__link:hover {
+    background: var(--paper-deep);
+  }
+  .search__chip:hover:not(.is-on) {
+    background: var(--paper-deep);
+  }
+}
+
+/* On a phone the on-screen keyboard takes half the screen: sit at the top, keep the list tall. */
+@media (max-width: 640px) {
+  .search__sheet {
+    box-shadow: 4px 4px 0 var(--ink);
+    max-height: calc(100dvh - 1.5rem);
+    top: 0.75rem;
+  }
+  .search__hint {
+    display: none; /* nobody has a keyboard to press Esc on */
+  }
+  .search__kind {
+    width: 3.6rem;
+  }
+  .search__try-word {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+@media (pointer: coarse) {
+  .search__try-word {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

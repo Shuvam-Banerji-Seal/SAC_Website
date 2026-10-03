@@ -390,6 +390,21 @@ body.fold-ready .fold__panel > .fold__shade {
   background: var(--paper-deep);
   color: var(--accent);
 }
+/* Search shows on every screen size; the settings button above is phone-only. */
+.sidebar__action--search {
+  display: flex;
+}
+.sidebar__kbd {
+  border: 1px solid var(--ink-rule);
+  font: inherit;
+  margin-left: auto;
+  padding: 0 0.4rem;
+}
+@media (pointer: coarse) {
+  .sidebar__kbd {
+    display: none; /* no "/" key on a touch screen */
+  }
+}
 .sidebar__action-icon {
   font-size: 1rem;
 }

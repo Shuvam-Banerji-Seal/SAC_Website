@@ -16,7 +16,7 @@
  * Motion: the page-turn is skipped under reduced motion (OS or the site's own
  * toggle) and wherever the Web Animations API is missing.
  */
-import { el, pageUrl } from "../utils/dom.js";
+import { el, loadStylesheet } from "../utils/dom.js";
 import { fetchEventsBetween, calendarLinks } from "../utils/calendar.js";
 import {
   buildMonthGrid,
@@ -93,24 +93,7 @@ function explainBusyMode() {
   );
 }
 
-/** Load the calendar's own stylesheet once; resolves when it is usable. */
-function ensureStyles() {
-  const href = pageUrl("css/pages/calendar.css");
-  if (
-    [...document.querySelectorAll('link[rel="stylesheet"]')].some(
-      (l) => l.getAttribute("href") === href
-    )
-  ) {
-    return Promise.resolve();
-  }
-  return new Promise((resolve) => {
-    const link = el("link", { rel: "stylesheet", href });
-    link.addEventListener("load", resolve, { once: true });
-    link.addEventListener("error", resolve, { once: true });
-    document.head.append(link);
-    setTimeout(resolve, 1500); // never hold the page hostage to a stylesheet
-  });
-}
+const ensureStyles = () => loadStylesheet("css/pages/calendar.css");
 
 /**
  * @param {HTMLElement} mount

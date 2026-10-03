@@ -28,6 +28,29 @@ export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
 }
 
+/**
+ * Load a stylesheet that only some visitors need (the calendar's, the search palette's)
+ * once, and resolve when it is usable. `path` goes through pageUrl(). Never rejects and
+ * never waits more than 1.5 s: a slow stylesheet must not hold a feature hostage.
+ */
+export function loadStylesheet(path) {
+  const href = pageUrl(path);
+  if (
+    [...document.querySelectorAll('link[rel="stylesheet"]')].some(
+      (l) => l.getAttribute("href") === href
+    )
+  ) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    const link = el("link", { rel: "stylesheet", href });
+    link.addEventListener("load", resolve, { once: true });
+    link.addEventListener("error", resolve, { once: true });
+    document.head.append(link);
+    setTimeout(resolve, 1500);
+  });
+}
+
 export function onReady(fn) {
   if (document.readyState !== "loading") fn();
   else document.addEventListener("DOMContentLoaded", fn);

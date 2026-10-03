@@ -20,6 +20,7 @@ import { onReady } from "./utils/dom.js";
 import { renderNavbar } from "./components/navbar.js";
 import { renderFooter } from "./components/footer.js";
 import { setupNavbarFold } from "./components/navbar-fold.js";
+import { initSearchLauncher } from "./components/search-launcher.js";
 import { initSettings, applyPrefs, loadPrefs } from "./components/settings.js";
 import { initLoader } from "./loader.js";
 import { initBackToTop } from "./components/back-to-top.js";
@@ -91,6 +92,7 @@ onReady(async () => {
   renderNavbar(page);
   renderFooter();
   setupNavbarFold();
+  initSearchLauncher(); // "/" and Ctrl/⌘ K; the palette itself loads on first use
   initSettings();
   initBackToTop();
 
