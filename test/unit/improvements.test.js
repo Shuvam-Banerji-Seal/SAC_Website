@@ -12,7 +12,7 @@
  * - Clubs search
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -189,16 +189,16 @@ describe("Phase 3.2: settings panel new controls", () => {
   });
 });
 
-describe("Phase 3.2: calligraphy and three-fold respect manual reduce-motion", () => {
+describe("Phase 3.2: calligraphy respects manual reduce-motion", () => {
   const calligraphy = read("/js/utils/calligraphy.js");
-  const threeFold = read("/js/components/three-fold.js");
 
   it("calligraphy.js checks data-reduce-motion attribute", () => {
     expect(calligraphy).toContain('getAttribute("data-reduce-motion")');
   });
 
-  it("three-fold.js checks data-reduce-motion attribute", () => {
-    expect(threeFold).toContain('getAttribute("data-reduce-motion")');
+  it("the retired Three.js paper-fold effect stays gone", () => {
+    // it needed a ~1MB CDN import; the lightweight redesign removed it
+    expect(existsSync(resolve(__dirname, "../../js/components/three-fold.js"))).toBe(false);
   });
 });
 

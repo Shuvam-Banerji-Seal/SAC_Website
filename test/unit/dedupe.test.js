@@ -2,7 +2,7 @@
  * test/unit/dedupe.test.js — the duplicate manifest must never quietly eat
  * something the site needs.
  *
- * The manifest is generated (utils/dedupe/), so these assertions guard the
+ * The manifest is generated (tools/dedupe/), so these assertions guard the
  * output of that pipeline rather than hand-written data: a regenerate that
  * starts suppressing every logo, or a whole club, fails here.
  */
@@ -60,7 +60,7 @@ describe("duplicate manifest", () => {
     }
   });
 
-  // Same noise test the generator uses (utils/dedupe/build_manifest.py) and
+  // Same noise test the generator uses (tools/dedupe/build_manifest.py) and
   // that js/utils/caption.js applies at render time.
   // Trailing " 1" is how the pipeline disambiguated a re-ingest, so
   // "DSC 0081 1" is the same class of noise as "DSC 0081".
@@ -144,7 +144,7 @@ describe("duplicate manifest", () => {
   });
 
   it("the manifest builder preserves curation across regenerations", () => {
-    const builder = readFileSync(resolve(root, "utils/dedupe/build_manifest.py"), "utf-8");
+    const builder = readFileSync(resolve(root, "tools/dedupe/build_manifest.py"), "utf-8");
     expect(builder).toContain('previous.get("curated")');
     expect(builder).toContain("curated_note");
   });
@@ -152,7 +152,7 @@ describe("duplicate manifest", () => {
 
 describe("same-person curation (Dean's office staff portraits)", () => {
   const source = JSON.parse(
-    readFileSync(resolve(root, "utils/dedupe/same_person.json"), "utf-8")
+    readFileSync(resolve(root, "tools/dedupe/same_person.json"), "utf-8")
   ).groups;
   const byPath = new Map(images.map((r) => [r.path, r]));
   const visible = new Set(surviving.map((r) => r.id));

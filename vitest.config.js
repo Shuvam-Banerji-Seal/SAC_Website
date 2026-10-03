@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     include: ["test/**/*.test.js"],
-    exclude: ["test/e2e/**", "node_modules/**"],
+    exclude: ["node_modules/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],

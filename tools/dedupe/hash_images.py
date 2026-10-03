@@ -86,7 +86,7 @@ def fingerprint(rec: dict) -> dict | None:
 
 
 def main() -> int:
-    dest = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "utils/dedupe/fingerprints.jsonl"
+    dest = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "tools/dedupe/fingerprints.jsonl"
     rows = [json.loads(line) for line in MAP.read_text().splitlines() if line.strip()]
     imgs = [r for r in rows if r.get("file_type") == "image"]
     print(f"fingerprinting {len(imgs)} images on {os.cpu_count()} cores -> {dest}")

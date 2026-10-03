@@ -118,6 +118,7 @@ jobs:
           echo "All critical paths present."
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
 
       # Stage ONLY the files Pages serves into _site/. upload-pages-artifact
@@ -143,6 +144,13 @@ jobs:
           cp public/duplicates.json _site/public/duplicates.json
           echo "--- staged site size ---"
           du -sh _site
+
+      # The repo is served from two Pages hosts with different paths and path
+      # casing, and a sitemap is only valid for the host that serves it. The
+      # checked-in copy is a default; the published one is built from the base
+      # URL of THIS deployment (see tools/gen-sitemap.mjs).
+      - name: Generate sitemap.xml and robots.txt for this host
+        run: node tools/gen-sitemap.mjs --base "${{ steps.pages.outputs.base_url }}" --out _site
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -20,7 +20,7 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
  * ---------------------
  * The pipeline ingested several source documents in both .docx and .pdf
  * form, so the same picture landed in the map up to six times; club folders
- * also carry burst frames of one moment. utils/dedupe/ fingerprints every
+ * also carry burst frames of one moment. tools/dedupe/ fingerprints every
  * image and writes public/duplicates.json — the ids to skip, and which id
  * each one duplicates.
  *
@@ -33,7 +33,7 @@ const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
  * documents) merged with the generated lists; build_manifest.py preserves it
  * across regenerations. `same_person` is the other hand-kept layer: perceptual
  * hashes cannot pair two different frames of one sitter, so a person records
- * one keeper per staff member in utils/dedupe/same_person.json and the
+ * one keeper per staff member in tools/dedupe/same_person.json and the
  * builder compiles it to ids. `duplicates.json` must be staged with the site —
  * it 404'd in production until 2026-09-21, silently showing every duplicate.
  *

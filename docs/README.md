@@ -1,4 +1,14 @@
-# SAC Website — design + research docs
+# SAC Website — docs
+
+## Project documents
+
+| File | What it is |
+| ---- | ---------- |
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | How the site fits together and *why*: the page-load model, data and de-duplication, the calendar, generated files and the tests that guard them, deployment. **Start here.** |
+| [`new-design.md`](./new-design.md) | The "lightweight redesign" brief that retired Three.js and the heavy loader. |
+| [`../AGENTS.md`](../AGENTS.md) | Operating manual: rules, commands, recipes, gotchas. |
+
+## Design + research notes
 
 > A research-driven look at how to make the SAC website feel like a
 > real, printed newspaper — and what other paper-like visual languages

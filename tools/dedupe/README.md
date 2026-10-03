@@ -1,4 +1,4 @@
-# utils/dedupe — finding duplicate images in the archive
+# tools/dedupe — finding duplicate images in the archive
 
 The asset pipeline ingested several club documents in **both** `.docx` and
 `.pdf` form, and in a few cases ran the same document twice under slightly
@@ -20,10 +20,10 @@ overwrite anything written into the map itself.
 ## Running it
 
 ```bash
-python3 utils/dedupe/hash_images.py /tmp/fingerprints.jsonl        # ~20s, 16 cores
-python3 utils/dedupe/cluster.py /tmp/fingerprints.jsonl \
+python3 tools/dedupe/hash_images.py /tmp/fingerprints.jsonl        # ~20s, 16 cores
+python3 tools/dedupe/cluster.py /tmp/fingerprints.jsonl \
         --out /tmp/clusters.json --sheets /tmp/sheets              # contact sheets to eyeball
-python3 utils/dedupe/build_manifest.py /tmp/clusters.json          # -> public/duplicates.json
+python3 tools/dedupe/build_manifest.py /tmp/clusters.json          # -> public/duplicates.json
 npx vitest run test/unit/dedupe.test.js
 ```
 
@@ -78,7 +78,7 @@ the wrong person's portrait. The Dean's-office staff set
 (`Campus_Archive/Administrative_Staffs_Doaa`, 55 photographs of 20 people) is
 therefore curated **by eye**: look at the contact sheets, group the frames that
 belong to one person, and record one keeper per person in
-`utils/dedupe/same_person.json`.
+`tools/dedupe/same_person.json`.
 
 ```jsonc
 { "folder": "Campus_Archive/Administrative_Staffs_Doaa",
@@ -93,7 +93,7 @@ down. `build_manifest.py` compiles the file into `same_person` in
 `public/duplicates.json` (ids + paths), and `js/data.js` hides the `drop` ids.
 
 ```bash
-python3 utils/dedupe/build_manifest.py --people-only   # recompile, no fingerprints needed
+python3 tools/dedupe/build_manifest.py --people-only   # recompile, no fingerprints needed
 npx vitest run test/unit/dedupe.test.js
 ```
 

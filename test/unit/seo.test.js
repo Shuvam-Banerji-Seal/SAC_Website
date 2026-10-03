@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "../..");
 
 describe("search infrastructure", () => {
-  it("ships sitemap.xml covering every static page", () => {
+  it("ships sitemap.xml covering every static page (host-correct: see sitemap.test.js)", () => {
     const file = resolve(root, "sitemap.xml");
     expect(existsSync(file)).toBe(true);
     const xml = readFileSync(file, "utf-8");
@@ -18,18 +18,22 @@ describe("search infrastructure", () => {
     // every deployed page is listed
     const count = (xml.match(/<loc>/g) || []).length;
     expect(count).toBeGreaterThanOrEqual(38);
-    expect(xml).toContain("index.html");
     expect(xml).toContain("pages/food-hygiene.html");
-    expect(xml).toContain("404.html");
+    // the error page is not a page to index
+    expect(xml).not.toContain("404.html");
   });
 
-  it("ships robots.txt pointing at both mirror sitemaps", () => {
+  it("ships robots.txt that names a sitemap and does not hard-code one host's casing", () => {
     const robots = readFileSync(resolve(root, "robots.txt"), "utf-8");
     expect(robots).toContain("User-agent: *");
     expect(robots).toContain("Allow: /");
-    // URL case matters: the primary Pages domain is SAC_website (lowercase w)
-    expect(robots).toContain("https://slashdot-iiserk.github.io/SAC_website/sitemap.xml");
-    expect(robots).not.toContain("SAC_Website/sitemap.xml");
+    // Two Pages hosts serve this repo with different paths (SAC_Website vs
+    // SAC_website, case-sensitive). CI regenerates this line for the host being
+    // deployed; the checked-in copy only has to be internally consistent.
+    expect(robots).toMatch(/^Sitemap: https:\/\/[^\s]+\/sitemap\.xml$/m);
+    expect(readFileSync(resolve(root, "tools/gen-sitemap.mjs"), "utf-8")).toContain(
+      "case-sensitive"
+    );
   });
 
   it("deploy stages sitemap + robots + 404 + hero pool", () => {
@@ -37,7 +41,7 @@ describe("search infrastructure", () => {
     expect(yml).toContain("sitemap.xml");
     expect(yml).toContain("robots.txt");
     expect(yml).toContain("404.html");
-    // the whole assets/ dir ships — heroes + logos + textures ride along
+    // the whole assets/ dir ships — the hero set + logos + textures ride along
     expect(yml).toContain("cp -r css js pages assets diagrams _site/");
   });
 

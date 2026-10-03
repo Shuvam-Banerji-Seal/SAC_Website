@@ -1,706 +1,153 @@
-# AGENTS.md — Complete Repository Guide
+# AGENTS.md — working in this repository
 
-> **SAC_Website** — Official website of the Student Activity Council (SAC) at IISER Kolkata.
-> A newspaper-themed static site: CSS-only paper loader, calligraphy reveals, postmarks,
-> washi-tape pins, torn edges, 17 paper textures, synthesised audio, render-time caption
-> derivation (no "img 001" anywhere), and a body-segmented club directory mirroring the
-> source data tree. Served entirely via GitHub Pages — no backend, no build step,
-> no runtime dependency beyond a modern browser.
+The official website of the **Student Activity Council (SAC), IISER Kolkata**: a
+newspaper-themed **static** site (HTML, CSS, ES modules) on GitHub Pages. No
+bundler, no runtime dependencies. `npm` is for tests, lint and small generators.
 
----
-
-## 1. Repository Structure (Top Level)
-
-```
-SAC_Website/
-├── index.html                  # Home (masthead → hero → lead → 5-body SVG diagram → stats → picture desk → YT/Calendar → ticker)
-├── .github/workflows/deploy.yml # CI/CD: lint → test → verify → deploy to Pages
-├── .gitmodules                 # Two submodules: public/assets (images) + utils/pretext
-├── .nojekyll                   # Instructs GitHub Pages not to run Jekyll
-├── .gitignore
-├── .prettierrc.json
-├── eslint.config.js            # ESLint flat config (2024+)
-├── package.json                # Dev tooling: vitest, eslint, prettier, http-server
-├── vitest.config.js            # Vitest config with jsdom environment
-├── sw.js                       # Service Worker (sac-v25) — caches static assets + all sub-pages + 404
-├── AGENTS.md                   # ← This file
-├── README.md                   # Project overview and setup instructions
-│
-├── css/                        # 11 CSS files + 6 page-specific stylesheets (incl. enhancements, print)
-├── js/                         # 8 components + 6 page initializers + 9 utilities + loader + preloader
-├── pages/                      # 37 static HTML pages (32 clubs/committees + clubs, events, gallery, about, food-hygiene)
-├── 404.html                    # Self-contained newspaper 404 (GitHub Pages serves it at any broken URL)
-├── assets/                     # Textures + hero.webp (87KB) + audio + 7 SVG logos
-├── docs/                       # 20 research documents on paper textures, animations, typography
-├── diagrams/                   # Mermaid/architecture diagrams
-├── test/                       # 13 test files (190 tests) + setup + e2e/integration/fixtures
-├── public/                     # Git submodule → SAC_website_assets (1393 processed entries)
-│   └── assets/processed/       # assets_map.jsonl + source ledger + website-ready media/docs
-├── utils/                      # Git submodule → chenglou/pretext (text measurement library)
-│   └── pretext/                # TypeScript source for @chenglou/pretext (v0.0.8)
-└── .playwright-mcp/            # Playwright MCP session logs (console captures + page snapshots, gitignored)
-```
+Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how it fits together and
+why. This file is the operating manual.
 
 ---
 
-## 2. Git Submodules
-
-### `public/assets` (SSH: `git@github.com:slashdot-iiserk/SAC_website_assets.git`)
-
-- **Purpose**: Houses all processed media — images and markdown documents.
-- **Key file**: `public/assets/processed/assets_map.jsonl` — the canonical **1393-entry** metadata file (32 indexed clubs, 1099 WebP images, 185 Markdown docs, 101 videos, 7 audio files, and 1 JSON record).
-- **Source accounting**: `public/assets/processed/source_manifest.jsonl` records all **1033** source files and their processed outputs.
-- **CI requirement**: Deploy fails if this submodule isn't checked out (`public/assets/processed/` must exist).
-
-### `utils/pretext` (SSH: `git@github.com:chenglou/pretext.git`)
-
-- **Purpose**: Vendored text measurement library by chenglou (MIT).
-- **Uses**: Canvas-based `prepare()` + `layout()` for zero-reflow text measurement.
-- **Built output**: `js/pretext/layout.js` (copied from `utils/pretext/dist/layout.js` via `npm run build:pretext`).
-- **CI requirement**: Deploy verifies `js/pretext/layout.js` exists but does NOT rebuild it.
-
----
-
-## 3. Entry Point — `index.html`
-
-The home page is a single 615-line HTML file that acts as the site's landing page. Its structure:
-
-```
-index.html
-├── <head>
-│   ├── Meta (charset, viewport, description, SVG favicon)
-│   ├── Stylesheets (11 CSS files in dependency order, incl. enhancements.css + print.css)
-│   │   ├── css/preloader.css  (0-100% progress bar)
-│   │   ├── css/reset.css      (minimal reset)
-│   │   ├── css/variables.css  (design tokens, paper textures)
-│   │   ├── css/main.css       (base layout, body background textures)
-│   │   ├── css/components.css (navbar, footer, club cards, calligraphy)
-│   │   ├── css/pages/home.css (masthead, lead article, poster cards, SAC diagram)
-│   │   ├── css/loader.css     (newspaper loader animation + splash)
-│   │   ├── css/settings.css   (settings panel + texture picker)
-│   │   └── css/viewer.css     (lightbox overlay)
-│   └── <script type="importmap"> (Three.js CDN: jsdelivr)
-│
-├── <body data-page="home">
-│   ├── #preloader              (0-100% progress bar, managed by js/preloader.js)
-│   │   └── <script src="js/preloader.js">
-│   ├── #loader (z-index: 1000) (Newspaper ink loader, managed by js/loader.js)
-│   │   ├── .ambient-grain
-│   │   ├── #stageShell > #paperStage (newspaper elements)
-│   │   ├── #status             (progress bar + club label)
-│   │   ├── #inkFinale           (SVG seal, splash droplets, logo reveal)
-│   │   └── .skip-btn
-│   │
-│   ├── <header>
-│   │   ├── <nav id="navbar">  (populated by js/components/navbar.js)
-│   │   └── #navbarCorner       (64×64 fold-corner button)
-│   │
-│   ├── <main class="home">
-│   │   ├── .masthead           (newspaper title bar — Vol. 01, date, tagline)
-│   │   ├── .lead-article       (featured intro with two-column body)
-│   │   │   ├── h2#lead-headline (calligraphy reveal target)
-│   │   │   ├── .lead-article__deck
-│   │   │   ├── .lead-article__byline
-│   │   │   └── .lead-article__body (3 paragraphs, column layout measured by pretext)
-│   │   ├── .sac-diagram-section (inline SVG organisational chart)
-│   │   ├── #youtube-section    (notebook pinned video cards, hidden until data loads)
-│   │   ├── #calendar-section   (pinned Google Calendar cards, hidden until data loads)
-│   │   ├── .news-ticker        (marquee bulletin strip)
-│   │   └── #bodies             (5 mount points: council, academics, hostel, sports, cultural)
-│   │
-│   └── #footer                 (populated by js/components/footer.js)
-│
-├── <script type="module" src="js/main.js">   (entry point — dispatches to page init)
-├── <script type="module" src="js/loader.js"> (also imported by main.js — module guards re-init)
-└── Settings overlay/panel + FAB (⚙)
-```
-
-### Key text content (hardcoded in index.html):
-
-- **Masthead subtitle**: `"A record of the clubs, councils, and communities that shape campus life"`
-- **Lead headline**: `"A Campus In Print: The Work And Life Of Twelve Societies"`
-- **Lead deck**: _"The Student Activity Council brings together every cultural, academic, and residential society at IISER Kolkata under a single administrative body..."_
-- **Body copy**: 3 paragraphs describing the SAC ecosystem, the card-based directory, and the living-document nature of the site
-
----
-
-## 4. JavaScript Architecture (14 application files)
-
-### Entry Point
-
-```
-js/main.js
-├── Imports: dom.js, navbar.js, footer.js, navbar-fold.js, settings.js, viewer.js,
-│           three-fold.js, home.js, clubs.js, club-images.js, events.js, gallery.js
-├── onReady() ── applies saved theme/font/texture prefs (prevents FOUC)
-│            ── renderNavbar(page), renderFooter()
-│            ── setupNavbarFold(), initSettings(), initViewer(), initPaperFold()
-│            ── initializers[page]?.()          # Home / Clubs / Events / Gallery
-│            └─ if (body[data-club-slug]) initClubImages()
-└── ── register Service Worker (/SAC_Website/sw.js)
-```
-
-### Module Dependency Graph
-
-```
-main.js
-├── utils/dom.js          — $, $$, el(), clear(), onReady(), pageUrl(), isInPagesDir()
-│
-├── config.js             — SITE_TITLE, SITE_DESCRIPTION, NAV_ITEMS (5),
-│                           YOUTUBE + CALENDAR API keys (referrer-restricted)
-│
-├── data.js               — loadAssetsMap(), indexByClub(), getClub(), getClubEntries()
-│   └── Fetches: public/assets/processed/assets_map.jsonl (1393 lines, cached Promise + sessionStorage cache, 10-min TTL)
-│
-├── components/
-│   ├── navbar.js         — renderNavbar(activePage): builds <nav class="navbar"> from NAV_ITEMS
-│   ├── navbar-fold.js    — setupNavbarFold(): mobile curtain pull-down (<1024px) / desktop corner drawer (>=1024px)
-│   ├── footer.js         — renderFooter(): © year + SITE_TITLE
-│   ├── settings.js       — initSettings(): dark mode, 7 font presets, 8 paper textures,
-│   │                       font size (S/M/L), reduce motion, sound, ambient music, localStorage
-│   ├── viewer.js         — initViewer(): lightbox for [data-viewer] images, prev/next/keyboard
-│   └── three-fold.js     — initPaperFold(): Three.js (dynamic import), 3D paper mesh with idle/visibility pausing
-│       └── Dep: three (CDN import map, not npm)
-│
-├── pages/
-│   ├── home.js           — initHome(): 5 body sections, card grid, lead-article column calc, calligraphy
-│   ├── clubs.js          — initClubs(): full grid of all clubs with logos & stats
-│   ├── club-images.js    — initClubImages(): per-club image grids filtered by role
-│   ├── events.js         — initEvents(): event cards with lightbox wiring
-│   └── gallery.js        — initGallery(): full image gallery with category grouping
-│
-├── loader.js             — self-initialising: newspaper animation (5→8→all papers by device class)
-│   └── Dep: data.js, sounds via calligraphy.js (playPrintSound)
-│
-├── preloader.js          — plain script (not ES module): 3-phase asset warm-up
-│
-└── utils/
-    ├── calligraphy.js    — revealText(), initScrollSounds(), sound synthesis (3 sound types)
-    └── text-measure.js   — measureText() → prepare() + layout() from pretext
-        └── Dep: ../pretext/layout.js (vendored)
-```
-
-### Core Data Flow
-
-```
-assets_map.jsonl (1393 entries)
-    │
-    ▼
-loadAssetsMap() ── fetch + parse JSONL → Array<AssetEntry>
-    │                                          │
-    ▼                                          ▼
-indexByClub()                              getClubEntries(slug)
-    │                                          │
-    ▼                                          ▼
-Array<ClubRecord>                          Filtered entries
-(logo, name, markdown, counts)             (by role/type)
-    │
-    ├── home.js → buckets clubs → 5 body sections with paper-card grid
-    ├── clubs.js → full alphabetical grid
-    └── club-images.js → images by role (ob_portrait, event, iicm, etc.)
-```
-
-### 3.1 File-by-File Reference
-
-| File                           | Lines | Imports                                                                                                   | Exports                                                                                                                                       | Purpose                                                                       |
-| ------------------------------ | ----- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `js/main.js`                   | 64    | dom, navbar, footer, navbar-fold, settings, viewer, three-fold, home, clubs, club-images, events, gallery | (none — runs on load)                                                                                                                         | App entry: apply prefs, render nav/footer, dispatch to page init, register SW |
-| `js/config.js`                 | 31    | (none)                                                                                                    | `SITE_TITLE`, `SITE_DESCRIPTION`, `NAV_ITEMS`                                                                                                 | Site-wide constants                                                           |
-| `js/data.js`                   | 139   | dom                                                                                                       | `loadAssetsMap()`, `indexByClub()`, `getClub()`, `getClubEntries()`                                                                           | JSONL fetch, club indexing, logo detection                                    |
-| `js/preloader.js`              | 351   | (none — plain script)                                                                                     | (none)                                                                                                                                        | 3-phase warm-up: download → decode → compositor warm                          |
-| `js/loader.js`                 | 582   | data                                                                                                      | (none — self-inits via DOMContentLoaded)                                                                                                      | Newspaper loader animation with device-class scaled timing                    |
-| `js/utils/dom.js`              | 57    | (none)                                                                                                    | `$`, `$$`, `el()`, `clear()`, `onReady()`, `getQueryParam()`, `isInPagesDir()`, `pageUrl()`                                                   | Tiny DOM helpers                                                              |
-| `js/utils/calligraphy.js`      | 857   | (none)                                                                                                    | `revealText()`, `revealParagraphs()`, `setSoundEnabled()`, `initScrollSounds()`, `playPaperScratch()`, `playPrintSound()`, `playPenScratch()` | Calligraphy text reveal animation + Web Audio API sound synthesis             |
-| `js/utils/text-measure.js`     | 81    | `../pretext/layout.js`                                                                                    | `measureText()`, `measureBlocks()`, `getMaxHeight()`, `clearMeasureCache()`                                                                   | Canvas-based text measurement wrapper                                         |
-| `js/utils/caption.js`          | 95    | (none)                                                                                                    | `captionFor()`, `altTextFor()`, `isGenericTitle()`                                                                                             | Render-time human captions — kills every "img 001" pipeline title (446 fixed) |
-| `js/utils/media.js`             | 55    | (none)                                                                                                    | `initLazyVideos()`, `videoPlayerAttrs()`                                                                                                      | preload=none + IntersectionObserver flip for `<video>`/`<audio>`              |
-| `js/components/back-to-top.js` | 40    | dom.js                                                                                                    | `initBackToTop()`                                                                                                                             | Newspaper ↑ button on every page; reduce-motion aware                         |
-| `js/components/navbar.js`      | 49    | dom, config                                                                                               | `renderNavbar(activePage)`                                                                                                                    | Renders primary nav                                                           |
-| `js/components/navbar-fold.js` | 202   | dom                                                                                                       | `setupNavbarFold()`                                                                                                                           | Mobile curtain + desktop corner drawer                                        |
-| `js/components/footer.js`      | 31    | dom, config                                                                                               | `renderFooter()`                                                                                                                              | Renders site footer                                                           |
-| `js/components/settings.js`    | 530   | dom                                                                                                       | `initSettings()`                                                                                                                              | Dark mode, 7 fonts, 8 textures, a11y prefs, persistence                       |
-| `js/components/viewer.js`      | 191   | dom                                                                                                       | `initViewer()`                                                                                                                                | Image lightbox with navigation                                                |
-| `js/components/three-fold.js`  | 168   | three (dynamic import)                                                                                    | `initPaperFold()`, `destroy()`                                                                                                                | Three.js 3D paper parallax                                                    |
-| `js/pages/home.js`             | 449   | dom, data, calligraphy                                                                                    | `initHome()`, `adjustLeadLayout()`, `extractExcerpt()`                                                                                        | Home page initialiser                                                         |
-| `js/pages/clubs.js`            | 76    | dom, data                                                                                                 | `initClubs()`                                                                                                                                 | All-clubs overview                                                            |
-| `js/pages/club-images.js`      | 141   | dom, data, calligraphy                                                                                    | `initClubImages()`                                                                                                                            | Per-club image grids                                                          |
-| `js/pages/events.js`           | ~120  | dom, data, calligraphy                                                                                    | `initEvents()`                                                                                                                                | Events page                                                                   |
-| `js/pages/gallery.js`          | ~80   | dom, data                                                                                                 | `initGallery()`                                                                                                                               | Full gallery                                                                  |
-
----
-
-## 5. CSS Architecture (10 files + 6 page-specific)
-
-### File Dependency Order (as loaded in index.html)
-
-| Order | File                    | Lines | Purpose                                                               |
-| ----- | ----------------------- | ----- | --------------------------------------------------------------------- |
-| 1     | `css/preloader.css`     | ~80   | 0-100% progress bar styles                                            |
-| 2     | `css/reset.css`         | ~60   | Minimal browser reset                                                 |
-| 3     | `css/variables.css`     | 339   | Design tokens: colors, fonts, spacing, paper textures (SVG data URIs) |
-| 4     | `css/main.css`          | 439   | Body backgrounds, base typography, texture stacks                     |
-| 5     | `css/components.css`    | ~650  | Navbar, footer, club cards, calligraphy animations, settings panel    |
-| 6     | `css/pages/home.css`    | 875   | Masthead, lead article, paper cards, body sections, fold animation    |
-| 7     | `css/loader.css`        | ~890  | Loader animation, newspaper entrance, splash droplets, SAC seal       |
-| 8     | `css/settings.css`      | ~80   | Settings panel layout                                                 |
-| 9     | `css/viewer.css`        | 194   | Lightbox overlay, frame decorations                                   |
-| —     | `css/pages/club.css`    | ~450  | Individual club page styles                                           |
-| —     | `css/pages/clubs.css`   | ~80   | All-clubs overview page                                               |
-| —     | `css/pages/events.css`  | ~80   | Events page                                                           |
-| —     | `css/pages/gallery.css` | ~80   | Gallery page                                                          |
-| —     | `css/pages/about.css`   | ~40   | About page                                                            |
-
-### Texture System (CSS Custom Properties)
-
-All paper textures are defined as SVG data URIs in `css/variables.css`:
-
-- `--paper-base`/`--paper-soft`/`--paper-deep`/`--paper-edge` — color ramp
-- `--paper-grain` — 320×320 SVG `feTurbulence` fractal noise
-- `--paper-stains` — radial gradient stains
-- `--paper-fold-crease` — 200×4 horizontal gradient
-- `--paper-coffee-stain` — 160×160 SVG with feDisplacementMap
-- `--paper-halftone` — 6×10 SVG dot pattern
-- `--paper-edge-wear` — 320×320 radial vignette
-- `--paper-texture` — repeating linear gradient (laid-paper)
-
-9 texture presets via `[data-texture="…"]`: fresh, aged, rustic, notice, dark, kraft, parchment, slate + combined data-theme.
-
----
-
-## 6. HTML Pages (35 total)
-
-### Home
-
-| File         | Content                                                                                 |
-| ------------ | --------------------------------------------------------------------------------------- |
-| `index.html` | Masthead, lead article, SAC diagram SVG, YouTube/Calendar, news ticker, 5 body sections |
-
-### Club Pages (15)
-
-| File                   | Club                                 |
-| ---------------------- | ------------------------------------ |
-| `pages/aarshi.html`    | AARSHI — Drama Club                  |
-| `pages/arts.html`      | Arts Club of IISER Kolkata           |
-| `pages/radio.html`     | Campus Radio IISER KOLKATA (IKCR)    |
-| `pages/ikqc.html`      | IKQC — Quiz Club of IISER Kolkata    |
-| `pages/literary.html`  | Literary Club of IISER Kolkata       |
-| `pages/movie.html`     | Movie Club of IISER K                |
-| `pages/music.html`     | Music Club of IISER K                |
-| `pages/nature.html`    | Nature Club of IISER Kolkata         |
-| `pages/nrutya.html`    | Nrutya — Dance Club of IISER Kolkata |
-| `pages/pixel.html`     | PIXEL — Photography Club             |
-| `pages/academics.html` | SAC Academics                        |
-| `pages/hostel.html`    | SAC Hostel Committee                 |
-| `pages/singularity.html` | Singularity — Astronomy Club           |
-| `pages/slashdot.html`  | Slashdot — Programming Club          |
-| `pages/placement.html` | SAC Placement Cell                   |
-
-Each club page includes: static HTML content, office-bearer tables, event lists, achievements, contact info, social links, and `[data-club-images]` placeholder divs populated dynamically by `club-images.js`.
-
-### Sports Pages (16)
-
-| File                     | Sport                        |
-| ------------------------ | ---------------------------- |
-| `pages/athletics.html`   | Athletics                    |
-| `pages/badminton.html`   | Badminton                    |
-| `pages/basketball.html`  | Basketball                   |
-| `pages/carrom.html`      | Carrom                       |
-| `pages/chess.html`       | Chess                        |
-| `pages/cricket.html`     | Cricket                      |
-| `pages/football.html`    | Football                     |
-| `pages/gaming.html`      | Gaming                       |
-| `pages/gym.html`         | Gym / Fitness                |
-| `pages/kabaddi.html`     | Kabaddi                      |
-| `pages/kho-kho.html`     | Kho-Kho                      |
-| `pages/lawn-tennis.html` | Lawn Tennis                  |
-| `pages/rubik.html`       | Rubik's Cube                 |
-| `pages/sydc.html`        | SYDC — Self-Defence          |
-| `pages/table-tennis.html`| Table Tennis                 |
-| `pages/volleyball.html`  | Volleyball                   |
-
-### Other Pages
-
-| File                 | Content                   |
-| -------------------- | ------------------------- |
-| `pages/clubs.html`   | All-clubs overview grid   |
-| `pages/events.html`  | Event cards with lightbox |
-| `pages/gallery.html` | Full image gallery        |
-| `pages/about.html`   | About SAC                 |
-
----
-
-## 7. Loader System (Two-Phase)
-
-### Phase 1: Preloader (`js/preloader.js`)
-
-- Plain script (not ES module), runs immediately from `<script>` in `<body>`
-- **3 phases**: Download (0→70%) → Decode (70→90%) → Warm-up (90→100%)
-- Downloads CSS, JS, textures into HTTP cache; decodes images via `img.decode()`/`createImageBitmap()`; warms GPU compositor with dummy 3D transform
-- Safety timeout: low=8000ms, medium=6000ms, high=4000ms
-- Dispatches `"preloader-done"` event with `{ tier }` detail
-- Sets `window.__sacDeviceTier`
-
-### Phase 2: Loader (`js/loader.js`)
-
-- ES module, imported by `js/main.js` but only runs if `#loader` element exists
-- Waits for preloader-done event (with tier-scaled safety timeout)
-- Fetches JSONL, builds 12/8/5 newspaper cards (by device class), runs staggered entrance animation → gather → ink drop → SAC seal → fade
-- Device classification: `classifyDevice()` → phone | tablet | desktop (replaces old binary `isMobile()`)
-- TIMING config per device class:
-  - Phone: 5 papers, 400ms stagger, 1500ms gather delay
-  - Tablet: 8 papers, 320ms stagger, 1200ms gather delay
-  - Desktop: all papers, 270ms stagger, 1050ms gather delay
-
-### Device Tier Detection (`js/preloader.js`)
-
-```javascript
-function detectDeviceTier() {
-  // Returns "low" | "medium" | "high"
-  // Low: ≤2 cores, ≤2 GB RAM, 2g/slow-2g, or save-data
-  // Medium: mobile UA, ≤4 cores, ≤4 GB RAM, or 3g
-  // High: everything else
-}
-```
-
----
-
-## 8. Audio System (`js/utils/calligraphy.js`)
-
-All sounds are synthesized via Web Audio API — no external files. Processing chain:
-
-```
-sound source → filter → gain → dryGain ──┐
-                              → reverbSend → reverb → reverbWet → compressor → destination
-```
-
-### Master Chain
-
-- **Compressor**: DynamicsCompressorNode (threshold -20dB, ratio 3.5, knee 10)
-- **Reverb**: ConvolverNode with synthesized paper-room IR (0.35s stereo noise, exponential decay)
-- **Wet/Dry**: 55% reverb send, 40% reverb return wet mix
-
-### Three Sound Types
-
-**1. Paper Scratch** (`playPaperScratch`) — scroll sound
-
-- 4 layers: pink noise (sweeping BP 3200→1200Hz), white noise (HP 5000Hz), square crackle clicks, sine low thud (80→40Hz)
-- Volume 0.04, duration 0.14s, velocity-based in scroll handler
-
-**2. Printing Press** (`playPrintSound`) — loader sound
-
-- 5 layers: dual sawtooth oscillators a fifth apart (55Hz+82Hz), AM-modulated brown noise (24Hz chatter), 3 sine thuds (140→40Hz), white noise impact transient (2000Hz HP), brown noise ink burst (600Hz LP)
-- Volume 0.07, played when "SAC" seal stamps
-
-**3. Pen Scratch** (`playPenScratch`) — calligraphy sound
-
-- Character-type-aware: uppercase (4000Hz, 0.06s, 1.2×), lowercase (6000Hz, 0.04s, 1.0×), punctuation (7000Hz, 0.025s, 0.6×), digits (5000Hz, 0.045s, 0.9×)
-- White noise burst through highpass filter with randomisation
-
-### AudioContext Lifecycle
-
-- Created inside `unlockAudio()` which is bound to first `click`/`touchstart` (browser gesture requirement)
-- `audioUnlocked` flag prevents sound calls before gesture
-- All sound functions silently return if audio not unlocked
-
----
-
-## 9. Animation System
-
-### Calligraphy Text Reveal (`revealText()`)
-
-- Wraps each character in `<span class="calligraphy-char">` with:
-  - Clip-path reveal (left-to-right, CSS animation)
-  - Per-character rotation wobble (`--char-wobble`, -2° to +2°)
-  - Ink-bleed shadow (`<span class="calligraphy-char__bleed">`)
-  - Speed multiplier: spaces (0.25×), punctuation (0.4×), lowercase (1.0×), uppercase (1.4×)
-- Sounds synced via `setTimeout` per character
-
-### Scroll Sounds (`initScrollSounds()`)
-
-- Velocity-based volume (`0.01 + velocity * 0.002`, capped at 0.04)
-- Duration scales with velocity (`0.06 + velocity * 0.003`, capped at 0.15)
-- 400ms throttle between sounds
-- Guarded against double-binding (`window.__sacScrollSoundsBound`)
-
-### 3D Paper Fold (`three-fold.js`)
-
-- Three.js `PlaneGeometry(6, 4, 16, 12)` with dark semi-transparent material
-- Mouse-follow parallax: `rotation.x/y` and `position` lerped at 0.05
-- Idle detection: pauses render loop after 2s no mouse movement
-- Visibility API: pauses when tab hidden, restarts if within idle window
-- Proper `destroy()`: disposes Three.js resources, removes listeners
-- Dynamic import of Three.js from CDN (graceful failure if unavailable)
-
-### Body Section Folding (`setupFolding()` in home.js)
-
-- Each `.body-section` starts with `rotateX(-90deg)` (folded shut)
-- IntersectionObserver adds `.is-visible` at 15% viewport entry → animates flat
-- Honours `prefers-reduced-motion`
-
-### Navbar Reveal (`navbar-fold.js`)
-
-- **Mobile** (< 1024px): `#navbar` is an off-canvas drawer; `body.sidebar-open` slides it in.
-  Closed by the toggle, the scrim, Escape, a tap in `main`/footer, or a left swipe on the drawer.
-  Body scroll is locked while open, and the drawer is `inert` while closed so its links
-  stay out of the tab order.
-- **Mobile masthead strip** (`.mobile-topbar`, built by `navbar.js`): sticky 54px bar carrying
-  the wordmark and the current section. `body.has-topbar` reserves the height (added only on
-  pages that render it, so 404.html is unaffected); `body.topbar-hidden` retracts the strip
-  and the toggle together on scroll-down past 140px and restores them on scroll-up.
-- **Toggle icon**: three `<span>`s inside `#navbarCorner`, rewritten by `navbar.js` over the
-  static SVG that ships in the 38 page files, so it can fold into a cross on `body.sidebar-open`.
-- **Desktop** (≥ 1024px): rail is always visible; the same button toggles `body.sidebar-collapsed`
-  (persisted in `localStorage` as `sac-sidebar-collapsed`).
-- Resize watcher: switches mode across the 1024px breakpoint
-- Guards against double-binding (`__sacNavbarResizeBound`, `__sacSidebarBound`, `__sacTopbarBound`)
-
----
-
-## 10. Service Worker (`sw.js`)
-
-- **Cache name**: `sac-v25` (bumped on significant CSS/JS changes)
-- **Install**: `skipWaiting()`, caches ~90 static assets (CSS, JS, textures, audio, ALL sub-pages incl. sports & academic clubs)
-- **Activate**: `clients.claim()`, deletes old cache versions
-- **Fetch strategy**:
-  - Dynamic assets (JSONL): network-first, cache fallback
-  - Static assets: stale-while-revalidate (serve from cache, update in background)
-- **Note**: All club, sports, academic, and placement pages ARE now in the static cache list.
-
----
-
-## 11. Settings Panel (`js/components/settings.js`)
-
-### Features
-
-- **Dark mode**: light / dark / auto (follows OS)
-- **Font presets** (7): Newspaper (Playfair Display), Modern (EB Garamond), Typewriter (Special Elite), Gothic (IM Fell English), Classical (Cormorant), Monospace (IBM Plex Mono), Old English (display-only)
-- **Paper textures** (8): Fresh, Aged, Rustic, Notice Board, Dark, Kraft, Parchment, Slate
-- **Text size**: S / M / L (`--fs-scale` 0.85 / 1 / 1.2)
-- **Accessibility**: Reduce motion, Sound effects, Ambient music toggles
-- **Persistence**: localStorage key `sac-site-prefs` (JSON)
-- **FOUC prevention**: `main.js` reads localStorage before rendering
-
-### Google Fonts
-
-- Loaded lazily (only when selected, not on page load)
-- Preloaded after first render via `preloadFonts()` for instant switching
-
----
-
-## 12. Viewer / Lightbox (`js/components/viewer.js`)
-
-- Triggered by `data-viewer="groupname"` attribute on `<img>` elements
-- Groups images by `data-viewer` value for prev/next navigation
-- **Layout**: the overlay is a three-row grid — `.viewer-bar` (context + close),
-  `.viewer-stage` (paper `.viewer-frame` around `.viewer-img`), `.viewer-foot`
-  (caption, filmstrip, `.viewer-controls`). The prev/next buttons live in the
-  footer control row on phones and move out to the viewport gutters at ≥901px,
-  where `.viewer-frame`'s `max-width` reserves the space for them. They never
-  overlap the plate at any width.
-- **Plate sizing**: `max-height: min(<share>dvh, calc(100dvh - <chrome>px))` per
-  breakpoint, so the picture is bounded both by a share of the screen and by the
-  height the bar and foot actually leave. Filmstrip drops out below 480px tall.
-- Keyboard: Escape (close), ArrowLeft (prev), ArrowRight (next), Z (zoom); Tab is
-  trapped inside the dialog and focus returns to the opener on close
-- Touch: horizontal swipe on the stage pages through the group (suppressed while zoomed)
-- `body.viewer-open` hides the FABs, the toggle and the mobile strip while the plate is up
-- `will-change: transform` applied to frame while open, removed on close
-- `backdrop-filter: blur(4px)` on overlay (with `-webkit-` prefix)
-
----
-
-## 13. Pretext Text Measurement (`js/utils/text-measure.js`)
-
-- **Library**: `@chenglou/pretext` v0.0.8 (vendored submodule at `utils/pretext/`)
-- **Built output**: `js/pretext/layout.js` (7 companion files in `js/pretext/`)
-- **Only consumer**: `home.js` → `adjustLeadLayout()` — measures lead-article body height to decide 1-vs-2 column layout
-- **API**: `measureText(text, font, maxWidth, lineHeight)` → `{ height, lineCount }`
-- **Caching**: Internal Map keyed by `text|font` string
-- **Graceful degradation**: Dynamic import catches errors; CSS default (2 columns) preserved on failure
-- **Build**: `npm run build:pretext` compiles TypeScript submodule and copies dist to `js/pretext/`
-
----
-
-## 14. CI/CD Pipeline (`.github/workflows/deploy.yml`)
-
-### Jobs
-
-**1. test** (ubuntu-latest, 10min timeout):
-
-```
-checkout (recursive submodules) → setup Node 20 → npm ci → eslint → prettier check
-→ npm audit → vitest run → upload coverage artifact
-```
-
-**2. deploy** (needs: test, only on main push):
-
-```
-checkout → verify critical paths (index.html, css/, js/, pages/, public/assets/,
-  assets_map.jsonl, .nojekyll, js/pretext/layout.js)
-  → configure-pages → upload artifact → deploy-pages
-```
-
----
-
-## 15. Test Suite (17 files, 190 tests)
-
-| Test File                               | Tests | What It Tests                                                                                                         |
-| --------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
-| `test/unit/calligraphy.test.js`         | 6     | `revealText()`, `extractExcerpt()`, `initScrollSounds()` guard                                                        |
-| `test/unit/config.test.js`              | 3     | `NAV_ITEMS` structure, URL formatting                                                                                 |
-| `test/unit/improvements.test.js`        | 56    | Comprehensive regression suite for recent fixes                                                                       |
-| `test/unit/footer.test.js`              | 4     | Footer 4-column render, sports links                                                                                  |
-| `test/unit/css-fixes.test.js`           | 10    | `background-attachment` override, aspect ratio, `backdrop-filter` prefix, `--paper-edge-wear`, `build:pretext` script |
-| `test/unit/data.test.js`                | 6     | `loadAssetsMap()`, `indexByClub()`, `getClub()`, `getClubEntries()`, logo fallbacks                                   |
-| `test/unit/dom.test.js`                 | 13    | `el()`, `clear()`, `pageUrl()`, `pageLink()`, `assetUrl()`, `isInPagesDir()`, `onReady()`, `showError()`                                           |
-| `test/unit/home-excerpt.test.js`        | 8     | `extractExcerpt()` with markdown, tables, headings, ALL-CAPS labels                                                   |
-| `test/unit/loader.test.js`              | 25    | `classifyDevice()`, TIMING config, safety timeout, gather unification, splash params                                  |
-| `test/unit/preloader.test.js`           | 6     | Preloader DOM structure, `is-done` class, `preloader-done` event                                                      |
-| `test/unit/pretext-integration.test.js` | 9     | Real `prepare()` + `layout()` (not mocked), CJK, empty text, `clearCache()`, wrapper                                  |
-| `test/unit/settings.test.js`            | 8     | Settings panel render, font/texture pickers, localStorage persistence                                                 |
-| `test/unit/text-measure.test.js`        | 6     | `measureText()`, caching, invalid input guards, `clearMeasureCache()`                                                 |
-
-### Test Infrastructure
-
-- **Runner**: Vitest v4.1.9
-- **Environment**: jsdom (with mocks for IntersectionObserver, ResizeObserver, matchMedia, fonts, serviceWorker, caches API, OffscreenCanvas)
-- **Setup**: `test/setup.js` — global mocks + helpers (`setupPage()`, `flushPromises()`)
-- **Config**: `vitest.config.js` — coverage thresholds 40/30/35/40, excludes `js/pretext/` and `js/config.js`
-- **E2E**: `test/e2e/` (empty — Playwright MCP used for manual verification instead)
-
----
-
-## 16. Assets (`public/assets/` Submodule + `assets/` Directory)
-
-### `public/assets/processed/` (Git submodule — 1393 map entries)
-
-The `assets_map.jsonl` is a newline-delimited JSON file with 1393 records:
-
-- **1393 records** — 1099 WebP images + 185 Markdown documents + 101 MP4 videos + 7 audio files + 1 JSON record across **32 indexed clubs**
-- 32 fields per record: path, public_url, filename, width, height, orientation, club, club_name, is_logo, is_markdown_content, is_ob_portrait, is_extracted_from_doc, is_event, is_iicm, role, file_type, mime, tenure, year, person, ob_role, tags, title, description, taken_at, venue, competition, alt_text, copyright, credit, parent_path, original_filename
-
-### Image Roles
-
-| Role        | Purpose                          | Count |
-| ----------- | -------------------------------- | ----- |
-| ob_portrait | Office-bearer portrait           | 50+   |
-| logo        | Club logo                        | ~12   |
-| event       | Event photography                | ~80   |
-| iicm        | Inter-IISER Cultural Meet        | ~40   |
-| equipment   | Equipment photos                 | ~20   |
-| portfolio   | Portfolio/work samples           | ~30   |
-| outer-fest  | External festival coverage       | ~15   |
-| other       | Club documents, extracted images | ~180  |
-
-### `assets/` Directory (9 texture images at repo root)
-
-| File                 | Dimensions | Used In                                |
-| -------------------- | ---------- | -------------------------------------- |
-| `natural-paper.png`  | 523×384    | Body background (main.css)             |
-| `newspaper-bg.jpg`   | 800×533    | `.lead-article::after`, `.body-banner` |
-| `old-paper.jpg`      | 800×1200   | `.sac-diagram-wrap`                    |
-| `paper.png`          | 500×593    | Settings preview only                  |
-| `rice-paper.png`     | 485×485    | Settings preview only                  |
-| `paper-fibers.png`   | 410×410    | Settings preview / docs                |
-| `groovepaper.png`    | 300×300    | Settings preview only                  |
-| `old-wall.png`       | 300×300    | Settings preview only                  |
-| `stressed-linen.png` | 256×256    | Settings preview only                  |
-
----
-
-## 17. Key Bug Fix History
-
-| #   | Bug                                                                      | Fix                                                                       | File                                     |
-| --- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------- | ---------------------------------------- |
-| 1   | Tablet loader — binary isMobile() misclassified iPad/Android tablet      | `classifyDevice()` → phone/tablet/desktop with TIMING config              | `js/loader.js`                           |
-| 2   | Safety timeout race — loader waited 5000ms but preloader can take 8000ms | Tier-scaled: low=10000, medium=8000, high=6000                            | `js/loader.js`                           |
-| 3   | Device tier too aggressive — cores<=4→low, cores<=8→medium               | Low: ≤2 cores, Medium: isMobileUA\|≤4 cores                               | `js/preloader.js`                        |
-| 4   | `background-attachment:fixed` on .masthead breaks on iOS                 | `@media (hover:none) and (pointer:coarse)` override                       | `css/main.css`, `css/pages/home.css`     |
-| 5   | natural-paper.png 523×384 tiled at 400×400 — distortion                  | Changed to `400px auto`                                                   | `css/main.css`                           |
-| 6   | backdrop-filter missing -webkit- prefix                                  | Added `-webkit-backdrop-filter`                                           | `css/viewer.css`                         |
-| 7   | build:pretext script fragile (used `;` not `&&`)                         | Changed `;` to `&&`, removed `2>/dev/null`                                | `package.json`                           |
-| 8   | `--paper-edge-wear` dead — defined only in dark theme                    | Added to `:root` with light colors                                        | `css/variables.css`                      |
-| 9   | Audio system — no reverb, mono, basic envelopes                          | Added ConvolverNode reverb, compressor, ADSR, char-type-aware pen scratch | `js/utils/calligraphy.js`                |
-| 10  | Poster click-fold animation glitch                                       | Removed `.is-folding` click handler; hover-only                           | `js/pages/home.js`, `css/pages/home.css` |
-| 11  | Newspaper theme CSS invalid — stray `}` closed first `:root`, leaving ~40 vars as top-level declarations | Wrapped newspaper tokens in second `:root {}` block                        | `css/variables.css`                      |
-| 12  | Clubs/events search "no results" appended to detached mount (post-`replaceWith`) — never visible | Query live node `getElementById(...)` before `appendChild`                 | `js/pages/clubs.js`, `js/pages/events.js` |
-| 13  | Dark-mode auto-switch highlighted texture with `.is-active` but CSS uses `.is-selected` | Unified on `.is-selected`                                                  | `js/components/settings.js`              |
-| 14  | Events force-included ALL 101 videos; fake years 2030/2029/2028 from filename counters | Pipeline year-window + is_event for event-folder videos | `public/assets/tools/generate_assets_map.py` |
-| 15  | Loader injected unstyled on subpages missing loader.css | `<link>` added to about/clubs/events/gallery | subpage heads |
-| 16  | 'Dark' paper texture trapped users in dark colors; Light click did nothing | Theme clears conflicting texture; live matchMedia auto listener | `js/components/settings.js` |
-| 17  | Gallery/club pages preloaded 100+ video metadata requests | Shared `initLazyVideos` (video+audio) preload=none + IO flip | `js/utils/media.js` |
-| 18  | Viewer strip built one button per image (1,133 possible) | 41-thumb sliding window | `js/components/viewer.js` |
-| 19  | deploy.yml staging list omitted 404.html — Pages shipped default 404 | Staged + hard verify step | `.github/workflows/deploy.yml` |
-| 20  | Club cards faded (unconditional `.club-card--pending` at 0.72) | Conditional pending class; 6 SVG crest fallbacks | `js/pages/clubs.js` |
-| 21  | Main column hugged left when zooming out on ultrawide | Fluid `max()` centering margins | `css/main.css` |
-| 22  | 446 images showed pipeline titles ("img 001", "DSC 0718") | `captionFor()` render-time derivation: event-folder → parent-doc plate → role | `js/utils/caption.js` |
-| 23  | Audio preload fired net::ERR_ABORTED churn on gallery | `preload="none"` + IO flip covers `<audio>` | `js/utils/media.js` |
-| 24  | Maps/YT iframes raised Permissions-Policy warnings | `allow="fullscreen; picture-in-picture; encrypted-media"` lists | `footer.js`, `home.js` |
-| 25  | News ticker clipped bulletins on phones (overflow hidden) | Mobile scroll-x fallback | `css/pages/home.css` |
-
----
-
-## 18. Known Limitations
-
-1. **71 MB chess finals video** exceeds GitHub's 50 MB recommendation (under the 100 MB hard limit — warning only; LFS would silence it).
-2. **4 unverified OB names** (Nrutya "25_26_OBs_00" etc.) flagged with "verify name" badges — awaiting team follow-up.
-3. **SPICMACAY** submitted zero data — rendered as an honest pending card.
-4. **Third-party console noise** (YouTube/Maps cookies, fingerprinting) originates inside vendor iframes; our code emits none.
-5. **Calendar API 403 on localhost** — key is referrer-restricted to the Pages domains; live works.
-6. **Prettier** still fails on 6 legacy files (pre-dates the redesign; CI `continue-on-error`).
-7. **Pretext bundle oversized** — only `prepare()/layout()` used, full library shipped.
-8. **Submodule SSH URLs** — CI clones with GITHUB_TOKEN; local dev needs SSH keys.
-
-## 19. Local Development
+## Rules that are not negotiable
+
+1. **Commit as the repository owner, and only as them.** Use the git identity that
+   is already configured (`git var GIT_AUTHOR_IDENT`). Never set a bot name or email
+   (earlier sessions committed as "SAC Deploy Bot"), never pass `-c user.*` or
+   `--author`, and **never add a `Co-Authored-By:` trailer** — it adds a second
+   contributor on GitHub.
+2. **Never delete from the archive.** `public/assets` is a separate repository.
+   Hide an image with the manifest (`public/duplicates.json`), don't remove the file.
+3. **No force-push, history rewrite, or deploy without being asked.** A push to
+   `main` deploys to production. Work on a branch; open a PR; say what you did.
+4. **Tests, lint and format must pass** before a commit: `npm run check`.
+5. **Don't hand-edit generated blocks** (see "Generated files"). Run the generator.
+6. **Leave the owner's untracked files alone** (e.g. loose screenshots in the root).
+
+## Commands
 
 ```bash
-# Prerequisites
-node >= 18.0.0
-git with SSH keys (for submodules)
+npm install                     # tooling only; the site itself needs nothing
+npm run serve                   # http-server on :8000 (use another port if 8000 is taken)
+npm run check                   # lint + prettier + generated-files check + all tests (what CI runs)
+npm test                        # vitest only        npm run test:watch · test:coverage
+npm run lint:fix · npm run format
 
-# Clone with submodules
-git clone --recurse-submodules git@github.com:Shuvam-Banerji-Seal/SAC_Website.git
-cd SAC_Website
-
-# Install dependencies (testing/lint tooling only — not needed for the site)
-npm install
-
-# Run tests
-npm test                # vitest (all unit tests)
-npm run test:watch      # vitest watch mode
-npm run test:coverage   # with coverage report
-
-# Lint & format
-npm run lint
-npm run format:check
-npm run lint:fix        # auto-fix
-npm run format          # auto-format
-
-# Audit
-npm audit
-
-# Serve locally
-npm run serve           # http-server on port 8000
-
-# Build pretext (only if utils/pretext submodule is updated)
-npm run build:pretext
-
-# Deploy (CI handles this — but manual push triggers it)
-git push origin main
+npm run sync                    # regenerate modulepreload blocks + service-worker shell list
+npm run sitemap                 # regenerate sitemap.xml / robots.txt (CI does this per host)
+npm run dedupe:people           # recompile tools/dedupe/same_person.json -> public/duplicates.json
+npm run build:pretext           # only if the utils/pretext submodule changes
 ```
 
----
+Submodules: `git submodule update --init --recursive` (SSH URLs; CI uses the token).
+`public/assets` is ~6 GB — `git fetch` inside it is slow; run it in the background.
 
-## 20. Deployment
+## Repository map
 
-- **Platform**: GitHub Pages
-- **URL**: `https://shuvam-banerji-seal.github.io/SAC_Website/`
-- **Trigger**: Push to `main` branch → GitHub Actions → Deploy
-- **CDN propagation**: ~60-90s after deploy completes
-- **Cache**: Service Worker caches at `sac-v25`; clients need hard refresh to pick up new SW
-- **No build step**: The site is pure static — what you see in the repo is what's served
+```
+index.html, pages/*.html   38 pages. body[data-page] picks the page script; club pages add data-club-slug.
+js/
+  main.js                  entry for every page (shell + one dynamic page import)
+  data.js                  loads assets_map.jsonl, applies duplicates.json, indexes clubs
+  config.js                site constants, nav, API keys (referrer-restricted)
+  loader.js, preloader.js  the entrance (once per tab session); preloader is a classic script
+  components/              navbar, footer, settings, viewer, calendar, section-nav, campus-book/board,
+                           sac-diagram, council-facts, back-to-top, reading-progress
+  pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
+  utils/                   dom (el, pageUrl, assetUrl), calendar(+model), caption, thumb, media,
+                           reveal, skeleton, view-pref, calligraphy, music, youtube, tenure, text-measure
+  pretext/                 vendored text-measurement library (built from the submodule; don't edit)
+css/                       preloader, reset, variables (tokens), main, components, loader, settings,
+                           viewer, enhancements (last layer), print, pages/{home,clubs,club,events,
+                           gallery,about,calendar}.css
+tools/                     sync-preloads.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
+test/unit/                 40 files, ~550 tests (vitest + jsdom); setup in test/setup.js
+public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
+public/duplicates.json     ids the site hides (generated + curated)
+utils/pretext/             SUBMODULE (chenglou/pretext)
+docs/                      ARCHITECTURE.md, new-design.md, research notes (docs/README.md)
+sw.js                      service worker (code network-first, media stale-while-revalidate)
+.github/workflows/         deploy.yml — test on PR/push, deploy on main
+```
 
----
+## Conventions
 
-_Generated by deep audit of the repository. Last updated: 2 August 2026._
-_Repository: https://github.com/Shuvam-Banerji-Seal/SAC_Website_
+- **Vanilla ES modules.** No frameworks, no new runtime dependencies. Build DOM with
+  `el(tag, attrs, ...children)` from `js/utils/dom.js`. Use `pageUrl()`/`assetUrl()`
+  for paths — pages live at two depths.
+- **Style:** Prettier (100 cols, double quotes, ES5 trailing commas); ESLint flat
+  config. CSS uses tokens from `variables.css`; square corners, hard offset shadows,
+  mono small-caps for labels. New colours go in `variables.css` with a dark value.
+- **Comments say why.** The code is full of "this fixed bug X on date Y" — keep that
+  habit; it is how the next person avoids undoing a fix.
+- **Motion:** transform/opacity only; gate hover behind `(hover: hover)`; honour both
+  `prefers-reduced-motion` and `html[data-reduce-motion="on"]`.
+- **Touch targets ≥ 44 px** on phones. **Contrast:** ink on every light paper must
+  meet AA (`contrast.test.js` reads the real CSS).
+- **A test with the fix.** Prefer tests of structure and behaviour over byte counts.
+  When a measured problem is fixed, write down the number in the commit message.
+
+## Generated files — change the source, run the tool
+
+| File / block | Source | Command |
+|---|---|---|
+| `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
+| `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
+| `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |
+| `public/duplicates.json` | `tools/dedupe/*` | see `tools/dedupe/README.md` |
+
+`npm run sync:check` (part of `check`) fails if any are stale.
+
+## Recipes
+
+**Add a club.** (1) Create `pages/<slug>.html` from a sibling; set
+`<body class="has-topbar" data-page="club" data-club-slug="<Archive_Folder_Slug>">`;
+keep the `.section-nav--slot` before the first section. (2) Add the slug to
+`getClubPageUrl` and `SLUG_BODIES` in `js/pages/clubs.js`. (3) `npm run sync` and
+`npm run sitemap`. (4) `npm test` — `club-registry.test.js` names whatever you missed.
+
+**Add a script to every page's critical path.** Don't. Import it dynamically from the
+page module or from `whenIdle()` in `main.js`. `load-budget.test.js` caps the shell.
+
+**Add a stylesheet.** Link it on every page that needs it, *after* `components.css`
+and *before* `enhancements.css`. Core sheets must be on all 38 pages (`page-shell.test.js`).
+
+**Hide a duplicate photo.** Same photo twice → regenerate with the fingerprint tools.
+Different frames of one *person* → add a group to `tools/dedupe/same_person.json`, then
+`npm run dedupe:people`. If unsure two portraits are the same person, keep both.
+
+**Change the hero.** `assets/hero-people.webp` is pinned on purpose (it used to rotate by
+calendar month). Re-export all four sizes (480/800/1100/1400), update the width/height in
+`index.html`, and keep share images absolute (`hero.test.js` checks all of this).
+
+**Touch the caches.** Bump `CACHE_NAME` in `sw.js` **and** `CACHE_VERSION` in
+`js/data.js` together (a test enforces equality) whenever cached JSON or the shell changes.
+
+## Checking your work in a browser
+
+- Serve on a free port (`npx http-server . -p 8123 -c-1`); the Playwright MCP can drive it.
+- **Clear state between runs:** `sessionStorage` (the map cache is keyed by version and
+  lives 10 minutes) and, on https, the service worker. Stale caches have produced false
+  bug reports more than once.
+- `localhost` can't call the Calendar API (referrer-restricted → 403). Intercept
+  `https://www.googleapis.com/calendar/**` with `page.route` to test both modes.
+- `http-server` doesn't gzip, so local byte counts overstate the live site (the 2 MB map
+  is ~100 KB on Pages). Throttle (1.6 Mbps, 150 ms, 4× CPU) when judging load time.
+- Measure layout shift with a `PerformanceObserver` for `layout-shift`; expect ≈ 0.
+- Lighthouse (mobile) should stay 100 / 100 / 100 on home, clubs and a club page.
+
+## Gotchas
+
+- **Two Pages hosts**, different casing: `shuvam-banerji-seal.github.io/SAC_Website/` and
+  `slashdot-iiserk.github.io/SAC_website/`. Never hard-code either in a page-level path.
+- `assets_map.jsonl` ids shift when the map is regenerated; always pair ids with paths.
+- Hover/animation CSS on `.thumb` must keep `opacity` in its `transition` list or the
+  reveal fade breaks (a specificity side-effect we already hit once).
+- The Calendar currently returns **no titles** (free/busy sharing). That is a sharing
+  setting, not a bug in the code. See `docs/ARCHITECTURE.md` §5.
+- Don't test the splash by reloading: it plays once per tab session
+  (`sessionStorage["sac-splash"]`).
+
+## Known limits
+
+See `docs/ARCHITECTURE.md` §9.

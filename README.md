@@ -1,212 +1,97 @@
 # Student Activity Council — IISER Kolkata
 
-Official website of the **Student Activity Council (SAC)** at IISER Kolkata.
-A lightweight CSS-Grid broadsheet with a responsive sidebar, editorial club
-pages, and a CSS-only stack of printed club papers on entry.
+Official website of the **Student Activity Council (SAC)** at IISER Kolkata: a
+newspaper-themed static site for the Council's clubs, committees, events and
+campus life. Pure HTML, CSS and ES modules — served as-is by GitHub Pages, with no
+build step and no runtime dependencies.
 
----
+> Contributors and AI agents: start with [`AGENTS.md`](AGENTS.md) (rules, commands,
+> recipes) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (how it fits together).
 
-## What this is
+## What's on the site
 
-A static site that showcases the cultural clubs, academic bodies, hostel
-committee, and sports societies under the SAC umbrella at IISER Kolkata.
-Every image and club document is served from a git submodule (`public/assets/`)
-and described by a canonical `assets_map.jsonl` that the website fetches at
-runtime to render club pages, event timelines, and the gallery.
+- **Home** — masthead, the Council's group photograph, the lead story, the
+  organisational chart, the _Campus Book_ (a flip-through album), the _Campus Board_
+  (pinned postcards), a picture desk, latest videos and **The SAC Calendar**.
+- **Clubs** — every club and committee in five bodies (Academics, Cultural, Food &
+  Hygiene, Hostel, Sports), with a sticky jump bar and search.
+- **Club pages** (32) — office bearers, events, achievements, galleries, and a
+  jump bar built from the page's own sections.
+- **Events, Gallery, Campus Life** — the photographic archive, grouped and searchable.
+- **The SAC Calendar** — a month view backed by Google Calendar. It shows booked
+  time slots while the calendar is shared as free/busy, and titles, places and
+  details as soon as it is shared publicly.
 
-## Features
+## The look
 
-- **Newspaper theme** — paper textures, ink colors, serif fonts, fold creases
-- **Sidebar newspaper shell** — fixed desktop index rail and mobile off-canvas navigation
-- **CSS paper loader** — club sheets stack, settle, and tear apart without WebGL or canvas
-- **Notice board effects** — nail/pin decorations, crooked cards, postmark stamps
-- **Calligraphy text reveal** — headline appears as if being written, letter by letter
-- **Sound modes** — layered paper ruffles plus an optional local calm-reading ambience
-- **14 paper presets** — eight colour treatments plus Natural, Fibers, Rice, Linen, Groove, and Old Wall scans
-- **7 font presets** — Newspaper, Modern, Typewriter, Gothic, Classical, Monospace, Old English
-- **Dark mode** — consistent across all pages, respects `prefers-color-scheme`
-- **System typography** — no Google Fonts or runtime font downloads
-- **Service Worker** — stale-while-revalidate caching for fast subsequent loads
-- **Responsive** — works on desktop, tablet, and mobile
+An aged-paper broadsheet: warm stock with foxing, tea stains and a faint fold, rust
+and oxblood accents, mono small-caps labels, pinned and taped cards. Paper ageing is
+one setting — **Fresh**, **Aged** (default) or **Rustic** — alongside 17 paper textures,
+7 type presets, dark mode, text size, and reduced-motion and sound toggles.
+Hover and entrance motion is transform/opacity only and switches off for anyone who
+asks for less motion.
 
-## Folder structure
+## Fast on phones
+
+The site is built to load quickly on a mid-range phone over a slow connection: each
+page loads only its own script, images come in several sizes, below-the-fold work
+waits until it is near the screen, and the service worker installs a small app shell
+after the page has finished loading. Layout shift is ≈ 0 and Lighthouse (mobile) is
+100 / 100 / 100 on the home page, clubs and club pages. Details and the numbers are in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Repository layout
 
 ```
-SAC_Website/
-├── index.html              ← landing page with pre-loader + main loader
-├── pages/                  ← all other HTML pages
-│   ├── about.html
-│   ├── clubs.html          ← all-clubs grid
-│   ├── club.html           ← single template; uses ?id=<slug>
-│   ├── events.html
-│   └── gallery.html
-├── css/
-│   ├── preloader.css       ← pre-loader progress bar
-│   ├── reset.css           ← minimal modern reset
-│   ├── variables.css       ← theme tokens + 14 texture presets + dark mode
-│   ├── main.css            ← base layout, typography, entrance animations
-│   ├── components.css      ← navbar, club-card, thumb, footer, stat-grid
-│   ├── settings.css        ← settings panel (dark mode, font, texture)
-│   ├── viewer.css          ← image viewer/lightbox
-│   ├── loader.css          ← newspaper ink loader animation
-│   └── pages/              ← per-page stylesheets
-├── js/
-│   ├── preloader.js        ← first-paint guard (plain script, no ES module)
-│   ├── main.js             ← entry: renders nav + footer, dispatches by page
-│   ├── config.js           ← site title, NAV_ITEMS
-│   ├── data.js             ← loads + indexes assets_map.jsonl
-│   ├── loader.js           ← newspaper ink loader animation
-│   ├── pretext/            ← built pretext dist (text measurement library)
-│   ├── components/
-│   │   ├── navbar.js
-│   │   ├── navbar-fold.js
-│   │   ├── footer.js
-│   │   ├── settings.js     ← theme, font, texture, sound controls
-│   │   └── viewer.js       ← image lightbox
-│   ├── pages/
-│   │   ├── home.js         ← landing page with calligraphy + paper fold
-│   │   ├── club-page.js    ← map-backed club identity, logo, and title
-│   │   ├── club-images.js  ← map-backed responsive media grids
-│   │   ├── clubs.js
-│   │   ├── club.js         ← individual club template
-│   │   ├── events.js
-│   │   └── gallery.js
-│   └── utils/
-│       ├── dom.js          ← $, el(), onReady, pageUrl()
-│       ├── text-measure.js ← pretext wrapper for text measurement
-│       └── calligraphy.js  ← text reveal animation + sound effects
-├── test/
-│   ├── setup.js            ← global test setup (jsdom, mocks)
-│   └── unit/
-│       ├── dom.test.js
-│       ├── data.test.js
-│       ├── settings.test.js
-│       ├── home-excerpt.test.js
-│       ├── text-measure.test.js
-│       ├── calligraphy.test.js
-│       ├── preloader.test.js
-│       └── config.test.js
-├── package.json            ← npm scripts, dependencies, devDependencies
-├── vitest.config.js        ← test configuration
-├── eslint.config.js        ← linting rules
-├── .prettierrc.json        ← code formatting
-├── sw.js                   ← Service Worker (stale-while-revalidate)
-├── public/
-│   └── assets/             ← git submodule (SAC_website_assets)
-│       └── processed/
-│           ├── <clubs>/    ← website-ready WebP images + markdown
-│           └── assets_map.jsonl ← canonical index
-└── utils/
-    └── pretext/            ← git submodule (chenglou/pretext)
+index.html, pages/       38 pages
+css/                     tokens (variables.css), shell, per-page stylesheets
+js/                      main.js (entry) · components/ · pages/ · utils/ · pretext/ (vendored)
+tools/                   sync-preloads · gen-sitemap · dedupe/ (image de-duplication, Python)
+test/unit/               ~550 tests (Vitest + jsdom)
+docs/                    ARCHITECTURE.md and research notes
+public/assets/           git submodule — every image, document and video, plus assets_map.jsonl
+public/duplicates.json   images the site hides (the archive itself is never edited)
+utils/pretext/           git submodule — text-measurement library
+sw.js                    service worker
 ```
 
 ## Development
 
-### Prerequisites
-
-- Node.js 18+ (for testing and tooling)
-- A modern browser (the site itself is pure static HTML/CSS/JS)
-
-### Setup
+Requires Node 18+ (tooling only) and Python 3 with Pillow and numpy (only for the
+image de-duplication tools). The submodules use SSH URLs.
 
 ```bash
-# Install dev dependencies
+git clone --recurse-submodules git@github.com:Shuvam-Banerji-Seal/SAC_Website.git
+cd SAC_Website
 npm install
 
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-
-# Lint
-npm run lint
-
-# Format code
-npm run format
-
-# Security audit
-npm audit
-
-# Start a local dev server
-npm run serve
-# Then open http://localhost:8000/
+npm run serve     # http://localhost:8000/
+npm run check     # lint + format + generated-files check + tests — what CI runs
 ```
 
-### Building pretext
+`public/assets` is large (~6 GB). If you only need to work on code, you can skip it
+for a while, but the site and most tests need its `assets_map.jsonl`.
 
-The pretext library (text measurement) is a git submodule. To rebuild it:
-
-```bash
-npm run build:pretext
-```
-
-This installs pretext's dependencies, compiles the TypeScript, and copies the
-built files to `js/pretext/`.
-
-## Testing
-
-The project uses **Vitest** with **jsdom** for unit testing. Tests are in
-`test/unit/` and cover:
-
-- DOM utilities (`el()`, `$()`, `pageUrl()`, `isInPagesDir()`)
-- Data indexing (`indexByClub()`, `pickLogo()`, `getClubEntries()`)
-- Settings panel (dark mode, font selection, texture selection)
-- Excerpt extraction from markdown
-- Pretext text measurement wrapper
-- Calligraphy animation
-- Pre-loader
-
-```bash
-npm test          # run all tests
-npm run test:coverage  # with coverage report
-```
-
-## CI/CD
-
-The GitHub Actions workflow (`.github/workflows/deploy.yml`) runs:
-
-1. **Test job**: lint, format check, security audit, unit tests, coverage upload
-2. **Deploy job** (main branch only): verify critical paths, deploy to GitHub Pages
+Other scripts: `npm test`, `test:watch`, `test:coverage`, `lint:fix`, `format`,
+`sync` (regenerate `<head>` preload blocks and the service-worker shell),
+`sitemap`, `dedupe:people`, `build:pretext`. See [`AGENTS.md`](AGENTS.md).
 
 ## Deployment
 
-The site is configured for GitHub Pages at **`/SAC_Website/`**:
+Pushing to `main` runs lint, format and tests, then deploys to GitHub Pages
+(`.github/workflows/deploy.yml`). The repository is deployed from two accounts, so the
+workflow generates `sitemap.xml` and `robots.txt` for whichever host it is publishing
+to. The deploy fails if the assets submodule isn't checked out.
 
-1. Push to `main`
-2. CI/CD pipeline runs tests
-3. If tests pass, the site is deployed to GitHub Pages
-4. Visit `https://<user>.github.io/SAC_Website/`
+## The calendar needs one setting
 
-## SAC Bodies
-
-The website organizes clubs into 5 SAC bodies:
-
-| Body      | Section     | Description                                            |
-| --------- | ----------- | ------------------------------------------------------ |
-| Council   | Preface     | SAC General Secretary, Joint Secretary, and officers   |
-| Academics | Section I   | Academic initiatives, placement cell, talks            |
-| Hostel    | Section II  | Hostel committee, residence life, welfare              |
-| Sports    | Section III | Sports clubs (cricket, football, etc.) — data arriving |
-| Cultural  | Section IV  | Cultural clubs (drama, music, dance, film, etc.)          |
-
-## Texture Presets
-
-| Preset       | Look                                              |
-| ------------ | ------------------------------------------------- |
-| Fresh        | Clean, bright, minimal texture — modern newspaper |
-| Aged         | Warm, slightly yellowed — vintage paper           |
-| Rustic       | Coffee-stained, heavy aging — old document        |
-| Notice Board | Corkboard with brass pins — pinned postcards      |
-| Dark         | Dark coffee-stain — night reading mode            |
-| Kraft        | Brown kraft paper — raw packaging                 |
-| Parchment    | Cream parchment — medieval manuscript             |
-| Slate        | Cool blue-gray — modern dark UI                   |
+The Google Calendar the site reads is currently shared as **free/busy only**, so
+Google returns no event names. To show titles, places and details: Google Calendar →
+Settings → _Access permissions_ → make it public and choose **See all event
+details**. Ideally use a dedicated, public "SAC Events" calendar (the one in
+`js/config.js` is a personal institute calendar) and update `CALENDAR.CALENDAR_ID`.
 
 ## License
 
-The website source (HTML/CSS/JS) is part of the SAC_Website repo. Assets in
-`public/assets/` belong to their respective owners and clubs.
+The website source (HTML/CSS/JS) is part of this repository. The images and documents
+in `public/assets/` belong to their respective owners and clubs.

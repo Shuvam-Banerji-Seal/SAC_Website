@@ -14,7 +14,7 @@
  * for its module, so the fetch starts with the document instead of waiting
  * for this file to run.
  *
- * Three.js was removed in the lightweight redesign (new_design.md).
+ * Three.js was removed in the lightweight redesign (docs/new-design.md).
  */
 import { onReady } from "./utils/dom.js";
 import { renderNavbar } from "./components/navbar.js";
