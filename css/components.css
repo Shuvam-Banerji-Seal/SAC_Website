@@ -44,20 +44,34 @@
 /* ------------------------------------------------------------------ container */
 #navbar {
   /* desktop: the page's left margin — a full-height index column */
-  background:
-    linear-gradient(90deg, transparent 82%, rgba(70, 44, 20, calc(0.1 * var(--age))) 100%),
-    radial-gradient(ellipse at 18% 0%, rgba(150, 96, 40, calc(0.13 * var(--age))), transparent 62%),
-    var(--paper-fiber), var(--paper-grain), var(--paper-soft);
+  background: var(--fold-paper);
   border-right: 1px solid var(--rule);
   display: block;
   inset: 0 auto 0 0;
   position: fixed;
-  transition: width 0.45s var(--fold-ease);
   width: var(--sidebar-w);
   z-index: 900;
 }
 
+/* The rail's ageing (a darker right edge, a warm glow at the top-left) is laid over the sheets
+   rather than under them. Under them it only showed where no sheet was — below the brand tab
+   of a folded rail — so the tab read as a lighter block with a visible bottom edge. */
+#navbar::after {
+  background:
+    linear-gradient(90deg, transparent 82%, rgba(70, 44, 20, calc(0.1 * var(--age))) 100%),
+    radial-gradient(ellipse at 18% 0%, rgba(150, 96, 40, calc(0.13 * var(--age))), transparent 62%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
 .fold {
+  /* Nothing may show above the hinge line (the masthead's bottom edge on a phone). Panel 2 is
+     taller than the brand panel, so a folded stack overhung it by ~19px and covered the
+     masthead's text while the sheet closed. The sides and bottom are left generous for the
+     card's hard shadow and the panels' swing. */
+  clip-path: inset(0 -24px -100vh -24px);
   perspective: 1200px;
   perspective-origin: 50% 0;
   position: relative;
@@ -168,62 +182,74 @@
   }
 }
 
-/* ---------------------------------------------------------------- the motion */
+/* ---------------------------------------------------------------- the motion
+   Folding (closing) runs bottom to top: panel 4 lands on 3, 3 on 2, 2 on 1. A panel is
+   hidden at the instant it lands — its visibility delay is its transform delay plus its
+   duration, spelled once with the two variables below. (A sheet folded over lies flat, face
+   up, on the one above it: hiding it 0.2s late left that face showing as a ghost on the
+   brand block, and hiding it early cut the motion short.) --fold-dur and --fold-lag are
+   inherited by the panel's shade, which fades over the same time. */
+:root {
+  --fold-dur: 0.34s;
+  --fold-lag: 0s;
+}
 body.fold-ready .fold__panel--2,
 body.fold-ready .fold__panel--3,
 body.fold-ready .fold__panel--4 {
-  /* closing: the bottom panel folds first. Hidden only once it has landed. */
   transition:
-    transform 0.5s var(--fold-ease),
-    visibility 0s linear 0.78s;
+    transform var(--fold-dur) var(--fold-ease) var(--fold-lag),
+    visibility 0s linear calc(var(--fold-lag) + var(--fold-dur));
 }
 body.fold-ready .fold__panel--4 {
-  transition-delay: 0s, 0.7s;
+  --fold-lag: 0s;
 }
 body.fold-ready .fold__panel--3 {
-  transition-delay: 0.09s, 0.78s;
+  --fold-lag: 0.06s;
 }
 body.fold-ready .fold__panel--2 {
-  transition-delay: 0.18s, 0.86s;
+  --fold-lag: 0.12s;
 }
 body.fold-ready .fold__panel > .fold__shade {
-  transition: opacity 0.5s ease;
+  transition: opacity var(--fold-dur) ease;
 }
 
+/* Opening is slower and top-down; the panel shows at once and then turns. */
 @media (max-width: 1023px) {
   body.fold-ready.sidebar-open .fold__panel--2,
   body.fold-ready.sidebar-open .fold__panel--3,
   body.fold-ready.sidebar-open .fold__panel--4 {
+    --fold-dur: 0.62s;
     transition:
-      transform 0.62s var(--fold-ease),
+      transform var(--fold-dur) var(--fold-ease) var(--fold-lag),
       visibility 0s;
   }
   body.fold-ready.sidebar-open .fold__panel--2 {
-    transition-delay: 0.1s, 0s;
+    --fold-lag: 0.1s;
   }
   body.fold-ready.sidebar-open .fold__panel--3 {
-    transition-delay: 0.22s, 0s;
+    --fold-lag: 0.22s;
   }
   body.fold-ready.sidebar-open .fold__panel--4 {
-    transition-delay: 0.34s, 0s;
+    --fold-lag: 0.34s;
   }
 }
 @media (min-width: 1024px) {
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--2,
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--3,
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--4 {
+    --fold-dur: 0.62s;
     transition:
-      transform 0.62s var(--fold-ease),
+      transform var(--fold-dur) var(--fold-ease) var(--fold-lag),
       visibility 0s;
   }
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--2 {
-    transition-delay: 0.1s, 0s;
+    --fold-lag: 0.1s;
   }
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--3 {
-    transition-delay: 0.22s, 0s;
+    --fold-lag: 0.22s;
   }
   body.fold-ready:not(.sidebar-collapsed) .fold__panel--4 {
-    transition-delay: 0.34s, 0s;
+    --fold-lag: 0.34s;
   }
 }
 
@@ -242,18 +268,27 @@ body.fold-ready .fold__panel > .fold__shade {
   body.sidebar-open #navbar {
     pointer-events: auto;
   }
+  #navbar::after {
+    content: none;
+  }
+  /* Closed, the sheet is turned exactly edge-on (-90deg about the masthead's bottom edge,
+     which is where the perspective's eye sits), so it is a line, not a sliver. At -100deg it
+     showed its reverse as a paper tongue across the masthead. */
   .fold__panel--1 {
-    transform: rotateX(-100deg);
+    transform: rotateX(-90deg);
     visibility: hidden;
   }
   body.sidebar-open .fold__panel--1 {
     transform: none;
     visibility: visible;
   }
+  /* Closing: the concertina lands first (panel 2 at 0.46s), then the whole stack swings up
+     under the masthead (0.38s + 0.36s = 0.74s) and goes at that instant — nothing nested in
+     it is still visible by then, which is what used to leave folded paper over the strip. */
   body.fold-ready .fold__panel--1 {
     transition:
-      transform 0.5s var(--fold-ease) 0.12s,
-      visibility 0s linear 0.62s;
+      transform 0.36s var(--fold-ease) 0.38s,
+      visibility 0s linear 0.74s;
   }
   body.fold-ready.sidebar-open .fold__panel--1 {
     transition:
@@ -322,6 +357,10 @@ body.fold-ready .fold__panel > .fold__shade {
 .sidebar__brand em {
   color: var(--accent);
   font-style: normal;
+}
+/* the folded rail's "SAC" — desktop only (see "desktop rail") */
+.sidebar__brand-short {
+  display: none;
 }
 .sidebar__tagline {
   color: var(--ink-muted);
@@ -514,9 +553,16 @@ body.sidebar-open .sidebar-scrim {
   outline: 2px solid var(--accent);
   outline-offset: 0;
 }
-.navbar-corner:hover,
+/* Lift on hover only where hovering exists: on a touch screen :hover sticks to the corner
+   after a tap, which left it peeled 26deg after the sheet had closed (and 18deg short of
+   flat once it was open). */
 .navbar-corner:focus-visible {
   --peel: 26deg;
+}
+@media (hover: hover) {
+  .navbar-corner:hover {
+    --peel: 26deg;
+  }
 }
 /* stand-in until the layers exist */
 .navbar-corner:not(.is-folded) {
@@ -622,13 +668,24 @@ body.fold-ready .corner__flap {
   body.sidebar-open .navbar-corner {
     --peel: 180deg;
   }
+}
+@media (max-width: 1023px) and (hover: hover) {
   body.sidebar-open .navbar-corner:hover {
     --peel: 162deg;
   }
 }
 
-/* ---------------------------------------------------------------- desktop rail */
+/* ---------------------------------------------------------------- desktop rail
+   Collapsing is two beats: the sheet folds up (panels land by 0.46s), then the rail narrows
+   (--rail-lag later, over --rail-dur) while the brand cross-fades to "SAC". Expanding is the
+   reverse order: the rail widens first and the panels unfold into it. navbar-fold.js reads
+   these two numbers to glide the page along with the rail. None of it runs before
+   body.fold-ready, so a rail restored as folded never animates on load. */
 @media (min-width: 1024px) {
+  :root {
+    --rail-dur: 450ms;
+    --rail-lag: 280ms;
+  }
   .sidebar-scrim {
     display: none;
   }
@@ -636,15 +693,17 @@ body.fold-ready .corner__flap {
   .navbar-corner {
     --mirror: -1;
     left: calc(var(--sidebar-w) - var(--corner));
+  }
+  body.fold-ready #navbar {
+    transition: width var(--rail-dur) var(--fold-ease);
+  }
+  body.fold-ready .navbar-corner {
     transition:
-      left 0.45s var(--fold-ease),
+      left var(--rail-dur) var(--fold-ease),
       transform var(--transition);
   }
   body:not(.sidebar-collapsed) .navbar-corner {
     --peel: 180deg;
-  }
-  body:not(.sidebar-collapsed) .navbar-corner:hover {
-    --peel: 162deg;
   }
 
   /* folded up: only the brand tab remains, and the page reclaims the margin */
@@ -654,23 +713,71 @@ body.fold-ready .corner__flap {
   body.sidebar-collapsed .navbar-corner {
     left: calc(var(--sidebar-collapsed-w) - var(--corner));
   }
-  body.sidebar-collapsed .fold__panel--1 > .fold__sheet {
-    padding: 3.6rem 0 0.9rem;
+  body.fold-ready.sidebar-collapsed #navbar {
+    transition-delay: var(--rail-lag);
   }
-  body.sidebar-collapsed .sidebar__brand {
-    border-bottom: 0;
-    font-size: 0;
-    padding: 0;
-    text-align: center;
+  body.fold-ready.sidebar-collapsed .navbar-corner {
+    transition-delay: var(--rail-lag), 0s;
   }
-  body.sidebar-collapsed .sidebar__brand::before {
+
+  /* The brand block is laid out at the same width in both states, so it is the same height in
+     both: the hinge that panel 2 hangs from used to jump 37px when the rail collapsed (the
+     brand re-wrapped as it narrowed). The sheet clips what spills past the narrower rail. */
+  .sidebar__brand {
+    width: calc(var(--sidebar-w) - 4.6rem);
+  }
+  .sidebar__brand-short {
     color: var(--accent);
-    content: "SAC";
+    display: block;
     font-family: var(--font-display);
     font-size: var(--fs-md);
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    text-align: center;
+    top: 3.6rem;
+    width: var(--sidebar-collapsed-w);
   }
+  /* collapsing: the long name goes while the rail starts to narrow, "SAC" arrives once it has */
+  body.fold-ready .sidebar__brand-full,
+  body.fold-ready .sidebar__tagline {
+    transition: opacity 0.2s ease 0.22s;
+  }
+  body.fold-ready .sidebar__brand {
+    transition: border-color 0.2s ease 0.22s;
+  }
+  body.fold-ready .sidebar__brand-short {
+    transition: opacity 0.2s ease 0.5s;
+  }
+  body.sidebar-collapsed .sidebar__brand-full,
   body.sidebar-collapsed .sidebar__tagline {
-    display: none;
+    opacity: 0;
+  }
+  body.sidebar-collapsed .sidebar__brand {
+    border-bottom-color: transparent;
+  }
+  /* the corner's clearance is padding, and padding cannot shrink below itself: left in place
+     it kept the sheet 74px wide inside a 67px rail — a pale strip past the rail's edge */
+  body.sidebar-collapsed .fold__panel--1 > .fold__sheet {
+    padding-right: 0;
+  }
+  body.sidebar-collapsed .sidebar__brand-short {
+    opacity: 1;
+  }
+  /* expanding: "SAC" leaves at once, the full name returns when the rail is nearly wide */
+  body.fold-ready:not(.sidebar-collapsed) .sidebar__brand-short {
+    transition: opacity 0.12s ease;
+  }
+  body.fold-ready:not(.sidebar-collapsed) .sidebar__brand-full,
+  body.fold-ready:not(.sidebar-collapsed) .sidebar__tagline,
+  body.fold-ready:not(.sidebar-collapsed) .sidebar__brand {
+    transition-delay: 0.3s;
+  }
+}
+@media (min-width: 1024px) and (hover: hover) {
+  body:not(.sidebar-collapsed) .navbar-corner:hover {
+    --peel: 162deg;
   }
 }
 

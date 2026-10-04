@@ -241,6 +241,51 @@ describe("navigation", () => {
   });
 });
 
+describe("loading order", () => {
+  it("keeps the mount's placeholder until the stylesheet is in, then shows the sheet", async () => {
+    // markup first, stylesheet after, was a bare table and bare buttons on the page for the
+    // length of a stylesheet download, followed by a jump when the CSS landed
+    let styled;
+    const loadStyles = () => new Promise((resolve) => (styled = resolve));
+    const { fetchRange } = source([]);
+    initCalendar(mount, { fetchRange, now: NOW, loadStyles });
+    await flush();
+    expect(mount.childElementCount).toBe(0); // :empty — home.css paints "Unfolding the calendar…"
+    expect(mount.querySelector(".cal")).toBeNull();
+
+    styled();
+    await flush();
+    expect(mount.querySelector(".cal")).not.toBeNull();
+    expect(mount.querySelectorAll(".cal__cell")).toHaveLength(42);
+  });
+
+  it("still shows the calendar if the stylesheet loader fails", async () => {
+    const { fetchRange } = source([]);
+    initCalendar(mount, {
+      fetchRange,
+      now: NOW,
+      loadStyles: () => Promise.reject(new Error("offline")),
+    });
+    await flush();
+    expect(mount.querySelectorAll(".cal__cell")).toHaveLength(42);
+  });
+
+  it("is not shown at all if it was destroyed while the stylesheet was loading", async () => {
+    let styled;
+    const { fetchRange } = source([]);
+    const cal = initCalendar(mount, {
+      fetchRange,
+      now: NOW,
+      loadStyles: () => new Promise((resolve) => (styled = resolve)),
+    });
+    await flush(); // the loader has been asked
+    cal.destroy();
+    styled();
+    await flush();
+    expect(mount.querySelector(".cal")).toBeNull();
+  });
+});
+
 describe("failure", () => {
   it("shows a banner, still draws the month, and Try again recovers", async () => {
     let fail = true;
@@ -280,6 +325,31 @@ describe("home page wiring", () => {
   const html = readFileSync(resolve(root, "index.html"), "utf-8");
   const home = readFileSync(resolve(root, "js/pages/home.js"), "utf-8");
   const css = readFileSync(resolve(root, "css/pages/calendar.css"), "utf-8");
+
+  it("reserves the calendar's own height, so it replaces its placeholder without a jump", () => {
+    const homeCss = readFileSync(resolve(root, "css/pages/home.css"), "utf-8");
+    const rem = (query) => {
+      const block = query
+        ? homeCss.match(
+            new RegExp(`@media \\(${query}\\) \\{\\s*\\.cal-mount \\{\\s*min-height: ([\\d.]+)rem`)
+          )
+        : homeCss.match(/\n\.cal-mount \{\s*min-height: ([\d.]+)rem/);
+      return Number(block?.[1]);
+    };
+    // measured on the drawn calendar with no events: 710px, 964px, 811px (at 16px to the rem)
+    expect(rem(null)).toBeGreaterThanOrEqual(44);
+    expect(rem("max-width: 900px")).toBeGreaterThanOrEqual(60);
+    expect(rem("max-width: 640px")).toBeGreaterThanOrEqual(50);
+    // and the placeholder is the mount itself, so it is exactly that tall
+    expect(homeCss).toMatch(/\.cal-mount:empty \{[^}]*display: flex/);
+  });
+
+  it("starts watching for the reader before the archive loads, and loads script + sheet together", () => {
+    expect(home.indexOf("loadCalendarSection();")).toBeLessThan(home.indexOf("loadAssetsMap()"));
+    expect(home).toMatch(
+      /Promise\.all\(\[\s*import\("\.\.\/components\/calendar\.js"\),\s*loadStylesheet\("css\/pages\/calendar\.css"/
+    );
+  });
 
   it("ships a visible mount, not a hidden section waiting for cards", () => {
     expect(html).toContain('id="calendar-mount"');

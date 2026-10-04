@@ -3,6 +3,20 @@
 (function () {
   "use strict";
 
+  // A rail the reader folded up on an earlier page is folded from the first paint. Left to
+  // navbar-fold.js (a module, so after paint) every page opened with the rail wide and then
+  // visibly snapped narrow. The class is the same one the controller keeps; it only adds it.
+  try {
+    if (
+      window.matchMedia("(min-width: 1024px)").matches &&
+      window.localStorage.getItem("sac-sidebar-collapsed") === "1"
+    ) {
+      document.body.classList.add("sidebar-collapsed");
+    }
+  } catch {
+    /* storage blocked or no matchMedia — the controller restores it a moment later */
+  }
+
   const ASSETS = ["css/variables.css", "css/main.css", "js/main.js"];
   const SAFETY_BY_TIER = { low: 8000, medium: 6000, high: 4000 };
   const pre = document.getElementById("preloader");

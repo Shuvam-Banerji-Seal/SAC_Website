@@ -5,7 +5,7 @@
  * the complete SAC index lives on Clubs, while this page carries the lead
  * story, a living picture desk, campus statistics, and current notices.
  */
-import { el, assetUrl, showError } from "../utils/dom.js";
+import { el, assetUrl, showError, loadStylesheet } from "../utils/dom.js";
 import { loadAssetsMap, indexByClub } from "../data.js";
 import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
@@ -175,6 +175,11 @@ export async function initHome() {
   // Static facts: up at once, no archive needed.
   renderCouncilFacts();
 
+  // The calendar needs nothing from the archive, so it starts watching for the reader now.
+  // It used to be set up at the very end, after the 2 MB map and the Book and Board modules:
+  // someone who followed a link straight to the calendar waited for all of them first.
+  loadCalendarSection();
+
   // "Club of the day": from the registry alone, so it is up before the archive; it takes the
   // archive's logo when that arrives (below). Imported on demand — it is below the fold.
   const { initClubSpotlight } = await import("../components/club-spotlight.js");
@@ -242,7 +247,6 @@ export async function initHome() {
   if (ro && main) ro.observe(main);
 
   loadYouTubeSection();
-  loadCalendarSection();
   initScrollSounds();
 }
 
@@ -308,7 +312,12 @@ export function loadCalendarSection() {
   const mount = document.getElementById("calendar-mount");
   if (!mount) return;
   const start = async () => {
-    const { initCalendar } = await import("../components/calendar.js");
+    // The script and its stylesheet download side by side; the calendar then waits for the
+    // sheet before it replaces the placeholder (calendar.js "boot").
+    const [{ initCalendar }] = await Promise.all([
+      import("../components/calendar.js"),
+      loadStylesheet("css/pages/calendar.css", 6000),
+    ]);
     initCalendar(mount);
   };
   if (!("IntersectionObserver" in window)) {
@@ -321,7 +330,7 @@ export function loadCalendarSection() {
       observer.disconnect();
       start();
     },
-    { rootMargin: "400px 0px" }
+    { rootMargin: "800px 0px" }
   );
   observer.observe(mount);
 }

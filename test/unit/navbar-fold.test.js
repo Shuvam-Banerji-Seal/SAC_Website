@@ -264,6 +264,92 @@ describe("controller — desktop", () => {
   });
 });
 
+describe("the page glides with the rail", () => {
+  // jsdom has no layout: report the page's left edge as a function of the rail's state
+  function stubLayout(main) {
+    main.getBoundingClientRect = () => ({
+      left: document.body.classList.contains("sidebar-collapsed") ? 134 : 250,
+    });
+    main.animate = vi.fn();
+  }
+  async function start({ ready = true } = {}) {
+    setViewport(true);
+    const { renderNavbar } = await import("../../js/components/navbar.js");
+    const { setupNavbarFold } = await import("../../js/components/navbar-fold.js");
+    renderNavbar("home");
+    setupNavbarFold();
+    if (ready) vi.advanceTimersByTime(100);
+    const main = document.querySelector("main");
+    stubLayout(main);
+    return main;
+  }
+  const toggle = () => document.getElementById("navbarCorner");
+
+  it("on collapse, starts the page where it was and slides it to where it is, after the fold", async () => {
+    const main = await start();
+    toggle().click();
+    expect(main.animate).toHaveBeenCalledTimes(1);
+    const [frames, options] = main.animate.mock.calls[0];
+    expect(frames).toEqual([{ transform: "translateX(116px)" }, { transform: "none" }]);
+    expect(options.delay).toBe(280); // --rail-lag: the rail waits for the sheet to fold
+    expect(options.duration).toBe(450); // --rail-dur: the same time the rail itself takes
+    expect(options.fill).toBe("backwards"); // holds the old position through the delay
+  });
+
+  it("on expand, goes the other way and starts at once", async () => {
+    localStorage.setItem("sac-sidebar-collapsed", "1");
+    const main = await start();
+    toggle().click();
+    const [frames, options] = main.animate.mock.calls[0];
+    expect(frames[0].transform).toBe("translateX(-116px)");
+    expect(options.delay).toBe(0);
+  });
+
+  it("does not move the page for reduced motion, or before the first paint", async () => {
+    document.documentElement.setAttribute("data-reduce-motion", "on");
+    const calm = await start();
+    toggle().click();
+    expect(calm.animate).not.toHaveBeenCalled();
+
+    vi.resetModules();
+    delete window.__sacSidebarBound;
+    shell();
+    document.documentElement.removeAttribute("data-reduce-motion");
+    const early = await start({ ready: false });
+    toggle().click();
+    expect(early.animate).not.toHaveBeenCalled();
+  });
+
+  it("restores a folded rail before first paint: preloader.js adds the class on a wide screen", () => {
+    const run = () => {
+      document.body.className = "";
+      new Function(readFileSync(resolve(root, "js/preloader.js"), "utf-8"))();
+    };
+    localStorage.setItem("sac-sidebar-collapsed", "1");
+    setViewport(true);
+    run();
+    expect(document.body.classList.contains("sidebar-collapsed")).toBe(true);
+    // a phone has no folded rail, so a stored choice must not touch it
+    setViewport(false);
+    run();
+    expect(document.body.classList.contains("sidebar-collapsed")).toBe(false);
+    // nor does a rail that was left open
+    setViewport(true);
+    localStorage.setItem("sac-sidebar-collapsed", "0");
+    run();
+    expect(document.body.classList.contains("sidebar-collapsed")).toBe(false);
+  });
+
+  it("carries two names for the brand, so the folded rail can cross-fade to SAC", async () => {
+    await start();
+    const brand = document.querySelector(".sidebar__brand");
+    expect(brand.querySelector(".sidebar__brand-full").textContent).toMatch(/SAC\s*Chronicle/);
+    const short = brand.querySelector(".sidebar__brand-short");
+    expect(short.textContent).toBe("SAC");
+    expect(short.getAttribute("aria-hidden")).toBe("true"); // the full name is what is read out
+  });
+});
+
 describe("transitions wait for first paint", () => {
   it("fold-ready is not present until the controller has run, and every transition is behind it", async () => {
     expect(document.body.classList.contains("fold-ready")).toBe(false);
@@ -354,29 +440,103 @@ describe("the CSS contract", () => {
     );
   });
 
+  // seconds, from the rule that sets `prop` on `selector` ("0.34s" -> 0.34)
+  const seconds = (selector, prop) => {
+    const rule = css.match(new RegExp(`${selector} \\{[^}]*?${prop}: ([\\d.]+)s`));
+    return rule ? Number(rule[1]) : NaN;
+  };
+  const closeLag = (n) => seconds(`body\\.fold-ready \\.fold__panel--${n}`, "--fold-lag");
+  const openLag = (n) =>
+    seconds(`body\\.fold-ready\\.sidebar-open \\.fold__panel--${n}`, "--fold-lag");
+  const foldDuration = seconds(":root", "--fold-dur");
+
   it("unfolds top to bottom and folds bottom to top (staggered)", () => {
-    const delay = (sel) =>
-      Number(css.match(new RegExp(`${sel} \\{\\s*transition-delay: ([\\d.]+)s`))?.[1]);
-    const open = "body\\.fold-ready\\.sidebar-open \\.fold__panel--";
-    expect(delay(`${open}2`)).toBeLessThan(delay(`${open}3`));
-    expect(delay(`${open}3`)).toBeLessThan(delay(`${open}4`));
-    const close = "body\\.fold-ready \\.fold__panel--";
-    expect(delay(`${close}4`)).toBeLessThan(delay(`${close}3`));
-    expect(delay(`${close}3`)).toBeLessThan(delay(`${close}2`));
+    expect(openLag(2)).toBeLessThan(openLag(3));
+    expect(openLag(3)).toBeLessThan(openLag(4));
+    expect(closeLag(4)).toBeLessThan(closeLag(3));
+    expect(closeLag(3)).toBeLessThan(closeLag(2));
   });
 
-  it("hides a folded panel only after it has landed, not while it is still moving", () => {
-    expect(css).toMatch(/visibility 0s linear 0\.78s/);
+  it("hides a folded panel at the instant it lands: visibility waits for lag + duration", () => {
+    // spelled once, from the same two variables the transform uses, so they cannot drift
+    expect(css).toMatch(
+      /transform var\(--fold-dur\) var\(--fold-ease\) var\(--fold-lag\),\s*visibility 0s linear calc\(var\(--fold-lag\) \+ var\(--fold-dur\)\)/
+    );
+    // and opening shows it at once
+    expect(css).toMatch(
+      /body\.fold-ready\.sidebar-open \.fold__panel--2,[^{]*\{[^}]*visibility 0s;/
+    );
+  });
+
+  it("on a phone the sheet leaves last, and nothing nested in it outlives it", () => {
+    const rule = css.match(
+      /body\.fold-ready \.fold__panel--1 \{\s*transition:\s*transform ([\d.]+)s var\(--fold-ease\) ([\d.]+)s,\s*visibility 0s linear ([\d.]+)s/
+    );
+    expect(rule, "closing transition of panel 1").not.toBeNull();
+    const [dur, delay, hideAt] = rule.slice(1).map(Number);
+    expect(hideAt).toBeCloseTo(delay + dur, 5); // gone exactly when its swing ends
+    for (const n of [2, 3, 4]) {
+      // every folded panel has landed (and been hidden) before the sheet itself goes
+      expect(closeLag(n) + foldDuration).toBeLessThan(hideAt);
+    }
+  });
+
+  it("the closed sheet is turned exactly edge-on, so it is a line and not a paper tongue", () => {
+    expect(css).toMatch(/\.fold__panel--1 \{\s*transform: rotateX\(-90deg\);\s*visibility: hidden/);
+  });
+
+  it("nothing of the folded stack shows above the hinge line (the masthead's edge)", () => {
+    expect(css).toMatch(/\.fold \{[^}]*clip-path: inset\(0 /);
   });
 
   it("the dog-ear's flap turns through 180deg about the fold line when the nav is open", () => {
     expect(css).toContain("transform: rotate3d(-1, 1, 0, var(--peel))");
     expect(css).toMatch(/body\.sidebar-open \.navbar-corner \{\s*--peel: 180deg/);
     expect(css).toMatch(/body:not\(\.sidebar-collapsed\) \.navbar-corner \{\s*--peel: 180deg/);
-    // hover lifts it a little way
+    // keyboard focus lifts it a little way, and so does hover — where hovering exists
+    expect(css).toMatch(/\.navbar-corner:focus-visible \{\s*--peel: 26deg/);
+    expect(css).toMatch(/\(hover: hover\) \{\s*\.navbar-corner:hover \{\s*--peel: 26deg/);
+  });
+
+  it("lifts the corner on hover only where hovering exists (a tap must not leave it peeled)", () => {
+    // take out every (hover: hover) block; no .navbar-corner:hover may remain outside them
+    let rest = css;
+    for (;;) {
+      const at = rest.search(/@media[^{]*\(hover: hover\)[^{]*\{/);
+      if (at < 0) break;
+      let depth = 0;
+      let end = rest.indexOf("{", at);
+      for (let i = end; i < rest.length; i++) {
+        if (rest[i] === "{") depth++;
+        if (rest[i] === "}" && --depth === 0) {
+          end = i;
+          break;
+        }
+      }
+      rest = rest.slice(0, at) + rest.slice(end + 1);
+    }
+    expect(css).toContain(".navbar-corner:hover");
+    expect(rest).not.toContain(".navbar-corner:hover");
+  });
+
+  it("the desktop rail does not animate until fold-ready, and narrows after the fold", () => {
+    expect(css).toMatch(/body\.fold-ready #navbar \{\s*transition: width var\(--rail-dur\)/);
     expect(css).toMatch(
-      /\.navbar-corner:hover,\s*\.navbar-corner:focus-visible \{\s*--peel: 26deg/
+      /body\.fold-ready\.sidebar-collapsed #navbar \{\s*transition-delay: var\(--rail-lag\)/
     );
+    const ms = (name) => Number(css.match(new RegExp(`${name}: (\\d+)ms`))?.[1]);
+    // the rail starts to narrow only once the stack is mostly folded up…
+    expect(ms("--rail-lag")).toBeGreaterThan(closeLag(2) * 1000 - 200);
+    // …and the base #navbar rule carries no transition of its own (that ran on page load)
+    const base = css.match(/\n#navbar \{[^}]*\}/)?.[0] ?? "";
+    expect(base).not.toContain("transition");
+  });
+
+  it("lays the brand out at one width in both states, so the hinge never moves", () => {
+    expect(css).toMatch(/\.sidebar__brand \{\s*width: calc\(var\(--sidebar-w\) - 4\.6rem\)/);
+    // the old text swap (font-size: 0 plus ::before) snapped the block's height by 37px
+    expect(css).not.toMatch(/sidebar__brand::before/);
+    expect(css).not.toMatch(/body\.sidebar-collapsed \.sidebar__brand \{[^}]*font-size: 0/);
   });
 
   it("mirrors the corner on desktop, where it sits at the rail's top-right", () => {

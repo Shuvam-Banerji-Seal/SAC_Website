@@ -515,10 +515,14 @@
 .notebook-section {
   margin: 2.5rem 0;
 }
-/* Space held for the calendar until it is scrolled near and loaded, so the
-   page below it never jumps. The placeholder is replaced, not hidden. */
+/* Space held for the calendar until it is scrolled near and loaded, so the page below it
+   never jumps. The placeholder is replaced, not hidden. The heights are the calendar's own,
+   measured when it is drawn with no events (4 Oct 2026): 710px beside its agenda from 901px
+   up, 811px stacked on a phone, 964px stacked between 641 and 900px. They were 544px and
+   288px, so the page below dropped 166-523px the moment the calendar arrived. Event rows
+   make the agenda taller still (+90px wide, +400px stacked); that is data, not layout. */
 .cal-mount {
-  min-height: 34rem;
+  min-height: 44.5rem;
 }
 .cal-mount:empty {
   align-items: center;
@@ -537,10 +541,12 @@
 }
 @media (max-width: 900px) {
   .cal-mount {
-    min-height: 0;
+    min-height: 60rem;
   }
-  .cal-mount:empty {
-    min-height: 18rem;
+}
+@media (max-width: 640px) {
+  .cal-mount {
+    min-height: 50.5rem;
   }
 }
 

@@ -33,6 +33,44 @@ const prefersLessMotion = () =>
   document.documentElement.getAttribute("data-reduce-motion") === "on" ||
   Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 
+/** A time custom property ("450ms" or "0.45s") in milliseconds. */
+function cssMs(name, fallback) {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const n = parseFloat(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return raw.endsWith("ms") ? n : n * 1000;
+}
+
+/**
+ * Fold or unfold the desktop rail and let the page travel with it.
+ *
+ * The page's left margin is a function of the rail's width, so it changes the moment the
+ * class does — while the rail takes ~0.7s to follow. The page therefore jumped left (or right)
+ * at once, and for the first moments of a collapse the headline sat under the still-wide rail.
+ * Instead we let layout land where it will, then slide each block from where it was to where
+ * it is (FLIP) over the same time and delay the rail's own transition uses (--rail-dur,
+ * --rail-lag in components.css). Text re-wraps once, at the start; nothing else jumps.
+ */
+function glidePage(change, collapsing) {
+  const blocks = [...document.querySelectorAll("main, .site-footer")];
+  const before = blocks.map((b) => b.getBoundingClientRect().left);
+  change();
+  const animated = document.body.classList.contains("fold-ready") && !prefersLessMotion();
+  if (!animated) return;
+  const duration = cssMs("--rail-dur", 450);
+  const delay = collapsing ? cssMs("--rail-lag", 280) : 0;
+  blocks.forEach((block, i) => {
+    const dx = before[i] - block.getBoundingClientRect().left;
+    if (typeof block.animate !== "function" || Math.abs(dx) < 1) return;
+    block.animate([{ transform: `translateX(${dx}px)` }, { transform: "none" }], {
+      duration,
+      delay,
+      easing: "cubic-bezier(0.22, 0.8, 0.28, 1)",
+      fill: "backwards",
+    });
+  });
+}
+
 export function setupNavbarFold() {
   const toggle = $("#navbarCorner");
   const navbar = document.getElementById("navbar");
@@ -96,7 +134,7 @@ export function setupNavbarFold() {
     syncInert();
   };
   const setCollapsed = (collapsed) => {
-    document.body.classList.toggle("sidebar-collapsed", collapsed);
+    glidePage(() => document.body.classList.toggle("sidebar-collapsed", collapsed), collapsed);
     try {
       localStorage.setItem("sac-sidebar-collapsed", collapsed ? "1" : "0");
     } catch {}

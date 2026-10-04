@@ -93,7 +93,9 @@ function explainBusyMode() {
   );
 }
 
-const ensureStyles = () => loadStylesheet("css/pages/calendar.css");
+// Waits up to 6s, not the default 1.5s: past the guard the sheet would arrive after the markup
+// is shown, which is the unstyled flash this ordering exists to prevent.
+const ensureStyles = () => loadStylesheet("css/pages/calendar.css", 6000);
 
 /**
  * @param {HTMLElement} mount
@@ -190,7 +192,10 @@ export function initCalendar(mount, options = {}) {
     agenda,
     note
   );
-  mount.replaceChildren(root);
+  // The sheet is built here but not shown (see "boot"): the mount keeps its styled
+  // "Unfolding the calendar…" placeholder until calendar.css is in. Showing this markup
+  // first put a bare table, buttons and headings on the page until the stylesheet arrived,
+  // and the page jumped when it did.
   const stage = sheet.querySelector(".cal__stage");
 
   /* ----------------------------------------------------------------- data */
@@ -646,7 +651,13 @@ export function initCalendar(mount, options = {}) {
 
   /* ----------------------------------------------------------------- boot */
   paintAll(null);
-  Promise.all([loadStyles(), loadUpcoming()])
+  const styled = Promise.resolve()
+    .then(loadStyles)
+    .catch(() => {});
+  styled.then(() => {
+    if (!destroyed) mount.replaceChildren(root);
+  });
+  Promise.all([styled, loadUpcoming()])
     .then(() => show(year, month))
     .catch(() => show(year, month));
 

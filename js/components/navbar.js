@@ -100,11 +100,13 @@ export function renderNavbar(activePage) {
   mount.setAttribute("aria-label", "Primary");
 
   // Brand
+  // Two names: the long one, and the "SAC" the folded desktop rail cross-fades to (a text
+  // swap done with font-size:0 and ::before could not fade, and snapped the block's height).
   const brand = el(
     "div",
     { class: "sidebar__brand" },
-    "The SAC ",
-    el("em", {}, "Chronicle"),
+    el("span", { class: "sidebar__brand-full" }, "The SAC ", el("em", {}, "Chronicle")),
+    el("span", { class: "sidebar__brand-short", "aria-hidden": "true" }, "SAC"),
     el("p", { class: "sidebar__tagline" }, "IISER Kolkata · Vol. 01")
   );
 

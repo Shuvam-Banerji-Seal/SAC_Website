@@ -31,23 +31,24 @@ export function clear(node) {
 /**
  * Load a stylesheet that only some visitors need (the calendar's, the search palette's)
  * once, and resolve when it is usable. `path` goes through pageUrl(). Never rejects and
- * never waits more than 1.5 s: a slow stylesheet must not hold a feature hostage.
+ * never waits longer than `timeout` ms: a hung request must not hold a feature hostage.
+ *
+ * A link that is already in the document is only "done" if the browser has built its sheet
+ * (`link.sheet`). One that is still downloading used to count as loaded, so a second caller —
+ * the calendar, asking while its prefetch was in flight — drew its markup unstyled.
  */
-export function loadStylesheet(path) {
+export function loadStylesheet(path, timeout = 1500) {
   const href = pageUrl(path);
-  if (
-    [...document.querySelectorAll('link[rel="stylesheet"]')].some(
-      (l) => l.getAttribute("href") === href
-    )
-  ) {
-    return Promise.resolve();
-  }
+  const existing = [...document.querySelectorAll('link[rel="stylesheet"]')].find(
+    (l) => l.getAttribute("href") === href
+  );
+  if (existing?.sheet) return Promise.resolve();
   return new Promise((resolve) => {
-    const link = el("link", { rel: "stylesheet", href });
+    const link = existing || el("link", { rel: "stylesheet", href });
     link.addEventListener("load", resolve, { once: true });
     link.addEventListener("error", resolve, { once: true });
-    document.head.append(link);
-    setTimeout(resolve, 1500);
+    if (!existing) document.head.append(link);
+    setTimeout(resolve, timeout);
   });
 }
 
