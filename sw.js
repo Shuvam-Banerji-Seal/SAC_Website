@@ -14,7 +14,7 @@
  * is actually used.
  */
 
-const CACHE_NAME = "sac-v54";
+const CACHE_NAME = "sac-v55";
 
 /* The app shell: the pages' shared CSS and the modules every page loads.
  * Generated from the real import graph — run `node tools/sync-pages.mjs`

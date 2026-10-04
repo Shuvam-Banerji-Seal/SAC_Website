@@ -18,7 +18,9 @@ build step and no runtime dependencies.
 - **Search** — press `/` (or Ctrl/⌘ K, or the sidebar's Search button) to find any club or
   page by name, by what it does ("telescope"), or by what you are into. It loads only when used.
 - **Club pages** (32) — office bearers, events, achievements, galleries, and a
-  jump bar built from the page's own sections.
+  jump bar built from the page's own sections. Each runs under its own newspaper desk
+  ("The Chess Column", "The Sky Desk") with the ink, line drawing, border pattern, bullets,
+  photo mounts and title type of what the club does.
 - **Events, Gallery, Campus Life** — the photographic archive, grouped and searchable.
 - **The SAC Calendar** — a month view backed by Google Calendar. It shows booked
   time slots while the calendar is shared as free/busy, and titles, places and

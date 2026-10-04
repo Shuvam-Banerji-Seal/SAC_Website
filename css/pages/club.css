@@ -1,11 +1,50 @@
+/* =====================================================================
+   A club's page
+   ---------------------------------------------------------------------
+   Each page is dressed by css/pages/club-themes.css: the club's ink, a line drawing, a
+   pattern for rules, the shape of its bullets, how its photographs are mounted, the cut of its
+   title — chosen in the registry, written onto <body> by tools/sync-pages.mjs. This file is the
+   furniture. It reads those variables and falls back to the site's own accent and rules where
+   a page has no theme (var(--x, fallback)), so an unthemed page looks as it always did.
+   ===================================================================== */
 .club-detail {
+  counter-reset: club-section;
   max-width: 1060px;
 }
 
+/* ------------------------------------------------------------------ masthead */
 .club-detail__header {
   border-bottom: var(--rule-double);
+  isolation: isolate;
   margin-bottom: 1.5rem;
   padding-bottom: 0.8rem;
+  position: relative;
+}
+/* the club's drawing, large and faint behind the title; it takes the ink as a mask, so the
+   dark theme's lighter ink comes with it */
+.club-detail__header::before {
+  -webkit-mask: var(--club-art, none) center / contain no-repeat;
+  mask: var(--club-art, none) center / contain no-repeat;
+  aspect-ratio: 1;
+  background: var(--club-ink);
+  content: "";
+  opacity: 0.13;
+  pointer-events: none;
+  position: absolute;
+  right: clamp(0rem, 3vw, 2.5rem);
+  top: 3rem;
+  transform: rotate(-4deg);
+  width: clamp(9rem, 25vw, 18rem);
+  z-index: -1;
+}
+/* the club's pattern, under the masthead */
+.club-detail__header::after {
+  background: var(--band, none);
+  content: "";
+  display: block;
+  height: var(--band-h, 0);
+  margin-top: 0.7rem;
+  opacity: 0.7;
 }
 
 .club-detail__identity {
@@ -13,6 +52,7 @@
   display: grid;
   gap: clamp(1rem, 4vw, 2.5rem);
   grid-template-columns: minmax(112px, 180px) minmax(0, 1fr);
+  position: relative;
 }
 
 .club-detail__logo {
@@ -27,7 +67,7 @@
 }
 
 .club-detail__logo::after {
-  border: 1px solid var(--accent);
+  border: 1px solid var(--club-ink);
   content: "";
   inset: 0.35rem;
   pointer-events: none;
@@ -45,7 +85,7 @@
 }
 
 .club-detail__logo-fallback {
-  color: var(--accent);
+  color: var(--club-ink);
   font-family: var(--font-display);
   font-size: clamp(2rem, 7vw, 4rem);
   line-height: 0.9;
@@ -65,9 +105,16 @@
 .club-detail__identity-copy {
   min-width: 0;
 }
+/* keep a long title clear of the postmark (74px, in the corner) */
+@media (min-width: 721px) {
+  .club-detail__identity-copy {
+    padding-right: 5rem;
+  }
+}
 
+/* the desk the page runs under — "The Chess Column" */
 .club-detail__eyebrow {
-  color: var(--accent);
+  color: var(--club-ink);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   letter-spacing: 0.1em;
@@ -76,21 +123,38 @@
 }
 
 .club-detail__title {
-  font-family: var(--font-body);
-  font-size: clamp(2.2rem, 7vw, 5.5rem);
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+  font-family: var(--title-font, var(--font-body));
+  font-size: var(--title-size, clamp(2.2rem, 7vw, 5.5rem));
+  font-style: var(--title-style, normal);
+  font-synthesis: none;
+  font-weight: var(--title-weight, 700);
+  letter-spacing: var(--title-ls, -0.045em);
+  line-height: var(--title-lh, 0.92);
   max-width: 18ch;
   overflow-wrap: anywhere;
-  text-transform: none;
+  text-transform: var(--title-case, none);
 }
 
 .club-detail__title::after {
-  border-bottom: var(--rule-double);
+  border-bottom: 4px double var(--club-ink, var(--rule));
   content: "";
   display: block;
   margin-top: 0.7rem;
   width: min(100%, 13rem);
+}
+
+/* one line of spirit under the title */
+.club-detail__tag {
+  border-left: 3px solid var(--club-ink);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-style: italic;
+  line-height: 1.25;
+  margin: 0.9rem 0 0;
+  max-width: 34ch;
+  padding-left: 0.75rem;
+  text-wrap: balance;
 }
 
 .club-detail__stats {
@@ -111,7 +175,7 @@
 }
 
 .club-detail__stats span::before {
-  color: var(--accent);
+  color: var(--club-ink);
   content: "·";
   margin-right: 0.4rem;
 }
@@ -122,20 +186,26 @@
 }
 
 .club-detail__stats .club-detail__source {
-  color: var(--accent);
+  color: var(--club-ink);
 }
 
-.club-detail__body {
-  column-count: 2;
-  column-gap: 2rem;
-  column-rule: 1px solid var(--paper-edge);
-  hyphens: auto;
+/* ------------------------------------------------------------------ sections
+   Text sections are laid out as the margin-heading spreads of a broadsheet: the heading
+   stands in a narrow left column (and follows you down a long section), the text runs in one
+   measure beside it. They used to be two newspaper columns, which split a heading from its list
+   (Objectives 1-3 under the title, 4-7 across the gutter). Below 900px the heading sits above. */
+.club-detail__body,
+.club-detail__section {
   margin-bottom: 1.5rem;
-  text-align: justify;
 }
-
+.club-detail__body {
+  hyphens: auto;
+}
+.club-detail__body p {
+  text-align: left;
+}
 .club-detail__body p:first-child::first-letter {
-  color: var(--accent);
+  color: var(--club-ink);
   float: left;
   font-size: 3.8em;
   font-weight: 700;
@@ -149,21 +219,164 @@
   padding-top: 0.8rem;
 }
 
-.club-detail__section h2,
+/* every section's heading: its number, its words, the club's band under them */
+.club-detail__body > h2,
+.club-detail__section > h2,
 .club-detail__section-title,
 .club-detail__image-block h2 {
+  border-bottom: 0;
   font-family: var(--font-body);
-  border-bottom: 2px solid var(--rule);
   font-size: var(--fs-xl);
   letter-spacing: -0.025em;
-  padding-bottom: 0.35rem;
+  line-height: 1.05;
+  padding-bottom: 0;
   text-transform: none;
+  text-wrap: balance;
+}
+.club-detail__body > h2::after,
+.club-detail__section > h2::after,
+.club-detail__section-title::after,
+.club-detail__image-block h2::after {
+  background: var(--band, none);
+  content: "";
+  display: block;
+  height: var(--band-h, 0);
+  margin-top: 0.7rem;
+  opacity: 0.55;
+}
+/* the numbered headings are the page's own (a gallery's heading arrives with its photographs,
+   and must not renumber the ones already on screen) */
+.club-detail__body > h2::before,
+.club-detail__section > h2::before {
+  color: var(--club-ink);
+  content: counter(club-section, decimal-leading-zero);
+  counter-increment: club-section;
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.16em;
+  margin-bottom: 0.4rem;
+}
+/* with no band, the numbered headings keep a plain rule */
+.club-detail__section > h2,
+.club-detail__image-block h2,
+.club-detail__section-title {
+  border-bottom: 2px solid var(--rule);
+}
+body[data-band] .club-detail__section > h2,
+body[data-band] .club-detail__image-block h2,
+body[data-band] .club-detail__section-title {
+  border-bottom: 0;
+}
+
+@media (min-width: 900px) {
+  .club-detail__body {
+    column-gap: clamp(1.75rem, 3.5vw, 3rem);
+    display: grid;
+    grid-template-columns: minmax(9.5rem, 12.5rem) minmax(0, 1fr);
+    /* rows are explicit so the heading can span them all (and stay put while the text
+       scrolls); gaps are margins, because empty rows would each add a gap */
+    grid-template-rows: repeat(24, auto);
+  }
+  .club-detail__body > * {
+    grid-column: 2;
+    margin-bottom: 0.9rem;
+    margin-top: 0;
+  }
+  .club-detail__body > h2 {
+    align-self: start;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    margin-bottom: 0;
+    position: sticky;
+    top: 5.25rem;
+  }
+  .club-detail__body > h2 {
+    font-size: var(--fs-lg);
+  }
+  /* a section with no heading (the introduction) names itself in the margin */
+  .club-detail__body:not(:has(> h2))::before {
+    align-self: start;
+    border-bottom: var(--band-h, 0) solid transparent;
+    color: var(--club-ink);
+    content: "The club";
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    grid-column: 1;
+    grid-row: 1 / -1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .club-detail__body > h3 {
+    margin-top: 0.6rem;
+  }
+}
+
+.club-detail__body h3 {
+  color: var(--club-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.14em;
+  margin: 1.2rem 0 0.4rem;
+  text-transform: uppercase;
+}
+
+/* ---- the objectives: a numbered list, the numerals in the club's ink */
+.club-detail__body ol:not([class]) {
+  counter-reset: club-item;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.club-detail__body ol:not([class]) > li {
+  align-items: baseline;
+  border-bottom: 1px solid var(--ink-rule);
+  counter-increment: club-item;
+  display: grid;
+  gap: 0.2rem 0.9rem;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  padding: 0.7rem 0;
+}
+.club-detail__body ol:not([class]) > li:first-child {
+  border-top: 1px solid var(--ink-rule);
+}
+.club-detail__body ol:not([class]) > li::before {
+  color: var(--club-ink);
+  content: counter(club-item, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+/* ---- the activities: bullets cut to the club's shape */
+.club-detail__body ul:not([class]) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.club-detail__body ul:not([class]) > li {
+  border-bottom: 1px dotted var(--ink-rule);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  position: relative;
+}
+.club-detail__body ul:not([class]) > li::before {
+  background: var(--bullet-bg, var(--club-ink));
+  border: var(--bullet-border, 0);
+  border-radius: var(--bullet-radius, 0);
+  clip-path: var(--bullet-clip, none);
+  content: "";
+  height: 0.62em;
+  left: 0.1rem;
+  position: absolute;
+  top: 0.95em;
+  width: 0.62em;
 }
 
 .club-detail__image-block {
   margin: 2rem 0;
 }
 
+/* ---- the office bearers' table */
 .club-detail__table-scroll {
   border: 1px solid var(--ink-rule);
   break-inside: avoid;
@@ -173,7 +386,7 @@
 }
 
 .club-detail__table-scroll:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--club-ink, var(--accent));
   outline-offset: 2px;
 }
 
@@ -181,13 +394,43 @@
   margin: 0;
   min-width: 640px;
 }
+.club-detail .ob-table th {
+  background: color-mix(in srgb, var(--club-ink) 12%, var(--paper-deep));
+  border-bottom: 2px solid var(--club-ink);
+}
+.club-detail .ob-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--club-ink) 4%, transparent);
+}
+.club-detail .ob-role {
+  border: 1px solid currentColor;
+  color: var(--club-ink);
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+}
+
+@media (max-width: 899px) {
+  /* the number sits beside the heading rather than above it, to spend less height */
+  .club-detail__body > h2,
+  .club-detail__section > h2 {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.7rem;
+  }
+  .club-detail__body > h2::before,
+  .club-detail__section > h2::before {
+    margin-bottom: 0;
+  }
+  .club-detail__body > h2::after,
+  .club-detail__section > h2::after {
+    flex-basis: 100%;
+  }
+  .club-detail__body > h2 {
+    margin-bottom: 0.8rem;
+  }
+}
 
 @media (max-width: 720px) {
-  .club-detail__body {
-    column-count: 1;
-    text-align: left;
-  }
-
   .club-detail__identity {
     align-items: start;
     grid-template-columns: 88px minmax(0, 1fr);
@@ -207,7 +450,12 @@
   }
 
   .club-detail__title {
-    font-size: clamp(1.8rem, 9vw, 3.4rem);
+    font-size: var(--title-size-sm, clamp(1.8rem, 9vw, 3.4rem));
+  }
+  .club-detail__header::before {
+    right: -1rem;
+    top: 4rem;
+    width: 11rem;
   }
 }
 
@@ -235,24 +483,34 @@
   }
 }
 
-/* Featured-moments strip in the club identity header */
+/* ------------------------------------------------------------- photographs
+   The strip of featured moments in the masthead. Each print sits in the club's mount
+   (club-themes.css: mat, polaroid, film, viewfinder, court, window): --fp-* is the mount's
+   padding and the picture is inset by exactly that, whatever the picture's own shape. */
 .club-hero-strip {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.75rem;
   margin: 1rem 0 0;
 }
 .club-hero-strip__item {
-  background: var(--paper-deep);
-  border: 1px solid var(--ink);
+  background: var(--frame-bg, var(--paper-deep));
+  border: var(--frame-border, 1px solid var(--ink));
+  box-shadow: var(--frame-shadow, none);
   cursor: zoom-in;
   flex: 1 1 0;
   min-width: 0;
-  overflow: hidden;
-  padding: 0;
+  padding: var(--fp-t, 0) var(--fp-r, 0) var(--fp-b, 0) var(--fp-l, 0);
   position: relative;
+  transform: rotate(var(--tilt, 0deg));
   transition:
     transform var(--transition),
     box-shadow var(--transition);
+}
+.club-hero-strip__item:nth-child(odd) {
+  --tilt: var(--frame-tilt-a, 0deg);
+}
+.club-hero-strip__item:nth-child(even) {
+  --tilt: var(--frame-tilt-b, 0deg);
 }
 .club-hero-strip__item.is-lead {
   flex: 2.2 1 0;
@@ -262,23 +520,38 @@
   display: block;
   height: auto;
   object-fit: cover;
+  outline: var(--frame-img-edge, none);
   width: 100%;
 }
 /* The lead photo sets the strip's height; the smaller ones are stretched to match it.
    Their images fill that frame — at their own 16:10 they left a blank band above. */
 .club-hero-strip__item:not(.is-lead) img {
   aspect-ratio: auto;
-  height: 100%;
-  inset: 0;
+  height: calc(100% - var(--fp-t, 0px) - var(--fp-b, 0px));
+  inset: var(--fp-t, 0) var(--fp-r, 0) var(--fp-b, 0) var(--fp-l, 0);
   position: absolute;
+  width: calc(100% - var(--fp-l, 0px) - var(--fp-r, 0px));
 }
-.club-hero-strip__item:hover {
-  box-shadow: 3px 3px 0 var(--paper-edge);
-  transform: translateY(-2px);
+/* what the mount adds over the print: tape, sprocket holes, corner marks, a title bar */
+.club-hero-strip__item::before {
+  background: var(--frame-deco, none);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+@media (hover: hover) {
+  .club-hero-strip__item:hover {
+    box-shadow:
+      3px 3px 0 var(--paper-edge),
+      var(--frame-shadow, 0 0 0 transparent);
+    transform: rotate(var(--tilt, 0deg)) translateY(-2px);
+  }
 }
 .club-hero-strip__item:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--club-ink, var(--accent));
+  outline-offset: 3px;
 }
 .club-hero-strip__item::after {
   /* fixed light ink: sits directly on the photo in BOTH themes */
@@ -286,9 +559,10 @@
   content: "✦";
   font-size: 0.7rem;
   position: absolute;
-  right: 0.45rem;
+  right: calc(var(--fp-r, 0px) + 0.45rem);
   text-shadow: 0 1px 3px rgba(24, 20, 16, 0.85);
-  top: 0.35rem;
+  top: calc(var(--fp-t, 0px) + 0.35rem);
+  z-index: 3;
 }
 @media (max-width: 720px) {
   .club-hero-strip {
@@ -302,7 +576,9 @@
   .club-hero-strip__item:not(.is-lead) img {
     aspect-ratio: 16 / 10;
     height: auto;
+    inset: auto;
     position: static;
+    width: 100%;
   }
 }
 
@@ -645,4 +921,87 @@
 }
 .club-pager__next:hover span::after {
   content: " →";
+}
+
+/* ------------------------------------------------------- the club's ink on shared parts */
+.club-detail .postmark {
+  border-color: var(--club-ink);
+  color: var(--club-ink);
+  right: 0.5rem;
+  top: 0.3rem;
+}
+.club-detail .postmark::after {
+  border-color: var(--club-ink);
+}
+.club-detail .postmark__lines {
+  border-block-color: var(--club-ink);
+}
+.club-detail .club-action--primary {
+  background: var(--club-ink);
+  border-color: var(--club-ink);
+  color: var(--paper-soft);
+}
+.club-detail .club-action--primary:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.club-detail .crumbs__list li + li::before,
+.club-detail .person__role {
+  color: var(--club-ink);
+}
+.club-detail .section-nav__chip:hover {
+  border-color: var(--club-ink);
+}
+.club-detail .section-nav__chip.is-active {
+  background: var(--club-ink);
+  border-color: var(--club-ink);
+  color: var(--paper-soft);
+}
+.club-pager__related a:hover {
+  border-color: var(--club-ink);
+}
+
+/* ------------------------------------------------------------------- motion
+   The drawing is inked in as the page opens and then drifts a little slower than the text, so
+   the sheet has depth. Both are transform/translate only; both stand down for reduced motion. */
+@keyframes club-art-in {
+  from {
+    opacity: 0;
+    transform: rotate(-14deg) scale(0.9);
+  }
+  to {
+    opacity: 0.13;
+    transform: rotate(-4deg) scale(1);
+  }
+}
+@keyframes club-art-drift {
+  to {
+    translate: 0 4.5rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduce-motion="on"]) .club-detail__header::before {
+    animation: club-art-in 1s var(--ease-ink, ease-out) 0.15s both;
+  }
+  @supports (animation-timeline: scroll()) {
+    html:not([data-reduce-motion="on"]) .club-detail__header::before {
+      animation:
+        club-art-in 1s var(--ease-ink, ease-out) 0.15s both,
+        club-art-drift linear both;
+      animation-range:
+        normal,
+        0 70vh;
+      animation-timeline: auto, scroll(root);
+    }
+  }
+}
+
+@media print {
+  .club-detail__header::before,
+  .club-detail__header::after,
+  .club-detail__body > h2::after,
+  .club-detail__section > h2::after {
+    display: none;
+  }
 }

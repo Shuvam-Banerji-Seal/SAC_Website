@@ -147,7 +147,7 @@ address so a filtered view can be shared. The rules are pure (`utils/club-filter
 
 | Generator | Writes | Guarded by |
 |---|---|---|
-| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js`; from the club registry, each club page's breadcrumb and "more clubs" pager and the interest chips on the home page and the Clubs directory | `load-budget.test.js` runs it in `--check` mode; `club-pages.test.js` and `home-features.test.js` pin the club and home blocks to the generator |
+| `tools/sync-pages.mjs` | the `modulepreload` block in all 38 pages; the app-shell list in `sw.js`; from the club registry, each club page's breadcrumb and "more clubs" pager, its `<body data-motif data-band data-bullet data-frame data-type>` and its `club-themes.css` link, and the interest chips on the home page and the Clubs directory | `load-budget.test.js` runs it in `--check` mode; `club-pages.test.js`, `club-themes.test.js` and `home-features.test.js` pin the club and home blocks to the generator |
 | `tools/gen-sitemap.mjs` | `sitemap.xml`, `robots.txt` (CI regenerates both for the host being deployed) | `sitemap.test.js` |
 | `tools/dedupe/build_manifest.py` | `public/duplicates.json` | `dedupe.test.js` |
 
@@ -158,7 +158,7 @@ absolute URL is hand-written.
 Other invariants with tests: every page shares one stylesheet shell
 (`page-shell.test.js`); ink on paper meets WCAG AA for every light texture
 (`contrast.test.js`); a club agrees across its page, the directory map and the
-archive (`club-registry.test.js`); `sw.js` and `js/data.js` carry the same cache
+archive (`club-registry.test.js`); every club has a complete, readable theme (`club-themes.test.js`); `sw.js` and `js/data.js` carry the same cache
 version (`site-hygiene.test.js`).
 
 ## 8. Look and motion
@@ -174,6 +174,26 @@ version (`site-hygiene.test.js`).
   and page changes use cross-document view transitions. A browser without them
   shows the page.
 - **Touch:** controls are ≥ 44 px on phones and touch screens.
+
+### Club identities
+
+Each club page is a section of the Chronicle that wears the character of what the club does:
+its **ink**, a **line drawing**, a **band** (a pattern under the masthead and every heading),
+the shape of its **bullets**, the **mount** of its photographs and the cut of its **title** —
+plus a newspaper **desk** ("The Chess Column", "The Sky Desk"), a line of spirit and a word for
+the postmark. The registry (`js/data/clubs.js`, `THEMES`) chooses; the generator writes the
+choice onto `<body>` as `data-motif`, `-band`, `-bullet`, `-frame` and `-type`, so the page is
+dressed from the first paint; `css/pages/club-themes.css` defines each name once and
+`css/pages/club.css` (the furniture) reads the variables with plain-look fallbacks.
+
+- The drawing is `assets/motifs/<motif>.svg`, used as a CSS **mask** over the club's ink — so
+  the dark theme's lighter ink comes with it, and a page fetches one file of ~1–3 KB.
+- Inks are held to AA on every paper, light and dark (`club-themes.test.js` parses the CSS).
+- Text sections are margin-heading spreads (heading left, sticky; one measure of text right)
+  below 900 px the heading sits above. Only the page's *own* headings are numbered, so a gallery
+  that arrives late renumbers nothing.
+- Nothing here moves layout: the pseudo-elements are absolutely positioned or in the header's own
+  flow, and layout shift on club pages is still 0.
 
 ## 9. Deployment
 

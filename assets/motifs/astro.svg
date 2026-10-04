@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="m"><rect width="240" height="240" fill="#fff"/><circle cx="120" cy="124" r="47" fill="#000"/></mask></defs>
+<g transform="rotate(-20 120 124)">
+<path d="M22 124a98 28 0 0 1 196 0" mask="url(#m)"/>
+<path d="M22 124a98 28 0 0 0 196 0"/>
+<path d="M44 124a76 19 0 0 1 152 0" mask="url(#m)"/>
+<path d="M44 124a76 19 0 0 0 152 0"/>
+</g>
+<circle cx="120" cy="124" r="46"/>
+<path d="M77 108q43 14 86 0M75 140q45 15 90 0"/>
+<path d="M46 36q2.5 11.5 14 14q-11.5 2.5 -14 14q-2.5 -11.5 -14 -14q11.5 -2.5 14 -14z" fill="#000" stroke="none"/><path d="M196 185q2.0 9.0 11 11q-9.0 2.0 -11 11q-2.0 -9.0 -11 -11q9.0 -2.0 11 -11z" fill="#000" stroke="none"/><path d="M206 44q1.4 6.6 8 8q-6.6 1.4 -8 8q-1.4 -6.6 -8 -8q6.6 -1.4 8 -8z" fill="#000" stroke="none"/>
+<g fill="#000" stroke="none"><circle cx="62" cy="196" r="3.5"/><circle cx="28" cy="100" r="3"/><circle cx="214" cy="104" r="2.5"/><circle cx="150" cy="30" r="2.5"/></g>
+<path d="M26 206A130 130 0 0 0 96 232" stroke-dasharray="1 9" stroke-width="3.5"/>
+</svg>

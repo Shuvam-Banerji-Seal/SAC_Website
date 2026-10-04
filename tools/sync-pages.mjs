@@ -284,7 +284,34 @@ function placeBlock(html, start, end, block, anchor) {
   return html.replace(anchor, (m) => `${block}\n${m}`);
 }
 
-/** The club page's two generated blocks. Returns the html unchanged for any other page. */
+/** The attributes a theme puts on <body>; the stylesheet keys everything off them. */
+export const THEME_ATTRS = ["motif", "band", "bullet", "frame", "type"];
+
+/**
+ * `<body data-motif data-band data-bullet data-frame data-type>`: the club's look, known to the
+ * stylesheet from the first paint rather than after the page script has run.
+ */
+export function setBodyTheme(html, theme) {
+  return html.replace(/<body([^>]*)>/, (_, attrs) => {
+    let rest = attrs;
+    for (const name of THEME_ATTRS) rest = rest.replace(new RegExp(`\\s+data-${name}="[^"]*"`), "");
+    const set = THEME_ATTRS.map((name) => ` data-${name}="${theme[name]}"`).join("");
+    return `<body${rest}${set}>`;
+  });
+}
+
+const THEME_LINK = '<link rel="stylesheet" href="../css/pages/club-themes.css" />';
+
+/** The themes stylesheet, linked straight after club.css (club.css reads the variables it sets). */
+export function ensureThemeLink(html) {
+  if (html.includes(THEME_LINK)) return html;
+  return html.replace(
+    /([ \t]*)<link rel="stylesheet" href="\.\.\/css\/pages\/club\.css" \/>/,
+    (m, indent) => `${m}\n${indent}${THEME_LINK}`
+  );
+}
+
+/** The club page's generated blocks and attributes. Returns the html unchanged for any other page. */
 export function syncClubBlocks(html, file) {
   const club = clubByPage(file);
   if (!club || !/data-club-slug=/.test(html)) return html;
@@ -296,7 +323,7 @@ export function syncClubBlocks(html, file) {
     /[ \t]*<header class="club-detail__header">/
   );
   next = placeBlock(next, PAGER_START, PAGER_END, buildPager(club), /[ \t]*<\/article>/);
-  return next;
+  return ensureThemeLink(setBodyTheme(next, club.theme));
 }
 
 /** Rewrite one HTML document; returns the new text (unchanged if already current). */

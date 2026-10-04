@@ -56,7 +56,7 @@ js/
                            reading-progress, club-spotlight (home "club of the day");
                            search-launcher (in the shell: "/" and Ctrl/⌘ K) and
                            search (the palette — loaded, with css/search.css, on first use)
-  data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest
+  data/clubs.js            the club registry: slug, page, body, name, interests, keywords, crest, theme
   pages/                   home, clubs, club-page, club-images, events, gallery, campus-life
   utils/                   dom (el, pageUrl, assetUrl, loadStylesheet), calendar(+model), search-index,
                            club-filter, caption, thumb, media, reveal, skeleton, view-pref, calligraphy, music,
@@ -64,9 +64,10 @@ js/
   pretext/                 vendored text-measurement library (built from the submodule; don't edit)
 css/                       preloader, reset, variables (tokens), main, components, loader, settings,
                            viewer, enhancements (last layer), print, search (loaded on demand),
-                           pages/{home,clubs,club,events,gallery,about,calendar}.css
+                           pages/{home,clubs,club,club-themes,events,gallery,about,calendar}.css
 tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
-test/unit/                 47 files, ~725 tests (vitest + jsdom); setup in test/setup.js
+test/unit/                 48 files, ~800 tests (vitest + jsdom); setup in test/setup.js
+assets/                    site images (hero, paper textures), logos/ (crests), motifs/ (one line drawing per club)
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)
 utils/pretext/             SUBMODULE (chenglou/pretext)
@@ -98,6 +99,7 @@ sw.js                      service worker (code network-first, media stale-while
 |---|---|---|
 | `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
 | `<!-- club-crumbs … -->` and `<!-- club-pager … -->` on the 32 club pages | the club registry, `js/data/clubs.js` | `npm run sync` |
+| `data-motif data-band data-bullet data-frame data-type` on each club page's `<body>`, and its `club-themes.css` link | `THEMES` in the registry | `npm run sync` |
 | `<!-- home-finder … -->` in `index.html` ("What are you into?" chips + the spotlight's mount) and `<!-- clubs-filter … -->` in `pages/clubs.html` (the interest filter row) | `INTERESTS` and the listed clubs in the registry | `npm run sync` |
 | `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
 | `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |
@@ -113,9 +115,13 @@ keep the `.section-nav--slot` before the first section. (2) Add one row to `CLUB
 `js/data/clubs.js` (page, body, name, short name, interests, search keywords) — the
 directory, footer, pager, search, interest filter and the home chips' counts all read it. Give it `keywords` people would
 actually type ("telescope" finds the astronomy club); `search-index.test.js` fails if a club cannot
-be found by its own name. (3) `npm run sync` (writes
-its breadcrumb and "more clubs" blocks and the preload blocks) and `npm run sitemap`.
-(4) `npm test` — `club-registry.test.js` and `club-pages.test.js` name whatever you missed.
+be found by its own name. (3) Give it a look: a row in `THEMES` (motif, band, bullet, frame, type,
+desk, tag, stamp), a drawing `assets/motifs/<motif>.svg` (240×240, stroke only, ~2 KB — draw it, then
+preview it as a mask), and a `body[data-motif="…"]` block in `css/pages/club-themes.css` with an ink
+that passes AA on light and dark papers (`--club-ink`, `--club-ink-dark`) and `--club-art`.
+(4) `npm run sync` (writes its breadcrumb, "more clubs" and `<body data-…>` attributes, and the
+preload blocks) and `npm run sitemap`. (5) `npm test` — `club-registry.test.js`, `club-pages.test.js`
+and `club-themes.test.js` name whatever you missed.
 
 **Add a stylesheet or script only some visitors need** (a palette, a calendar). Don't link it from
 pages: load it on first use, `loadStylesheet("css/<name>.css")` from `utils/dom.js` plus a dynamic

@@ -1,0 +1,487 @@
+/* Club identities — what makes each club's page its own.
+   -----------------------------------------------------------------------------
+   Every club page is a section of the Chronicle that wears the character of what the club
+   does: its ink, a line drawing, a pattern for rules and borders, the shape of its bullets, the
+   way its photographs are mounted, the cut of its title. The registry (js/data/clubs.js, THEMES)
+   says which; tools/sync-pages.mjs writes the choice onto <body> as five attributes —
+   data-motif, data-band, data-bullet, data-frame, data-type — so the page is dressed from the
+   first paint. This file defines each name once; club.css uses them. test/unit/club-themes.test.js
+   fails if a name the registry uses is missing here.
+
+   What a theme sets (all inherited from <body>):
+     --club-ink / --club-ink-dark   the ink: AA on every light paper, and on the dark ones
+     --club-art                     the drawing, assets/motifs/<motif>.svg, used as a mask so it
+                                    takes the ink (and the dark theme's ink) for free
+     --band, --band-h               the pattern and its height
+     --bullet-*                     a list marker's shape
+     --fp-*, --frame-*              a photograph's mounting
+     --title-*                      the title's type
+   Colour comes from var(--club-ink), so a band or frame follows the ink into the dark theme. */
+
+:root {
+  --club-ink: var(--accent);
+}
+[data-theme="dark"] body[data-motif] {
+  --club-ink: var(--club-ink-dark);
+}
+
+/* ------------------------------------------------------------------ ink + drawing */
+body[data-motif="ledger"] {
+  --club-ink: #1f3b5c;
+  --club-ink-dark: #9dbfe6;
+  --club-art: url("../../assets/motifs/ledger.svg");
+}
+body[data-motif="career"] {
+  --club-ink: #245055;
+  --club-ink-dark: #8fcfd2;
+  --club-art: url("../../assets/motifs/career.svg");
+}
+body[data-motif="astro"] {
+  --club-ink: #272f7c;
+  --club-ink-dark: #aab4f4;
+  --club-art: url("../../assets/motifs/astro.svg");
+}
+body[data-motif="code"] {
+  --club-ink: #0a543e;
+  --club-ink-dark: #6fdcae;
+  --club-art: url("../../assets/motifs/code.svg");
+}
+body[data-motif="theatre"] {
+  --club-ink: #7a1230;
+  --club-ink-dark: #f2909f;
+  --club-art: url("../../assets/motifs/theatre.svg");
+}
+body[data-motif="palette"] {
+  --club-ink: #6e3e00;
+  --club-ink-dark: #eeb866;
+  --club-art: url("../../assets/motifs/palette.svg");
+}
+body[data-motif="radio"] {
+  --club-ink: #0b5058;
+  --club-ink-dark: #76d4de;
+  --club-art: url("../../assets/motifs/radio.svg");
+}
+body[data-motif="quiz"] {
+  --club-ink: #582c80;
+  --club-ink-dark: #cfa9f2;
+  --club-art: url("../../assets/motifs/quiz.svg");
+}
+body[data-motif="quill"] {
+  --club-ink: #5a3016;
+  --club-ink-dark: #e0ae82;
+  --club-art: url("../../assets/motifs/quill.svg");
+}
+body[data-motif="film"] {
+  --club-ink: #2c2520;
+  --club-ink-dark: #e4d5ba;
+  --club-art: url("../../assets/motifs/film.svg");
+}
+body[data-motif="music"] {
+  --club-ink: #6b2358;
+  --club-ink-dark: #e6a0d8;
+  --club-art: url("../../assets/motifs/music.svg");
+}
+body[data-motif="leaf"] {
+  --club-ink: #2a5425;
+  --club-ink-dark: #9cd78f;
+  --club-art: url("../../assets/motifs/leaf.svg");
+}
+body[data-motif="mandala"] {
+  --club-ink: #852049;
+  --club-ink-dark: #f09cba;
+  --club-art: url("../../assets/motifs/mandala.svg");
+}
+body[data-motif="camera"] {
+  --club-ink: #36485c;
+  --club-ink-dark: #a9c3de;
+  --club-art: url("../../assets/motifs/camera.svg");
+}
+body[data-motif="dining"] {
+  --club-ink: #81310f;
+  --club-ink-dark: #f0a37a;
+  --club-art: url("../../assets/motifs/dining.svg");
+}
+body[data-motif="building"] {
+  --club-ink: #7a3328;
+  --club-ink-dark: #eaa090;
+  --club-art: url("../../assets/motifs/building.svg");
+}
+body[data-motif="track"] {
+  --club-ink: #8a2410;
+  --club-ink-dark: #f2a08a;
+  --club-art: url("../../assets/motifs/track.svg");
+}
+body[data-motif="shuttle"] {
+  --club-ink: #0f5245;
+  --club-ink-dark: #7fdac5;
+  --club-art: url("../../assets/motifs/shuttle.svg");
+}
+body[data-motif="hoop"] {
+  --club-ink: #7d3409;
+  --club-ink-dark: #f2b078;
+  --club-art: url("../../assets/motifs/hoop.svg");
+}
+body[data-motif="carrom"] {
+  --club-ink: #65380f;
+  --club-ink-dark: #e2b182;
+  --club-art: url("../../assets/motifs/carrom.svg");
+}
+body[data-motif="chess"] {
+  --club-ink: #243a2c;
+  --club-ink-dark: #a9d6b6;
+  --club-art: url("../../assets/motifs/chess.svg");
+}
+body[data-motif="cricket"] {
+  --club-ink: #1b3d86;
+  --club-ink-dark: #9fbaf2;
+  --club-art: url("../../assets/motifs/cricket.svg");
+}
+body[data-motif="football"] {
+  --club-ink: #16542a;
+  --club-ink-dark: #8fdba2;
+  --club-art: url("../../assets/motifs/football.svg");
+}
+body[data-motif="gamepad"] {
+  --club-ink: #41318c;
+  --club-ink-dark: #bdb2f6;
+  --club-art: url("../../assets/motifs/gamepad.svg");
+}
+body[data-motif="dumbbell"] {
+  --club-ink: #38454f;
+  --club-ink-dark: #b4c4d0;
+  --club-art: url("../../assets/motifs/dumbbell.svg");
+}
+body[data-motif="kabaddi"] {
+  --club-ink: #713b08;
+  --club-ink-dark: #efbb7c;
+  --club-art: url("../../assets/motifs/kabaddi.svg");
+}
+body[data-motif="khokho"] {
+  --club-ink: #544a00;
+  --club-ink-dark: #e0d36c;
+  --club-art: url("../../assets/motifs/khokho.svg");
+}
+body[data-motif="tennis"] {
+  --club-ink: #434d0c;
+  --club-ink-dark: #cddc7e;
+  --club-art: url("../../assets/motifs/tennis.svg");
+}
+body[data-motif="cube"] {
+  --club-ink: #1a449b;
+  --club-ink-dark: #a2c0fa;
+  --club-art: url("../../assets/motifs/cube.svg");
+}
+body[data-motif="dojo"] {
+  --club-ink: #7a1010;
+  --club-ink-dark: #f09a96;
+  --club-art: url("../../assets/motifs/dojo.svg");
+}
+body[data-motif="pingpong"] {
+  --club-ink: #901a16;
+  --club-ink-dark: #f4a29c;
+  --club-art: url("../../assets/motifs/pingpong.svg");
+}
+body[data-motif="volleyball"] {
+  --club-ink: #134b7c;
+  --club-ink-dark: #98c7f0;
+  --club-art: url("../../assets/motifs/volleyball.svg");
+}
+
+/* ------------------------------------------------------------------ bands
+   A strip under the masthead and under each section heading. --band is a complete
+   `background` value (so it carries its own tile size); --band-h is the strip's height. */
+body[data-band="checker"] {
+  --band: conic-gradient(
+      var(--club-ink) 25%,
+      transparent 0 50%,
+      var(--club-ink) 0 75%,
+      transparent 0
+    )
+    0 0 / 12px 12px;
+  --band-h: 12px;
+}
+body[data-band="staff"] {
+  --band: repeating-linear-gradient(0deg, var(--club-ink) 0 1px, transparent 1px 4px);
+  --band-h: 17px;
+}
+body[data-band="film"] {
+  --band:
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 0 / 100% 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 100% 2px no-repeat,
+    repeating-linear-gradient(90deg, var(--club-ink) 0 7px, transparent 7px 15px) 0 4px / 100% 6px
+      no-repeat;
+  --band-h: 14px;
+}
+body[data-band="stars"] {
+  --band:
+    radial-gradient(circle, var(--club-ink) 1.3px, transparent 1.8px) 0 0 / 22px 14px,
+    radial-gradient(circle, var(--club-ink) 2.4px, transparent 3px) 11px 7px / 66px 14px;
+  --band-h: 14px;
+}
+body[data-band="dots"] {
+  --band:
+    radial-gradient(circle, var(--club-ink) 1.5px, transparent 2px) 0 0 / 10px 10px,
+    radial-gradient(circle, var(--club-ink) 1.5px, transparent 2px) 5px 5px / 10px 10px;
+  --band-h: 10px;
+}
+body[data-band="court"] {
+  --band:
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 0 / 100% 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 100% 2px no-repeat,
+    repeating-linear-gradient(90deg, var(--club-ink) 0 12px, transparent 12px 20px) 0 50% / 100% 2px
+      no-repeat;
+  --band-h: 12px;
+}
+body[data-band="grid"] {
+  --band:
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 100% 1px no-repeat,
+    linear-gradient(90deg, var(--club-ink) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(0deg, var(--club-ink) 1px, transparent 1px) 0 0 / 12px 12px;
+  --band-h: 12px;
+}
+body[data-band="stripes"] {
+  --band: repeating-linear-gradient(-45deg, var(--club-ink) 0 3px, transparent 3px 8px);
+  --band-h: 10px;
+}
+body[data-band="scallop"] {
+  --band: radial-gradient(
+      circle at 10px -2px,
+      transparent 8px,
+      var(--club-ink) 8.5px 10.5px,
+      transparent 11px
+    )
+    0 0 / 20px 10px;
+  --band-h: 10px;
+}
+body[data-band="ticks"] {
+  --band:
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, var(--club-ink) 0 1px, transparent 1px 8px) 0 100% / 100% 6px
+      no-repeat,
+    repeating-linear-gradient(90deg, var(--club-ink) 0 1px, transparent 1px 40px) 0 100% / 100% 12px
+      no-repeat;
+  --band-h: 12px;
+}
+body[data-band="zigzag"] {
+  --band:
+    linear-gradient(135deg, var(--club-ink) 25%, transparent 25%) 0 0 / 10px 10px,
+    linear-gradient(225deg, var(--club-ink) 25%, transparent 25%) 0 0 / 10px 10px;
+  --band-h: 10px;
+}
+body[data-band="waves"] {
+  --band:
+    radial-gradient(
+        circle at 10px -2px,
+        transparent 8px,
+        var(--club-ink) 8.5px 10.5px,
+        transparent 11px
+      )
+      0 0 / 20px 12px,
+    radial-gradient(
+        circle at 0 14px,
+        transparent 8px,
+        var(--club-ink) 8.5px 10.5px,
+        transparent 11px
+      )
+      0 0 / 20px 12px;
+  --band-h: 12px;
+}
+
+/* ------------------------------------------------------------------ bullets
+   A marker is a 0.55em box filled with the ink and cut to a shape. */
+body[data-bullet] {
+  --bullet-clip: none;
+  --bullet-radius: 0;
+  --bullet-bg: var(--club-ink);
+  --bullet-border: 0;
+}
+body[data-bullet="square"] {
+  --bullet-clip: inset(0);
+}
+body[data-bullet="diamond"] {
+  --bullet-clip: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+body[data-bullet="circle"] {
+  --bullet-radius: 50%;
+}
+body[data-bullet="ring"] {
+  --bullet-radius: 50%;
+  --bullet-bg: transparent;
+  --bullet-border: 2px solid var(--club-ink);
+}
+body[data-bullet="star"] {
+  --bullet-clip: polygon(
+    50% 0,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+body[data-bullet="play"] {
+  --bullet-clip: polygon(0 0, 100% 50%, 0 100%);
+}
+body[data-bullet="leaf"] {
+  --bullet-radius: 0 100% 0 100%;
+}
+body[data-bullet="cross"] {
+  --bullet-clip: polygon(
+    35% 0,
+    65% 0,
+    65% 35%,
+    100% 35%,
+    100% 65%,
+    65% 65%,
+    65% 100%,
+    35% 100%,
+    35% 65%,
+    0 65%,
+    0 35%,
+    35% 35%
+  );
+}
+body[data-bullet="hex"] {
+  --bullet-clip: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%);
+}
+body[data-bullet="chevron"] {
+  --bullet-clip: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%, 40% 50%);
+}
+
+/* ------------------------------------------------------------------ photo frames
+   Each photograph in the masthead strip sits in a mount. --fp-* are its padding (top, right,
+   bottom, left — the picture is inset by exactly that), --frame-bg/-border/-shadow its paper,
+   --frame-deco a pattern laid over it (film perforations, viewfinder corners, a window's title
+   bar, tape), and --frame-tilt-a/-b the little tilt of alternate photographs. */
+body[data-frame] {
+  --fp-t: 0px;
+  --fp-r: 0px;
+  --fp-b: 0px;
+  --fp-l: 0px;
+  --frame-bg: var(--paper-deep);
+  --frame-border: 1px solid var(--ink);
+  --frame-shadow: none;
+  --frame-deco: none;
+  --frame-tilt-a: 0deg;
+  --frame-tilt-b: 0deg;
+  --frame-img-edge: none;
+}
+body[data-frame="mat"] {
+  --fp-t: 6px;
+  --fp-r: 6px;
+  --fp-b: 6px;
+  --fp-l: 6px;
+  --frame-bg: var(--paper-soft);
+  --frame-shadow: 2px 3px 0 var(--paper-edge);
+  --frame-img-edge: 1px solid var(--ink-rule);
+}
+body[data-frame="polaroid"] {
+  --fp-t: 8px;
+  --fp-r: 8px;
+  --fp-b: 28px;
+  --fp-l: 8px;
+  --frame-bg: var(--paper-soft);
+  --frame-border: 1px solid var(--ink-rule);
+  --frame-shadow: 2px 4px 0 rgba(24, 20, 16, 0.2);
+  --frame-tilt-a: -1.1deg;
+  --frame-tilt-b: 0.9deg;
+  --frame-deco: linear-gradient(rgba(183, 141, 47, 0.5), rgba(183, 141, 47, 0.5)) 50% -7px / 56px
+    15px no-repeat;
+}
+body[data-frame="film"] {
+  /* a fixed dark strip with light sprocket holes: it is film in either theme */
+  --fp-t: 20px;
+  --fp-r: 0px;
+  --fp-b: 20px;
+  --fp-l: 0px;
+  --frame-bg: #2a2118;
+  --frame-border: 0;
+  --frame-deco:
+    repeating-linear-gradient(90deg, #efe3c8 0 7px, transparent 7px 15px) 0 6px / 100% 8px no-repeat,
+    repeating-linear-gradient(90deg, #efe3c8 0 7px, transparent 7px 15px) left 0 bottom 6px / 100%
+      8px no-repeat;
+}
+body[data-frame="viewfinder"] {
+  --fp-t: 10px;
+  --fp-r: 10px;
+  --fp-b: 10px;
+  --fp-l: 10px;
+  --frame-bg: transparent;
+  --frame-border: 0;
+  --frame-deco:
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 0 / 22px 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 0 / 2px 22px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 100% 0 / 22px 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 100% 0 / 2px 22px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 22px 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 100% / 2px 22px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 100% 100% / 22px 2px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 100% 100% / 2px 22px no-repeat;
+}
+body[data-frame="court"] {
+  --fp-t: 7px;
+  --fp-r: 7px;
+  --fp-b: 7px;
+  --fp-l: 7px;
+  --frame-bg: var(--paper-soft);
+  --frame-border: 3px solid var(--club-ink);
+  --frame-shadow: inset 0 0 0 2px var(--paper-soft), inset 0 0 0 3px var(--club-ink);
+}
+body[data-frame="window"] {
+  --fp-t: 28px;
+  --fp-r: 6px;
+  --fp-b: 6px;
+  --fp-l: 6px;
+  --frame-bg: var(--paper-soft);
+  --frame-border: 2px solid var(--club-ink);
+  --frame-deco:
+    radial-gradient(circle, var(--club-ink) 3.5px, transparent 4px) 8px 7px / 10px 10px no-repeat,
+    radial-gradient(circle, var(--club-ink) 3.5px, transparent 4px) 24px 7px / 10px 10px no-repeat,
+    radial-gradient(circle, var(--club-ink) 3.5px, transparent 4px) 40px 7px / 10px 10px no-repeat,
+    linear-gradient(var(--club-ink), var(--club-ink)) 0 23px / 100% 2px no-repeat;
+}
+
+/* ------------------------------------------------------------------ title type
+   System fonts only (no downloads): the cut changes, the family stays on the page's stack. */
+body[data-type] {
+  --title-font: var(--font-body);
+  --title-weight: 700;
+  --title-style: normal;
+  --title-case: none;
+  --title-ls: -0.045em;
+  --title-lh: 0.92;
+  --title-size: clamp(2.2rem, 7vw, 5.5rem);
+}
+/* the plain cut is the default above; naming it keeps every type a rule of its own */
+body[data-type="serif"] {
+  --title-style: normal;
+}
+body[data-type="display"] {
+  --title-font: var(--font-display);
+  /* Impact has one weight, and must not be faked bolder; where it is missing the fallback face
+     is a real bold. club.css sets font-synthesis: none for the same reason. */
+  --title-weight: 700;
+  --title-case: uppercase;
+  --title-ls: 0.01em;
+  --title-lh: 0.98;
+  --title-size: clamp(2.3rem, 7vw, 5rem);
+}
+body[data-type="italic"] {
+  --title-style: italic;
+  --title-ls: -0.04em;
+}
+body[data-type="mono"] {
+  --title-font: var(--font-mono);
+  --title-ls: -0.06em;
+  --title-size: clamp(1.9rem, 5.6vw, 4.2rem);
+}
+body[data-type="caps"] {
+  --title-case: uppercase;
+  --title-ls: 0.035em;
+  --title-lh: 1;
+  --title-size: clamp(1.8rem, 5.2vw, 4rem);
+}

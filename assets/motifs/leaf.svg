@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<defs><g id="lf"><path d="M0 0C14-22 46-22 66 0 46 22 14 22 0 0z"/><path d="M0 0H60" stroke-width="3"/></g></defs>
+<path d="M48 216C68 160 112 108 196 36"/>
+<use href="#lf" transform="translate(70 176) rotate(-148)"/>
+<use href="#lf" transform="translate(88 152) rotate(-24)"/>
+<use href="#lf" transform="translate(112 126) rotate(-160) scale(.9)"/>
+<use href="#lf" transform="translate(134 102) rotate(-18) scale(.9)"/>
+<use href="#lf" transform="translate(160 76) rotate(-150) scale(.78)"/>
+<use href="#lf" transform="translate(182 56) rotate(-14) scale(.7)"/>
+<path d="M146 204q9-12 18 0q9-12 18 0M188 172q7-9 14 0q7-9 14 0" stroke-width="3.5"/>
+</svg>

@@ -12,6 +12,7 @@ import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { isCurrentTenure } from "../utils/tenure.js";
 import { getClub, getClubEntries, loadAssetsMap, indexByClub } from "../data.js";
 import { buildActions, fixBrokenMailtos, hydratePagerLogos } from "../components/club-extras.js";
+import { clubBySlug } from "../data/clubs.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -54,7 +55,7 @@ function makeLogo(club, entries) {
   );
 }
 
-function buildIdentity(club, entries) {
+function buildIdentity(club, entries, theme) {
   const imageCount = entries.filter((entry) => entry.file_type === "image").length;
   const documentCount = entries.filter((entry) => entry.file_type === "markdown").length;
   const portraitCount = entries.filter(
@@ -78,7 +79,8 @@ function buildIdentity(club, entries) {
     el(
       "div",
       { class: "postmark", "aria-hidden": "true" },
-      "SAC",
+      // the club's own word (the registry's theme.stamp); a page with no theme keeps "SAC"
+      theme?.stamp ?? "SAC",
       el("span", { class: "postmark__lines" }, stampDate),
       "IISER·K"
     ),
@@ -86,8 +88,10 @@ function buildIdentity(club, entries) {
     el(
       "div",
       { class: "club-detail__identity-copy" },
-      el("p", { class: "club-detail__eyebrow" }, "SAC Chronicle · club record"),
+      // the desk the page runs under ("The Chess Column"), as a newspaper would name its section
+      el("p", { class: "club-detail__eyebrow" }, theme?.desk ?? "SAC Chronicle · club record"),
       el("h1", { class: "club-detail__title", id: "clubTitle" }, club.name),
+      theme?.tag ? el("p", { class: "club-detail__tag" }, theme.tag) : null,
       el(
         "div",
         { class: "club-detail__stats", "aria-label": "Club record summary" },
@@ -212,7 +216,7 @@ export async function initClubPage() {
     clearSkeleton(header);
 
     const backLink = header.querySelector(".back-link");
-    const identity = buildIdentity(club, entries);
+    const identity = buildIdentity(club, entries, clubBySlug(slug)?.theme);
     const strip = buildHeroStrip(club, entries);
     const tear = el("div", { class: "paper-tear", "aria-hidden": "true" });
     header.replaceChildren(
