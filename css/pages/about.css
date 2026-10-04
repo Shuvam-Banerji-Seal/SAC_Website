@@ -31,34 +31,14 @@
   font-style: italic;
 }
 
-/* Live archive stats (same furniture as home) */
+/* The stat cards are shared furniture (css/components.css, "Council facts"); here they only
+   take the reading column's measure. */
 .home-stats {
-  border-block: 1px solid var(--rule);
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  /* four facts: two by two at this measure, not three and a straggler */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 2rem auto;
   max-width: 70ch;
-  padding: 1rem 0;
   width: 100%;
-}
-.home-stat {
-  border-left: 3px solid var(--accent);
-  padding: 0.35rem 0 0.35rem 0.9rem;
-}
-.home-stat strong {
-  color: var(--accent);
-  display: block;
-  font-family: var(--font-display);
-  font-size: var(--fs-2xl);
-  line-height: 0.9;
-}
-.home-stat span {
-  color: var(--ink-muted);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /* Map shares the reading measure — page feels like one paper column */
@@ -123,4 +103,30 @@
 .about-bodies__link:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Wide screens: the reading column keeps its 70ch measure and the map stands beside it, in view
+   as you read, instead of one narrow strip centred in a wide page. */
+@media (min-width: 1100px) {
+  .about-layout {
+    align-items: start;
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    display: grid;
+    grid-template-columns: minmax(0, 70ch) minmax(16rem, 1fr);
+  }
+  .about-layout > .prose {
+    margin-inline: 0;
+    max-width: none;
+  }
+  .about-layout > .map-card {
+    grid-column: 2;
+    margin-inline: 0;
+    margin-top: 1.4rem;
+    max-width: none;
+    position: sticky;
+    top: 2rem;
+  }
+  .about-layout .map-card__frame iframe {
+    height: min(26rem, 60vh);
+  }
 }

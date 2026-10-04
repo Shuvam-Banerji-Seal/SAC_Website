@@ -1,0 +1,179 @@
+/* Club inks — the colour and the drawing of each club, on any element.
+   -----------------------------------------------------------------------------
+   `data-motif="chess"` on an element (a club page's <body>, a directory card, the home page's
+   "club of the day") gives it --club-ink and --club-art. They are inherited, so everything inside
+   can be drawn in the club's ink; the drawing is assets/motifs/<motif>.svg, used as a CSS mask.
+   The dark theme swaps in the club's lighter ink. Both inks pass WCAG AA on every paper, light
+   and dark (test/unit/club-themes.test.js reads this file to check it).
+
+   The rest of a club page's look — bands, bullets, photo frames, title type — is
+   css/pages/club-themes.css, which only club pages load. Resolve the drawing's URL from a
+   stylesheet in css/pages/ (the path below is relative to this file). */
+
+:root {
+  --club-ink: var(--accent);
+}
+[data-theme="dark"] [data-motif] {
+  --club-ink: var(--club-ink-dark);
+}
+
+[data-motif="ledger"] {
+  --club-ink: #1f3b5c;
+  --club-ink-dark: #9dbfe6;
+  --club-art: url("../../assets/motifs/ledger.svg");
+}
+[data-motif="career"] {
+  --club-ink: #245055;
+  --club-ink-dark: #8fcfd2;
+  --club-art: url("../../assets/motifs/career.svg");
+}
+[data-motif="astro"] {
+  --club-ink: #272f7c;
+  --club-ink-dark: #aab4f4;
+  --club-art: url("../../assets/motifs/astro.svg");
+}
+[data-motif="code"] {
+  --club-ink: #0a543e;
+  --club-ink-dark: #6fdcae;
+  --club-art: url("../../assets/motifs/code.svg");
+}
+[data-motif="theatre"] {
+  --club-ink: #7a1230;
+  --club-ink-dark: #f2909f;
+  --club-art: url("../../assets/motifs/theatre.svg");
+}
+[data-motif="palette"] {
+  --club-ink: #6e3e00;
+  --club-ink-dark: #eeb866;
+  --club-art: url("../../assets/motifs/palette.svg");
+}
+[data-motif="radio"] {
+  --club-ink: #0b5058;
+  --club-ink-dark: #76d4de;
+  --club-art: url("../../assets/motifs/radio.svg");
+}
+[data-motif="quiz"] {
+  --club-ink: #582c80;
+  --club-ink-dark: #cfa9f2;
+  --club-art: url("../../assets/motifs/quiz.svg");
+}
+[data-motif="quill"] {
+  --club-ink: #5a3016;
+  --club-ink-dark: #e0ae82;
+  --club-art: url("../../assets/motifs/quill.svg");
+}
+[data-motif="film"] {
+  --club-ink: #2c2520;
+  --club-ink-dark: #e4d5ba;
+  --club-art: url("../../assets/motifs/film.svg");
+}
+[data-motif="music"] {
+  --club-ink: #6b2358;
+  --club-ink-dark: #e6a0d8;
+  --club-art: url("../../assets/motifs/music.svg");
+}
+[data-motif="leaf"] {
+  --club-ink: #2a5425;
+  --club-ink-dark: #9cd78f;
+  --club-art: url("../../assets/motifs/leaf.svg");
+}
+[data-motif="mandala"] {
+  --club-ink: #852049;
+  --club-ink-dark: #f09cba;
+  --club-art: url("../../assets/motifs/mandala.svg");
+}
+[data-motif="camera"] {
+  --club-ink: #36485c;
+  --club-ink-dark: #a9c3de;
+  --club-art: url("../../assets/motifs/camera.svg");
+}
+[data-motif="dining"] {
+  --club-ink: #81310f;
+  --club-ink-dark: #f0a37a;
+  --club-art: url("../../assets/motifs/dining.svg");
+}
+[data-motif="building"] {
+  --club-ink: #7a3328;
+  --club-ink-dark: #eaa090;
+  --club-art: url("../../assets/motifs/building.svg");
+}
+[data-motif="track"] {
+  --club-ink: #8a2410;
+  --club-ink-dark: #f2a08a;
+  --club-art: url("../../assets/motifs/track.svg");
+}
+[data-motif="shuttle"] {
+  --club-ink: #0f5245;
+  --club-ink-dark: #7fdac5;
+  --club-art: url("../../assets/motifs/shuttle.svg");
+}
+[data-motif="hoop"] {
+  --club-ink: #7d3409;
+  --club-ink-dark: #f2b078;
+  --club-art: url("../../assets/motifs/hoop.svg");
+}
+[data-motif="carrom"] {
+  --club-ink: #65380f;
+  --club-ink-dark: #e2b182;
+  --club-art: url("../../assets/motifs/carrom.svg");
+}
+[data-motif="chess"] {
+  --club-ink: #243a2c;
+  --club-ink-dark: #a9d6b6;
+  --club-art: url("../../assets/motifs/chess.svg");
+}
+[data-motif="cricket"] {
+  --club-ink: #1b3d86;
+  --club-ink-dark: #9fbaf2;
+  --club-art: url("../../assets/motifs/cricket.svg");
+}
+[data-motif="football"] {
+  --club-ink: #16542a;
+  --club-ink-dark: #8fdba2;
+  --club-art: url("../../assets/motifs/football.svg");
+}
+[data-motif="gamepad"] {
+  --club-ink: #41318c;
+  --club-ink-dark: #bdb2f6;
+  --club-art: url("../../assets/motifs/gamepad.svg");
+}
+[data-motif="dumbbell"] {
+  --club-ink: #38454f;
+  --club-ink-dark: #b4c4d0;
+  --club-art: url("../../assets/motifs/dumbbell.svg");
+}
+[data-motif="kabaddi"] {
+  --club-ink: #713b08;
+  --club-ink-dark: #efbb7c;
+  --club-art: url("../../assets/motifs/kabaddi.svg");
+}
+[data-motif="khokho"] {
+  --club-ink: #544a00;
+  --club-ink-dark: #e0d36c;
+  --club-art: url("../../assets/motifs/khokho.svg");
+}
+[data-motif="tennis"] {
+  --club-ink: #434d0c;
+  --club-ink-dark: #cddc7e;
+  --club-art: url("../../assets/motifs/tennis.svg");
+}
+[data-motif="cube"] {
+  --club-ink: #1a449b;
+  --club-ink-dark: #a2c0fa;
+  --club-art: url("../../assets/motifs/cube.svg");
+}
+[data-motif="dojo"] {
+  --club-ink: #7a1010;
+  --club-ink-dark: #f09a96;
+  --club-art: url("../../assets/motifs/dojo.svg");
+}
+[data-motif="pingpong"] {
+  --club-ink: #901a16;
+  --club-ink-dark: #f4a29c;
+  --club-art: url("../../assets/motifs/pingpong.svg");
+}
+[data-motif="volleyball"] {
+  --club-ink: #134b7c;
+  --club-ink-dark: #98c7f0;
+  --club-art: url("../../assets/motifs/volleyball.svg");
+}

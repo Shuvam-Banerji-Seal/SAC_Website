@@ -182,7 +182,12 @@ export async function initHome() {
 
   // "Club of the day": from the registry alone, so it is up before the archive; it takes the
   // archive's logo when that arrives (below). Imported on demand — it is below the fold.
-  const { initClubSpotlight } = await import("../components/club-spotlight.js");
+  // The card is drawn in the club's ink, so that sheet comes with it (it is not linked from the
+  // page: only the front page's card and the directory use it, and the card is below the fold).
+  const [{ initClubSpotlight }] = await Promise.all([
+    import("../components/club-spotlight.js"),
+    loadStylesheet("css/pages/club-inks.css", 3000),
+  ]);
   const spotlight = initClubSpotlight(document.getElementById("club-spotlight"));
 
   // The organisational plate is drawn from the BODIES table in its own

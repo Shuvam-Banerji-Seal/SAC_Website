@@ -107,6 +107,9 @@ function clubCard(c) {
       "data-club-body": c.body,
       "data-club-interests": (c.interests ?? clubBySlug(c.slug)?.interests ?? []).join(" "),
       "data-club-keywords": c.keywords ?? clubBySlug(c.slug)?.keywords ?? "",
+      // the card is drawn in the club's own ink (css/pages/club-inks.css); a club with no page
+      // yet has no theme, and keeps the plain card
+      "data-motif": clubBySlug(c.slug)?.theme?.motif,
     },
     url && !pending
       ? // No aria-label: the link's own text (name + body line) is its name. An

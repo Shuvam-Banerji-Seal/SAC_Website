@@ -27,6 +27,7 @@ import { setBodyTheme, ensureThemeLink, THEME_ATTRS } from "../../tools/sync-pag
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (rel) => readFileSync(resolve(root, rel), "utf-8");
 const themes = read("css/pages/club-themes.css");
+const inks = read("css/pages/club-inks.css");
 const clubCss = read("css/pages/club.css");
 const variables = read("css/variables.css");
 
@@ -96,14 +97,16 @@ describe("the drawings", () => {
 });
 
 describe("css/pages/club-themes.css", () => {
-  it("is linked after club.css and before enhancements.css on every club page, and only there", () => {
+  it("is linked, after the inks, after club.css and before enhancements.css on every club page, and only there", () => {
     const pages = CLUBS.map((c) => c.page);
     for (const page of pages) {
       const html = read(page);
       const club = html.indexOf('href="../css/pages/club.css"');
+      const ink = html.indexOf('href="../css/pages/club-inks.css"');
       const theme = html.indexOf('href="../css/pages/club-themes.css"');
       const last = html.indexOf('href="../css/enhancements.css"');
-      expect(theme, `${page} does not link club-themes.css`).toBeGreaterThan(club);
+      expect(ink, `${page} does not link club-inks.css`).toBeGreaterThan(club);
+      expect(theme, `${page} does not link club-themes.css`).toBeGreaterThan(ink);
       expect(theme).toBeLessThan(last);
     }
     for (const other of [
@@ -116,14 +119,9 @@ describe("css/pages/club-themes.css", () => {
     }
   });
 
-  it("gives every motif its ink (light and dark) and its drawing", () => {
-    for (const motif of MOTIFS) {
-      const body = rule(themes, `body[data-motif="${motif}"]`);
-      expect(body, `no block for ${motif}`).not.toBeNull();
-      expect(decl(body, "club-ink"), motif).toMatch(/^#[0-9a-f]{6}$/);
-      expect(decl(body, "club-ink-dark"), motif).toMatch(/^#[0-9a-f]{6}$/);
-      expect(decl(body, "club-art"), motif).toBe(`url("../../assets/motifs/${motif}.svg")`);
-    }
+  it("leaves the inks to club-inks.css, which it never repeats", () => {
+    expect(themes).not.toContain("--club-ink-dark:");
+    expect(themes).not.toContain("--club-art:");
   });
 
   it("defines each band, bullet, frame and title type once — and every one is used", () => {
@@ -147,9 +145,28 @@ describe("css/pages/club-themes.css", () => {
     }
   });
 
-  it("follows the dark theme by swapping in the club's dark ink on <body>", () => {
-    expect(themes).toMatch(
-      /\[data-theme="dark"\] body\[data-motif\] \{\s*--club-ink: var\(--club-ink-dark\)/
+  it("the film mount is dark film in either theme: its colours are fixed, not tokens", () => {
+    expect(decl(rule(themes, 'body[data-frame="film"]'), "frame-bg")).toBe("#2a2118");
+  });
+});
+
+describe("css/pages/club-inks.css", () => {
+  it("gives every motif its ink (light and dark) and its drawing, on any element", () => {
+    for (const motif of MOTIFS) {
+      const body = rule(inks, `[data-motif="${motif}"]`);
+      expect(body, `no block for ${motif}`).not.toBeNull();
+      expect(decl(body, "club-ink"), motif).toMatch(/^#[0-9a-f]{6}$/);
+      expect(decl(body, "club-ink-dark"), motif).toMatch(/^#[0-9a-f]{6}$/);
+      expect(decl(body, "club-art"), motif).toBe(`url("../../assets/motifs/${motif}.svg")`);
+    }
+    // keyed on the attribute alone, not on <body>, or a card could not wear it
+    expect(inks).not.toMatch(/body\[data-motif/);
+  });
+
+  it("falls back to the site's accent, and follows the dark theme to the club's dark ink", () => {
+    expect(inks).toMatch(/:root \{\s*--club-ink: var\(--accent\)/);
+    expect(inks).toMatch(
+      /\[data-theme="dark"\] \[data-motif\] \{\s*--club-ink: var\(--club-ink-dark\)/
     );
   });
 
@@ -166,7 +183,7 @@ describe("css/pages/club-themes.css", () => {
     const dark = ["paper", "paper-soft", "paper-deep"].map((n) => paper('[data-theme="dark"]', n));
     expect([...light, ...dark].every((h) => /^#[0-9a-f]{6}$/i.test(h))).toBe(true);
     for (const motif of MOTIFS) {
-      const body = rule(themes, `body[data-motif="${motif}"]`);
+      const body = rule(inks, `[data-motif="${motif}"]`);
       for (const surface of light) {
         expect(
           ratio(decl(body, "club-ink"), surface),
@@ -181,9 +198,43 @@ describe("css/pages/club-themes.css", () => {
       }
     }
   });
+});
 
-  it("the film mount is dark film in either theme: its colours are fixed, not tokens", () => {
-    expect(decl(rule(themes, 'body[data-frame="film"]'), "frame-bg")).toBe("#2a2118");
+describe("the inks beyond the club pages", () => {
+  const home = read("js/pages/home.js");
+
+  it("the directory links the inks, and each card carries its club's motif", () => {
+    expect(read("pages/clubs.html")).toContain('href="../css/pages/club-inks.css"');
+    expect(read("js/pages/clubs.js")).toMatch(
+      /"data-motif": clubBySlug\(c\.slug\)\?\.theme\?\.motif/
+    );
+    expect(read("css/pages/clubs.css")).toMatch(
+      /\.club-card\[data-motif\] \.club-card__logo::before/
+    );
+  });
+
+  it("the front page fetches the inks together with the card, not as a linked sheet", () => {
+    expect(read("index.html")).not.toContain("club-inks.css");
+    expect(home).toMatch(
+      /Promise\.all\(\[\s*import\("\.\.\/components\/club-spotlight\.js"\),\s*loadStylesheet\("css\/pages\/club-inks\.css"/
+    );
+  });
+
+  it("the spotlight sets its mount's motif to the club it shows", async () => {
+    document.body.innerHTML = '<div id="club-spotlight" class="spotlight"></div>';
+    const { initClubSpotlight } = await import("../../js/components/club-spotlight.js");
+    const mount = document.getElementById("club-spotlight");
+    const chess = clubBySlug("SAC_Sports_Chess");
+    const spot = initClubSpotlight(mount, { clubs: [chess] });
+    expect(mount.dataset.motif).toBe("chess");
+    spot.show(clubBySlug("SAC_Sports_Cricket"));
+    expect(mount.dataset.motif).toBe("cricket");
+  });
+
+  it("only the pages that show a club link the inks", () => {
+    for (const other of ["pages/about.html", "pages/events.html", "pages/gallery.html"]) {
+      expect(read(other)).not.toContain("club-inks.css");
+    }
   });
 });
 
@@ -206,20 +257,23 @@ describe("pages are dressed from the first paint", () => {
     expect(twice).toContain('class="x" data-club-slug="a"');
   });
 
-  it("ensureThemeLink is idempotent and sits right after club.css", () => {
+  it("ensureThemeLink adds the inks and then the themes right after club.css, once", () => {
     const html = '  <link rel="stylesheet" href="../css/pages/club.css" />\n  <link href="b">';
     const once = ensureThemeLink(html);
-    expect(once).toMatch(
-      /club\.css" \/>\n {2}<link rel="stylesheet" href="\.\.\/css\/pages\/club-themes\.css" \/>/
-    );
+    const lines = once.split("\n").map((l) => l.trim());
+    expect(lines).toEqual([
+      '<link rel="stylesheet" href="../css/pages/club.css" />',
+      '<link rel="stylesheet" href="../css/pages/club-inks.css" />',
+      '<link rel="stylesheet" href="../css/pages/club-themes.css" />',
+      '<link href="b">',
+    ]);
     expect(ensureThemeLink(once)).toBe(once);
   });
 });
 
 describe("club.css wears the theme without needing it", () => {
   it("reads every variable with a fallback where an unthemed page would lack it", () => {
-    // :root supplies --club-ink; the rest are optional and default to the plain look
-    expect(themes).toMatch(/:root \{\s*--club-ink: var\(--accent\)/);
+    // club-inks.css's :root supplies --club-ink; the rest are optional and default to the plain look
     for (const v of [
       "band",
       "band-h",

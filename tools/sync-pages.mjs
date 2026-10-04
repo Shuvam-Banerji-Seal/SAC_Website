@@ -256,8 +256,10 @@ export function buildInterestFilter(indent = "      ") {
 /** The Clubs directory's generated block. Returns the html unchanged for any other page. */
 export function syncDirectoryBlocks(html, file) {
   if (file !== "pages/clubs.html") return html;
+  // each card wears its club's ink and drawing, so the directory links the inks too
+  const linked = linkAfter(html, "../css/pages/clubs.css", INKS_LINK);
   return placeBlock(
-    html,
+    linked,
     FILTER_START,
     FILTER_END,
     buildInterestFilter(),
@@ -300,15 +302,26 @@ export function setBodyTheme(html, theme) {
   });
 }
 
+const INKS_LINK = '<link rel="stylesheet" href="../css/pages/club-inks.css" />';
 const THEME_LINK = '<link rel="stylesheet" href="../css/pages/club-themes.css" />';
 
-/** The themes stylesheet, linked straight after club.css (club.css reads the variables it sets). */
+/**
+ * Put `link` on its own line straight after the line that links `after` (a path under css/),
+ * unless the page already has it. Returns the html unchanged when `after` is not linked.
+ */
+function linkAfter(html, after, link) {
+  if (html.includes(link)) return html;
+  const anchor = new RegExp(`([ \\t]*)<link rel="stylesheet" href="${escapeRe(after)}" />`);
+  return html.replace(anchor, (m, indent) => `${m}\n${indent}${link}`);
+}
+
+/**
+ * A club page links club-inks.css and then club-themes.css straight after club.css — club.css
+ * reads the variables they set, and enhancements.css (the last layer) stays last.
+ */
 export function ensureThemeLink(html) {
-  if (html.includes(THEME_LINK)) return html;
-  return html.replace(
-    /([ \t]*)<link rel="stylesheet" href="\.\.\/css\/pages\/club\.css" \/>/,
-    (m, indent) => `${m}\n${indent}${THEME_LINK}`
-  );
+  const withInks = linkAfter(html, "../css/pages/club.css", INKS_LINK);
+  return linkAfter(withInks, "../css/pages/club-inks.css", THEME_LINK);
 }
 
 /** The club page's generated blocks and attributes. Returns the html unchanged for any other page. */

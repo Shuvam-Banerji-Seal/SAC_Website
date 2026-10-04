@@ -668,47 +668,6 @@
   transform: rotate(2deg);
 }
 
-.home-stats {
-  border-block: 1px solid var(--rule);
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  margin: 2rem 0;
-  padding: 1rem 0;
-}
-
-.home-stat {
-  border-left: 3px solid var(--accent);
-  padding: 0.35rem 0 0.35rem 0.9rem;
-}
-
-.home-stat strong {
-  color: var(--accent);
-  display: block;
-  font-family: var(--font-display);
-  font-size: var(--fs-2xl);
-  line-height: 0.9;
-}
-
-.home-stat span {
-  color: var(--ink-muted);
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* The figure alone says little; the note under it is the actual fact. */
-.home-stat__note {
-  color: var(--ink-soft);
-  font-family: var(--font-body) !important;
-  font-size: var(--fs-xs);
-  letter-spacing: 0 !important;
-  margin-top: 0.3rem;
-  text-transform: none !important;
-}
-
 .campus-gallery {
   margin: 2.5rem 0;
   border-bottom: 1px solid var(--rule);
@@ -1659,6 +1618,40 @@ main.home::after {
   }
 }
 
+/* Wide screens: the chips and the search field stand on the left, the club of the day beside
+   them, instead of a full-width card with a hole in its middle. The grid is static (the block is
+   generated HTML), so nothing moves when the card is filled in; --spotlight-h is the tallest card
+   at this width, measured over every club (see the spotlight below). */
+@media (min-width: 1280px) {
+  .finder {
+    column-gap: 2.4rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+  .finder > .section-title,
+  .finder__lede {
+    grid-column: 1 / -1;
+  }
+  .finder__chips {
+    align-content: start;
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .finder__search {
+    align-self: start;
+    grid-column: 1;
+    grid-row: 4;
+    margin-bottom: 0;
+  }
+  .finder .spotlight {
+    align-self: start;
+    grid-column: 2;
+    grid-row: 3 / span 2;
+    margin-top: 0.5rem;
+    min-height: 17.5rem; /* the tallest card here: Slashdot at 1280px, 267px + borders */
+  }
+}
+
 /* Club of the day. The card's height is reserved (min-height) so the filled-in card does not
    push the sections below it down; it is taller on phones, where the name wraps. */
 .spotlight {
@@ -1668,7 +1661,7 @@ main.home::after {
   display: grid;
   gap: 1.1rem;
   grid-template-columns: 64px minmax(0, 1fr);
-  min-height: 12.4rem; /* the tallest card at ≥ 641 px is 196.5 px (measured over every club) */
+  min-height: 12.65rem; /* the tallest card at ≥ 641 px is 196.5 px of content, plus the club-ink top border (4px) */
   padding: 1.1rem 1.2rem;
   position: relative;
 }
@@ -1684,6 +1677,28 @@ main.home::after {
   top: -7px;
   transform: translateX(-50%);
   width: 12px;
+}
+/* in the shown club's ink, with its drawing behind the card's text */
+.spotlight[data-motif]:not([data-motif=""]) {
+  border-top: 4px solid var(--club-ink);
+  box-shadow: 5px 5px 0 var(--club-ink);
+}
+.spotlight[data-motif]:not([data-motif=""])::after {
+  -webkit-mask: var(--club-art) center / contain no-repeat;
+  mask: var(--club-art) center / contain no-repeat;
+  aspect-ratio: 1;
+  background: var(--club-ink);
+  bottom: -1rem;
+  content: "";
+  opacity: 0.12;
+  pointer-events: none;
+  position: absolute;
+  right: -0.5rem;
+  transform: rotate(-6deg);
+  width: 11rem;
+}
+.spotlight[data-motif]:not([data-motif=""]) .spotlight__kicker {
+  color: var(--club-ink);
 }
 .spotlight__crest {
   align-items: center;
@@ -1819,7 +1834,7 @@ main.home::after {
   .spotlight {
     gap: 0.9rem;
     grid-template-columns: 52px minmax(0, 1fr);
-    min-height: 15.2rem; /* tallest at 360–640 px: 241.5 px */
+    min-height: 15.45rem; /* tallest at 360–640 px: 241.5 px, plus the 4px ink border */
     padding: 1rem;
   }
   .spotlight__crest {
@@ -1829,17 +1844,6 @@ main.home::after {
 }
 @media (max-width: 359px) {
   .spotlight {
-    min-height: 18.6rem; /* tallest at 320 px: 295 px */
+    min-height: 18.85rem; /* tallest at 320 px: 295 px, plus the 4px ink border */
   }
-}
-
-/* the counted-up figures (council-facts.js) — digits keep one width so the count doesn't jitter.
-   `.home-stat span` above would otherwise turn the figure into a small mono label. */
-.home-stat strong .home-stat__figure {
-  color: inherit;
-  display: inline;
-  font: inherit;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: inherit;
-  text-transform: none;
 }

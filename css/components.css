@@ -1681,3 +1681,58 @@ main h2[id] {
   min-height: 90vh;
   min-height: 90svh;
 }
+
+/* ===========================================================================
+   Council facts — the figure-and-caption cards on the front page and About
+   ---------------------------------------------------------------------------
+   One set of rules for both pages. They used to live in home.css, with a partial copy in
+   about.css, and About missed two of them: its label and note ran together ("BODIES" +
+   "ACADEMICS…"), and the counted-up figures (council-facts.js) were styled as small mono
+   labels, because `.home-stat span` also matches the digits.
+   =========================================================================== */
+.home-stats {
+  border-block: 1px solid var(--rule);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  margin: 2rem 0;
+  padding: 1rem 0;
+}
+.home-stat {
+  border-left: 3px solid var(--accent);
+  padding: 0.35rem 0 0.35rem 0.9rem;
+}
+.home-stat strong {
+  color: var(--accent);
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 0.9;
+}
+.home-stat span {
+  color: var(--ink-muted);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* The figure alone says little; the note under it is the actual fact. */
+.home-stat__note {
+  color: var(--ink-soft);
+  font-family: var(--font-body) !important;
+  font-size: var(--fs-xs);
+  letter-spacing: 0 !important;
+  margin-top: 0.3rem;
+  text-transform: none !important;
+}
+/* the counted-up digits keep one width so the count doesn't jitter; `.home-stat span` above
+   would otherwise turn them into a small mono label */
+.home-stat strong .home-stat__figure {
+  color: inherit;
+  display: inline;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: inherit;
+  text-transform: none;
+}

@@ -197,16 +197,24 @@ describe("what the layout depends on", () => {
   const css = read("css/pages/home.css");
 
   it("reserves the spotlight's height at three widths, so filling it in moves nothing", () => {
-    const base = css.match(/\.spotlight\s*{[^}]*min-height:\s*([\d.]+)rem/)?.[1];
+    const base = css.match(/^\.spotlight\s*{[^}]*min-height:\s*([\d.]+)rem/m)?.[1];
     const phone = css.match(
       /@media \(max-width: 640px\)\s*{\s*\.spotlight\s*{[^}]*min-height:\s*([\d.]+)rem/
     )?.[1];
     const narrow = css.match(
       /@media \(max-width: 359px\)\s*{\s*\.spotlight\s*{[^}]*min-height:\s*([\d.]+)rem/
     )?.[1];
-    expect(Number(base)).toBeGreaterThanOrEqual(12.3); // tallest measured at ≥641px: 196.5px
+    expect(Number(base)).toBeGreaterThanOrEqual(12.6); // 196.5px of content + the 4px ink border
     expect(Number(phone)).toBeGreaterThan(Number(base));
     expect(Number(narrow)).toBeGreaterThan(Number(phone));
+  });
+
+  it("reserves the card's height beside the chips on wide screens too", () => {
+    const wide = css.match(
+      /@media \(min-width: 1280px\)\s*{[\s\S]*?\.finder \.spotlight\s*{[^}]*min-height:\s*([\d.]+)rem/
+    )?.[1];
+    expect(Number(wide)).toBeGreaterThanOrEqual(17.3); // 267px of content at 1280px, plus borders
+    expect(css).toMatch(/\.finder\s*{[^}]*display:\s*grid/); // static grid: nothing moves when filled
   });
 
   it("bounds the card's own height: the name and meta are clamped, known-for is one line", () => {
@@ -341,8 +349,26 @@ describe("count-up figures", () => {
   });
 
   it("styles the figure so the `.home-stat span` label rule does not shrink it", () => {
-    const css = read("css/pages/home.css");
+    // in the shared sheet, so the About page — which renders the same cards — has it too
+    const css = read("css/components.css");
     expect(css).toMatch(/\.home-stat strong \.home-stat__figure\s*{[^}]*font:\s*inherit/);
     expect(css).toMatch(/\.home-stat strong \.home-stat__figure\s*{[^}]*tabular-nums/);
+  });
+
+  it("keeps the stat cards in one place: neither page sheet redefines the card or its label", () => {
+    // About once carried a partial copy that lacked `display: block` on the label and the
+    // figure rule: the label and note ran together and the counted digits became tiny mono text
+    for (const page of ["css/pages/home.css", "css/pages/about.css"]) {
+      const css = read(page);
+      expect(css, page).not.toMatch(/\.home-stat span\s*{/);
+      expect(css, page).not.toMatch(/\.home-stat__note\s*{/);
+      expect(css, page).not.toMatch(/\.home-stat__figure/);
+    }
+    const shared = read("css/components.css");
+    expect(shared).toMatch(/\.home-stat span\s*{[^}]*display:\s*block/);
+    // and both pages that mount the cards link the shared sheet
+    for (const html of ["index.html", "pages/about.html"]) {
+      expect(read(html)).toContain("css/components.css");
+    }
   });
 });

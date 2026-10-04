@@ -214,3 +214,54 @@
     padding: 0.35rem 0;
   }
 }
+
+/* ------------------------------------------------- a card in its club's ink
+   club-inks.css gives the card --club-ink and --club-art. The drawing peeks in behind the crest
+   (it is clipped by the plate, and stays under the picture), the top rule and the hover are in
+   the ink, so the directory reads as a shelf of different things, not 33 grey rectangles. */
+.club-card {
+  border-top: 3px solid var(--club-ink, var(--ink));
+}
+.club-card__logo {
+  overflow: hidden;
+  position: relative;
+}
+.club-card[data-motif] .club-card__logo::before {
+  -webkit-mask: var(--club-art) center / contain no-repeat;
+  mask: var(--club-art) center / contain no-repeat;
+  aspect-ratio: 1;
+  background: var(--club-ink);
+  bottom: -1.1rem;
+  content: "";
+  opacity: 0.16;
+  pointer-events: none;
+  position: absolute;
+  right: -0.9rem;
+  transform: rotate(-8deg);
+  width: 6.4rem;
+}
+.club-card__logo img,
+.club-card__logo-fallback {
+  position: relative; /* above the drawing */
+}
+/* the whole card is the link, so its text is not underlined like a link in a paragraph: the
+   name is underlined, in the club's ink, when the card is pointed at */
+.club-card a {
+  color: inherit;
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .club-card:hover .club-card__name {
+    text-decoration: underline;
+    text-decoration-color: var(--club-ink, var(--accent));
+    text-underline-offset: 0.2em;
+  }
+  .club-card[data-motif]:hover {
+    border-color: var(--club-ink);
+    box-shadow: 4px 4px 0 var(--club-ink);
+  }
+}
+.club-card a:focus-visible {
+  outline: 2px solid var(--club-ink, var(--accent));
+  outline-offset: 4px;
+}

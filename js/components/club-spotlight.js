@@ -105,6 +105,8 @@ export function initClubSpotlight(mount, { date = new Date(), clubs = CLUBS } = 
     const words = knownFor(club);
     known.textContent = words.length ? `Ask them about: ${words.join(" · ")}` : "";
     known.hidden = !words.length;
+    // the card is drawn in the club's ink, with its drawing behind (club-inks.css, home.css)
+    mount.dataset.motif = club.theme?.motif ?? "";
     open.setAttribute("href", pageUrl(club.page));
     open.setAttribute("aria-label", `Visit ${club.name}`);
     paintCrest();
