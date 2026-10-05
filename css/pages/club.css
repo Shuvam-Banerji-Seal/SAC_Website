@@ -553,7 +553,8 @@ body[data-band] .club-detail__section-title {
 .club-hero-strip__item.is-lead {
   flex: 2.2 1 0;
 }
-.club-hero-strip__item img {
+.club-hero-strip__item img,
+.club-hero-strip__photo {
   aspect-ratio: 16 / 10;
   display: block;
   height: auto;
@@ -563,12 +564,29 @@ body[data-band] .club-detail__section-title {
 }
 /* The lead photo sets the strip's height; the smaller ones are stretched to match it.
    Their images fill that frame — at their own 16:10 they left a blank band above. */
-.club-hero-strip__item:not(.is-lead) img {
+.club-hero-strip__item:not(.is-lead) img,
+.club-hero-strip__item:not(.is-lead) .club-hero-strip__photo {
   aspect-ratio: auto;
   height: calc(100% - var(--fp-t, 0px) - var(--fp-b, 0px));
   inset: var(--fp-t, 0) var(--fp-r, 0) var(--fp-b, 0) var(--fp-l, 0);
   position: absolute;
   width: calc(100% - var(--fp-l, 0px) - var(--fp-r, 0px));
+}
+/* the strip held open while the archive loads: the club's mounts, empty, gently pulsing */
+.club-hero-strip--reserved {
+  pointer-events: none;
+}
+.club-hero-strip--reserved .club-hero-strip__photo {
+  animation: sac-skeleton-pulse 1.4s ease-in-out infinite;
+  background: var(--paper-deep);
+}
+.club-hero-strip--reserved .club-hero-strip__item::after {
+  content: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-hero-strip--reserved .club-hero-strip__photo {
+    animation: none;
+  }
 }
 /* what the mount adds over the print: tape, sprocket holes, corner marks, a title bar */
 .club-hero-strip__item::before {
@@ -611,7 +629,8 @@ body[data-band] .club-detail__section-title {
     flex: 1 1 100%;
   }
   /* stacked, each photo is its own height again */
-  .club-hero-strip__item:not(.is-lead) img {
+  .club-hero-strip__item:not(.is-lead) img,
+  .club-hero-strip__item:not(.is-lead) .club-hero-strip__photo {
     aspect-ratio: 16 / 10;
     height: auto;
     inset: auto;

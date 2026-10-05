@@ -120,14 +120,19 @@ describe("duplicate manifest", () => {
     }
   });
 
-  it("data.js applies the manifest and fails open without it", () => {
+  it("data.js applies the manifest and fails open without it", async () => {
     const src = readFileSync(resolve(root, "js/data.js"), "utf-8");
     expect(src).toContain("public/duplicates.json");
     expect(src).toContain("suppressed.has(entry.id)");
-    // the hand-curated list must be merged alongside the generated ones
-    expect(src).toContain("manifest.curated");
+    // one reading of the manifest, shared with the page generator (tools/sync-pages.mjs)
+    expect(src).toMatch(/\.then\(\(manifest\) => suppressedIds\(manifest\)\)/);
     // a missing/broken manifest must resolve to an empty Set, not throw
     expect(src).toMatch(/catch\(\(\) => new Set\(\)\)/);
+    const { suppressedIds } = await import("../../js/utils/hero-picks.js");
+    expect(suppressedIds(null).size).toBe(0);
+    // the hand-curated list is merged alongside the generated ones
+    const ids = suppressedIds({ suppress: [1], degenerate: [2], curated: [3] });
+    expect([...ids].sort()).toEqual([1, 2, 3]);
   });
 
   // Regression: the manifest was never staged by CI, so it 404'd live and the
@@ -138,9 +143,11 @@ describe("duplicate manifest", () => {
     expect(deploy).toMatch(/test -f public\/duplicates\.json/);
   });
 
-  it("data.js hides the extra frames recorded in same_person", () => {
-    const src = readFileSync(resolve(root, "js/data.js"), "utf-8");
-    expect(src).toContain("manifest.same_person");
+  it("data.js hides the extra frames recorded in same_person", async () => {
+    const { suppressedIds } = await import("../../js/utils/hero-picks.js");
+    const ids = suppressedIds({ same_person: [{ keep: { id: 7 }, drop: [{ id: 8 }, { id: 9 }] }] });
+    expect(ids.has(8) && ids.has(9)).toBe(true);
+    expect(ids.has(7)).toBe(false);
   });
 
   it("the manifest builder preserves curation across regenerations", () => {

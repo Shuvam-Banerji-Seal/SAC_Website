@@ -7,6 +7,7 @@
  * same useful map-backed visual anchor without making the pages boilerplate.
  */
 import { $, el, assetUrl } from "../utils/dom.js";
+import { heroPicks, HERO_MIN } from "../utils/hero-picks.js";
 import { altTextFor } from "../utils/caption.js";
 import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { isCurrentTenure } from "../utils/tenure.js";
@@ -122,20 +123,28 @@ function setMeta(attr, key, content) {
   tag.setAttribute("content", content);
 }
 
-/** Featured strip: the three best landscape event shots above the intro. */
-function buildHeroStrip(club, entries) {
-  const picks = entries
-    .filter(
-      (e) =>
-        e.file_type === "image" &&
-        (e.is_event || e.is_iicm || e.role === "event") &&
-        !e.is_extracted_from_doc &&
-        !e.is_ob_portrait &&
-        (Number(e.aspect_ratio) || 1) >= 1.2
+/** An empty strip of `count` mounts, the size the real one will be; null when there is none. */
+function reserveHeroStrip(header, count) {
+  if (count < HERO_MIN) return null;
+  const slot = el(
+    "div",
+    { class: "club-hero-strip club-hero-strip--reserved", "aria-hidden": "true" },
+    ...Array.from({ length: count }, (_, i) =>
+      el(
+        "div",
+        { class: "club-hero-strip__item" + (i === 0 ? " is-lead" : "") },
+        el("span", { class: "club-hero-strip__photo" })
+      )
     )
-    .sort((a, b) => (Number(b.width) || 0) - (Number(a.width) || 0))
-    .slice(0, 3);
-  if (picks.length < 2) return null;
+  );
+  header.append(slot);
+  return slot;
+}
+
+/** Featured strip: the three best landscape event shots above the intro (utils/hero-picks.js). */
+function buildHeroStrip(club, entries) {
+  const picks = heroPicks(entries);
+  if (picks.length < HERO_MIN) return null;
   return el(
     "div",
     { class: "club-hero-strip", "aria-label": "Featured moments" },
@@ -208,11 +217,15 @@ export async function initClubPage() {
   if (!slug || !header) return null;
 
   showIdentitySkeleton(header);
+  // The generator wrote how many photographs the strip will hold (data-strip): hold their space
+  // now, in the strip's own layout, so the strip doesn't push the page down when it arrives.
+  const stripSlot = reserveHeroStrip(header, Number(document.body.dataset.strip) || 0);
   try {
     const assets = await loadAssetsMap();
     const club = getClub(slug, assets);
     if (!club) {
       clearSkeleton(header);
+      stripSlot?.remove();
       return null;
     }
     const entries = getClubEntries(assets, slug);
@@ -244,6 +257,7 @@ export async function initClubPage() {
     return { club, entries };
   } catch (error) {
     console.warn("[club-page] Could not hydrate club identity:", error);
+    stripSlot?.remove();
     return null;
   }
 }

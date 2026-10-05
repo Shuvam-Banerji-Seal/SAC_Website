@@ -12,6 +12,7 @@
  * (the helper is in js/utils/dom.js).
  */
 import { isInPagesDir } from "./utils/dom.js";
+import { suppressedIds } from "./utils/hero-picks.js";
 
 const JSONL_PATH = "public/assets/processed/assets_map.jsonl";
 const JSONL_URL = isInPagesDir() ? `../${JSONL_PATH}` : JSONL_PATH;
@@ -45,16 +46,7 @@ const DUPES_URL = isInPagesDir() ? `../${DUPES_PATH}` : DUPES_PATH;
 function fetchSuppressed() {
   return fetch(DUPES_URL, { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
-    .then((manifest) => {
-      if (!manifest) return new Set();
-      const ids = [
-        ...(manifest.suppress || []),
-        ...(manifest.degenerate || []),
-        ...(manifest.curated || []),
-        ...(manifest.same_person || []).flatMap((group) => group.drop.map((d) => d.id)),
-      ];
-      return new Set(ids);
-    })
+    .then((manifest) => suppressedIds(manifest))
     .catch(() => new Set());
 }
 
