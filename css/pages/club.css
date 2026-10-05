@@ -572,6 +572,28 @@ body[data-band] .club-detail__section-title {
   position: absolute;
   width: calc(100% - var(--fp-l, 0px) - var(--fp-r, 0px));
 }
+/* Four photographs (a club's own choice) are an even row of 3:2 prints, two by two on phones: a
+   lead and three narrow ones stretched to its height cropped group photographs to slivers. */
+.club-hero-strip--n4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.club-hero-strip--n4 .club-hero-strip__item img,
+.club-hero-strip--n4 .club-hero-strip__item .club-hero-strip__photo,
+.club-hero-strip--n4 .club-hero-strip__item:not(.is-lead) img,
+.club-hero-strip--n4 .club-hero-strip__item:not(.is-lead) .club-hero-strip__photo {
+  aspect-ratio: 3 / 2;
+  height: auto;
+  inset: auto;
+  position: static;
+  width: 100%;
+}
+@media (max-width: 720px) {
+  .club-hero-strip--n4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* the strip held open while the archive loads: the club's mounts, empty, gently pulsing */
 .club-hero-strip--reserved {
   pointer-events: none;

@@ -12,9 +12,17 @@
 /** A strip needs this many photographs; with fewer the club has none. */
 export const HERO_MIN = 2;
 const HERO_MAX = 3;
+/** A club's own choice can run to four (club.css lays four out as an even row). */
+const FEATURED_MAX = 4;
 
-/** The best landscape event photographs, widest first. */
+/**
+ * The photographs under the title. A club that has chosen them (archive role "featured" —
+ * Singularity sent four, 2026-10-05) gets those, in the order it gave them; any other club gets
+ * its best landscape event photographs, widest first.
+ */
 export function heroPicks(entries) {
+  const chosen = entries.filter((e) => e.file_type === "image" && e.role === "featured");
+  if (chosen.length >= HERO_MIN) return chosen.slice(0, FEATURED_MAX);
   return entries
     .filter(
       (e) =>

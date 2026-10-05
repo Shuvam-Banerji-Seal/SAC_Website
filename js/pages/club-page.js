@@ -9,6 +9,7 @@
 import { $, el, assetUrl } from "../utils/dom.js";
 import { heroPicks, HERO_MIN } from "../utils/hero-picks.js";
 import { altTextFor } from "../utils/caption.js";
+import { srcsetFor } from "../utils/thumb.js";
 import { showIdentitySkeleton, clearSkeleton } from "../utils/skeleton.js";
 import { isCurrentTenure } from "../utils/tenure.js";
 import { getClub, getClubEntries, loadAssetsMap, indexByClub } from "../data.js";
@@ -128,7 +129,10 @@ function reserveHeroStrip(header, count) {
   if (count < HERO_MIN) return null;
   const slot = el(
     "div",
-    { class: "club-hero-strip club-hero-strip--reserved", "aria-hidden": "true" },
+    {
+      class: `club-hero-strip club-hero-strip--reserved club-hero-strip--n${count}`,
+      "aria-hidden": "true",
+    },
     ...Array.from({ length: count }, (_, i) =>
       el(
         "div",
@@ -141,13 +145,26 @@ function reserveHeroStrip(header, count) {
   return slot;
 }
 
+/** How wide a strip's print is (club.css): four even, or a 2.2:1:1 lead; full width on phones.
+ *  Measured, not guessed — a four-up print is 236px at 1440 (16vw: the rail and margins take the
+ *  rest) and 153px on a 390px phone (40vw); overstating it sent 2x screens the 2400px originals. */
+function stripSizes(count, index) {
+  if (count === 4) return "(max-width: 720px) 40vw, 16vw";
+  const share = index === 0 ? 2.2 : 1;
+  const total = 2.2 + (count - 1);
+  return `(max-width: 720px) 100vw, ${Math.round((share / total) * 68)}vw`;
+}
+
 /** Featured strip: the three best landscape event shots above the intro (utils/hero-picks.js). */
 function buildHeroStrip(club, entries) {
   const picks = heroPicks(entries);
   if (picks.length < HERO_MIN) return null;
   return el(
     "div",
-    { class: "club-hero-strip", "aria-label": "Featured moments" },
+    {
+      class: `club-hero-strip club-hero-strip--n${picks.length}`,
+      "aria-label": "Featured moments",
+    },
     ...picks.map((e, i) =>
       el(
         "button",
@@ -164,6 +181,10 @@ function buildHeroStrip(club, entries) {
         },
         el("img", {
           src: assetUrl(e.public_url),
+          // The originals are up to 2400px; a print in a four-up strip is ~250px wide. Offer the
+          // 480px variant too and let the browser take what the frame needs.
+          srcset: srcsetFor(e, assetUrl),
+          sizes: stripSizes(picks.length, i),
           alt: altTextFor(e, "Featured club photograph"),
           loading: i === 0 ? "eager" : "lazy",
           decoding: "async",

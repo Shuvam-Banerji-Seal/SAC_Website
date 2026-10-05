@@ -21,3 +21,16 @@ export function gridSrc(asset) {
   if (asset.file_type === "image" && asset.thumb_url) return asset.thumb_url;
   return asset.public_url || "";
 }
+
+/**
+ * A srcset offering the 480px grid variant and the full image, for frames that are sometimes
+ * small and sometimes large (the home Picture Desk's lead, a club's title strip). undefined
+ * when the archive has only one size, so the plain src stands.
+ * @param {object} asset — one assets_map.jsonl entry
+ * @param {(path: string) => string} url — the page's assetUrl (paths differ by page depth)
+ */
+export function srcsetFor(asset, url) {
+  const thumb = gridSrc(asset);
+  if (!asset?.width || !thumb || thumb === asset.public_url) return undefined;
+  return `${url(thumb)} 480w, ${url(asset.public_url)} ${asset.width}w`;
+}

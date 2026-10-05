@@ -169,6 +169,37 @@ describe("the photo strip under a club's title", () => {
     expect(heroCount([photo(1, 900, 1.5)])).toBe(0);
   });
 
+  it("prefers the photographs a club chose, in its order, up to four", async () => {
+    const { heroPicks, heroCount } = await import("../../js/utils/hero-picks.js");
+    const event = (id) => ({
+      id,
+      file_type: "image",
+      is_event: true,
+      width: 2400,
+      aspect_ratio: 1.5,
+    });
+    const chosen = (id) => ({
+      id,
+      file_type: "image",
+      role: "featured",
+      width: 900,
+      aspect_ratio: 1.3,
+    });
+    const entries = [
+      event(1),
+      chosen(10),
+      event(2),
+      chosen(11),
+      chosen(12),
+      chosen(13),
+      chosen(14),
+    ];
+    expect(heroPicks(entries).map((e) => e.id)).toEqual([10, 11, 12, 13]);
+    expect(heroCount(entries)).toBe(4);
+    // one chosen photograph is not a strip: the club's events stand in
+    expect(heroPicks([event(1), chosen(10), event(2)]).map((e) => e.id)).toEqual([1, 2]);
+  });
+
   it("is marked on every club page that will have one, with its size, and on no other", async () => {
     const { stripCounts } = await import("../../tools/sync-pages.mjs");
     const counts = stripCounts(root);
