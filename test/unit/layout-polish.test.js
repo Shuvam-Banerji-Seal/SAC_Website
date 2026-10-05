@@ -140,3 +140,135 @@ describe("a club masthead's record line", () => {
     expect(line).not.toMatch(/\b0 |medias|map logo|map mark/i);
   });
 });
+
+// 2026-10-05, measured on the live site: the strip under a club's title arrived with the archive
+// and pushed the page down — CLS 0.10 landing on Singularity with a slow archive, 0.28 once
+// scrolled, 0.21 on Chess. The generator now marks the pages that get one, and the page holds
+// that many mounts open from the first paint.
+describe("the photo strip under a club's title", () => {
+  it("is chosen in one place: landscape event photographs, widest first, two at least", async () => {
+    const { heroPicks, heroCount } = await import("../../js/utils/hero-picks.js");
+    const photo = (id, w, ratio, extra = {}) => ({
+      id,
+      file_type: "image",
+      is_event: true,
+      width: w,
+      aspect_ratio: ratio,
+      ...extra,
+    });
+    const entries = [
+      photo(1, 900, 1.5),
+      photo(2, 2400, 1.6),
+      photo(3, 2000, 0.75), // portrait-shaped: never in the strip
+      photo(4, 1800, 1.33, { is_extracted_from_doc: true }),
+      photo(5, 1600, 1.4),
+      photo(6, 1200, 1.5, { is_event: false }),
+    ];
+    expect(heroPicks(entries).map((e) => e.id)).toEqual([2, 5, 1]);
+    expect(heroCount(entries)).toBe(3);
+    expect(heroCount([photo(1, 900, 1.5)])).toBe(0);
+  });
+
+  it("prefers the photographs a club chose, in its order, up to four", async () => {
+    const { heroPicks, heroCount } = await import("../../js/utils/hero-picks.js");
+    const event = (id) => ({
+      id,
+      file_type: "image",
+      is_event: true,
+      width: 2400,
+      aspect_ratio: 1.5,
+    });
+    const chosen = (id) => ({
+      id,
+      file_type: "image",
+      role: "featured",
+      width: 900,
+      aspect_ratio: 1.3,
+    });
+    const entries = [
+      event(1),
+      chosen(10),
+      event(2),
+      chosen(11),
+      chosen(12),
+      chosen(13),
+      chosen(14),
+    ];
+    expect(heroPicks(entries).map((e) => e.id)).toEqual([10, 11, 12, 13]);
+    expect(heroCount(entries)).toBe(4);
+    // one chosen photograph is not a strip: the club's events stand in
+    expect(heroPicks([event(1), chosen(10), event(2)]).map((e) => e.id)).toEqual([1, 2]);
+  });
+
+  it("is marked on every club page that will have one, with its size, and on no other", async () => {
+    const { stripCounts } = await import("../../tools/sync-pages.mjs");
+    const counts = stripCounts(root);
+    const { CLUBS } = await import("../../js/data/clubs.js");
+    let marked = 0;
+    for (const club of CLUBS) {
+      const body = read(club.page).match(/<body[^>]*>/)[0];
+      const want = counts.get(club.slug) || 0;
+      const got = Number((body.match(/data-strip="(\d)"/) || [])[1] || 0);
+      expect(got, club.page).toBe(want);
+      if (want) marked++;
+    }
+    expect(marked).toBeGreaterThan(0);
+  });
+
+  it("holds the strip open while the archive loads, in the strip's own layout", async () => {
+    document.head.innerHTML = '<meta name="description" content="x" />';
+    document.body.innerHTML =
+      '<div class="club-detail__header"><a class="back-link" href="#">back</a></div>';
+    document.body.dataset.clubSlug = "SAC_Sports_Chess";
+    document.body.dataset.strip = "3";
+    const orig = global.fetch;
+    let release;
+    const gate = new Promise((r) => (release = r));
+    const row = (id, w) =>
+      JSON.stringify({
+        id,
+        club: "SAC_Sports_Chess",
+        club_name: "Chess Club",
+        file_type: "image",
+        is_event: true,
+        width: w,
+        aspect_ratio: 1.5,
+        public_url: `p/${id}.webp`,
+        path: `C/${id}.webp`,
+      });
+    global.fetch = async () => {
+      await gate;
+      return { ok: true, text: async () => [row(1, 2400), row(2, 2000), row(3, 1800)].join("\n") };
+    };
+    vi.resetModules();
+    sessionStorage.clear();
+    const { initClubPage } = await import("../../js/pages/club-page.js");
+    const done = initClubPage();
+    await new Promise((r) => setTimeout(r, 0));
+
+    const reserved = document.querySelector(".club-hero-strip--reserved");
+    expect(reserved).not.toBeNull();
+    expect(reserved.getAttribute("aria-hidden")).toBe("true");
+    const items = [...reserved.querySelectorAll(".club-hero-strip__item")];
+    expect(items).toHaveLength(3);
+    expect(items[0].classList.contains("is-lead")).toBe(true);
+    expect(items.every((i) => i.querySelector(".club-hero-strip__photo"))).toBe(true);
+
+    release();
+    await done;
+    global.fetch = orig;
+    expect(document.querySelector(".club-hero-strip--reserved")).toBeNull();
+    expect(document.querySelectorAll(".club-hero-strip .club-hero-strip__item")).toHaveLength(3);
+    delete document.body.dataset.strip;
+  });
+
+  it("gives an empty mount's photo exactly the space a photograph takes", () => {
+    const css = read("css/pages/club.css");
+    expect(css).toMatch(
+      /\.club-hero-strip__item img,\s*\.club-hero-strip__photo \{\s*aspect-ratio: 16 \/ 10/
+    );
+    expect(css).toMatch(
+      /\.club-hero-strip__item:not\(\.is-lead\) img,\s*\.club-hero-strip__item:not\(\.is-lead\) \.club-hero-strip__photo \{/
+    );
+  });
+});

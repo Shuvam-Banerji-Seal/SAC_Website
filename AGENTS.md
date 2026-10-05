@@ -100,6 +100,7 @@ sw.js                      service worker (code network-first, media stale-while
 | `<!-- preload:start … preload:end -->` in every page head | the import graph of `js/main.js` + the page's module (`PAGE_MODULES` in the tool) | `npm run sync` |
 | `<!-- club-crumbs … -->` and `<!-- club-pager … -->` on the 32 club pages | the club registry, `js/data/clubs.js` | `npm run sync` |
 | `data-motif data-band data-bullet data-frame data-type` on each club page's `<body>`, and its `club-themes.css` link | `THEMES` in the registry | `npm run sync` |
+| `data-strip="<n>"` on a club page's `<body>` (how many photographs stand under its title, so the page holds their space while the archive loads) | the archive map + `duplicates.json`, chosen by `js/utils/hero-picks.js` | `npm run sync` — rerun after any archive change |
 | `<!-- home-finder … -->` in `index.html` ("What are you into?" chips + the spotlight's mount) and `<!-- clubs-filter … -->` in `pages/clubs.html` (the interest filter row) | `INTERESTS` and the listed clubs in the registry | `npm run sync` |
 | `SHELL` list in `sw.js` | same graph + shared CSS | `npm run sync` |
 | `sitemap.xml`, `robots.txt` | page list + git dates + **host** | `npm run sitemap` (CI regenerates per host) |

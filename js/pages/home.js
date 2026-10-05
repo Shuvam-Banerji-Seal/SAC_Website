@@ -11,7 +11,7 @@ import { initScrollSounds } from "../utils/calligraphy.js";
 import { fetchLatestVideos } from "../utils/youtube.js";
 import { measureText } from "../utils/text-measure.js";
 import { captionFor, altTextFor } from "../utils/caption.js";
-import { gridSrc } from "../utils/thumb.js";
+import { gridSrc, srcsetFor } from "../utils/thumb.js";
 import { renderCouncilFacts } from "../components/council-facts.js";
 
 const EXCERPT_MAX = 240;
@@ -97,11 +97,7 @@ const LEAD_SIZES = "(min-width: 900px) 60vw, (min-width: 521px) 50vw, 100vw";
 const FRAME_SIZES = "(min-width: 900px) 30vw, (min-width: 521px) 50vw, 100vw";
 
 /** The 480px grid variant and the full image, when the archive has both. */
-export function pictureSrcset(asset) {
-  const thumb = gridSrc(asset);
-  if (!asset?.width || !thumb || thumb === asset.public_url) return undefined;
-  return `${assetUrl(thumb)} 480w, ${assetUrl(asset.public_url)} ${asset.width}w`;
-}
+export const pictureSrcset = (asset) => srcsetFor(asset, assetUrl);
 
 function renderCampusGallery(assets, claimed) {
   const mount = document.getElementById("campus-gallery-grid");

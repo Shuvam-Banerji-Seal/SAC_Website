@@ -25,6 +25,9 @@
  * without JavaScript:
  *   club-crumbs   the breadcrumb:  Home › Clubs › SAC Cultural › AARSHI
  *   club-pager    "More from SAC Cultural" and previous / next club
+ * and one attribute derived from the archive (public/assets): data-strip="<n>" on <body>, the
+ * number of photographs under the club's title, so the page can hold their space while the
+ * archive loads (utils/hero-picks.js).
  *
  * The home page gets one more from the same registry:
  *   home-finder   "What are you into?" — an interest chip per INTERESTS row, with its club count
@@ -47,6 +50,7 @@ import {
   clubByPage,
   countForInterest,
 } from "../js/data/clubs.js";
+import { heroCount, suppressedIds } from "../js/utils/hero-picks.js";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -324,8 +328,42 @@ export function ensureThemeLink(html) {
   return linkAfter(withInks, "../css/pages/club-inks.css", THEME_LINK);
 }
 
+const MAP_FILE = "public/assets/processed/assets_map.jsonl";
+const DUPES_FILE = "public/duplicates.json";
+
+/**
+ * How many photographs each club's title strip will show (utils/hero-picks.js), from the archive
+ * as it will be deployed — same map, same hidden duplicates as data.js. null when the archive is
+ * not checked out: the pages' marks are then left as they are.
+ */
+export function stripCounts(root = ROOT) {
+  const mapPath = resolve(root, MAP_FILE);
+  if (!existsSync(mapPath)) return null;
+  const dupesPath = resolve(root, DUPES_FILE);
+  const hidden = suppressedIds(
+    existsSync(dupesPath) ? JSON.parse(readFileSync(dupesPath, "utf-8")) : null
+  );
+  const byClub = new Map();
+  for (const line of readFileSync(mapPath, "utf-8").split("\n")) {
+    if (!line.trim()) continue;
+    const entry = JSON.parse(line);
+    if (hidden.has(entry.id)) continue;
+    if (!byClub.has(entry.club)) byClub.set(entry.club, []);
+    byClub.get(entry.club).push(entry);
+  }
+  return new Map([...byClub].map(([club, entries]) => [club, heroCount(entries)]));
+}
+
+/** `<body data-strip="n">` on a page whose strip will hold n photographs; none without one. */
+export function setBodyStrip(html, count) {
+  return html.replace(/<body([^>]*)>/, (_, attrs) => {
+    const rest = attrs.replace(/\s+data-strip="[^"]*"/, "");
+    return `<body${rest}${count ? ` data-strip="${count}"` : ""}>`;
+  });
+}
+
 /** The club page's generated blocks and attributes. Returns the html unchanged for any other page. */
-export function syncClubBlocks(html, file) {
+export function syncClubBlocks(html, file, strips = null) {
   const club = clubByPage(file);
   if (!club || !/data-club-slug=/.test(html)) return html;
   let next = placeBlock(
@@ -336,7 +374,9 @@ export function syncClubBlocks(html, file) {
     /[ \t]*<header class="club-detail__header">/
   );
   next = placeBlock(next, PAGER_START, PAGER_END, buildPager(club), /[ \t]*<\/article>/);
-  return ensureThemeLink(setBodyTheme(next, club.theme));
+  next = ensureThemeLink(setBodyTheme(next, club.theme));
+  if (strips) next = setBodyStrip(next, strips.get(club.slug) || 0);
+  return next;
 }
 
 /** Rewrite one HTML document; returns the new text (unchanged if already current). */
@@ -396,12 +436,13 @@ export function syncServiceWorker(js, root = ROOT) {
 
 export function run({ check = false, root = ROOT } = {}) {
   const stale = [];
+  const strips = stripCounts(root);
   for (const file of pageFiles(root)) {
     const path = resolve(root, file);
     const html = readFileSync(path, "utf-8");
     const prefix = file.startsWith("pages/") ? "../" : "";
     const next = syncDirectoryBlocks(
-      syncHomeBlocks(syncClubBlocks(syncHtml(html, prefix, root), file), file),
+      syncHomeBlocks(syncClubBlocks(syncHtml(html, prefix, root), file, strips), file),
       file
     );
     if (next !== html) {

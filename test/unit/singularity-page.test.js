@@ -1,6 +1,7 @@
 /**
  * test/unit/singularity-page.test.js — the changes Singularity asked for (2026-10-05), kept.
  *
+ *   1  the four photographs the club chose, under its title (and the page holds their space)
  *   2  every office bearer in the table, each with a phone and an institute address
  *   3  a portrait for each of them in the archive, under the same name (so the card gets Call/Email)
  *   4  the ISAAC paragraph in the club's words, with its two links, wholly right of the divider
@@ -30,6 +31,33 @@ const map = read("public/assets/processed/assets_map.jsonl")
 const rows = [...page.querySelectorAll(".ob-table tbody tr")].map((tr) => {
   const [name, phone, email, role] = [...tr.cells].map((td) => td.textContent.trim());
   return { name, phone, email, role };
+});
+
+describe("under the title (change 1)", () => {
+  it("shows the four photographs from the club's folder, in its order", async () => {
+    const { heroPicks } = await import("../../js/utils/hero-picks.js");
+    const picks = heroPicks(map);
+    expect(picks.map((a) => a.title)).toEqual([
+      "Freshers' 2026",
+      "Singularity, 1 September 2026",
+      "Parallelization",
+      "Singularity Freshers' 2025",
+    ]);
+    for (const a of picks) {
+      expect(a.role).toBe("featured");
+      expect(existsSync(resolve(root, a.public_url)), a.public_url).toBe(true);
+      expect(existsSync(resolve(root, a.thumb_url)), a.thumb_url).toBe(true);
+    }
+    // the club's choice stands under the title, not again among the event photographs
+    expect(picks.some((a) => a.is_event)).toBe(false);
+  });
+
+  it("holds four mounts open from the first paint", () => {
+    expect(page.body.dataset.strip).toBe("4");
+    expect(read("css/pages/club.css")).toMatch(
+      /\.club-hero-strip--n4 \{\s*display: grid;\s*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/
+    );
+  });
 });
 
 describe("office bearers (changes 2 and 3)", () => {
