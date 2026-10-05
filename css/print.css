@@ -18,6 +18,10 @@
   .skip-link {
     display: none !important;
   }
+  html::before {
+    display: none !important;
+  }
+  html,
   body,
   main {
     background: #fff !important;

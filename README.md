@@ -28,7 +28,7 @@ build step and no runtime dependencies.
 
 ## The look
 
-An aged-paper broadsheet: warm stock with foxing, tea stains and a faint fold, rust
+An aged-paper broadsheet: warm stock with foxing, tea stains and a worn edge, rust
 and oxblood accents, mono small-caps labels, pinned and taped cards. Paper ageing is
 one setting — **Fresh**, **Aged** (default) or **Rustic** — alongside 17 paper textures,
 7 type presets, dark mode, text size, and reduced-motion and sound toggles.

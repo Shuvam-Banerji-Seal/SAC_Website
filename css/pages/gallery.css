@@ -85,6 +85,29 @@
   letter-spacing: 0.04em;
   margin: 0;
 }
+/* The toolbar is sticky, so on a phone every line of it is a line of photographs lost for the
+   whole visit (it was ~136px of an 844px screen). The search box says what it searches and the
+   hint is for wide screens, so both labels go; and the bar retracts with the masthead strip as you
+   read down the album and returns the moment you scroll up — never while you are typing in it. */
+@media (max-width: 640px) {
+  .gallery-toolbar {
+    gap: 0.4rem 0.5rem;
+    padding: 0.45rem 0.5rem 0.35rem;
+    transition:
+      top var(--transition),
+      transform 0.25s ease;
+  }
+  .gallery-search {
+    flex-basis: 100%;
+  }
+  .gallery-search__label,
+  .gallery-count__hint {
+    display: none;
+  }
+  body.topbar-hidden .gallery-toolbar:not(:focus-within) {
+    transform: translateY(calc(-100% - 2px));
+  }
+}
 .gallery-filter-wrap {
   margin: 0 0 1rem;
 }
@@ -150,6 +173,8 @@
   font-family: var(--font-body);
   font-size: var(--fs-xl);
   letter-spacing: -0.025em;
+  /* clear of the first row's pin heads, which sit 6px above each print */
+  margin-bottom: 1.1rem;
   text-transform: none;
 }
 .gallery__club-name::before {

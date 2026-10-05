@@ -165,8 +165,15 @@ version (`site-hygiene.test.js`).
 
 - **Tokens** live in `css/variables.css`. Paper ageing is one number, `--age`
   (Fresh 0.3, **Aged 1 — the default**, Rustic 1.5, dark 0.55), that scales
-  every stain, foxing spot, vignette and fold. `--rust`/`--tea` are the oxidised
+  every stain, foxing spot and vignette. `--rust`/`--tea` are the oxidised
   end of the palette.
+- **The sheet** is two layers (`css/main.css`): `<html>` carries the paper colour, the optional
+  scanned stock and the 180px fibre-noise tile; `html::before` is one fixed, viewport-sized layer
+  with the vignette, foxing, stains and laid lines. Every image on that layer takes the *same*
+  `background-size`, because the variables hold several gradients each — a per-layer size list
+  is cycled across them by the browser, which once tiled the stains into a quilt of squares
+  (`css-fixes.test.js` guards it). It is `position: fixed`, not `background-attachment: fixed`,
+  which iOS ignores and Chrome repaints on scroll.
 - **Motion** uses transform and opacity only, hover effects sit behind
   `(hover: hover)`, and everything stops under `prefers-reduced-motion` *and* the
   site's own Reduce-motion toggle (`html[data-reduce-motion="on"]`).

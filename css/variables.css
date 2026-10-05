@@ -8,8 +8,11 @@
      --paper-foxing  age freckles, the brown spots old stock develops
      --paper-stains  larger tea/ink blooms
      --paper-edge-wear  vignette, darker toward the trimmed edges
-   All are `background-attachment: fixed` on <body>, so the sheet stays put
-   while the type scrolls over it — one composited layer, no repaint. */
+   The fibre tiles <html>; the rest share one fixed, viewport-sized layer
+   (html::before in main.css), so the sheet stays put while the type scrolls
+   over it — one composited layer, no repaint. Each variable may hold any
+   number of gradients: that layer gives every image the same size, so
+   nothing here has to line up with a size list. */
 :root {
   /* How old the sheet looks, 0 (fresh stock) to ~1.5 (a cellar find). Every
      ageing layer below scales its opacity by this, so one number moves the
@@ -37,9 +40,9 @@
   );
   /* fractalNoise at a high base frequency = pulp tooth rather than clouds */
   --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)' opacity='0.055'/%3E%3C/svg%3E");
-  /* Foxing: the rust-brown freckles old rag paper develops. Soft-edged on
-     purpose — crisp dots read as a repeating lattice the moment the tile wraps,
-     blooms read as age. */
+  /* Foxing: the rust-brown freckles old rag paper develops, placed across one
+     screen (the layer is viewport-sized and does not repeat). Soft-edged on
+     purpose: crisp dots read as print, blooms read as age. */
   --paper-foxing:
     radial-gradient(
       circle at 18% 32%,
@@ -67,7 +70,24 @@
       transparent 12px
     ),
     radial-gradient(circle at 47% 46%, rgba(138, 86, 34, calc(0.04 * var(--age))), transparent 7px),
-    radial-gradient(circle at 8% 88%, rgba(130, 78, 30, calc(0.06 * var(--age))), transparent 16px);
+    radial-gradient(circle at 8% 88%, rgba(130, 78, 30, calc(0.06 * var(--age))), transparent 16px),
+    radial-gradient(
+      circle at 56% 66%,
+      rgba(138, 86, 34, calc(0.05 * var(--age))),
+      transparent 10px
+    ),
+    radial-gradient(
+      circle at 81% 27%,
+      rgba(130, 78, 30, calc(0.055 * var(--age))),
+      transparent 13px
+    ),
+    radial-gradient(circle at 27% 7%, rgba(146, 92, 40, calc(0.045 * var(--age))), transparent 8px),
+    radial-gradient(
+      circle at 93% 74%,
+      rgba(130, 78, 30, calc(0.05 * var(--age))),
+      transparent 18px
+    ),
+    radial-gradient(circle at 41% 95%, rgba(138, 86, 34, calc(0.05 * var(--age))), transparent 11px);
   /* Stains, top-most first: a coffee-cup ring, a tea wash pooled in one
      corner, a damp bloom, and the sun-faded middle that keeps text readable. */
   --paper-stains:

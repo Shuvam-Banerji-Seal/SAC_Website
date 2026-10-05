@@ -91,6 +91,18 @@ function selectEditorialImages(assets, limit = 6, claimed = new Set()) {
   return chosen;
 }
 
+// Picture Desk frame widths (home.css): three columns from 900px, the lead across two; two
+// columns from 521px; one below.
+const LEAD_SIZES = "(min-width: 900px) 60vw, (min-width: 521px) 50vw, 100vw";
+const FRAME_SIZES = "(min-width: 900px) 30vw, (min-width: 521px) 50vw, 100vw";
+
+/** The 480px grid variant and the full image, when the archive has both. */
+export function pictureSrcset(asset) {
+  const thumb = gridSrc(asset);
+  if (!asset?.width || !thumb || thumb === asset.public_url) return undefined;
+  return `${assetUrl(thumb)} 480w, ${assetUrl(asset.public_url)} ${asset.width}w`;
+}
+
 function renderCampusGallery(assets, claimed) {
   const mount = document.getElementById("campus-gallery-grid");
   if (!mount) return;
@@ -121,8 +133,13 @@ function renderCampusGallery(assets, claimed) {
           },
           el("img", {
             src: assetUrl(gridSrc(asset)),
+            // The lead frame is ~770px wide on a laptop: the 480px grid variant alone was a blur.
+            // The archive's full image (median ~170 KB) is offered for the frames that need it.
+            srcset: pictureSrcset(asset),
+            sizes: index === 0 ? LEAD_SIZES : FRAME_SIZES,
             alt: altTextFor(asset, title),
-            loading: index < 2 ? "eager" : "lazy",
+            // the desk is far below the fold; its 4:3 mounts hold the space while they load
+            loading: "lazy",
             decoding: "async",
             width: asset.width || undefined,
             height: asset.height || undefined,

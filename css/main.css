@@ -1,30 +1,50 @@
 /* Shared broadsheet shell. The reference layout is editorial first: every
    page is a paper sheet, and the sidebar is its margin/index. */
-html,
-body {
-  background: var(--paper);
+html {
+  /* The sheet itself: its colour, the optional scanned stock (Settings → paper; a seamless tile,
+     shown at its own size — it used to be stretched to the window), and the pulp tooth, one 180px
+     noise tile. Both are single images and both tile evenly, so they scroll with the page. */
+  background-color: var(--paper);
+  background-image: var(--paper-texture-image), var(--paper-fiber);
+  background-size:
+    auto,
+    180px 180px;
   color: var(--ink);
 }
 
+/* What age has done to the sheet — vignette, foxing, stains, the laid lines — on one fixed,
+   viewport-sized layer under everything.
+   It used to be six variables in one `background-image` on <body> with a six-entry
+   `background-size` list. But foxing is seven gradients and the stains four, so the list held 15
+   images and the browser cycled the six sizes across them: the sun-faded centre was tiled every
+   320px, a red tint every 180px, freckles at both — the faint quilt of squares behind every page
+   (2026-10-05) — and the fibre noise was stretched to 940px, blotches instead of tooth. Here every
+   layer takes the same single size, so a theme can add or drop gradients without shifting another.
+   A position:fixed layer also replaces `background-attachment: fixed`, which iOS ignores and
+   Chrome repaints on every scroll; this is painted once and composited. 100vh, not inset: 0, so
+   it doesn't resize (and repaint) as a phone's toolbar slides away. */
+html::before {
+  background-image:
+    var(--paper-edge-wear), var(--paper-foxing), var(--paper-stains), var(--paper-grain);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  content: "";
+  height: 100vh;
+  left: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
 body {
+  color: var(--ink);
   display: flex;
   flex-direction: column;
   font-family: var(--font-body);
   font-size: calc(var(--fs-base) * var(--fs-scale));
   line-height: 1.55;
-  /* Order is top-most first. See css/variables.css for what each layer is. */
-  background-image:
-    var(--paper-edge-wear), var(--paper-foxing), var(--paper-stains), var(--paper-texture-image),
-    var(--paper-fiber), var(--paper-grain);
-  background-size:
-    100% 100%,
-    940px 780px,
-    100% 100%,
-    100% 100%,
-    180px 180px,
-    320px 320px;
-  background-repeat: no-repeat, repeat, no-repeat, repeat, repeat, repeat;
-  background-attachment: fixed, fixed, fixed, fixed, fixed, fixed;
 }
 
 main {
@@ -228,24 +248,6 @@ body:not([data-page="home"]) main > * {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  body,
-  body[data-page="home"] {
-    background-attachment: scroll;
-  }
-  body[data-page="home"] {
-    background-image: var(--paper-texture-image), var(--paper-grain);
-    background-size:
-      cover,
-      320px auto;
-    background-repeat: no-repeat, repeat;
-  }
-}
-
-/* Optional DPI-safe hooks for older deployments that still ship a raster
-   paper file. The active surface above remains gradient-only. */
-/* image-set(url("../assets/natural-paper.png") 1x); background-size: 400px auto; */
-
 @media (max-width: 640px) {
   main {
     padding-top: 4.5rem;
@@ -261,25 +263,13 @@ body:not([data-page="home"]) main > * {
    value scales with --age, so "Fresh" nearly removes them and "Rustic" doubles
    down. Nothing here is a network request or a repaint on scroll. */
 
-/* A newspaper is folded once per sheet. One faint crease — a shadow line and a
-   highlight beside it — every ~1380px of column, behind the content. */
+/* There used to be a fold crease here: a hairline every 1380px of column, behind the content.
+   Behind the cards it showed only in the gaps between them, as stray partial rules — one ran
+   through "The Campus Board" heading — and it read as a rendering seam, not a fold. Removed
+   2026-10-05; `main` keeps its stacking context for the layers that rely on it. */
 main {
   isolation: isolate;
   position: relative;
-}
-main::before {
-  background: repeating-linear-gradient(
-    180deg,
-    transparent 0 1380px,
-    rgba(70, 44, 20, calc(0.08 * var(--age))) 1380px 1381px,
-    rgba(255, 250, 236, calc(0.6 * var(--age))) 1381px 1383px,
-    transparent 1383px 1384px
-  );
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: -1;
 }
 
 /* Letterpress ink spreads a hair into the fibres. */

@@ -185,10 +185,6 @@
   margin: 0;
 }
 
-.club-detail__stats .club-detail__source {
-  color: var(--club-ink);
-}
-
 /* ------------------------------------------------------------------ sections
    Text sections are laid out as the margin-heading spreads of a broadsheet: the heading
    stands in a narrow left column (and follows you down a long section), the text runs in one
@@ -588,6 +584,7 @@ body[data-band] .club-detail__section-title {
   margin: 0 0 0.9rem;
 }
 .crumbs__list {
+  align-items: center;
   color: var(--ink-muted);
   display: flex;
   flex-wrap: wrap;
@@ -600,19 +597,28 @@ body[data-band] .club-detail__section-title {
   padding: 0;
   text-transform: uppercase;
 }
+/* Every crumb centres its own row: on touch screens the links are 44px tall and the current
+   page is plain text, and top-aligned they put "› Chess" a line above the rest. */
+.crumbs__list li {
+  align-items: center;
+  display: inline-flex;
+  margin: 0;
+}
 .crumbs__list li + li::before {
   color: var(--accent);
   content: "›";
   margin-right: 0.5rem;
 }
+/* The rule is under the letters, not under the box — a 44px link's bottom border sat 15px below
+   its text and read as a stray line under each crumb. */
 .crumbs a {
-  border-bottom: 1px dotted currentColor;
   color: inherit;
-  text-decoration: none;
+  text-decoration: underline dotted 1px;
+  text-underline-offset: 0.3em;
 }
 .crumbs a:hover {
-  border-bottom-style: solid;
   color: var(--accent);
+  text-decoration-style: solid;
 }
 .crumbs [aria-current="page"] {
   color: var(--ink);

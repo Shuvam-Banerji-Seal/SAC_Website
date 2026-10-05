@@ -1167,17 +1167,37 @@ body.fold-ready .corner__flap {
 .reveal-section {
   contain: layout paint;
 }
+/* Pinned prints hang at up to ±1°, so a print's lower corner swings 2–3px outside the column —
+   and paint containment clips it: the first letter of a left-hand caption was cut off
+   ("?arallelization with MPI workshop", two-up on phones). These sections keep layout
+   containment and let their prints overhang. */
+.reveal-section:has(.pinned-thumbs, .people) {
+  contain: layout;
+}
 
 @media (max-width: 520px) {
+  /* Two prints to a row on phones. One full-width print each made the album 38,000px tall,
+     Events 40,000px and a club page like Chess 30,000px (2026-10-05) — a thumb's job is to be
+     found and tapped; the viewer shows it full-screen. */
+  .thumb-grid {
+    gap: 1.15rem 0.7rem;
+  }
   .thumb {
-    flex-basis: 100%;
-    max-width: none;
+    flex: 0 0 calc(50% - 0.35rem);
+    max-width: calc(50% - 0.35rem);
+    min-width: 0;
+  }
+  .thumb a {
+    min-height: 96px;
+    padding: 0.3rem;
   }
   .thumb__media {
-    max-height: none;
+    max-height: 58vw;
+    min-height: 84px;
   }
-  .thumb img {
-    max-height: min(460px, 100vw);
+  .thumb img,
+  .thumb video {
+    max-height: 56vw;
   }
   .ob-table,
   .ob-table thead,

@@ -111,8 +111,10 @@ function narrowLayout() {
   const maxLines = Math.max(...cards.map((c) => c.lines.length));
   const cardH = noteTop + maxLines * NOTE_STEP + 10;
 
-  const sealY = 98;
-  const firstY = 182;
+  // The kicker's baseline is at y 70; a seal centred at 98 (top of the ring at 60) printed its
+  // ring through "STUDENT ACTIVITY COUNCIL · IISER KOLKATA" on phones. 122 clears it by 14.
+  const sealY = 122;
+  const firstY = 206;
   return {
     width,
     height: firstY + BODIES.length * (cardH + gap) + 20,

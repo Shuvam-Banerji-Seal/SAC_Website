@@ -140,7 +140,11 @@ export async function initGallery() {
       if (!countLine) return;
       const q = searchInput?.value.trim();
       if (!q && activeClub === "all") {
-        countLine.textContent = `${fmt(totalPhotos)} photographs · ${clubSections.length} clubs · tap a plate to view it full-screen`;
+        // the hint is its own span so phones can drop it (gallery.css)
+        countLine.replaceChildren(
+          `${fmt(totalPhotos)} photographs · ${clubSections.length} clubs`,
+          el("span", { class: "gallery-count__hint" }, " · tap a plate to view it full-screen")
+        );
       } else {
         countLine.textContent = `${fmt(visiblePhotos)} of ${fmt(totalPhotos)} photographs match`;
       }

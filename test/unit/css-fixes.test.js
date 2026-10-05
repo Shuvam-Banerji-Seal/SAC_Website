@@ -2,8 +2,8 @@
  * test/unit/css-fixes.test.js — tests for CSS bug fixes.
  *
  * Verifies that the CSS files contain the correct fixes for:
- * - BUG 4: background-attachment: fixed on touch devices
- * - BUG 5: natural-paper.png aspect ratio distortion
+ * - BUG 4/5 and the 2026-10-05 quilt: the paper's layers (fixed layer, sizes that can't cycle,
+ *   scanned textures at their own size)
  * - BUG 6: backdrop-filter missing -webkit- prefix
  * - BUG 10: --paper-edge-wear defined in :root (not just dark theme)
  */
@@ -15,36 +15,112 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const readCss = (rel) => readFileSync(resolve(__dirname, "../.." + rel), "utf-8");
 
-describe("BUG 4: background-attachment: fixed on touch devices", () => {
+// Split a CSS value on its top-level commas (not the ones inside gradient(…) / url(…)).
+function layers(value) {
+  const out = [];
+  let depth = 0;
+  let cur = "";
+  for (const ch of value) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) {
+      out.push(cur.trim());
+      cur = "";
+    } else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+
+// Every rule in a stylesheet as { selector, decls: Map(property -> value) }, comments removed.
+function rules(css) {
+  const out = [];
+  const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const m of clean.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const decls = new Map();
+    for (const d of m[2].split(/;(?![^(]*\))/)) {
+      const i = d.indexOf(":");
+      if (i > 0) decls.set(d.slice(0, i).trim(), d.slice(i + 1).trim());
+    }
+    out.push({ selector: m[1].trim(), decls });
+  }
+  return out;
+}
+
+describe("the paper: ageing layers are one fixed layer, not background-attachment: fixed", () => {
   const mainCss = readCss("/css/main.css");
   const homeCss = readCss("/css/pages/home.css");
 
-  it("main.css has touch device media query for body", () => {
-    expect(mainCss).toContain("@media (hover: none) and (pointer: coarse)");
-    expect(mainCss).toContain("background-attachment: scroll");
+  // iOS ignores background-attachment: fixed and Chrome repaints it on every scroll; the touch
+  // overrides that worked around it are gone with it.
+  it("main.css never uses background-attachment: fixed", () => {
+    expect(mainCss.replace(/\/\*[\s\S]*?\*\//g, "")).not.toMatch(/background-attachment:\s*fixed/);
   });
 
-  it("main.css touch override covers body and body[data-page=home]", () => {
-    const match = mainCss.match(/@media[^{]*\{[^}]*body[^}]*\}/);
-    expect(match).toBeTruthy();
-    // The override should cover both body and body[data-page="home"]
-    expect(mainCss).toContain('body[data-page="home"]');
+  it("the ageing layer is a fixed, viewport-tall, click-through layer under the page", () => {
+    const layer = rules(mainCss).find((r) => r.selector === "html::before");
+    expect(layer).toBeTruthy();
+    expect(layer.decls.get("position")).toBe("fixed");
+    expect(layer.decls.get("z-index")).toBe("-1");
+    expect(layer.decls.get("pointer-events")).toBe("none");
+    // 100vh, not inset: 0 — it must not resize as a phone's toolbar slides away
+    expect(layer.decls.get("height")).toBe("100vh");
   });
 
-  it("home.css has touch device media query for .masthead", () => {
+  it("home.css still lets the photo masthead scroll on touch devices", () => {
     expect(homeCss).toContain("@media (hover: none) and (pointer: coarse)");
     expect(homeCss).toContain(".masthead");
     expect(homeCss).toContain("background-attachment: scroll");
   });
 });
 
-describe("BUG 5: natural-paper.png aspect ratio", () => {
-  const mainCss = readCss("/css/main.css");
+// 2026-10-05: <body> painted six paper variables with a six-entry background-size list, but
+// foxing and stains are several gradients each — 15 images in all — so the browser cycled the
+// sizes across them: the sun-faded centre was tiled every 320px and a red tint every 180px, a
+// quilt of squares behind every page. A rule that paints a multi-gradient variable must give
+// every image the same size and repeat; a rule with a size list may only use single images.
+describe("paper layers can't be cycled into each other's sizes", () => {
+  const MULTI = ["--paper-edge-wear", "--paper-foxing", "--paper-stains", "--paper-grain"];
+  const SINGLE = ["--paper-fiber", "--paper-texture-image"];
+  const sheets = [
+    "/css/main.css",
+    "/css/components.css",
+    "/css/enhancements.css",
+    "/css/pages/home.css",
+    "/css/pages/calendar.css",
+  ];
 
-  it("uses 'auto' for natural-paper.png height, not '400px'", () => {
-    // The old code had "400px 400px" which distorted the 523×384 image
-    expect(mainCss).not.toContain("400px 400px");
-    expect(mainCss).toContain("400px auto");
+  for (const sheet of sheets) {
+    it(`${sheet}: a multi-gradient paper layer gets one background-size and one repeat`, () => {
+      for (const { selector, decls } of rules(readCss(sheet))) {
+        const image = decls.get("background-image") || "";
+        if (!MULTI.some((v) => image.includes(`var(${v})`))) continue;
+        for (const prop of ["background-size", "background-repeat"]) {
+          const value = decls.get(prop);
+          expect(value, `${selector} needs one ${prop}`).toBeTruthy();
+          expect(layers(value), `${selector} ${prop}: ${value}`).toHaveLength(1);
+        }
+      }
+    });
+  }
+
+  it("the variables a size list relies on are one image in every theme", () => {
+    const vars = readCss("/css/variables.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    for (const name of SINGLE) {
+      const defs = [...vars.matchAll(new RegExp(`${name}:([^;]+);`, "g"))].map((m) => m[1]);
+      expect(defs.length, name).toBeGreaterThan(0);
+      for (const def of defs) expect(layers(def), `${name}: ${def}`).toHaveLength(1);
+    }
+  });
+
+  it("<html> gives each of its images its own size", () => {
+    const html = rules(readCss("/css/main.css")).find((r) => r.selector === "html");
+    const images = layers(html.decls.get("background-image"));
+    const sizes = layers(html.decls.get("background-size"));
+    expect(images).toEqual(["var(--paper-texture-image)", "var(--paper-fiber)"]);
+    expect(sizes).toHaveLength(images.length);
+    // BUG 5: the scanned textures are seamless tiles; stretching one to the window distorted it
+    expect(sizes[0]).toBe("auto");
   });
 });
 

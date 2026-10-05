@@ -20,12 +20,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(resolve(__dirname, "../.." + rel), "utf-8");
 
 describe("Phase 1.1: image-set() for raster textures", () => {
-  const mainCss = read("/css/main.css");
+  const variablesCss = read("/css/variables.css");
   const homeCss = read("/css/pages/home.css");
 
-  it("main.css uses image-set() for natural-paper.png", () => {
-    expect(mainCss).toContain("image-set(");
-    expect(mainCss).toContain("natural-paper.png");
+  it("variables.css serves natural-paper.png through image-set()", () => {
+    expect(variablesCss).toMatch(/image-set\(\s*url\("\.\.\/assets\/natural-paper\.png"\)/);
   });
 
   it("home.css uses image-set() for newspaper-bg.jpg (lead-article)", () => {
@@ -66,16 +65,6 @@ describe("Phase 1.2: decoding=async on dynamically created <img>", () => {
 
   it("home.js has decoding: async", () => {
     expect(home).toContain('decoding: "async"');
-  });
-});
-
-describe("Phase 1.3: mobile background simplification", () => {
-  const mainCss = read("/css/main.css");
-
-  it("touch device media query reduces background layers for home page", () => {
-    expect(mainCss).toContain("(hover: none) and (pointer: coarse)");
-    expect(mainCss).toContain('body[data-page="home"]');
-    expect(mainCss).toContain("var(--paper-grain)");
   });
 });
 

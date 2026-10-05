@@ -61,11 +61,17 @@ function buildIdentity(club, entries, theme) {
   const portraitCount = entries.filter(
     (entry) => entry.is_ob_portrait && isCurrentTenure(entry)
   ).length;
-  const eventCount = entries.filter((entry) => entry.is_event || entry.is_iicm).length;
   const mediaCount = entries.filter(
     (entry) => entry.file_type === "video" || entry.file_type === "audio"
   ).length;
-  const logoSource = club.logo ? "Map logo" : "Map mark";
+  // What a reader can find on the page, in their words. It used to list every counter, zeros
+  // included, in the archive's own terms: "0 portraits · 61 events · 2 medias · map logo".
+  const record = [
+    [imageCount, "photograph"],
+    [portraitCount, "office bearer pictured", "office bearers pictured"],
+    [mediaCount, "recording"],
+    [documentCount, "document"],
+  ].filter(([n]) => n > 0);
 
   const stampDate = new Date().toLocaleDateString("en-IN", {
     day: "2-digit",
@@ -92,16 +98,13 @@ function buildIdentity(club, entries, theme) {
       el("p", { class: "club-detail__eyebrow" }, theme?.desk ?? "SAC Chronicle · club record"),
       el("h1", { class: "club-detail__title", id: "clubTitle" }, club.name),
       theme?.tag ? el("p", { class: "club-detail__tag" }, theme.tag) : null,
-      el(
-        "div",
-        { class: "club-detail__stats", "aria-label": "Club record summary" },
-        el("span", {}, formatCount(imageCount, "image")),
-        el("span", {}, formatCount(portraitCount, "portrait")),
-        el("span", {}, formatCount(eventCount, "event")),
-        el("span", {}, formatCount(mediaCount, "media")),
-        el("span", {}, formatCount(documentCount, "document")),
-        el("span", { class: "club-detail__source" }, logoSource)
-      ),
+      record.length
+        ? el(
+            "div",
+            { class: "club-detail__stats", "aria-label": "In the club's record" },
+            ...record.map(([n, one, many]) => el("span", {}, formatCount(n, one, many)))
+          )
+        : null,
       // built with the identity, in the same tick, so it cannot move anything later
       buildActions(club)
     )
