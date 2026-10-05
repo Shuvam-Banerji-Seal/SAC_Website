@@ -73,28 +73,50 @@ describe("office bearers (changes 2 and 3)", () => {
 
 describe("the introduction (change 4)", () => {
   const intro = page.querySelector(".club-detail__body--pair");
-  const paras = [...(intro?.querySelectorAll(":scope > p") || [])];
+  const parts = [...(intro?.children || [])];
+  const isaac = parts[1];
+  const ANI = /^https:\/\/www\.aninews\.in\/news\/.*astronomy-clubs\d+\/$/;
 
-  it("is two paragraphs, set either side of the rule on wide screens", () => {
-    expect(paras).toHaveLength(2);
+  it("is two parts, set either side of the rule on wide screens", () => {
+    expect(parts.map((n) => n.tagName)).toEqual(["P", "DIV"]);
     expect(read("css/pages/club.css")).toMatch(
-      /\.club-detail__body--pair > p:nth-of-type\(2\) \{[^}]*border-left/
+      /\.club-detail__body--pair > :nth-child\(2\) \{[^}]*border-left/
     );
   });
 
-  it("carries the ISAAC paragraph in the club's words, with both links", () => {
-    const isaac = paras[1];
-    const text = isaac.textContent.replace(/\s+/g, " ").trim();
-    expect(text).toMatch(/^We are also one of the founders of ISAAC/);
-    expect(text).toContain("formed in June 2025");
-    expect(text).toContain("Mann ki Baat");
-    const hrefs = [...isaac.querySelectorAll("a")].map((a) => a.getAttribute("href"));
-    expect(hrefs).toEqual([
-      "https://www.instagram.com/isaac.astro.india/",
-      expect.stringMatching(/^https:\/\/www\.aninews\.in\/news\/.*astronomy-clubs/),
-    ]);
-    for (const a of isaac.querySelectorAll("a")) expect(a.rel).toContain("noopener");
+  it("tells ISAAC's story with the club's facts and links to ISAAC", () => {
+    const text = isaac.querySelector(":scope > p").textContent.replace(/\s+/g, " ").trim();
+    expect(text).toMatch(/^We are one of the founding clubs of ISAAC/);
+    for (const fact of [
+      "Indian Synergy of Astronomy and Astrophysics Clubs",
+      "June 2025",
+      "Mann Ki Baat",
+    ])
+      expect(text).toContain(fact);
+    const link = isaac.querySelector(":scope > p a");
+    expect(link.getAttribute("href")).toBe("https://www.instagram.com/isaac.astro.india/");
     expect(page.body.textContent).not.toContain("Singularity has also founded ISAAC");
+  });
+
+  // ANI, 31 May 2026: "I would also like to mention ISAAC. It is a student-led nationwide
+  // network that connects astronomy and astrophysics clubs," said PM Modi.
+  it("quotes the Prime Minister verbatim, and says where it was said", () => {
+    const quote = isaac.querySelector("blockquote.club-detail__quote");
+    expect(quote.getAttribute("cite")).toMatch(ANI);
+    expect(quote.querySelector("p").textContent.replace(/\s+/g, " ").trim()).toBe(
+      "\u201cI would also like to mention ISAAC. It is a student-led nationwide network that connects astronomy and astrophysics clubs.\u201d"
+    );
+    const source = quote.querySelector("footer");
+    expect(source.textContent).toContain("Prime Minister Narendra Modi");
+    expect(source.querySelector("a").getAttribute("href")).toMatch(ANI);
+    expect(source.textContent).toContain("31 May 2026");
+    for (const a of isaac.querySelectorAll("a")) expect(a.rel).toContain("noopener");
+  });
+
+  it("gives the drop cap to the introduction's first paragraph only", () => {
+    expect(read("css/pages/club.css")).toContain(
+      ".club-detail__body > p:first-child::first-letter"
+    );
   });
 });
 
