@@ -66,7 +66,7 @@ css/                       preloader, reset, variables (tokens), main, component
                            viewer, enhancements (last layer), print, search (loaded on demand),
                            pages/{home,clubs,club,club-themes,events,gallery,about,calendar}.css
 tools/                     sync-pages.mjs · gen-sitemap.mjs · dedupe/ (Python, Pillow+numpy)
-test/unit/                 48 files, ~800 tests (vitest + jsdom); setup in test/setup.js
+test/unit/                 50 files, ~830 tests (vitest + jsdom); setup in test/setup.js
 assets/                    site images (hero, paper textures), logos/ (crests), motifs/ (one line drawing per club)
 public/assets/             SUBMODULE: images, docs, video, assets_map.jsonl
 public/duplicates.json     ids the site hides (generated + curated)

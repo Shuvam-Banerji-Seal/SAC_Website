@@ -308,6 +308,27 @@ body[data-band] .club-detail__section-title {
   }
 }
 
+/* A two-paragraph introduction set as a spread: each paragraph whole, one either side of a rule.
+   Newspaper columns used to break the second paragraph across the divider, leaving a line of it on
+   the left (Singularity asked for this, 2026-10-05). Narrower, the two stack in one measure. */
+@media (min-width: 1100px) {
+  .club-detail__body--pair {
+    grid-template-columns: minmax(9.5rem, 12.5rem) minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .club-detail__body--pair > p:nth-of-type(1) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .club-detail__body--pair > p:nth-of-type(2) {
+    border-left: 1px solid var(--ink-rule);
+    grid-column: 3;
+    grid-row: 1;
+    /* the rule stands in the middle of the gutter */
+    margin-left: calc(clamp(1.75rem, 3.5vw, 3rem) / -2);
+    padding-left: calc(clamp(1.75rem, 3.5vw, 3rem) / 2);
+  }
+}
+
 .club-detail__body h3 {
   color: var(--club-ink);
   font-family: var(--font-mono);
