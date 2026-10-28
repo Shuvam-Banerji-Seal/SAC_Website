@@ -51,9 +51,60 @@ export function buildSectionNav(items, { label = "Jump to a section", into = nul
     into.removeAttribute("aria-hidden");
     into.setAttribute("aria-label", label);
     into.replaceChildren(list);
+    addOverflowCues(into);
     return into;
   }
-  return el("nav", { class: "section-nav", "aria-label": label }, list);
+  const nav = el("nav", { class: "section-nav", "aria-label": label }, list);
+  addOverflowCues(nav);
+  return nav;
+}
+
+/** Smooth unless the visitor (OS setting or the site's own toggle) asked for less motion. */
+const scrollBehavior = () =>
+  window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ||
+  document.documentElement.dataset.reduceMotion === "on"
+    ? "auto"
+    : "smooth";
+
+/**
+ * Show that the bar scrolls. With its scrollbar hidden, a bar wider than the screen just
+ * stopped mid-word ("COOL STUFF BY", Slashdot and Singularity, 2026-10-29) and a mouse had
+ * no way along it. Now the edge that hides chips fades out — `data-more="start end"` on the
+ * nav, for the CSS — and carries a ‹ / › button that pages the bar along. Keyboard users tab
+ * through the chips, which the browser scrolls into view, so the buttons stay out of the tab
+ * order and out of the accessibility tree.
+ */
+function addOverflowCues(nav) {
+  const list = nav.querySelector(".section-nav__list");
+  if (!list) return;
+  const step = (dir) =>
+    el(
+      "button",
+      {
+        class: `section-nav__step section-nav__step--${dir < 0 ? "prev" : "next"}`,
+        type: "button",
+        tabindex: "-1",
+        "aria-hidden": "true",
+        onclick: () =>
+          list.scrollBy?.({ left: dir * list.clientWidth * 0.75, behavior: scrollBehavior() }),
+      },
+      dir < 0 ? "‹" : "›"
+    );
+  nav.append(step(-1), step(1));
+
+  const update = () => {
+    const end = list.scrollWidth - list.clientWidth;
+    const more = [list.scrollLeft > 2 && "start", list.scrollLeft < end - 2 && "end"]
+      .filter(Boolean)
+      .join(" ");
+    if (more) nav.dataset.more = more;
+    else delete nav.dataset.more;
+  };
+  list.addEventListener("scroll", update, { passive: true });
+  // fires once the bar is laid out (it may be built before it is in the page), then on resize
+  if ("ResizeObserver" in window) new ResizeObserver(update).observe(list);
+  else window.addEventListener("resize", update);
+  update();
 }
 
 /**
@@ -80,12 +131,20 @@ export function trackSections(nav) {
       if (on) chip.setAttribute("aria-current", "true");
       else chip.removeAttribute("aria-current");
     });
-    // keep the active chip in view when the bar scrolls sideways
+    // Keep the active chip in view when the bar scrolls sideways. This used to compare the
+    // nav's own widths, which never overflow (the list inside it scrolls), so it never ran:
+    // the chips for a club's last sections lit up off-screen. Only a chip that is cut off, or
+    // under an edge's fade and button (EDGE px), is brought to the middle.
     const active = nav.querySelector(".is-active");
-    if (active && nav.scrollWidth > nav.clientWidth) {
-      const list = nav.querySelector(".section-nav__list");
-      const target = active.offsetLeft - nav.clientWidth / 2 + active.offsetWidth / 2;
-      list.scrollTo?.({ left: target, behavior: "smooth" });
+    const list = nav.querySelector(".section-nav__list");
+    if (active && list && list.scrollWidth > list.clientWidth) {
+      const EDGE = 48;
+      const a = active.getBoundingClientRect();
+      const l = list.getBoundingClientRect();
+      if (a.left < l.left + EDGE || a.right > l.right - EDGE) {
+        const left = a.left + a.width / 2 - (l.left + l.width / 2);
+        list.scrollBy?.({ left, behavior: scrollBehavior() });
+      }
     }
   };
   const observer = new IntersectionObserver(

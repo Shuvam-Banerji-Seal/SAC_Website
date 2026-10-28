@@ -1667,12 +1667,71 @@ body.has-topbar.topbar-hidden .section-nav {
   font-size: 0.85em;
   opacity: 0.75;
 }
+/* More chips than fit: the edge that hides some fades out, and a ‹ / › button over the fade
+   pages the bar along (section-nav.js, addOverflowCues). The scrollbar is hidden, so without
+   these the bar just stopped mid-word. Both sit over the bar: its height never changes. */
+.section-nav[data-more="end"] .section-nav__list {
+  mask-image: linear-gradient(to right, #000 calc(100% - 5rem), transparent calc(100% - 1.5rem));
+}
+.section-nav[data-more="start"] .section-nav__list {
+  mask-image: linear-gradient(to left, #000 calc(100% - 5rem), transparent calc(100% - 1.5rem));
+}
+.section-nav[data-more="start end"] .section-nav__list {
+  mask-image: linear-gradient(
+    to right,
+    transparent 1.5rem,
+    #000 5rem,
+    #000 calc(100% - 5rem),
+    transparent calc(100% - 1.5rem)
+  );
+}
+.section-nav__step {
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--ink-rule);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  height: 2.2rem;
+  justify-content: center;
+  line-height: 1;
+  /* centred by its insets, not a transform: every pressed button takes
+     transform: translateY(1px) scale(0.985) (enhancements.css), which replaced a
+     translateY(-50%) and dropped the button half its height under the pointer — the press
+     landed and the release missed, so no click */
+  inset-block: 0;
+  margin-block: auto;
+  padding: 0 0 0.1em;
+  position: absolute;
+  width: 2.2rem;
+  z-index: 1;
+}
+.section-nav__step--prev {
+  left: 0;
+}
+.section-nav__step--next {
+  right: 0;
+}
+.section-nav[data-more~="start"] .section-nav__step--prev,
+.section-nav[data-more~="end"] .section-nav__step--next {
+  display: inline-flex;
+}
+.section-nav__step:hover {
+  border-color: var(--ink);
+}
 @media (pointer: coarse), (max-width: 640px) {
   .section-nav {
     --section-nav-h: 4.25rem;
   }
   .section-nav__chip {
     min-height: 2.75rem;
+  }
+  .section-nav__step {
+    height: 2.75rem;
+    width: 2.75rem;
   }
 }
 /* A chosen section lands below the bar, not under it. */
