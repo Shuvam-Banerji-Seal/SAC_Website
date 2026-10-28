@@ -1722,12 +1722,15 @@ main h2[id] {
   border-left: 3px solid var(--accent);
   padding: 0.35rem 0 0.35rem 0.9rem;
 }
+/* line-height 1 and a gap under the figure: at 0.9 the "y" of "1 yr" hung into the label
+   below it, and every figure sat on its label's cap line */
 .home-stat strong {
   color: var(--accent);
   display: block;
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  line-height: 0.9;
+  line-height: 1;
+  margin-bottom: 0.15em;
 }
 .home-stat span {
   color: var(--ink-muted);

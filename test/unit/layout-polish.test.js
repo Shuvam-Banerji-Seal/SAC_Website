@@ -2,7 +2,9 @@
  * test/unit/layout-polish.test.js — the 2026-10-05 design pass, kept honest.
  *
  *   the front page's "Inside this edition" index points at real sections, in page order
- *   the council plate's seal never prints over its kicker line (phone and desktop layouts)
+ *   the council plate's seal never prints over its kicker line (phone and desktop layouts),
+ *   and carries the council's crest inside its ring
+ *   the council facts' figures clear their labels ("1 yr" on About)
  *   the Picture Desk offers the full image to the frames that need it
  *   the gallery's count keeps its hint in its own span (phones hide it)
  *   a club masthead lists what the reader can find — no zeros, no archive jargon
@@ -72,7 +74,34 @@ describe("the council plate", () => {
       // the kicker is ~7 units of small caps sitting on its baseline; the ring starts below it
       expect(top - kicker).toBeGreaterThanOrEqual(4);
     });
+
+    // 2026-10-28: the seal said "SAC" in type; it carries the council's crest, the tab icon's mark
+    it(`${narrow ? "phone" : "desktop"}: the seal holds the crest, its corners inside the ring`, async () => {
+      const svg = await plate(narrow);
+      const ring = svg.querySelector(".sacmap__seal-ring");
+      const logo = svg.querySelector(".sacmap__seal-logo");
+      expect(logo.getAttribute("href")).toBe("assets/logos/sac.svg");
+      const [cx, cy, r] = ["cx", "cy", "r"].map((a) => Number(ring.getAttribute(a)));
+      const [x, y, w, h] = ["x", "y", "width", "height"].map((a) => Number(logo.getAttribute(a)));
+      expect(w).toBe(h);
+      expect(x + w / 2).toBeCloseTo(cx, 0);
+      expect(y + h / 2).toBeCloseTo(cy, 0);
+      // sac.svg is a 200-unit square with 18-unit corners: they reach 0.67 of the side from
+      // the centre, which must clear the ring's 1.8-unit stroke
+      expect(0.67 * w).toBeLessThanOrEqual(r - 0.9);
+      expect(w).toBeGreaterThanOrEqual(1.2 * r); // and large enough that "SAC" reads
+      expect(svg.querySelector(".sacmap__seal text:not(.sacmap__seal-sub)")).toBeNull();
+    });
   }
+});
+
+describe("the council facts", () => {
+  // 2026-10-28: at line-height 0.9 the "y" of "1 yr" hung into "OFFICE-BEARER TENURE" (About)
+  it("give each figure a full line and a gap above its label", () => {
+    const rule = read("css/components.css").match(/\n\.home-stat strong \{[^}]*\}/)?.[0] ?? "";
+    expect(Number(rule.match(/line-height:\s*([\d.]+)/)?.[1])).toBeGreaterThanOrEqual(1);
+    expect(rule).toMatch(/margin-bottom:\s*0\.\d+em/);
+  });
 });
 
 describe("the Picture Desk", () => {
