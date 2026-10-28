@@ -870,6 +870,282 @@ body[data-band] .club-detail__section-title {
   }
 }
 
+/* --------------------------------------------------------- showcase cards
+   A club's own words under the archive's picture: workshops, posters, members' projects.
+   The words are the page's HTML; club-images.js (fillAssetSlots) puts the picture into each
+   [data-club-asset] slot. The slot is the club's mount (--fp-*, --frame-*) around a fixed-ratio
+   window: the ratio sits on the content box, so the frame can be any thickness and the slot
+   has its full height before the picture arrives — nothing moves when it does. */
+.showcase {
+  display: grid;
+  gap: 2rem 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--showcase-min, 14rem)), 1fr));
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+}
+.showcase--posters {
+  --showcase-min: 16rem;
+  --showcase-ratio: 3 / 2;
+  --showcase-fit: contain;
+}
+/* screenshots of members' projects: a dark screen in both themes, the picture whole on it */
+.showcase--screens {
+  --showcase-min: 21rem;
+  --showcase-ratio: 16 / 10;
+  --showcase-fit: contain;
+  --showcase-screen: #0d0f14;
+}
+.showcase__item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.showcase__media {
+  aspect-ratio: var(--showcase-ratio, 4 / 3);
+  background: var(--frame-bg, var(--paper-deep));
+  border: var(--frame-border, 1px solid var(--ink));
+  box-shadow: var(--frame-shadow, none);
+  box-sizing: content-box;
+  padding: var(--fp-t, 0) var(--fp-r, 0) var(--fp-b, 0) var(--fp-l, 0);
+  position: relative;
+}
+/* the mount's own marks (a window's title bar, tape, sprockets) over the picture */
+.showcase__media::before {
+  background: var(--frame-deco, none);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+.showcase__link,
+.showcase__media--blank::after {
+  background: var(--showcase-screen, var(--paper-deep));
+  inset: var(--fp-t, 0) var(--fp-r, 0) var(--fp-b, 0) var(--fp-l, 0);
+  overflow: hidden;
+  position: absolute;
+}
+.showcase__link {
+  cursor: zoom-in;
+  display: block;
+}
+.showcase__link:focus-visible {
+  outline: 2px solid var(--club-ink, var(--accent));
+  outline-offset: 3px;
+}
+.showcase__link img {
+  display: block;
+  height: 100%;
+  object-fit: var(--showcase-fit, cover);
+  object-position: var(--focus, 50% 40%);
+  width: 100%;
+}
+/* a project with no screenshot gets a strip of screen with the club's mark, not a grey box —
+   a full 16:10 screen left a dark panel the height of the cards above with nothing on it */
+.showcase__media--blank {
+  --showcase-ratio: 4 / 1;
+}
+.showcase__media--blank::after {
+  /* fixed light ink: it sits on the fixed dark screen in both themes */
+  color: #e9e4d4;
+  content: "/.";
+  display: grid;
+  font-family: var(--font-mono);
+  font-size: 2.6rem;
+  font-weight: 700;
+  place-items: center;
+}
+.showcase__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.8rem;
+}
+.showcase__body p {
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  margin: 0;
+}
+.showcase__body .showcase__kicker {
+  color: var(--club-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+.showcase__title {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+  text-transform: none;
+  text-wrap: balance;
+}
+/* no picture in the archive: the words stand alone under the club's rule */
+.showcase__item--text .showcase__body {
+  border-top: 3px solid var(--club-ink);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .showcase__link img {
+    transition: transform 0.5s var(--ease-ink);
+  }
+  .showcase__link:hover img {
+    transform: scale(1.04);
+  }
+}
+/* phones: workshop photographs two to a row — one column made eight cards a long scroll */
+@media (max-width: 640px) {
+  .showcase--photos {
+    gap: 1.5rem 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .showcase--photos .showcase__title {
+    font-size: var(--fs-sm);
+  }
+}
+
+/* ---- a fact file beside an introduction: the club's mount, a few facts in mono */
+.fact-file {
+  background: var(--frame-bg, var(--paper-soft));
+  border: var(--frame-border, 1px solid var(--ink));
+  box-shadow: var(--frame-shadow, none);
+  padding: var(--fp-t, 0) 0 0;
+  position: relative;
+}
+.fact-file::before {
+  background: var(--frame-deco, none);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.fact-file__title {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  margin: 0;
+  padding: 0.55rem 1rem 0;
+  text-transform: uppercase;
+}
+.fact-file__list {
+  margin: 0;
+  padding: 0.35rem 1rem 0.7rem;
+}
+.fact-file__list > div {
+  border-bottom: 1px dotted var(--ink-rule);
+  display: grid;
+  gap: 0 0.9rem;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  padding: 0.45rem 0;
+}
+.fact-file__list > div:last-child {
+  border-bottom: 0;
+}
+.fact-file__list dt {
+  color: var(--club-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  padding-top: 0.15em;
+  text-transform: uppercase;
+}
+.fact-file__list dd {
+  margin: 0;
+}
+
+/* ---- the themes a club works in: tiles, each with its mark in the club's ink */
+.focus-grid {
+  display: grid;
+  gap: 0.8rem;
+  /* four across beside the heading, two by two on a phone */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+  list-style: none;
+  margin: 0.2rem 0 1.4rem;
+  padding: 0;
+}
+.focus-grid > li {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--club-ink);
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  gap: 0.75rem;
+  line-height: 1.25;
+  padding: 0.9rem 0.9rem 1rem;
+}
+.focus-grid__glyph {
+  color: var(--club-ink);
+  font-family: var(--font-mono);
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+/* ---- a two-column spec sheet: a name in mono, what it is for beside it */
+.spec-list {
+  border-top: 2px solid var(--ink);
+  margin: 0;
+}
+.spec-list > div {
+  align-items: baseline;
+  border-bottom: 1px dotted var(--ink-rule);
+  display: grid;
+  gap: 0.15rem 1rem;
+  grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr);
+  padding: 0.55rem 0;
+}
+.spec-list dt {
+  color: var(--club-ink);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.spec-list dd {
+  margin: 0;
+}
+
+/* ---- plans, numbered in the club's ink, laid in as many columns as fit */
+.roadmap {
+  counter-reset: roadmap;
+  display: grid;
+  gap: 0 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.roadmap > li {
+  align-items: baseline;
+  border-top: 1px solid var(--ink-rule);
+  counter-increment: roadmap;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  padding: 0.6rem 0 0.7rem;
+}
+.roadmap > li::before {
+  color: var(--club-ink);
+  content: counter(roadmap, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+/* a club's own last line, set in mono like a signature */
+.club-signoff {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.club-signoff span {
+  color: var(--club-ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* ------------------------------------------------------------------ pager
    "More from <body>" and previous / next — static HTML from the registry. */
 .club-pager {

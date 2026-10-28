@@ -294,6 +294,58 @@ function renderMediaArchive(entries) {
   );
 }
 
+/**
+ * Cards whose words are the page's own and whose picture is the archive's (Slashdot's
+ * workshops, posters and projects). A slot names a file under the club's folder —
+ * `<div class="showcase__media" data-club-asset="images/workshops/julia-workshop.webp">` —
+ * and is filled from the map with a picture that opens in the viewer. CSS gives the slot its
+ * shape before the picture arrives, so nothing moves; a file the map doesn't list (or that
+ * duplicates.json hides) leaves the card as words alone, never a broken image.
+ * @returns {number} how many slots were filled
+ */
+export function fillAssetSlots(entries, slug, root = document) {
+  const byPath = new Map(entries.map((asset) => [asset.path, asset]));
+  let filled = 0;
+  for (const slot of root.querySelectorAll("[data-club-asset]")) {
+    const asset = byPath.get(`${slug}/${slot.dataset.clubAsset}`);
+    const card = slot.closest(".showcase__item");
+    if (!asset || asset.file_type !== "image") {
+      card?.classList.add("showcase__item--text");
+      slot.remove();
+      continue;
+    }
+    const title = card?.querySelector(".showcase__title")?.textContent.trim() || captionFor(asset);
+    const kind = slot.dataset.kind || "photograph";
+    const heading = slot.closest("section")?.querySelector("h2")?.textContent.trim() || "";
+    slot.replaceChildren(
+      el(
+        "a",
+        {
+          class: "showcase__link",
+          href: assetUrl(asset.public_url),
+          "data-viewer": `club-${slug}`,
+          "data-title": title,
+          "data-desc": card?.querySelector(".showcase__body > p:last-child")?.textContent.trim(),
+          "data-context": heading,
+          "data-width": asset.width || "",
+          "data-height": asset.height || "",
+          "aria-label": `View the ${kind}: ${title}`,
+        },
+        el("img", {
+          src: assetUrl(gridSrc(asset)),
+          alt: "",
+          loading: "lazy",
+          decoding: "async",
+          width: asset.width || undefined,
+          height: asset.height || undefined,
+        })
+      )
+    );
+    filled++;
+  }
+  return filled;
+}
+
 function collapseEmptySection(placeholder) {
   placeholder.style.display = "none";
   const section = placeholder.closest(".reveal-section") || placeholder.closest("section");
@@ -443,6 +495,8 @@ export async function initClubImages() {
     const placeholders = Array.from(document.querySelectorAll("[data-club-images]"));
     placeholders.forEach((m) => clearSkeleton(m));
     const rendered = placeholders.map((placeholder) => renderPlaceholder(placeholder, entries));
+    // pictures set in the page's own cards count as shown: the catch-all archive would repeat them
+    rendered.push(fillAssetSlots(entries, slug) > 0);
     if (!rendered.some(Boolean)) renderFallback(entries, placeholders);
     renderMediaArchive(entries);
   } catch (error) {
