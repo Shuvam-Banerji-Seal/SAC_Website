@@ -261,3 +261,120 @@ describe("wiring", () => {
     expect(css).toMatch(/\.section-nav__list \{[^}]*overflow-x: auto/);
   });
 });
+
+// 2026-10-29: with its scrollbar hidden, a bar wider than the screen stopped mid-word
+// ("COOL STUFF BY") on Slashdot and Singularity, with no way along it for a mouse; and the
+// lit chip of a club's last sections sat off-screen, because the follow-the-chip code
+// measured the nav (which never overflows) instead of the list inside it.
+describe("a bar with more chips than fit", () => {
+  /** A built bar whose list reports the given geometry, as a browser would lay it out. */
+  const bar = ({ scrollWidth = 1200, clientWidth = 600, scrollLeft = 0 } = {}) => {
+    document.body.innerHTML = '<h2 id="a">A</h2><h2 id="b">B</h2><h2 id="c">C</h2>';
+    const nav = buildSectionNav([
+      { id: "a", label: "A" },
+      { id: "b", label: "B" },
+      { id: "c", label: "C" },
+    ]);
+    document.body.prepend(nav);
+    const list = nav.querySelector(".section-nav__list");
+    const geometry = { scrollWidth, clientWidth, scrollLeft };
+    for (const key of Object.keys(geometry))
+      Object.defineProperty(list, key, {
+        configurable: true,
+        get: () => geometry[key],
+        set: (v) => {
+          geometry[key] = v;
+        },
+      });
+    list.scrollBy = vi.fn(({ left }) => {
+      geometry.scrollLeft = Math.max(
+        0,
+        Math.min(scrollWidth - clientWidth, geometry.scrollLeft + left)
+      );
+      list.dispatchEvent(new Event("scroll"));
+    });
+    list.dispatchEvent(new Event("scroll"));
+    return { nav, list, geometry };
+  };
+
+  it("adds a ‹ and a › button, out of the tab order and the accessibility tree", () => {
+    const { nav } = bar();
+    const steps = [...nav.querySelectorAll("button.section-nav__step")];
+    expect(steps.map((b) => b.textContent)).toEqual(["‹", "›"]);
+    for (const b of steps) {
+      expect(b.getAttribute("tabindex")).toBe("-1");
+      expect(b.getAttribute("aria-hidden")).toBe("true");
+      expect(b.getAttribute("type")).toBe("button");
+    }
+  });
+
+  it("says which edge hides chips, as it scrolls", () => {
+    const { nav, list, geometry } = bar();
+    expect(nav.dataset.more).toBe("end");
+    geometry.scrollLeft = 300;
+    list.dispatchEvent(new Event("scroll"));
+    expect(nav.dataset.more).toBe("start end");
+    geometry.scrollLeft = 600;
+    list.dispatchEvent(new Event("scroll"));
+    expect(nav.dataset.more).toBe("start");
+  });
+
+  it("says nothing when every chip fits", () => {
+    const { nav } = bar({ scrollWidth: 600, clientWidth: 600 });
+    expect(nav.dataset.more).toBeUndefined();
+  });
+
+  it("› and ‹ page the bar along by three quarters of its width", () => {
+    const { nav, list } = bar();
+    nav.querySelector(".section-nav__step--next").click();
+    expect(list.scrollBy).toHaveBeenLastCalledWith(expect.objectContaining({ left: 450 }));
+    expect(nav.dataset.more).toBe("start end");
+    nav.querySelector(".section-nav__step--prev").click();
+    expect(list.scrollBy).toHaveBeenLastCalledWith(expect.objectContaining({ left: -450 }));
+    expect(nav.dataset.more).toBe("end");
+  });
+
+  it("brings the lit chip into view when it is off the end of the bar", () => {
+    const { nav, list } = bar();
+    let callback;
+    const Original = window.IntersectionObserver;
+    window.IntersectionObserver = class {
+      constructor(cb) {
+        callback = cb;
+        this.observe = vi.fn();
+        this.disconnect = vi.fn();
+      }
+    };
+    list.getBoundingClientRect = () => ({ left: 0, right: 600, width: 600 });
+    nav.querySelector('[data-target="c"]').getBoundingClientRect = () => ({
+      left: 900,
+      right: 1000,
+      width: 100,
+    });
+    trackSections(nav);
+    callback([
+      {
+        target: document.getElementById("c"),
+        isIntersecting: true,
+        boundingClientRect: { top: 50 },
+        rootBounds: { top: 0 },
+      },
+    ]);
+    // the chip's centre (950) to the list's centre (300)
+    expect(list.scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 650 }));
+    window.IntersectionObserver = Original;
+  });
+
+  it("centres its buttons without a transform, which every pressed button replaces", () => {
+    const css = readFileSync(resolve(root, "css/components.css"), "utf-8");
+    const rule = (css.match(/\n\.section-nav__step \{[^}]*\}/)?.[0] ?? "").replace(
+      /\/\*[\s\S]*?\*\//g,
+      "" // the comment explaining why may name the property
+    );
+    expect(rule).toMatch(/position: absolute/);
+    expect(rule).not.toMatch(/transform\s*:/);
+    expect(readFileSync(resolve(root, "css/enhancements.css"), "utf-8")).toMatch(
+      /button:not\(:disabled\):active[^{]*\{[^}]*transform/
+    );
+  });
+});
