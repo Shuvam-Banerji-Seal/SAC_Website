@@ -111,27 +111,49 @@
         </header>
 
         <nav class="section-nav section-nav--slot" aria-hidden="true"></nav>
-        <section class="club-detail__body reveal-section">
+        <!-- The club's own documents (public/assets/…/Slashdot_Programming_Club/content/*.md) are
+             the source of every sentence below. Pictures are named by path in data-club-asset and
+             filled from assets_map.jsonl by club-images.js; the words stand without them. -->
+        <section class="club-detail__body club-detail__body--pair reveal-section">
           <p>
-            Slashdot — The Coding and Design Club of IISER Kolkata was conceptualized in 2019 and
-            officially formed on January 8th, 2021 by dedicated members from the 16MS, 17MS, 18MS,
-            and 19MS batches. The club creates a community where students can learn coding and
-            graphic design while having fun. Open to everyone interested, regardless of prior
-            experience.
+            Slashdot is the Coding and Design Club of IISER Kolkata: a community where people learn
+            coding and graphic design while having fun. Coding, design and AI skills are essential
+            today and beneficial for future endeavours, and the club welcomes everyone who is
+            interested &mdash; no prior experience necessary.
           </p>
+          <div class="club-detail__pair-aside">
+            <div class="fact-file">
+              <p class="fact-file__title">At a glance</p>
+              <dl class="fact-file__list">
+                <div><dt>Conceived</dt><dd>2019</dd></div>
+                <div><dt>Formed</dt><dd>8 January 2021</dd></div>
+                <div><dt>Started by</dt><dd>Members of the 16MS, 17MS, 18MS and 19MS batches</dd></div>
+                <div><dt>Open to</dt><dd>Everyone interested in coding and design</dd></div>
+              </dl>
+            </div>
+          </div>
         </section>
 
-        <section class="club-detail__section reveal-section">
+        <section class="club-detail__body reveal-section">
           <h2>What We Focus On</h2>
-          <div class="club-detail__body">
-            <p>Slashdot's activities are organised around four broad themes:</p>
-            <ul>
-              <li>Web Development</li>
-              <li>Data Science and AI/ML</li>
-              <li>Simulations and Scientific Visualization</li>
-              <li>Random Fun/Cool Stuff</li>
-            </ul>
-          </div>
+          <p>Slashdot's activities are organised around four broad themes:</p>
+          <ul class="focus-grid">
+            <li><span class="focus-grid__glyph" aria-hidden="true">&lt;/&gt;</span> Web Development</li>
+            <li><span class="focus-grid__glyph" aria-hidden="true">f(x)</span> Data Science and AI/ML</li>
+            <li>
+              <span class="focus-grid__glyph" aria-hidden="true">&Delta;t</span> Simulations and
+              Scientific Visualization
+            </li>
+            <li><span class="focus-grid__glyph" aria-hidden="true">:)</span> Random Fun/Cool Stuff</li>
+          </ul>
+          <h3>Tools we use</h3>
+          <dl class="spec-list">
+            <div><dt>Python</dt><dd>General-purpose coding, scripting and simulations</dd></div>
+            <div><dt>Blender</dt><dd>3D graphics, modelling and simulations</dd></div>
+            <div><dt>Manim</dt><dd>Mathematical and scientific animation</dd></div>
+            <div><dt>Illustrator</dt><dd>Vector graphic design</dd></div>
+            <div><dt>Canva</dt><dd>Quick, accessible graphic design</dd></div>
+          </dl>
         </section>
 
         <section class="club-detail__section reveal-section">
@@ -151,69 +173,176 @@
         <section class="club-detail__section reveal-section">
           <div
             data-club-images="Slashdot_Programming_Club"
-            data-role="event"
-            data-title="Past Events"
+            data-role="ob_portrait"
+            data-title="Office Bearer Portraits"
           ></div>
         </section>
 
         <section class="club-detail__section reveal-section">
+          <h2>Past Events</h2>
+          <ul class="showcase showcase--posters">
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/events/latex-session-poster.webp" data-kind="poster"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Session &middot; Saturday 5 Feb, 6 PM</p>
+                <h3 class="showcase__title">LaTeX</h3>
+                <p>A Slashdot-presented session on LaTeX.</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/events/web-development-workshop-poster.webp" data-kind="poster"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Workshop &middot; HTML, CSS, JS, GitHub</p>
+                <h3 class="showcase__title">Web Development Workshop</h3>
+                <p>
+                  An introductory workshop: learn web development from scratch, then design, develop
+                  and create your own website.
+                </p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/events/beyond-academia-sunipa-dev-poster.webp" data-kind="poster"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">With the Alumni Cell &middot; 6 Nov, 9 PM</p>
+                <h3 class="showcase__title">Beyond Academia &mdash; with Dr. Sunipa Dev</h3>
+                <p>
+                  A session on Machine Learning &amp; Data Science. Dr. Sunipa Dev completed her BS-MS
+                  at IISER Kolkata and her PhD at the University of Utah, and was then a postdoc at
+                  UCLA.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="club-detail__section reveal-section">
           <h2>Workshops</h2>
-          <div class="club-detail__body">
-            <h3>GitHub and Open Source</h3>
-            <p>Conducted in collaboration with IIIT Kalyani.</p>
-            <h3>Julia</h3>
-            <p>An introduction to a rather new programming language. Conducted by Tushar Gayan (19MS).</p>
-            <h3>Competitive Programming &amp; GSoC</h3>
-            <p>A comprehensive guide to Competitive Programming and Google Summer of Code. Conducted by Ananyapam.</p>
-            <h3>LaTeX</h3>
-            <p>Conducted by Piyush, Sabarno, and Debayan (22MS).</p>
-            <h3>Ek Pehal Teaching Sessions</h3>
-            <p>A collaboration with the Ek Pehal team.</p>
-            <h3>Web Development</h3>
-            <p>Conducted in collaboration with IIIT Kalyani.</p>
-            <h3>V-Roid Studio</h3>
-            <p>Conducted by Team Inquicon (Savith, Arkadeep).</p>
-            <h3>Qiskit Fall Fest</h3>
-            <p>Conducted in collaboration with IBM Quantum.</p>
-          </div>
+          <ul class="showcase showcase--photos">
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/github-open-source-workshop.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">GitHub and Open Source</h3>
+                <p>Conducted in collaboration with IIIT Kalyani.</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/julia-workshop.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">Julia</h3>
+                <p>An introduction to a rather new programming language. Conducted by Tushar Gayan (19MS).</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/competitive-programming-workshop.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">Competitive Programming &amp; GSoC</h3>
+                <p>
+                  A comprehensive guide to Competitive Programming and Google Summer of Code. Conducted
+                  by Ananyapam.
+                </p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/latex-workshop.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">LaTeX</h3>
+                <p>Conducted by Piyush, Sabarno, and Debayan (22MS).</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/ek-pehal-teaching-sessions.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">Ek Pehal Teaching Sessions</h3>
+                <p>Teaching sessions for the Ek Pehal students, in collaboration with the Ek Pehal team.</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/web-development-workshop.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">Web Development</h3>
+                <p>Conducted in collaboration with IIIT Kalyani.</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <!-- the logo is on the left of this graphic; a centred crop cut it in half -->
+              <div class="showcase__media" data-club-asset="images/workshops/vroid-studio-graphic.webp" data-kind="graphic" style="--focus: 0% 50%"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">V-Roid Studio</h3>
+                <p>Conducted by Team Inquicon (Savith, Arkadeep).</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/workshops/qiskit-fall-fest.webp"></div>
+              <div class="showcase__body">
+                <h3 class="showcase__title">Qiskit Fall Fest</h3>
+                <p>Conducted in collaboration with IBM Quantum.</p>
+              </div>
+            </li>
+          </ul>
         </section>
 
         <section class="club-detail__section reveal-section">
           <h2>Cool Stuff by Members</h2>
-          <div class="club-detail__body">
-            <h3>The WeLearn Bot</h3>
-            <p>Built by Amarjeet Kumar (18MS), Parth Bibekar (19MS), Abhay Kshirsagar (19MS), and Satvik Saha (19MS).</p>
-            <h3>The PhyXit Bot</h3>
-            <p>
-              A Discord bot for physics enthusiasts that can simulate physical systems, fetch ArXiv
-              papers, summarise Wikipedia articles, and pull up a professor's Google Scholar profile.
-              Built by Rohan Kumar (21MS), Sattwamo Ghosh (21MS), Apuroop Vaidyam (21MS),
-              Priyanshu Mahato (21MS), and Tushar Gayan (19MS).
-            </p>
-            <h3>Zoop &mdash; Anonymous Sharing</h3>
-            <p>
-              An anonymous-sharing social platform built by Abhiroop Chauhan (19MS).
-            </p>
-            <h3>Ani CLI</h3>
-            <p>A command-line tool for browsing and streaming anime, shared as a fun side-project within the community.</p>
-          </div>
+          <ul class="showcase showcase--screens">
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/projects/phyxit-bot.webp" data-kind="screenshot"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Discord bot</p>
+                <h3 class="showcase__title">The PhyXit Bot</h3>
+                <p>
+                  A Discord bot for physics enthusiasts that can simulate physical systems, fetch ArXiv
+                  papers, summarise Wikipedia articles, and pull up a professor's Google Scholar
+                  profile. Built by Rohan Kumar (21MS), Sattwamo Ghosh (21MS), Apuroop Vaidyam (21MS),
+                  Priyanshu Mahato (21MS), and Tushar Gayan (19MS).
+                </p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media" data-club-asset="images/projects/zoop-platform.webp" data-kind="screenshot"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Social platform</p>
+                <h3 class="showcase__title">Zoop &mdash; Anonymous Sharing</h3>
+                <p>Our own social media: an anonymous-sharing platform built by Abhiroop Chauhan (19MS).</p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media showcase__media--blank" aria-hidden="true"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Bot</p>
+                <h3 class="showcase__title">The WeLearn Bot</h3>
+                <p>
+                  Built by Amarjeet Kumar (18MS), Parth Bibekar (19MS), Abhay Kshirsagar (19MS), and
+                  Satvik Saha (19MS).
+                </p>
+              </div>
+            </li>
+            <li class="showcase__item">
+              <div class="showcase__media showcase__media--blank" aria-hidden="true"></div>
+              <div class="showcase__body">
+                <p class="showcase__kicker">Command-line tool</p>
+                <h3 class="showcase__title">Ani CLI</h3>
+                <p>
+                  A command-line tool for browsing and streaming anime, shared as one of the fun
+                  side-projects within the community.
+                </p>
+              </div>
+            </li>
+          </ul>
         </section>
 
-        <section class="club-detail__section reveal-section">
+        <section class="club-detail__body reveal-section">
           <h2>Upcoming Events</h2>
-          <div class="club-detail__body">
-            <ul>
-              <li>Qiskit for Quantum Computing (sponsored by IBM)</li>
-              <li>Julia and R Workshops</li>
-              <li>C++ Workshop</li>
-              <li>3D Graphics in Blender</li>
-              <li>LaTeX Workshop</li>
-              <li>Arduino Workshops</li>
-              <li>Student and Professor Talks (Seminars)</li>
-              <li>Workshops on LLMs</li>
-              <li>GIMP &mdash; with Pixel Club</li>
-            </ul>
-          </div>
+          <ol class="roadmap">
+            <li>Qiskit for Quantum Computing (sponsored by IBM)</li>
+            <li>Julia and R Workshops</li>
+            <li>C++ Workshop</li>
+            <li>3D Graphics in Blender</li>
+            <li>LaTeX Workshop</li>
+            <li>Arduino Workshops</li>
+            <li>Student and Professor Talks (Seminars)</li>
+            <li>Workshops on LLMs</li>
+            <li>GIMP &mdash; with Pixel Club</li>
+          </ol>
         </section>
 
         <section class="club-detail__body reveal-section">
@@ -224,6 +353,7 @@
             <li>YouTube channel</li>
             <li>WhatsApp community</li>
           </ul>
+          <p class="club-signoff">Thank you! And welcome to <span>( /. )</span></p>
         </section>
         <!-- club-pager:start (generated by tools/sync-pages.mjs — do not edit) -->
         <nav class="club-pager" aria-label="More clubs" data-no-jump>

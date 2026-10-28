@@ -20,6 +20,7 @@
  * prefers-reduced-motion the same CSS lands everything in its final
  * position with no transition.
  */
+import { assetUrl } from "../utils/dom.js";
 
 /** The five bodies of the SAC, in the order pages/clubs.html renders them.
  *  `members` is the constitutional shape of the body and `note` is what it
@@ -204,6 +205,10 @@ function wrapText(text, max) {
 function render(mount, narrow) {
   const L = narrow ? narrowLayout() : wideLayout();
   const { width: W, height: H } = L;
+  // The council's crest (the same mark as the tab icon) sits in the seal. It is a rounded
+  // square whose corners reach 0.67 of its side from the centre, so a side of 1.36 r keeps
+  // them just inside the ring.
+  const logo = Math.round(L.sealR * 1.36);
 
   const rules = `
     <line class="sacmap__rule" x1="24" y1="48" x2="${W - 24}" y2="48" stroke-width="1.2"/>
@@ -235,8 +240,7 @@ function render(mount, narrow) {
       <g class="sacmap__seal" style="--seal-x:${L.sealX}px; --seal-y:${L.sealY}px">
         <circle class="sacmap__seal-halo" cx="${L.sealX}" cy="${L.sealY}" r="${L.sealR}"/>
         <circle class="sacmap__seal-ring" cx="${L.sealX}" cy="${L.sealY}" r="${L.sealR}"/>
-        <circle class="sacmap__seal-ring sacmap__seal-ring--inner" cx="${L.sealX}" cy="${L.sealY}" r="${L.sealR - 8}"/>
-        <text class="sacmap__seal-mark" x="${L.sealX}" y="${L.sealY + 8}" text-anchor="middle">SAC</text>
+        <image class="sacmap__seal-logo" href="${assetUrl("assets/logos/sac.svg")}" x="${L.sealX - logo / 2}" y="${L.sealY - logo / 2}" width="${logo}" height="${logo}"/>
         <text class="sacmap__seal-sub" x="${L.sealX}" y="${L.sealY + L.sealR + 15}" text-anchor="middle">THE ELECTED STUDENT BODY</text>
       </g>
 
