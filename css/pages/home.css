@@ -286,17 +286,6 @@
   stroke: var(--accent);
   stroke-width: 1.8;
 }
-.sacmap__seal-ring--inner {
-  opacity: 0.45;
-  stroke-width: 0.7;
-}
-.sacmap__seal-mark {
-  fill: var(--accent);
-  font-family: var(--font-body);
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
 .sacmap__seal-sub {
   fill: var(--ink-muted);
   font-family: var(--font-mono);
