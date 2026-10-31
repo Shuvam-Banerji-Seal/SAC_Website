@@ -811,7 +811,7 @@ export const CLUBS = [
     "SAC_Sports_GYM",
     "gym",
     "sports",
-    "GYM Club",
+    "Gym Club",
     "Gym",
     ["sport"],
     "fitness workout weights training"
